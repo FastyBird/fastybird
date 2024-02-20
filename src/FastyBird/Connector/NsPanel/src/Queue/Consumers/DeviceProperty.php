@@ -96,7 +96,7 @@ trait DeviceProperty
 				$this->logger->warning(
 					'Stored device property was not of valid type',
 					[
-						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -122,7 +122,7 @@ trait DeviceProperty
 				$this->logger->error(
 					'Device was not found, property could not be configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -153,7 +153,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device variable property was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -180,7 +180,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device variable property was updated',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),

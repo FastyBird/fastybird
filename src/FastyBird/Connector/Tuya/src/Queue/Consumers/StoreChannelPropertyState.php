@@ -101,7 +101,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -130,7 +130,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 						]),
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
+						MetadataTypes\Sources\Connector::TUYA,
 					));
 				} catch (MetadataExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
@@ -172,7 +172,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
 						]),
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA),
+						MetadataTypes\Sources\Connector::TUYA,
 					));
 				}
 			}
@@ -181,7 +181,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

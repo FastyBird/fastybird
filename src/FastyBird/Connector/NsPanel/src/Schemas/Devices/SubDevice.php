@@ -33,7 +33,7 @@ final class SubDevice extends Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::NS_PANEL . '/device/' . Entities\Devices\SubDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::NS_PANEL->value . '/device/' . Entities\Devices\SubDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

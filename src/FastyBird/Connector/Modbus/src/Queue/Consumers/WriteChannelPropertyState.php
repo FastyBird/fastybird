@@ -111,7 +111,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -145,7 +145,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -179,7 +179,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -213,7 +213,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -240,7 +240,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Channel property is not writable',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -287,7 +287,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Value to write into register is invalid',
 				[
-					'source' => MetadataTypes\Sources\Connector::MODBUS,
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -324,7 +324,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->channelPropertiesStatesManager->setPendingState(
 			$property,
 			true,
-			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
+			MetadataTypes\Sources\Connector::MODBUS,
 		);
 
 		$mode = $this->connectorHelper->getClientMode($connector);
@@ -349,7 +349,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Device address is not configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -378,7 +378,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel address is not configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -428,7 +428,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$deviceExpectedDataType->value,
 					),
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -465,7 +465,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 							]),
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
+							MetadataTypes\Sources\Connector::MODBUS,
 						));
 					} else {
 						$this->resetExpected($property);
@@ -473,7 +473,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Value for boolean property have to be 1/0 or true/false',
 							[
-								'source' => MetadataTypes\Sources\Connector::MODBUS,
+								'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 								'type' => 'write-channel-property-state-message-consumer',
 								'connector' => [
 									'id' => $message->getConnector()->toString(),
@@ -548,7 +548,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Provided data type is not supported',
 							[
-								'source' => MetadataTypes\Sources\Connector::MODBUS,
+								'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 								'type' => 'write-channel-property-state-message-consumer',
 								'connector' => [
 									'id' => $message->getConnector()->toString(),
@@ -575,7 +575,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Data could not be converted for write',
 							[
-								'source' => MetadataTypes\Sources\Connector::MODBUS,
+								'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 								'type' => 'write-channel-property-state-message-consumer',
 								'connector' => [
 									'id' => $message->getConnector()->toString(),
@@ -605,7 +605,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						]),
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
+						MetadataTypes\Sources\Connector::MODBUS,
 					));
 				} else {
 					$this->resetExpected($property);
@@ -616,7 +616,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							$valueToWrite->getDataType()->value,
 						),
 						[
-							'source' => MetadataTypes\Sources\Connector::MODBUS,
+							'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 							'type' => 'write-channel-property-state-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -642,7 +642,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Could not write state to device',
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -683,7 +683,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Device ip address is not configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -718,7 +718,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$this->logger->error(
 					'Channel address is not configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -769,7 +769,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$deviceExpectedDataType->value,
 					),
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -809,7 +809,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						'Value for boolean property have to be 1/0 or true/false',
 						[
-							'source' => MetadataTypes\Sources\Connector::MODBUS,
+							'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 							'type' => 'write-channel-property-state-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -884,7 +884,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						'Provided data type is not supported',
 						[
-							'source' => MetadataTypes\Sources\Connector::MODBUS,
+							'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 							'type' => 'write-channel-property-state-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -911,7 +911,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						'Data could not be converted for write',
 						[
-							'source' => MetadataTypes\Sources\Connector::MODBUS,
+							'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 							'type' => 'write-channel-property-state-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -949,7 +949,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						$valueToWrite->getDataType()->value,
 					),
 					[
-						'source' => MetadataTypes\Sources\Connector::MODBUS,
+						'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 						'type' => 'write-channel-property-state-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -977,7 +977,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						]),
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
+						MetadataTypes\Sources\Connector::MODBUS,
 					));
 				}),
 				function (Throwable $ex) use ($message, $device, $channel, $property): void {
@@ -986,7 +986,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$this->logger->error(
 						'Could not write state to device',
 						[
-							'source' => MetadataTypes\Sources\Connector::MODBUS,
+							'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 							'type' => 'write-channel-property-state-message-consumer',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -1011,7 +1011,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::MODBUS,
+				'source' => MetadataTypes\Sources\Connector::MODBUS->value,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),
@@ -1040,7 +1040,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->channelPropertiesStatesManager->setPendingState(
 			$property,
 			false,
-			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS),
+			MetadataTypes\Sources\Connector::MODBUS,
 		);
 	}
 

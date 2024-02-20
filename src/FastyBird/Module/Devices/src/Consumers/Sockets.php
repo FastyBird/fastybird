@@ -50,14 +50,14 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($source->equalsValue(MetadataTypes\Sources\Module::DEVICES)) {
+		if ($source === MetadataTypes\Sources\Module::DEVICES) {
 			return;
 		}
 
 		$result = $this->sendMessage(
 			[
 				'routing_key' => $routingKey,
-				'source' => $source->getValue(),
+				'source' => $source->value,
 				'data' => $document?->toArray(),
 			],
 		);
@@ -66,11 +66,11 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->debug(
 				'Successfully published message',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
 					'message' => [
 						'routing_key' => $routingKey,
-						'source' => $source->getValue(),
+						'source' => $source->value,
 						'data' => $document?->toArray(),
 					],
 				],
@@ -80,11 +80,11 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Message could not be published to exchange',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
 					'message' => [
 						'routing_key' => $routingKey,
-						'source' => $source->getValue(),
+						'source' => $source->value,
 						'data' => $document?->toArray(),
 					],
 				],
@@ -94,11 +94,11 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 		$this->logger->debug(
 			'Received message from exchange was pushed to WS clients',
 			[
-				'source' => MetadataTypes\Sources\Module::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'sockets-consumer',
 				'message' => [
 					'routing_key' => $routingKey,
-					'source' => $source->getValue(),
+					'source' => $source->value,
 					'entity' => $document?->toArray(),
 				],
 			],
@@ -119,7 +119,7 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 				$this->logger->debug(
 					'Broadcasting message to topic',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'sockets-consumer',
 						'link' => $link,
 					],
@@ -133,7 +133,7 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -143,7 +143,7 @@ final readonly class Sockets implements ExchangeConsumer\Consumer
 			$this->logger->error(
 				'Data could not be broadcasts to clients',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

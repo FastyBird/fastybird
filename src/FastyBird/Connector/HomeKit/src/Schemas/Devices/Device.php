@@ -35,7 +35,7 @@ class Device extends DevicesSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/device/' . Entities\Devices\Device::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT->value . '/device/' . Entities\Devices\Device::TYPE;
 
 	public function getEntityClass(): string
 	{

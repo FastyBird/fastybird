@@ -282,7 +282,7 @@ final class Television implements Client
 					$this->logger->error(
 						'Calling device api failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'television-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -310,7 +310,7 @@ final class Television implements Client
 					$this->logger->error(
 						'Connection to device could not be created',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'television-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -344,7 +344,7 @@ final class Television implements Client
 					$this->logger->error(
 						'Device is in invalid state and could not be handled',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'television-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -438,7 +438,7 @@ final class Television implements Client
 				$this->logger->error(
 					'Preparing api request failed',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'television-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -455,7 +455,7 @@ final class Television implements Client
 				$this->logger->error(
 					'Calling device api failed',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'television-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -489,7 +489,7 @@ final class Television implements Client
 				$this->logger->error(
 					'Device is in invalid state and could not be handled',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'television-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -532,7 +532,7 @@ final class Television implements Client
 					$this->logger->warning(
 						'Could not call local api',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'television-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -613,7 +613,7 @@ final class Television implements Client
 			$this->logger->warning(
 				'Event subscription with device failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'television-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

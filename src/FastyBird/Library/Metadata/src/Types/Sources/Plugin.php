@@ -25,24 +25,21 @@ use FastyBird\Library\Metadata;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Plugin extends Source
+enum Plugin: string implements Source
 {
 
-	/**
-	 * Define types
-	 */
-	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
+	case COUCHDB = Metadata\Constants::PLUGIN_COUCHDB_SOURCE;
 
-	public const RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
+	case RABBITMQ = Metadata\Constants::PLUGIN_RABBITMQ_SOURCE;
 
-	public const REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
+	case REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
 
-	public const WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
+	case WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
 
-	public const WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
+	case WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;
 
-	public const API_KEY = Metadata\Constants::PLUGIN_API_KEY;
+	case API_KEY = Metadata\Constants::PLUGIN_API_KEY;
 
 }

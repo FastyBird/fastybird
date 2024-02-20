@@ -89,7 +89,7 @@ final class StoreBridgeLog implements Queue\Consumer
 			$message->getLevel(),
 			$message->getMessage(),
 			[
-				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'bridge-log',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),
@@ -103,7 +103,7 @@ final class StoreBridgeLog implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge log message',
 			[
-				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-bridge-log-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

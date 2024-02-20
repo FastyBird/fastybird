@@ -47,7 +47,7 @@ abstract class Device extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIRTUAL);
+		return MetadataTypes\Sources\Connector::VIRTUAL;
 	}
 
 	public function getConnector(): Entities\Connectors\Connector

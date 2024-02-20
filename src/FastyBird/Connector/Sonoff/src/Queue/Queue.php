@@ -48,7 +48,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'queue',
 				'message' => $message->toArray(),
 			],

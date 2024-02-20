@@ -123,7 +123,7 @@ final class Mdns implements Server
 		$this->logger->debug(
 			'Creating mDNS server',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'mdns-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -171,7 +171,7 @@ final class Mdns implements Server
 					$this->logger->error(
 						'An error occurred during server handling',
 						[
-							'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+							'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 							'type' => 'mdns-server',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -181,7 +181,7 @@ final class Mdns implements Server
 					);
 
 					$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 						'Discovery broadcast server was terminated',
 						$ex,
 					));
@@ -191,7 +191,7 @@ final class Mdns implements Server
 					$this->logger->info(
 						'Server was closed',
 						[
-							'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+							'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 							'type' => 'mdns-server',
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
@@ -215,7 +215,7 @@ final class Mdns implements Server
 				$this->logger->error(
 					'Could not create mDNS discovery server',
 					[
-						'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+						'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 						'type' => 'mdns-server',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -231,7 +231,7 @@ final class Mdns implements Server
 		$this->logger->debug(
 			'Closing mDNS server',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'mdns-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -261,7 +261,7 @@ final class Mdns implements Server
 			$this->logger->debug(
 				'Connector configuration changed. Refreshing mDNS broadcast',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'mdns-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -279,7 +279,7 @@ final class Mdns implements Server
 		$this->logger->debug(
 			'Broadcasting connector DNS zone',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'mdns-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

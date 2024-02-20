@@ -95,7 +95,7 @@ trait ChannelProperty
 			$this->logger->warning(
 				'Stored channel property was not of valid type',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
@@ -120,7 +120,7 @@ trait ChannelProperty
 				$this->logger->error(
 					'Channel was not found, property could not be configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'message-consumer',
 						'channel' => [
 							'id' => $channelId->toString(),
@@ -163,7 +163,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),
@@ -203,7 +203,7 @@ trait ChannelProperty
 			$this->logger->debug(
 				'Channel property was updated',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'message-consumer',
 					'channel' => [
 						'id' => $channelId->toString(),

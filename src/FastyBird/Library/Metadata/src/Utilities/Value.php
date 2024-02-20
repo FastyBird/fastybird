@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Metadata\Utilities;
 
 use BackedEnum;
-use Consistence\Enum\Enum;
 use DateTime;
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Exceptions;
@@ -674,15 +673,13 @@ final class Value
 	}
 
 	public static function flattenValue(
-		bool|int|float|string|DateTimeInterface|BackedEnum|Enum|null $value,
+		bool|int|float|string|DateTimeInterface|BackedEnum|null $value,
 	): bool|int|float|string|null
 	{
 		if ($value instanceof DateTimeInterface) {
 			return $value->format(DateTimeInterface::ATOM);
 		} elseif ($value instanceof BackedEnum) {
 			return $value->value;
-		} elseif ($value instanceof Enum) {
-			return is_numeric($value->getValue()) ? $value->getValue() : strval($value->getValue());
 		}
 
 		return $value;
@@ -694,7 +691,7 @@ final class Value
 	 * @throws Exceptions\InvalidArgument
 	 */
 	public static function toString(
-		bool|int|float|string|DateTimeInterface|BackedEnum|Enum|null $value,
+		bool|int|float|string|DateTimeInterface|BackedEnum|null $value,
 		bool $throw = false,
 	): string|null
 	{

@@ -39,7 +39,7 @@ final class Manual extends Trigger
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS . '/trigger/' . Entities\Triggers\Manual::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS->value . '/trigger/' . Entities\Triggers\Manual::TYPE;
 
 	/**
 	 * Define relationships names

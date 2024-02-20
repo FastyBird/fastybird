@@ -95,7 +95,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge info message',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -137,7 +137,7 @@ readonly class Bridge
 									$this->logger->warning(
 										'Received message payload is not valid for bridge state message',
 										[
-											'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+											'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 											'type' => 'bridge-messages-subscriber',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
@@ -167,7 +167,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge log',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -197,7 +197,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge devices message',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -227,7 +227,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge groups message',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -257,7 +257,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge event message',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -287,7 +287,7 @@ readonly class Bridge
 								$this->logger->warning(
 									'Received message payload is not valid for bridge extensions message',
 									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -315,7 +315,7 @@ readonly class Bridge
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'bridge-messages-subscriber',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -345,7 +345,7 @@ readonly class Bridge
 			$this->logger->error(
 				'Received bridge message payload is not valid JSON message',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'bridge-messages-subscriber',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

@@ -133,7 +133,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 		$channelPropertiesStatesManager->write(
 			$property,
 			$data,
-			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+			MetadataTypes\Sources\Module::DEVICES,
 		);
 	}
 
@@ -249,7 +249,7 @@ final class ChannelPropertiesStatesWritingTest extends BaseTestCase
 		$channelPropertiesStatesManager->set(
 			$property,
 			$data,
-			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+			MetadataTypes\Sources\Module::DEVICES,
 		);
 	}
 

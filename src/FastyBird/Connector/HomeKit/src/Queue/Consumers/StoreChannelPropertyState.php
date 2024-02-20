@@ -92,7 +92,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -157,7 +157,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -202,7 +202,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+				MetadataTypes\Sources\Connector::HOMEKIT,
 			));
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
@@ -216,7 +216,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $message->getValue(),
 					]),
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+					MetadataTypes\Sources\Connector::HOMEKIT,
 				));
 			} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 				$this->databaseHelper->transaction(
@@ -237,7 +237,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							$this->logger->error(
 								'Mapped variable property could not be updated',
 								[
-									'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+									'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 									'type' => 'store-channel-property-state-message-consumer',
 									'connector' => [
 										'id' => $message->getConnector()->toString(),
@@ -263,7 +263,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

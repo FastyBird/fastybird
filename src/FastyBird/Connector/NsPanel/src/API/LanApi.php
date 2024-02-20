@@ -903,7 +903,7 @@ final class LanApi
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'lan-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -945,7 +945,7 @@ final class LanApi
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'lan-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -1006,7 +1006,7 @@ final class LanApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'lan-api',
 					'request' => [
 						'method' => $request->getMethod(),

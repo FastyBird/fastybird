@@ -25,16 +25,13 @@ use FastyBird\Library\Metadata;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Automator extends Source
+enum Automator: string implements Source
 {
 
-	/**
-	 * Define types
-	 */
-	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const DEVICE_MODULE = Metadata\Constants::AUTOMATOR_DEVICE_MODULE;
+	case DEVICE_MODULE = Metadata\Constants::AUTOMATOR_DEVICE_MODULE;
 
-	public const DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
+	case DATE_TIME = Metadata\Constants::AUTOMATOR_DATE_TIME;
 
 }

@@ -96,7 +96,7 @@ class StatesManager
 					$this->logger->error(
 						'Data stored in database are noc compatible with state entity',
 						[
-							'source' => MetadataTypes\Sources\Plugin::REDISDB,
+							'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 							'type' => 'states-async-manager',
 							'record' => [
 								'id' => $id->toString(),
@@ -121,7 +121,7 @@ class StatesManager
 				$this->logger->error(
 					'State could not be created',
 					[
-						'source' => MetadataTypes\Sources\Plugin::REDISDB,
+						'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 						'type' => 'states-async-manager',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'record' => [
@@ -159,7 +159,7 @@ class StatesManager
 					$this->logger->error(
 						'Data stored in database are noc compatible with state entity',
 						[
-							'source' => MetadataTypes\Sources\Plugin::REDISDB,
+							'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 							'type' => 'states-async-manager',
 							'record' => [
 								'id' => $id->toString(),
@@ -187,7 +187,7 @@ class StatesManager
 					$this->logger->error(
 						'State could not be updated',
 						[
-							'source' => MetadataTypes\Sources\Plugin::REDISDB,
+							'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 							'type' => 'states-async-manager',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'record' => [

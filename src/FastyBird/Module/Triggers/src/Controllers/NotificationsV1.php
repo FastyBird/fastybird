@@ -219,7 +219,7 @@ final class NotificationsV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::TRIGGERS,
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
 						'type' => 'notifications-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -303,7 +303,7 @@ final class NotificationsV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::TRIGGERS,
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
 						'type' => 'notifications-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -373,7 +373,7 @@ final class NotificationsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::TRIGGERS,
+					'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
 					'type' => 'notifications-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

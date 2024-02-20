@@ -72,7 +72,7 @@ class Device extends VirtualEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\Sources\Addon
 	{
-		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
+		return MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT;
 	}
 
 	/**

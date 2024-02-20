@@ -40,7 +40,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE . '/condition/' . Entities\Conditions\ChannelPropertyCondition::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE->value . '/condition/' . Entities\Conditions\ChannelPropertyCondition::TYPE;
 
 	public function getType(): string
 	{

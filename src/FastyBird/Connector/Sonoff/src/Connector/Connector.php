@@ -104,7 +104,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Sonoff connector service',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -165,7 +165,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector service has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -188,7 +188,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Sonoff connector discovery',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -208,7 +208,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector discovery has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -244,7 +244,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Sonoff connector has been terminated',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

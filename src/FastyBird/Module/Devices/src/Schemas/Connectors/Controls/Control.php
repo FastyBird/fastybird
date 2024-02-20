@@ -41,7 +41,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES . '/control/connector';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES->value . '/control/connector';
 
 	/**
 	 * Define relationships names

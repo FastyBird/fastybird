@@ -43,7 +43,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::FB_MQTT);
+		return MetadataTypes\Sources\Connector::FB_MQTT;
 	}
 
 	/**

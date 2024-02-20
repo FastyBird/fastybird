@@ -25,14 +25,11 @@ use FastyBird\Library\Metadata;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Addon extends Source
+enum Addon: string implements Source
 {
 
-	/**
-	 * Define types
-	 */
-	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT;
+	case VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT;
 
 }

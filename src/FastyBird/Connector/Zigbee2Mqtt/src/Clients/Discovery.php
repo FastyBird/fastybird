@@ -145,7 +145,7 @@ final class Discovery
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected Zigbee2MQTT bridge',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -162,7 +162,7 @@ final class Discovery
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered Zigbee2MQTT bridges',
 				[
-					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -188,7 +188,7 @@ final class Discovery
 				$this->eventLoop->addTimer(self::DISCOVERY_TIMEOUT, function (): void {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 							'Devices discovery failed',
 						),
 					);
@@ -197,7 +197,7 @@ final class Discovery
 			->catch(function (): void {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 						'Devices discovery failed',
 					),
 				);
@@ -233,7 +233,7 @@ final class Discovery
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'discovery-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -253,7 +253,7 @@ final class Discovery
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'discovery-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [

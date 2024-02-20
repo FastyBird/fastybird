@@ -64,7 +64,7 @@ class Device extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::TUYA);
+		return MetadataTypes\Sources\Connector::TUYA;
 	}
 
 	public function getConnector(): Entities\Connectors\Connector

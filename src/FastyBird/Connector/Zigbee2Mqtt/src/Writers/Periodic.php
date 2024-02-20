@@ -213,7 +213,7 @@ abstract class Periodic
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				),
 			);
 

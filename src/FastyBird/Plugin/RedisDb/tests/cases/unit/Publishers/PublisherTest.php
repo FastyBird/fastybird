@@ -30,7 +30,7 @@ final class PublisherTest extends TestCase
 			->method('publish')
 			->with('exchange_channel', Nette\Utils\Json::encode([
 				'sender_id' => 'redis_client_identifier',
-				'source' => MetadataTypes\Sources\Module::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'routing_key' => 'testing.routing.key',
 				'created' => $now->format(DateTimeInterface::ATOM),
 				'data' => [
@@ -60,7 +60,7 @@ final class PublisherTest extends TestCase
 		);
 
 		$publisher->publish(
-			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+			MetadataTypes\Sources\Module::DEVICES,
 			'testing.routing.key',
 			new Fixtures\Dummy\DummyDocument(
 				'someAttribute',

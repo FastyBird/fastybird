@@ -49,7 +49,7 @@ final class Queue
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'queue',
 				'message' => $message->toArray(),
 			],

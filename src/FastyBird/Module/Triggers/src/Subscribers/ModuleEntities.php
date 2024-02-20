@@ -236,7 +236,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		if ($publishRoutingKey !== null) {
 			$this->getPublisher()->publish(
-				MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::TRIGGERS),
+				MetadataTypes\Sources\Module::TRIGGERS,
 				$publishRoutingKey,
 				$this->documentFactory->create(
 					Utils\ArrayHash::from($entity->toArray()),

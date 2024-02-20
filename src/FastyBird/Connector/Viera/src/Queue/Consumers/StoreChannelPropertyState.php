@@ -85,7 +85,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -126,7 +126,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -166,7 +166,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -194,12 +194,12 @@ final class StoreChannelPropertyState implements Queue\Consumer
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => null,
 					DevicesStates\Property::VALID_FIELD => true,
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
+				MetadataTypes\Sources\Connector::VIERA,
 			));
 			$this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
+				MetadataTypes\Sources\Connector::VIERA,
 			);
 		} else {
 			await($this->channelPropertiesStatesManager->set(
@@ -207,14 +207,14 @@ final class StoreChannelPropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
+				MetadataTypes\Sources\Connector::VIERA,
 			));
 		}
 
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

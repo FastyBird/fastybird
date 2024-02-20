@@ -71,7 +71,7 @@ class StatesRepository
 			$this->logger->error(
 				'Data stored in database are noc compatible with state entity',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-repository',
 					'record' => [
 						'id' => $id->toString(),
@@ -104,7 +104,7 @@ class StatesRepository
 			$this->logger->error(
 				'State could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-repository',
 					'record' => [
 						'id' => $id->toString(),

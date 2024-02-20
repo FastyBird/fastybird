@@ -315,7 +315,7 @@ final class Http implements Server
 						try {
 							$state = $this->channelPropertiesStatesManager->read(
 								$property,
-								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+								MetadataTypes\Sources\Connector::HOMEKIT,
 							);
 
 							if ($state instanceof DevicesDocuments\States\Properties\Channel) {
@@ -328,7 +328,7 @@ final class Http implements Server
 							$this->logger->warning(
 								'State value could not be set to characteristic',
 								[
-									'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+									'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 									'type' => 'http-server',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -358,7 +358,7 @@ final class Http implements Server
 							try {
 								$state = $this->channelPropertiesStatesManager->read(
 									$property,
-									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+									MetadataTypes\Sources\Connector::HOMEKIT,
 								);
 
 								if ($state instanceof DevicesDocuments\States\Properties\Channel) {
@@ -371,7 +371,7 @@ final class Http implements Server
 								$this->logger->warning(
 									'State value could not be set to characteristic',
 									[
-										'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+										'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 										'type' => 'http-server',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -422,7 +422,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Creating HAP web server',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -446,7 +446,7 @@ final class Http implements Server
 			$this->logger->error(
 				'Socket server could not be created',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -456,7 +456,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+				MetadataTypes\Sources\Connector::HOMEKIT,
 				'Socket server could not be created',
 				$ex,
 			));
@@ -468,7 +468,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'New client has connected to server',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -485,7 +485,7 @@ final class Http implements Server
 				$this->logger->debug(
 					'Connected client has closed connection',
 					[
-						'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+						'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 						'type' => 'http-server',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -504,7 +504,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during socket handling',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -514,7 +514,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+				MetadataTypes\Sources\Connector::HOMEKIT,
 				'HTTP server was terminated',
 				$ex,
 			));
@@ -524,7 +524,7 @@ final class Http implements Server
 			$this->logger->info(
 				'Server was closed',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -551,7 +551,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during server handling',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -561,7 +561,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+				MetadataTypes\Sources\Connector::HOMEKIT,
 				'HTTP server was terminated',
 				$ex,
 			));
@@ -573,7 +573,7 @@ final class Http implements Server
 		$this->logger->debug(
 			'Closing HAP web server',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'http-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -603,7 +603,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Shared key has been updated',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),

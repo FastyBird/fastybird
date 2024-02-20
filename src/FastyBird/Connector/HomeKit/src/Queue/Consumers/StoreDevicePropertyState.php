@@ -90,7 +90,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -118,7 +118,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device device property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'store-device-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -160,7 +160,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $message->getValue(),
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+				MetadataTypes\Sources\Connector::HOMEKIT,
 			));
 		} elseif ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 			$findDevicePropertyQuery = new Queries\Configuration\FindDeviceProperties();
@@ -174,7 +174,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => $message->getValue(),
 					]),
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+					MetadataTypes\Sources\Connector::HOMEKIT,
 				));
 			} elseif ($parent instanceof DevicesDocuments\Devices\Properties\Variable) {
 				$this->databaseHelper->transaction(function () use ($message, $parent, $device, $property): void {
@@ -194,7 +194,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 						$this->logger->error(
 							'Mapped variable property could not be updated',
 							[
-								'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+								'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 								'type' => 'store-device-property-state-message-consumer',
 								'connector' => [
 									'id' => $message->getConnector()->toString(),
@@ -216,7 +216,7 @@ final class StoreDevicePropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'store-device-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

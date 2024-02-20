@@ -109,7 +109,7 @@ final class StoreParametersStates implements Queue\Consumer
 						Utils\ArrayHash::from([
 							DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 						]),
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
+						MetadataTypes\Sources\Connector::SONOFF,
 					));
 				} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 					$this->databaseHelper->transaction(
@@ -152,7 +152,7 @@ final class StoreParametersStates implements Queue\Consumer
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $parameter->getValue(),
 							]),
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
+							MetadataTypes\Sources\Connector::SONOFF,
 						));
 					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 						$this->databaseHelper->transaction(
@@ -179,7 +179,7 @@ final class StoreParametersStates implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'status-parameters-states-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

@@ -205,7 +205,7 @@ final class IdentitiesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'identities-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -283,7 +283,7 @@ final class IdentitiesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'identities-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

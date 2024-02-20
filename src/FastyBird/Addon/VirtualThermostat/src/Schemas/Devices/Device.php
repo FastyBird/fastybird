@@ -36,7 +36,7 @@ final class Device extends VirtualSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT . '/device/' . Entities\Devices\Device::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value . '/device/' . Entities\Devices\Device::TYPE;
 
 	public function getEntityClass(): string
 	{

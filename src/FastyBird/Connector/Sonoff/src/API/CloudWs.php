@@ -184,7 +184,7 @@ final class CloudWs
 							$this->logger->debug(
 								'Connected to Sonoff sockets server',
 								[
-									'source' => MetadataTypes\Sources\Connector::SONOFF,
+									'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 									'type' => 'cloud-ws-api',
 								],
 							);
@@ -240,7 +240,7 @@ final class CloudWs
 					$this->logger->debug(
 						'Connection to Sonoff sockets server was closed',
 						[
-							'source' => MetadataTypes\Sources\Connector::SONOFF,
+							'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 							'type' => 'cloud-ws-api',
 							'connection' => [
 								'code' => $code,
@@ -468,7 +468,7 @@ final class CloudWs
 			$this->logger->debug(
 				'Received message from Sonoff sockets server not be parsed',
 				[
-					'source' => MetadataTypes\Sources\Connector::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 					'type' => 'cloud-ws-api',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -774,7 +774,7 @@ final class CloudWs
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'cloud-ws-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -811,7 +811,7 @@ final class CloudWs
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\Sources\Connector::SONOFF,
+									'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 									'type' => 'cloud-ws-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -865,7 +865,7 @@ final class CloudWs
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 					'type' => 'cloud-ws-api',
 					'request' => [
 						'method' => $request->getMethod(),

@@ -355,7 +355,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 						'Connector configuration changed, services have to be restarted',
 					),
 				);
@@ -364,7 +364,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			if ($document->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value) {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 						'Connector shared key changed, services have to be restarted',
 					),
 				);

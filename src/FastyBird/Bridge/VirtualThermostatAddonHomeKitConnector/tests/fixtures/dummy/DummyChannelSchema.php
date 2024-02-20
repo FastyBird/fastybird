@@ -11,7 +11,7 @@ final class DummyChannelSchema extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::VIRTUAL . '/device/' . DummyChannelEntity::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::VIRTUAL->value . '/device/' . DummyChannelEntity::TYPE;
 
 	public function getEntityClass(): string
 	{

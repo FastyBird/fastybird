@@ -108,7 +108,7 @@ final class Exchange extends Console\Command\Command
 			$this->logger->info(
 				'Starting devices exchange...',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'exchange-cmd',
 				],
 			);
@@ -136,7 +136,7 @@ final class Exchange extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'exchange-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -157,7 +157,7 @@ final class Exchange extends Console\Command\Command
 		$this->logger->info(
 			'Stopping devices exchange...',
 			[
-				'source' => MetadataTypes\Sources\Module::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'exchange-cmd',
 			],
 		);

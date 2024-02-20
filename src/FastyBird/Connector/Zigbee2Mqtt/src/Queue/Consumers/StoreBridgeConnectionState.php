@@ -141,7 +141,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 					);
 				}
 
@@ -166,7 +166,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 						);
 					}
 				}
@@ -194,7 +194,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 						$this->devicePropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 						);
 					}
 
@@ -219,7 +219,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 							$this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,
-								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT),
+								MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 							);
 						}
 					}
@@ -230,7 +230,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge connection state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-bridge-connection-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

@@ -224,7 +224,7 @@ final class Local implements Client
 							$this->logger->debug(
 								'Connected to Tuya local cloud device',
 								[
-									'source' => MetadataTypes\Sources\Connector::TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'local-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -239,7 +239,7 @@ final class Local implements Client
 							$this->logger->error(
 								'Tuya local device client could not be created',
 								[
-									'source' => MetadataTypes\Sources\Connector::TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'local-client',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -357,7 +357,7 @@ final class Local implements Client
 					$this->logger->warning(
 						'Could not call local api',
 						[
-							'source' => MetadataTypes\Sources\Connector::TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'local-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -443,7 +443,7 @@ final class Local implements Client
 			$this->logger->debug(
 				'Connected to device',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'local-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -470,7 +470,7 @@ final class Local implements Client
 			$this->logger->warning(
 				'An error occurred in Tuya local device client',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'local-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

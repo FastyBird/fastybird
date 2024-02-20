@@ -26,6 +26,8 @@ use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Log;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function is_array;
@@ -52,6 +54,10 @@ final readonly class Handler
 	{
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function handle(string $payload): void
 	{
 		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($payload));
@@ -77,7 +83,7 @@ final readonly class Handler
 				$this->logger->warning(
 					'Received message is not in valid format',
 					[
-						'source' => MetadataTypes\Sources\Plugin::REDISDB,
+						'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 						'type' => 'messages-handler',
 					],
 				);
@@ -87,7 +93,7 @@ final readonly class Handler
 			$this->logger->warning(
 				'Received message is not valid json',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-handler',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -97,6 +103,10 @@ final readonly class Handler
 		$this->dispatcher?->dispatch(new Events\AfterMessageHandled($payload));
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function consume(
 		string $source,
 		string $routingKey,
@@ -125,7 +135,7 @@ final readonly class Handler
 			$this->logger->error(
 				'Message could not be transformed into entity',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-handler',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'data' => $data,
@@ -150,32 +160,36 @@ final readonly class Handler
 		));
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function validateSource(
 		string $source,
 	): MetadataTypes\Sources\Source|null
 	{
-		if (MetadataTypes\Sources\Module::isValidValue($source)) {
-			return MetadataTypes\Sources\Module::get($source);
+		if (MetadataTypes\Sources\Module::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Module::from($source);
 		}
 
-		if (MetadataTypes\Sources\Plugin::isValidValue($source)) {
-			return MetadataTypes\Sources\Plugin::get($source);
+		if (MetadataTypes\Sources\Plugin::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Plugin::from($source);
 		}
 
-		if (MetadataTypes\Sources\Connector::isValidValue($source)) {
-			return MetadataTypes\Sources\Connector::get($source);
+		if (MetadataTypes\Sources\Connector::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Connector::from($source);
 		}
 
-		if (MetadataTypes\Sources\Automator::isValidValue($source)) {
-			return MetadataTypes\Sources\Automator::get($source);
+		if (MetadataTypes\Sources\Automator::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Automator::from($source);
 		}
 
-		if (MetadataTypes\Sources\Addon::isValidValue($source)) {
-			return MetadataTypes\Sources\Addon::get($source);
+		if (MetadataTypes\Sources\Addon::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Addon::from($source);
 		}
 
-		if (MetadataTypes\Sources\Bridge::isValidValue($source)) {
-			return MetadataTypes\Sources\Bridge::get($source);
+		if (MetadataTypes\Sources\Bridge::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Bridge::from($source);
 		}
 
 		return null;

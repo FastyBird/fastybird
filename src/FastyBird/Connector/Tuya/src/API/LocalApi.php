@@ -243,7 +243,7 @@ final class LocalApi
 								$this->logger->debug(
 									'Rebuilding payload for device22',
 									[
-										'source' => MetadataTypes\Sources\Connector::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA->value,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -277,7 +277,7 @@ final class LocalApi
 								$this->logger->debug(
 									'Device has replied to heartbeat',
 									[
-										'source' => MetadataTypes\Sources\Connector::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA->value,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -290,7 +290,7 @@ final class LocalApi
 								$this->logger->debug(
 									'Device has reported its state',
 									[
-										'source' => MetadataTypes\Sources\Connector::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA->value,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -323,7 +323,7 @@ final class LocalApi
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
-								'source' => MetadataTypes\Sources\Connector::TUYA,
+								'source' => MetadataTypes\Sources\Connector::TUYA->value,
 								'type' => 'local-api',
 								'device' => [
 									'identifier' => $this->identifier,
@@ -351,7 +351,7 @@ final class LocalApi
 								$this->logger->debug(
 									'Sending ping to device',
 									[
-										'source' => MetadataTypes\Sources\Connector::TUYA,
+										'source' => MetadataTypes\Sources\Connector::TUYA->value,
 										'type' => 'local-api',
 										'device' => [
 											'identifier' => $this->identifier,
@@ -629,7 +629,7 @@ final class LocalApi
 		$this->logger->debug(
 			'Detected device DPS',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,
@@ -691,7 +691,7 @@ final class LocalApi
 		$this->logger->debug(
 			'Sending message to device',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,
@@ -979,7 +979,7 @@ final class LocalApi
 				$this->logger->info(
 					'Received message from device in version 3.1. This code is untested',
 					[
-						'source' => MetadataTypes\Sources\Connector::TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'local-api',
 						'device' => [
 							'identifier' => $this->identifier,
@@ -1065,7 +1065,7 @@ final class LocalApi
 							$this->deviceType->value,
 						),
 						[
-							'source' => MetadataTypes\Sources\Connector::TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'local-api',
 							'device' => [
 								'identifier' => $this->identifier,
@@ -1110,7 +1110,7 @@ final class LocalApi
 			$this->logger->warning(
 				'Received message from device with unsupported version',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'local-api',
 					'device' => [
 						'identifier' => $this->identifier,
@@ -1129,7 +1129,7 @@ final class LocalApi
 		$this->logger->debug(
 			'Received message from device',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'local-api',
 				'device' => [
 					'identifier' => $this->identifier,

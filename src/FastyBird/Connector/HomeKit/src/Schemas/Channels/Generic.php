@@ -34,7 +34,7 @@ final class Generic extends Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT . '/channel/' . Entities\Channels\Generic::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::HOMEKIT->value . '/channel/' . Entities\Channels\Generic::TYPE;
 
 	public function getEntityClass(): string
 	{

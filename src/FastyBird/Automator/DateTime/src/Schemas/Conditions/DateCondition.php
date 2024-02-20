@@ -37,7 +37,7 @@ final class DateCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DATE_TIME . '/condition/' . Entities\Conditions\DateCondition::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DATE_TIME->value . '/condition/' . Entities\Conditions\DateCondition::TYPE;
 
 	public function getType(): string
 	{

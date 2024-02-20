@@ -58,7 +58,6 @@ contributteMonolog:
 orisaiObjectMapper:
     debug: %debugMode%
     rules:
-        - FastyBird\Library\Application\ObjectMapper\Rules\ConsistenceEnumRule()
         - FastyBird\Library\Application\ObjectMapper\Rules\UuidRule()
 
 # Core application extension

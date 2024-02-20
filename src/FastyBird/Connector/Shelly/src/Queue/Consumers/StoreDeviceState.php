@@ -132,7 +132,7 @@ final class StoreDeviceState implements Queue\Consumer
 							Utils\ArrayHash::from([
 								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 							]),
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+							MetadataTypes\Sources\Connector::SHELLY,
 						));
 					} elseif ($property instanceof DevicesDocuments\Devices\Properties\Variable) {
 						$this->databaseHelper->transaction(
@@ -184,7 +184,7 @@ final class StoreDeviceState implements Queue\Consumer
 									Utils\ArrayHash::from([
 										DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
 									]),
-									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+									MetadataTypes\Sources\Connector::SHELLY,
 								));
 							} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 								$this->databaseHelper->transaction(
@@ -249,7 +249,7 @@ final class StoreDeviceState implements Queue\Consumer
 								Utils\ArrayHash::from([
 									DevicesStates\Property::ACTUAL_VALUE_FIELD => $sensor->getValue(),
 								]),
-								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+								MetadataTypes\Sources\Connector::SHELLY,
 							));
 						} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 							$this->databaseHelper->transaction(
@@ -277,7 +277,7 @@ final class StoreDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

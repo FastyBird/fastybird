@@ -248,7 +248,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->warning(
 							'Calling device lan api for reading state failed',
 							[
-								'source' => MetadataTypes\Sources\Connector::SONOFF,
+								'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 								'type' => 'lan-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -265,7 +265,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->warning(
 							'Calling device lan api for reading state failed',
 							[
-								'source' => MetadataTypes\Sources\Connector::SONOFF,
+								'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 								'type' => 'lan-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -280,7 +280,7 @@ final class Lan extends ClientProcess implements Client
 						$this->logger->error(
 							'Could not call device lan api',
 							[
-								'source' => MetadataTypes\Sources\Connector::SONOFF,
+								'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 								'type' => 'lan-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
@@ -294,7 +294,7 @@ final class Lan extends ClientProcess implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF),
+								MetadataTypes\Sources\Connector::SONOFF,
 								'Could not call device lan api',
 								$ex,
 							),
@@ -366,7 +366,7 @@ final class Lan extends ClientProcess implements Client
 				$this->logger->error(
 					'Sonoff SPM sub-device could not be found',
 					[
-						'source' => MetadataTypes\Sources\Connector::SONOFF,
+						'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 						'type' => 'lan-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),

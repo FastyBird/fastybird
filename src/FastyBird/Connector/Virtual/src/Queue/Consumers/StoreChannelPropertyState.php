@@ -92,7 +92,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => $message->getSource()->getValue(),
+					'source' => $message->getSource()->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -127,7 +127,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel could not be loaded',
 				[
-					'source' => $message->getSource()->getValue(),
+					'source' => $message->getSource()->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -163,7 +163,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device channel property could not be loaded',
 				[
-					'source' => $message->getSource()->getValue(),
+					'source' => $message->getSource()->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -244,7 +244,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							$this->logger->error(
 								'Mapped variable property could not be updated',
 								[
-									'source' => $message->getSource()->getValue(),
+									'source' => $message->getSource()->value,
 									'type' => 'store-channel-property-state-message-consumer',
 									'connector' => [
 										'id' => $message->getConnector()->toString(),
@@ -270,7 +270,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => $message->getSource()->getValue(),
+				'source' => $message->getSource()->value,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

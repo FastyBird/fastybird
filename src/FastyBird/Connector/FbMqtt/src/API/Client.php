@@ -195,7 +195,7 @@ final class Client
 						$this->logger->info(
 							sprintf('Connected to MQTT broker with client id %s', $connection->getClientID()),
 							[
-								'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $connection->getUsername(),
@@ -258,7 +258,7 @@ final class Client
 					$this->logger->info(
 						sprintf('Disconnected from MQTT broker with client id %s', $connection->getClientID()),
 						[
-							'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+							'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 							'type' => 'api-client',
 							'credentials' => [
 								'username' => $connection->getUsername(),
@@ -361,7 +361,7 @@ final class Client
 		$this->logger->info(
 			'Established connection to MQTT broker',
 			[
-				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -614,7 +614,7 @@ final class Client
 			$this->logger->info(
 				'Connection to MQTT broker has been closed',
 				[
-					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'api-client',
 					'credentials' => [
 						'username' => $connection->getUsername(),
@@ -636,7 +636,7 @@ final class Client
 		$this->logger->warning(
 			sprintf('There was an error %s', $error->getMessage()),
 			[
-				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
@@ -660,7 +660,7 @@ final class Client
 		$this->logger->error(
 			sprintf('There was an error %s', $error->getMessage()),
 			[
-				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
@@ -760,7 +760,7 @@ final class Client
 						$this->logger->info(
 							sprintf('Connected to MQTT broker with client id %s', $result->getClientID()),
 							[
-								'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
@@ -780,7 +780,7 @@ final class Client
 						$this->logger->info(
 							sprintf('Disconnected from MQTT broker with client id %s', $result->getClientID()),
 							[
-								'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
@@ -804,7 +804,7 @@ final class Client
 								$result->getPayload(),
 							),
 							[
-								'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'message' => [
 									'topic' => $result->getTopic(),

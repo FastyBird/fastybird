@@ -49,7 +49,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			->with(
 				self::callback(
 					static function (MetadataTypes\Sources\Source $source): bool {
-						self::assertTrue($source->equalsValue(MetadataTypes\Sources\Module::DEVICES));
+						self::assertTrue($source === MetadataTypes\Sources\Module::DEVICES);
 
 						return true;
 					},

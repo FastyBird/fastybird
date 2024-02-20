@@ -49,7 +49,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::ZIGBEE2MQTT);
+		return MetadataTypes\Sources\Connector::ZIGBEE2MQTT;
 	}
 
 	/**

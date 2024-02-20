@@ -152,7 +152,7 @@ final class OpenPulsar
 				$this->logger->debug(
 					'Connected to Tuya sockets server',
 					[
-						'source' => MetadataTypes\Sources\Connector::TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'openpulsar-api',
 						'connector' => [
 							'identifier' => $this->identifier,
@@ -178,7 +178,7 @@ final class OpenPulsar
 					$this->logger->debug(
 						'Connection to Tuya WS server was closed',
 						[
-							'source' => MetadataTypes\Sources\Connector::TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'openpulsar-api',
 							'connection' => [
 								'code' => $code,
@@ -316,7 +316,7 @@ final class OpenPulsar
 		$this->logger->debug(
 			'Received message origin payload',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'openpulsar-api',
 				'data' => [
 					'payload' => $payload,
@@ -367,7 +367,7 @@ final class OpenPulsar
 		$this->logger->debug(
 			'Received message decrypted',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'openpulsar-api',
 				'data' => $decryptedData,
 				'connector' => [

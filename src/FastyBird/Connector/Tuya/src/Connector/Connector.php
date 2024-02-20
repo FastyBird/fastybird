@@ -99,7 +99,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Tuya connector service',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -156,7 +156,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector service has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -181,7 +181,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Tuya connector discovery',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -201,7 +201,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector discovery has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -237,7 +237,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Tuya connector has been terminated',
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

@@ -79,7 +79,7 @@ final class StoreSubDevice implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -114,7 +114,7 @@ final class StoreSubDevice implements Queue\Consumer
 				$this->logger->error(
 					'Connector could not be loaded',
 					[
-						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'store-sub-device-message-consumer',
 						'connector' => [
 							'id' => $message->getConnector()->toString(),
@@ -150,7 +150,7 @@ final class StoreSubDevice implements Queue\Consumer
 			$this->logger->info(
 				'Sub-device was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-sub-device-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -230,7 +230,7 @@ final class StoreSubDevice implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+							'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 							'type' => 'store-sub-device-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -278,7 +278,7 @@ final class StoreSubDevice implements Queue\Consumer
 							$this->logger->debug(
 								'Toggle channel name was set',
 								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'store-sub-device-message-consumer',
 									'connector' => [
 										'id' => $message->getConnector()->toString(),
@@ -303,7 +303,7 @@ final class StoreSubDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'store-sub-device-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

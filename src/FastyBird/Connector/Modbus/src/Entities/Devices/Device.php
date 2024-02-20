@@ -55,7 +55,7 @@ class Device extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS);
+		return MetadataTypes\Sources\Connector::MODBUS;
 	}
 
 	public function getConnector(): Entities\Connectors\Connector

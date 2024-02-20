@@ -93,7 +93,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -135,7 +135,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+						MetadataTypes\Sources\Connector::NS_PANEL,
 					);
 				}
 
@@ -160,7 +160,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+							MetadataTypes\Sources\Connector::NS_PANEL,
 						);
 					}
 				}
@@ -198,7 +198,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 							$this->devicePropertiesStatesManager->setValidState(
 								$property,
 								false,
-								MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+								MetadataTypes\Sources\Connector::NS_PANEL,
 							);
 						}
 
@@ -223,7 +223,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 								$this->channelPropertiesStatesManager->setValidState(
 									$property,
 									false,
-									MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+									MetadataTypes\Sources\Connector::NS_PANEL,
 								);
 							}
 						}
@@ -252,7 +252,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

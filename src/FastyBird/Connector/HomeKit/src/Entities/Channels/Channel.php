@@ -50,7 +50,7 @@ abstract class Channel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT);
+		return MetadataTypes\Sources\Connector::HOMEKIT;
 	}
 
 	public function getDevice(): Entities\Devices\Device

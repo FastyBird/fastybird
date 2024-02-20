@@ -121,7 +121,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					$this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+						MetadataTypes\Sources\Connector::SHELLY,
 					);
 				}
 
@@ -146,7 +146,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						$this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+							MetadataTypes\Sources\Connector::SHELLY,
 						);
 					}
 				}
@@ -156,7 +156,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

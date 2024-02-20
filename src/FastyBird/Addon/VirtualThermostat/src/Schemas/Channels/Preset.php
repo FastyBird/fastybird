@@ -36,7 +36,7 @@ final class Preset extends VirtualSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT . '/channel/' . Entities\Channels\Preset::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value . '/channel/' . Entities\Channels\Preset::TYPE;
 
 	public function getEntityClass(): string
 	{

@@ -231,7 +231,7 @@ abstract class Periodic
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 					),
 				);
 
@@ -251,7 +251,7 @@ abstract class Periodic
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 					),
 				);
 
@@ -271,7 +271,7 @@ abstract class Periodic
 				$state = await(
 					$this->devicePropertiesStatesManager->read(
 						$property,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 					),
 				);
 
@@ -291,7 +291,7 @@ abstract class Periodic
 				$state = await(
 					$this->channelPropertiesStatesManager->read(
 						$property,
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT),
+						MetadataTypes\Sources\Connector::HOMEKIT,
 					),
 				);
 

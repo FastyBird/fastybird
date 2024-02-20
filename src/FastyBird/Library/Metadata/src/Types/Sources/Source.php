@@ -15,8 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Types\Sources;
 
-use Consistence;
-use function strval;
+use BackedEnum;
 
 /**
  * Sources types
@@ -26,17 +25,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class Source extends Consistence\Enum\Enum
+interface Source extends BackedEnum
 {
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
 
 }

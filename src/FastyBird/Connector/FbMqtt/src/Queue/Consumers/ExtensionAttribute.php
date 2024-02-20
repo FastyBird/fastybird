@@ -75,7 +75,7 @@ final class ExtensionAttribute implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device "%s" is not registered', $message->getDevice()),
 				[
-					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'extension-attribute-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -150,7 +150,7 @@ final class ExtensionAttribute implements Queue\Consumer
 			$this->logger->warning(
 				sprintf('Device property "%s" is not registered', $message->getParameter()),
 				[
-					'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'extension-attribute-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -178,7 +178,7 @@ final class ExtensionAttribute implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed extension property message',
 			[
-				'source' => MetadataTypes\Sources\Connector::FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'extension-attribute-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

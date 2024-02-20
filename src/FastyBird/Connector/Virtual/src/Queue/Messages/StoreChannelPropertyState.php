@@ -53,8 +53,8 @@ final readonly class StoreChannelPropertyState implements Message
 		])]
 		private float|int|string|bool|null $value,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\Sources\Connector::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\Sources\Addon::class),
 		])]
 		private MetadataTypes\Sources\Connector|MetadataTypes\Sources\Addon $source,
 	)
@@ -106,7 +106,7 @@ final readonly class StoreChannelPropertyState implements Message
 			'channel' => $this->getChannel()->toString(),
 			'property' => is_string($this->getProperty()) ? $this->getProperty() : $this->getProperty()->toString(),
 			'value' => $this->getValue(),
-			'source' => $this->getSource()->getValue(),
+			'source' => $this->getSource()->value,
 		];
 	}
 

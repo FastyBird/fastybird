@@ -102,7 +102,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'initialize-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

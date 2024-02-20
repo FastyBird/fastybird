@@ -133,7 +133,7 @@ final class Local implements Client
 				$this->logger->error(
 					'An error occur in CoAP connection',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'local-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -145,7 +145,7 @@ final class Local implements Client
 				if (!$ex instanceof Exceptions\CoapError) {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+							MetadataTypes\Sources\Connector::SHELLY,
 							'CoAP client triggered an error',
 						),
 					);
@@ -155,7 +155,7 @@ final class Local implements Client
 			$this->logger->error(
 				'CoAP client could not be started',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -166,7 +166,7 @@ final class Local implements Client
 
 			$this->dispatcher?->dispatch(
 				new DevicesEvents\TerminateConnector(
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+					MetadataTypes\Sources\Connector::SHELLY,
 					'CoAP client could not be started',
 				),
 			);
@@ -204,7 +204,7 @@ final class Local implements Client
 							$this->logger->debug(
 								'Connection with device through websocket was created',
 								[
-									'source' => MetadataTypes\Sources\Connector::SHELLY,
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'local-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -219,7 +219,7 @@ final class Local implements Client
 							$this->logger->error(
 								'Device websocket connection could not be created',
 								[
-									'source' => MetadataTypes\Sources\Connector::SHELLY,
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'local-client',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -235,7 +235,7 @@ final class Local implements Client
 					$this->logger->error(
 						'Device websocket connection could not be created',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -249,7 +249,7 @@ final class Local implements Client
 
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+							MetadataTypes\Sources\Connector::SHELLY,
 							'Websockets api client could not be started',
 						),
 					);
@@ -376,7 +376,7 @@ final class Local implements Client
 								$this->logger->debug(
 									'Connection with device through websocket was created',
 									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'local-client',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
@@ -391,7 +391,7 @@ final class Local implements Client
 								$this->logger->error(
 									'Device websocket connection could not be created',
 									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'local-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -431,7 +431,7 @@ final class Local implements Client
 					$this->logger->error(
 						'Could not read device state',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -545,7 +545,7 @@ final class Local implements Client
 					$this->logger->error(
 						'Could not read device state',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -592,7 +592,7 @@ final class Local implements Client
 				$this->logger->error(
 					'Received message could not be handled',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'local-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -610,7 +610,7 @@ final class Local implements Client
 			$this->logger->warning(
 				'Connection with Gen 2 device failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -638,7 +638,7 @@ final class Local implements Client
 			$this->logger->debug(
 				'Connected to Gen 2 device',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -679,7 +679,7 @@ final class Local implements Client
 					$this->logger->error(
 						'An error occurred on initial Gen 2 device state reading',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
@@ -697,7 +697,7 @@ final class Local implements Client
 			$this->logger->debug(
 				'Disconnected from Gen 2 device',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),

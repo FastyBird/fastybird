@@ -96,7 +96,7 @@ trait DeviceProperty
 			$this->logger->warning(
 				'Stored device property was not of valid type',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -121,7 +121,7 @@ trait DeviceProperty
 				$this->logger->error(
 					'Device was not found, property could not be configured',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'message-consumer',
 						'device' => [
 							'id' => $deviceId->toString(),
@@ -161,7 +161,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device property was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),
@@ -197,7 +197,7 @@ trait DeviceProperty
 			$this->logger->debug(
 				'Device property was updated',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'message-consumer',
 					'device' => [
 						'id' => $deviceId->toString(),

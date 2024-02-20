@@ -69,7 +69,7 @@ final class AccessoriesController extends BaseController
 		$this->logger->debug(
 			'Requested list of all registered accessories',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'accessories-controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
@@ -114,7 +114,7 @@ final class AccessoriesController extends BaseController
 		$this->logger->debug(
 			'Requested accessories identify routine',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'accessories-controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],
@@ -144,7 +144,7 @@ final class AccessoriesController extends BaseController
 			$this->logger->error(
 				'Paired connector could not trigger identify routine',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'accessories-controller',
 					'request' => [
 						'address' => $request->getServerParams()['REMOTE_ADDR'],
@@ -181,7 +181,7 @@ final class AccessoriesController extends BaseController
 		$this->logger->debug(
 			'Requested fetching accessory resource',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'accessories-controller',
 				'request' => [
 					'address' => $request->getServerParams()['REMOTE_ADDR'],

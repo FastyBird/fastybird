@@ -40,8 +40,8 @@ final readonly class StoreDeviceConnectionState implements Message
 		#[ObjectMapper\Rules\InstanceOfValue(type: DevicesTypes\ConnectionState::class)]
 		private DevicesTypes\ConnectionState $state,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Connector::class),
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: MetadataTypes\Sources\Addon::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\Sources\Connector::class),
+			new ObjectMapper\Rules\InstanceOfValue(type: MetadataTypes\Sources\Addon::class),
 		])]
 		private MetadataTypes\Sources\Source $source,
 	)
@@ -77,7 +77,7 @@ final readonly class StoreDeviceConnectionState implements Message
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
 			'state' => $this->getState()->value,
-			'source' => $this->getSource()->getValue(),
+			'source' => $this->getSource()->value,
 		];
 	}
 

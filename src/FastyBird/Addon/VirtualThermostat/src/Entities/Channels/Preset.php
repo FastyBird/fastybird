@@ -54,7 +54,7 @@ class Preset extends VirtualEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\Sources\Addon
 	{
-		return MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT);
+		return MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT;
 	}
 
 	public function getDevice(): Entities\Devices\Device

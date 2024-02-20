@@ -201,7 +201,7 @@ final class ChannelPropertiesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -281,7 +281,7 @@ final class ChannelPropertiesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -353,7 +353,7 @@ final class ChannelPropertiesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'channel-properties-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

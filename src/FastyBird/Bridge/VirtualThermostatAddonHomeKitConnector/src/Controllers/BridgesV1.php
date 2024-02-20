@@ -229,7 +229,7 @@ class BridgesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'bridges-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -347,7 +347,7 @@ class BridgesV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'bridges-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -429,7 +429,7 @@ class BridgesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'bridges-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

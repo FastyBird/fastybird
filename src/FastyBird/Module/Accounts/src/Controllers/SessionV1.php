@@ -161,7 +161,7 @@ final class SessionV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+						'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 						'type' => 'session-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -217,7 +217,7 @@ final class SessionV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'session-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -355,7 +355,7 @@ final class SessionV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'session-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -419,7 +419,7 @@ final class SessionV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'session-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

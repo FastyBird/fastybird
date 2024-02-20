@@ -25,36 +25,33 @@ use FastyBird\Library\Metadata;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Connector extends Source
+enum Connector: string implements Source
 {
 
-	/**
-	 * Define types
-	 */
-	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const FB_BUS = Metadata\Constants::CONNECTOR_FB_BUS_SOURCE;
+	case FB_BUS = Metadata\Constants::CONNECTOR_FB_BUS_SOURCE;
 
-	public const FB_MQTT = Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE;
+	case FB_MQTT = Metadata\Constants::CONNECTOR_FB_MQTT_SOURCE;
 
-	public const SHELLY = Metadata\Constants::CONNECTOR_SHELLY_SOURCE;
+	case SHELLY = Metadata\Constants::CONNECTOR_SHELLY_SOURCE;
 
-	public const TUYA = Metadata\Constants::CONNECTOR_TUYA_SOURCE;
+	case TUYA = Metadata\Constants::CONNECTOR_TUYA_SOURCE;
 
-	public const SONOFF = Metadata\Constants::CONNECTOR_SONOFF_SOURCE;
+	case SONOFF = Metadata\Constants::CONNECTOR_SONOFF_SOURCE;
 
-	public const MODBUS = Metadata\Constants::CONNECTOR_MODBUS_SOURCE;
+	case MODBUS = Metadata\Constants::CONNECTOR_MODBUS_SOURCE;
 
-	public const HOMEKIT = Metadata\Constants::CONNECTOR_HOMEKIT_SOURCE;
+	case HOMEKIT = Metadata\Constants::CONNECTOR_HOMEKIT_SOURCE;
 
-	public const VIRTUAL = Metadata\Constants::CONNECTOR_VIRTUAL_SOURCE;
+	case VIRTUAL = Metadata\Constants::CONNECTOR_VIRTUAL_SOURCE;
 
-	public const TERMINAL = Metadata\Constants::CONNECTOR_TERMINAL_SOURCE;
+	case TERMINAL = Metadata\Constants::CONNECTOR_TERMINAL_SOURCE;
 
-	public const VIERA = Metadata\Constants::CONNECTOR_VIERA_SOURCE;
+	case VIERA = Metadata\Constants::CONNECTOR_VIERA_SOURCE;
 
-	public const NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
+	case NS_PANEL = Metadata\Constants::CONNECTOR_NS_PANEL_SOURCE;
 
-	public const ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
+	case ZIGBEE2MQTT = Metadata\Constants::CONNECTOR_ZIGBEE2MQTT_SOURCE;
 
 }

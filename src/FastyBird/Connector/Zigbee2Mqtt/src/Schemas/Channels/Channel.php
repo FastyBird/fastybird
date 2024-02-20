@@ -34,7 +34,7 @@ final class Channel extends DevicesSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::ZIGBEE2MQTT . '/channel/' . Entities\Channels\Channel::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value . '/channel/' . Entities\Channels\Channel::TYPE;
 
 	public function getEntityClass(): string
 	{

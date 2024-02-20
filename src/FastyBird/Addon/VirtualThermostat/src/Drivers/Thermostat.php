@@ -148,7 +148,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$actor,
-				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
 			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
@@ -183,7 +183,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getSensors($this->device) as $sensor) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$sensor,
-				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
 			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
@@ -242,7 +242,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				$state = $this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 
 				if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
@@ -255,7 +255,7 @@ class Thermostat implements VirtualDrivers\Driver
 					$this->channelPropertiesStatesManager->setValidState(
 						$property,
 						true,
-						MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+						MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 					);
 				}
 			}
@@ -264,7 +264,7 @@ class Thermostat implements VirtualDrivers\Driver
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getPresetMode($this->device),
-				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
 			if (
@@ -280,7 +280,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->channelPropertiesStatesManager->setValidState(
 					$this->deviceHelper->getPresetMode($this->device),
 					true,
-					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 			}
 		}
@@ -288,7 +288,7 @@ class Thermostat implements VirtualDrivers\Driver
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
 			$state = $this->channelPropertiesStatesManager->read(
 				$this->deviceHelper->getHvacMode($this->device),
-				MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
 			if (
@@ -304,7 +304,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->channelPropertiesStatesManager->setValidState(
 					$this->deviceHelper->getHvacMode($this->device),
 					true,
-					MetadataTypes\Sources\Addon::get(MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT),
+					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 			}
 		}
@@ -888,7 +888,7 @@ class Thermostat implements VirtualDrivers\Driver
 			$this->logger->warning(
 				'Floor is overheating. Turning off heaters actors',
 				[
-					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'thermostat-driver',
 					'connector' => [
 						'id' => $this->device->getConnector()->toString(),
@@ -1004,7 +1004,7 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->logger->warning(
 					'Floor sensors are not provided values. Floor could not be protected',
 					[
-						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 						'type' => 'thermostat-driver',
 						'connector' => [
 							'id' => $this->device->getConnector()->toString(),
@@ -1068,7 +1068,7 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->logger->warning(
 			$reason,
 			[
-				'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+				'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 				'type' => 'thermostat-driver',
 				'connector' => [
 					'id' => $this->device->getConnector()->toString(),

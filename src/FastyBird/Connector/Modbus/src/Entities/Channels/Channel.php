@@ -56,7 +56,7 @@ class Channel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::MODBUS);
+		return MetadataTypes\Sources\Connector::MODBUS;
 	}
 
 	public function getDevice(): Entities\Devices\Device

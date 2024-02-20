@@ -113,7 +113,7 @@ final class StoreLocalDevice implements Queue\Consumer
 			$this->logger->debug(
 				'Device was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'store-local-device-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -237,7 +237,7 @@ final class StoreLocalDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\Sources\Connector::SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'store-local-device-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

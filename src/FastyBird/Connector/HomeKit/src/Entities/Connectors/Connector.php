@@ -56,7 +56,7 @@ class Connector extends DevicesEntities\Connectors\Connector
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::HOMEKIT);
+		return MetadataTypes\Sources\Connector::HOMEKIT;
 	}
 
 	/**

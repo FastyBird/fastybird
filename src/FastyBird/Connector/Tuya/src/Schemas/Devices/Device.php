@@ -34,7 +34,7 @@ final class Device extends DevicesSchemas\Devices\Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::TUYA . '/device/' . Entities\Devices\Device::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::TUYA->value . '/device/' . Entities\Devices\Device::TYPE;
 
 	public function getEntityClass(): string
 	{

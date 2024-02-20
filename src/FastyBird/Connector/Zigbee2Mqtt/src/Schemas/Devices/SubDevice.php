@@ -34,7 +34,7 @@ final class SubDevice extends Device
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::ZIGBEE2MQTT . '/device/' . Entities\Devices\SubDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value . '/device/' . Entities\Devices\SubDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

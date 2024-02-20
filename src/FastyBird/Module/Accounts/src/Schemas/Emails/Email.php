@@ -39,7 +39,7 @@ final class Email extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS . '/email';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS->value . '/email';
 
 	/**
 	 * Define relationships names

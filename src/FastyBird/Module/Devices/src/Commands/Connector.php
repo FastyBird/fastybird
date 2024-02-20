@@ -203,7 +203,7 @@ class Connector extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -282,11 +282,11 @@ class Connector extends Console\Command\Command
 				$this->logger->warning(
 					'Triggering connector termination due to some error',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'reason' => [
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'message' => $reason,
 						],
 					],
@@ -295,10 +295,10 @@ class Connector extends Console\Command\Command
 				$this->logger->info(
 					'Triggering connector termination',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
 						'reason' => [
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'message' => $reason,
 						],
 					],
@@ -321,11 +321,11 @@ class Connector extends Console\Command\Command
 				$this->logger->warning(
 					'Triggering connector restart due to some error',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'reason' => [
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'message' => $reason,
 						],
 					],
@@ -334,10 +334,10 @@ class Connector extends Console\Command\Command
 				$this->logger->info(
 					'Triggering connector restart',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
 						'reason' => [
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'message' => $reason,
 						],
 					],
@@ -367,7 +367,7 @@ class Connector extends Console\Command\Command
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorDiscoveryStart($connector));
 
 				$this->logger->debug('Starting connector...', [
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
 				]);
 
@@ -381,7 +381,7 @@ class Connector extends Console\Command\Command
 						$this->logger->error(
 							'Connector discovery can\'t be started',
 							[
-								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'connector-cmd',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
@@ -395,7 +395,7 @@ class Connector extends Console\Command\Command
 				$this->dispatcher?->dispatch(new Events\BeforeConnectorExecutionStart($connector));
 
 				$this->logger->debug('Starting connector...', [
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
 				]);
 
@@ -409,7 +409,7 @@ class Connector extends Console\Command\Command
 						$this->logger->error(
 							'Connector execution can\'t be started',
 							[
-								'source' => MetadataTypes\Sources\Module::DEVICES,
+								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'connector-cmd',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
@@ -483,7 +483,7 @@ class Connector extends Console\Command\Command
 		$this->logger->debug(
 			'Stopping connector...',
 			[
-				'source' => MetadataTypes\Sources\Module::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'connector-cmd',
 			],
 		);
@@ -523,7 +523,7 @@ class Connector extends Console\Command\Command
 			$this->logger->error(
 				'Connector could not be stopped. An unexpected error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

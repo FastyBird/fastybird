@@ -213,7 +213,7 @@ abstract class Periodic
 			$state = await(
 				$this->channelPropertiesStatesManager->read(
 					$property,
-					MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+					MetadataTypes\Sources\Connector::SHELLY,
 				),
 			);
 

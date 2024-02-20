@@ -123,7 +123,7 @@ final readonly class DataTypeTransformer
 		Monolog\LoggerHolder::getInstance()->getLogger()->warning(
 			'Parent property value could not be transformed to mapped property value',
 			[
-				'source' => MetadataTypes\Sources\Module::DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'data-type-transformer',
 				'source_data_type' => $this->source,
 				'destination_data_type' => $this->destination,

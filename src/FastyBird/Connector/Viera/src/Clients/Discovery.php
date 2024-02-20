@@ -88,7 +88,7 @@ final class Discovery
 		$this->logger->debug(
 			'Starting devices discovery',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'discovery-client',
 			],
 		);
@@ -100,7 +100,7 @@ final class Discovery
 			$this->logger->error(
 				'Could not create discovery server',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -142,7 +142,7 @@ final class Discovery
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::VIERA),
+						MetadataTypes\Sources\Connector::VIERA,
 						'Devices discovery finished',
 					),
 				);
@@ -189,7 +189,7 @@ final class Discovery
 				$this->logger->error(
 					'Checking TV status failed',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
@@ -207,7 +207,7 @@ final class Discovery
 				$this->logger->error(
 					sprintf('The provided IP: %s:%d address is unreachable.', $host, $port),
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'discovery-client',
 						'device' => [
 							'id' => $id,
@@ -239,7 +239,7 @@ final class Discovery
 			$this->logger->error(
 				'Preparing api request failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -250,7 +250,7 @@ final class Discovery
 			$this->logger->error(
 				'Calling device api failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -269,7 +269,7 @@ final class Discovery
 			$this->logger->error(
 				'Unhandled error occur',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

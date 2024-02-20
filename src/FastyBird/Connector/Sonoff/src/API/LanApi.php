@@ -654,7 +654,7 @@ final class LanApi
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'lan-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -693,7 +693,7 @@ final class LanApi
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\Sources\Connector::SONOFF,
+									'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 									'type' => 'lan-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -751,7 +751,7 @@ final class LanApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 					'type' => 'lan-api',
 					'request' => [
 						'method' => $request->getMethod(),

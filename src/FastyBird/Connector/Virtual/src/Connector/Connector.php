@@ -82,7 +82,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Virtual connector service',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -119,7 +119,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector service has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -157,7 +157,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Virtual connector has been terminated',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+				'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

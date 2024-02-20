@@ -91,7 +91,7 @@ class StatesManager
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be created', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),
@@ -124,7 +124,7 @@ class StatesManager
 			return $state;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be updated', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
@@ -169,7 +169,7 @@ class StatesManager
 			return null;
 		} catch (Throwable $ex) {
 			$this->logger->error('State could not be created', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id,
@@ -248,7 +248,7 @@ class StatesManager
 			return $doc;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document key could not be created', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),
@@ -337,7 +337,7 @@ class StatesManager
 			}
 
 			$this->logger->error('Document key could not be updated', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
@@ -350,7 +350,7 @@ class StatesManager
 			throw $ex;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document key could not be updated', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
@@ -377,7 +377,7 @@ class StatesManager
 			return true;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be deleted', [
-				'source' => MetadataTypes\Sources\Plugin::COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),

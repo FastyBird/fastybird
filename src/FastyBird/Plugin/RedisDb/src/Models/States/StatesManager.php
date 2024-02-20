@@ -89,7 +89,7 @@ class StatesManager
 			$this->logger->error(
 				'State could not be created',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-manager',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'record' => [
@@ -134,7 +134,7 @@ class StatesManager
 			$this->logger->error(
 				'State could not be updated',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-manager',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'record' => [

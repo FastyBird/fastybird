@@ -111,7 +111,7 @@ final class StoreDevice implements Queue\Consumer
 			$this->logger->info(
 				'Device was created',
 				[
-					'source' => MetadataTypes\Sources\Connector::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 					'type' => 'store-device-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -245,7 +245,7 @@ final class StoreDevice implements Queue\Consumer
 					$this->logger->debug(
 						'Device dynamic property was created',
 						[
-							'source' => MetadataTypes\Sources\Connector::SONOFF,
+							'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 							'type' => 'store-device-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -278,7 +278,7 @@ final class StoreDevice implements Queue\Consumer
 					$this->logger->debug(
 						'Device dynamic property was updated',
 						[
-							'source' => MetadataTypes\Sources\Connector::SONOFF,
+							'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 							'type' => 'store-device-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -318,7 +318,7 @@ final class StoreDevice implements Queue\Consumer
 						$this->logger->debug(
 							'Device channel was created',
 							[
-								'source' => MetadataTypes\Sources\Connector::SONOFF,
+								'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 								'type' => 'store-device-message-consumer',
 								'connector' => [
 									'id' => $message->getConnector()->toString(),
@@ -356,7 +356,7 @@ final class StoreDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'store-device-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

@@ -134,7 +134,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'There is already registered device with same ieee address',
 						[
-							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -161,7 +161,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'Connector could not be loaded',
 						[
-							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $message->getConnector()->toString(),
@@ -198,7 +198,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->logger->info(
 					'Sub-device was created',
 					[
-						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -272,7 +272,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge devices list message',
 			[
-				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-bridge-devices-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),
@@ -311,7 +311,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->logger->warning(
 					'List type expose is not supported',
 					[
-						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -363,7 +363,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'Channel identifier could not be generated',
 						[
-							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),
@@ -455,7 +455,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),

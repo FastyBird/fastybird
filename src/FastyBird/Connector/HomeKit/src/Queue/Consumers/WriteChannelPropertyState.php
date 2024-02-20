@@ -86,7 +86,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -120,7 +120,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -147,7 +147,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Accessory for received channel property message was not found in accessory driver',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -181,7 +181,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -208,7 +208,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+					'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 					'type' => 'write-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -254,7 +254,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								$this->logger->warning(
 									'State entity is missing in event entity',
 									[
-										'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+										'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 										'type' => 'write-channel-property-state-message-consumer',
 										'connector' => [
 											'id' => $connector->getId()->toString(),
@@ -288,7 +288,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							$this->logger->warning(
 								'State entity is missing in event entity',
 								[
-									'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+									'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 									'type' => 'write-channel-property-state-message-consumer',
 									'connector' => [
 										'id' => $connector->getId()->toString(),
@@ -355,7 +355,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::HOMEKIT,
+				'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
 				'type' => 'write-channel-property-state-message-consumer',
 				'connector' => [
 					'id' => $connector->getId()->toString(),

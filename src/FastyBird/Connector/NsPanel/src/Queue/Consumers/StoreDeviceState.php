@@ -87,7 +87,7 @@ final class StoreDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-device-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -111,7 +111,7 @@ final class StoreDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'store-device-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),
@@ -167,7 +167,7 @@ final class StoreDeviceState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
 		}
 	}
@@ -257,7 +257,7 @@ final class StoreDeviceState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::ACTUAL_VALUE_FIELD => $value,
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
 
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
@@ -266,7 +266,7 @@ final class StoreDeviceState implements Queue\Consumer
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
 				]),
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
 		}
 	}

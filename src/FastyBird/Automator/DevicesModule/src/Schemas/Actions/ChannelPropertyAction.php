@@ -40,7 +40,7 @@ final class ChannelPropertyAction extends TriggersSchemas\Actions\Action
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE . '/action/' . Entities\Actions\ChannelPropertyAction::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE->value . '/action/' . Entities\Actions\ChannelPropertyAction::TYPE;
 
 	public function getType(): string
 	{

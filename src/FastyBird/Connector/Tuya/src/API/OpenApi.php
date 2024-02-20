@@ -1093,7 +1093,7 @@ final class OpenApi
 				strval($request->getUri()),
 			),
 			[
-				'source' => MetadataTypes\Sources\Connector::TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'openapi-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -1135,7 +1135,7 @@ final class OpenApi
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\Sources\Connector::TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'openapi-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -1198,7 +1198,7 @@ final class OpenApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'openapi-api',
 					'request' => [
 						'method' => $request->getMethod(),
@@ -1424,7 +1424,7 @@ final class OpenApi
 					strval($request->getUri()),
 				),
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'openapi-api',
 					'request' => [
 						'method' => $request->getMethod(),
@@ -1454,7 +1454,7 @@ final class OpenApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'openapi-api',
 					'request' => [
 						'method' => $request->getMethod(),

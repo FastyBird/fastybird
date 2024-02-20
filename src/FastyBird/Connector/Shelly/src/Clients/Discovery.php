@@ -145,7 +145,7 @@ final class Discovery
 			$this->logger->error(
 				'Invalid mDNS question response received',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -165,7 +165,7 @@ final class Discovery
 				$this->logger->warning(
 					'Invalid mDNS question response received',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'discovery-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -180,7 +180,7 @@ final class Discovery
 				$this->logger->warning(
 					'The server set the truncated bit although we issued a TCP request',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'discovery-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -269,7 +269,7 @@ final class Discovery
 					$this->logger->error(
 						'Could not map mDNS result to message: ' . $errorPrinter->printError($ex),
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'discovery-client',
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
@@ -329,7 +329,7 @@ final class Discovery
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+						MetadataTypes\Sources\Connector::SHELLY,
 						'Devices discovery finished',
 					),
 				);
@@ -380,7 +380,7 @@ final class Discovery
 				$this->logger->error(
 					'Could not load device basic information',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -416,7 +416,7 @@ final class Discovery
 				$this->logger->error(
 					'Device is password protected and could not be accessed',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -434,7 +434,7 @@ final class Discovery
 				$this->logger->error(
 					'Could not load device description or configuration',
 					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY,
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -640,7 +640,7 @@ final class Discovery
 			$this->logger->error(
 				'Could not create discovered device',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [

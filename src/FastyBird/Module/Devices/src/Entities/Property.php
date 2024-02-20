@@ -759,7 +759,7 @@ abstract class Property implements Entity,
 
 	public function getSource(): MetadataTypes\Sources\Module
 	{
-		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES);
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 }

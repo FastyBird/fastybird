@@ -92,7 +92,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => $message->getSource()->getValue(),
+					'source' => $message->getSource()->value,
 					'type' => 'store-device-connection-state-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -169,7 +169,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => $message->getSource()->getValue(),
+				'source' => $message->getSource()->value,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

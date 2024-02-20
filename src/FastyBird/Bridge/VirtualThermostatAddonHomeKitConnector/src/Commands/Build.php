@@ -143,7 +143,7 @@ class Build extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR->value,
 					'type' => 'build-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -204,7 +204,7 @@ class Build extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR->value,
 					'type' => 'build-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -271,7 +271,7 @@ class Build extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR,
+					'source' => MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR->value,
 					'type' => 'build-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

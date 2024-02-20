@@ -126,7 +126,7 @@ class ConnectorsV1 extends BaseV1
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Module::DEVICES,
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connectors-controller',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],

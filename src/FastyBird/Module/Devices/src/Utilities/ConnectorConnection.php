@@ -124,7 +124,7 @@ final class ConnectorConnection
 				States\Property::ACTUAL_VALUE_FIELD => $state->value,
 				States\Property::EXPECTED_VALUE_FIELD => null,
 			]),
-			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+			MetadataTypes\Sources\Module::DEVICES,
 		);
 
 		return false;

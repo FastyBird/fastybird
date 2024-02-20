@@ -109,7 +109,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting NS Panel connector service',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -205,7 +205,7 @@ final class Connector implements DevicesConnectors\Connector
 							$this->logger->error(
 								'Could not report device initial state to NS Panel',
 								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'connector',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -231,7 +231,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector service has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -259,7 +259,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting NS Panel connector discovery',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -281,7 +281,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector discovery has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -313,7 +313,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'NS Panel connector has been terminated',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

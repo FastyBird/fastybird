@@ -82,7 +82,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector service',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -118,7 +118,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector service has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -139,7 +139,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Starting Viera connector discovery',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -159,7 +159,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector discovery has been started',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -187,7 +187,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Viera connector has been terminated',
 			[
-				'source' => MetadataTypes\Sources\Connector::VIERA,
+				'source' => MetadataTypes\Sources\Connector::VIERA->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

@@ -159,7 +159,7 @@ final class Device implements Client
 					) instanceof Utils\ArrayHash
 				) {
 					$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+						MetadataTypes\Sources\Connector::NS_PANEL,
 						'Connector configuration is corrupted',
 					));
 
@@ -292,7 +292,7 @@ final class Device implements Client
 							$this->logger->debug(
 								'NS Panel third-party devices was successfully synchronised',
 								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'device-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -341,7 +341,7 @@ final class Device implements Client
 									$this->logger->error(
 										'Could not finish third-party device synchronisation',
 										[
-											'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+											'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 											'type' => 'device-client',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
@@ -404,7 +404,7 @@ final class Device implements Client
 								'Could not synchronise third-party devices with NS Panel',
 								array_merge(
 									[
-										'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -455,7 +455,7 @@ final class Device implements Client
 											$this->logger->debug(
 												'Removed third-party from NS Panel',
 												[
-													'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+													'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 													'type' => 'device-client',
 													'connector' => [
 														'id' => $this->connector->getId()->toString(),
@@ -514,7 +514,7 @@ final class Device implements Client
 												'Could not remove deleted third-party device from NS Panel',
 												array_merge(
 													[
-														'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+														'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 														'type' => 'device-client',
 														'exception' => ApplicationHelpers\Logger::buildException($ex),
 														'connector' => [
@@ -579,7 +579,7 @@ final class Device implements Client
 								'Could not fetch NS Panel registered devices',
 								array_merge(
 									[
-										'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -599,7 +599,7 @@ final class Device implements Client
 				$this->logger->error(
 					'An unhandled error occurred',
 					[
-						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'device-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
@@ -695,7 +695,7 @@ final class Device implements Client
 							$this->logger->debug(
 								'State for NS Panel third-party device was successfully updated',
 								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'device-client',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -731,7 +731,7 @@ final class Device implements Client
 								'State for NS Panel third-party device could not be updated',
 								array_merge(
 									[
-										'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
@@ -749,7 +749,7 @@ final class Device implements Client
 					$this->logger->error(
 						'An unhandled error occurred',
 						[
-							'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+							'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 							'type' => 'device-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [

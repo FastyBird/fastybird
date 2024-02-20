@@ -238,7 +238,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -355,7 +355,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -447,7 +447,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -564,7 +564,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Creating api client failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -583,7 +583,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Checking TV status failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -613,7 +613,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading TV specification failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -628,7 +628,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading TV specification failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -657,7 +657,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Checking screen status failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -711,7 +711,7 @@ class Install extends Console\Command\Command
 				$this->logger->error(
 					'Pin code pairing failed',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIERA,
+						'source' => MetadataTypes\Sources\Connector::VIERA->value,
 						'type' => 'install-cmd',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
@@ -731,7 +731,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading apps failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1005,7 +1005,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1242,7 +1242,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Creating api client failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1261,7 +1261,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Checking TV status failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1291,7 +1291,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading TV specification failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1306,7 +1306,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading TV specification failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
@@ -1333,7 +1333,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Checking screen status failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1394,7 +1394,7 @@ class Install extends Console\Command\Command
 					$this->logger->error(
 						'Pin code pairing failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -1415,7 +1415,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'Loading apps failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1628,7 +1628,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -1701,7 +1701,7 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIERA,
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
 					'type' => 'install-cmd',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -2492,7 +2492,7 @@ class Install extends Console\Command\Command
 					$this->logger->error(
 						'Creating api client failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -2514,7 +2514,7 @@ class Install extends Console\Command\Command
 					$this->logger->error(
 						'Checking screen status failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -2566,7 +2566,7 @@ class Install extends Console\Command\Command
 					$this->logger->error(
 						'Pin code pairing failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'install-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],

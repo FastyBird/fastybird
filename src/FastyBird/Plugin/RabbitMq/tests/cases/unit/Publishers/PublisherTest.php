@@ -36,7 +36,7 @@ final class PublisherTest extends TestCase
 				]),
 				[
 					'sender_id' => 'rabbitmq_client_identifier',
-					'source' => MetadataTypes\Sources\Module::DEVICES,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'created' => $now->format(DateTimeInterface::ATOM),
 				],
 				'exchange_name',
@@ -75,7 +75,7 @@ final class PublisherTest extends TestCase
 		);
 
 		$publisher->publish(
-			MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES),
+			MetadataTypes\Sources\Module::DEVICES,
 			'testing.routing.key',
 			new Fixtures\Dummy\DummyDocument(
 				'someAttribute',

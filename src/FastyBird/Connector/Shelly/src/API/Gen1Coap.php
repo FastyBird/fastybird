@@ -105,7 +105,7 @@ final class Gen1Coap
 			$this->logger->debug(
 				'CoAP connection was successfully closed',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen1-coap-api',
 				],
 			);
@@ -208,7 +208,7 @@ final class Gen1Coap
 					str_replace(' ', '', $message),
 				),
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen1-coap-api',
 				],
 			);

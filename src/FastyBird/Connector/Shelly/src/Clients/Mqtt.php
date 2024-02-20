@@ -45,7 +45,7 @@ final class Mqtt implements Client
 	public function connect(): void
 	{
 		$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+			MetadataTypes\Sources\Connector::SHELLY,
 			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
 		));
 	}
@@ -53,7 +53,7 @@ final class Mqtt implements Client
 	public function disconnect(): void
 	{
 		$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-			MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SHELLY),
+			MetadataTypes\Sources\Connector::SHELLY,
 			sprintf('MQTT client is not implemented for connector %s', $this->connector->getIdentifier()),
 		));
 	}

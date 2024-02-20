@@ -43,7 +43,7 @@ trait TEntity
 
 	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::ACCOUNTS);
+		return MetadataTypes\Sources\Module::ACCOUNTS;
 	}
 
 }

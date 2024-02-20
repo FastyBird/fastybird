@@ -205,7 +205,7 @@ class Devices
 							$this->logger->debug(
 								'Connected to virtual device',
 								[
-									'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 									'type' => 'devices-driver',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -220,7 +220,7 @@ class Devices
 							$this->logger->error(
 								'Virtual device service could not be created',
 								[
-									'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 									'type' => 'devices-driver',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
@@ -311,7 +311,7 @@ class Devices
 				$this->logger->warning(
 					'Could not call local api',
 					[
-						'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 						'type' => 'devices-driver',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [

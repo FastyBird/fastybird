@@ -78,7 +78,7 @@ final class Discovery
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected NS Panel',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -95,7 +95,7 @@ final class Discovery
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered NS Panels',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -120,7 +120,7 @@ final class Discovery
 			->then(function (): void {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+						MetadataTypes\Sources\Connector::NS_PANEL,
 						'Devices discovery finished',
 					),
 				);
@@ -128,7 +128,7 @@ final class Discovery
 			->catch(function (Throwable $ex): void {
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+						MetadataTypes\Sources\Connector::NS_PANEL,
 						'Devices discovery failed',
 						$ex,
 					),
@@ -185,7 +185,7 @@ final class Discovery
 			$this->logger->error(
 				'Loading sub-devices from NS Panel failed',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -231,7 +231,7 @@ final class Discovery
 				$this->logger->error(
 					'Could not map discovered device to result',
 					[
-						'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'discovery-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [

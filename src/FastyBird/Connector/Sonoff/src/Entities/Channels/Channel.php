@@ -47,7 +47,7 @@ class Channel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::SONOFF);
+		return MetadataTypes\Sources\Connector::SONOFF;
 	}
 
 	public function getDevice(): Entities\Devices\Device

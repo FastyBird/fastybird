@@ -199,7 +199,7 @@ final class AccountIdentitiesV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-identities-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

@@ -75,7 +75,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-third-party-device-message-consumer',
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
@@ -104,7 +104,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'store-third-party-device-message-consumer',
 				'connector' => [
 					'id' => $message->getConnector()->toString(),

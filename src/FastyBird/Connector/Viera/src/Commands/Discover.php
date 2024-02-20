@@ -484,7 +484,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Creating api client failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'discovery-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -506,7 +506,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Checking screen status failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'discovery-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -550,7 +550,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Preparing api request failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'discovery-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
@@ -568,7 +568,7 @@ class Discover extends Console\Command\Command
 					$this->logger->error(
 						'Calling device api failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIERA,
+							'source' => MetadataTypes\Sources\Connector::VIERA->value,
 							'type' => 'discovery-cmd',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],

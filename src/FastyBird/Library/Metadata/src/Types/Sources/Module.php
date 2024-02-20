@@ -25,20 +25,17 @@ use FastyBird\Library\Metadata;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Module extends Source
+enum Module: string implements Source
 {
 
-	/**
-	 * Define types
-	 */
-	public const NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
+	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	public const ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_SOURCE;
+	case ACCOUNTS = Metadata\Constants::MODULE_ACCOUNTS_SOURCE;
 
-	public const DEVICES = Metadata\Constants::MODULE_DEVICES_SOURCE;
+	case DEVICES = Metadata\Constants::MODULE_DEVICES_SOURCE;
 
-	public const TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_SOURCE;
+	case TRIGGERS = Metadata\Constants::MODULE_TRIGGERS_SOURCE;
 
-	public const UI = Metadata\Constants::MODULE_UI_SOURCE;
+	case UI = Metadata\Constants::MODULE_UI_SOURCE;
 
 }

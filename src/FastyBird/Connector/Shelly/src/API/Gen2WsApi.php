@@ -208,7 +208,7 @@ final class Gen2WsApi
 					$this->logger->debug(
 						'Connected to device sockets server',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen2-ws-api',
 							'device' => [
 								'id' => $this->id->toString(),
@@ -226,7 +226,7 @@ final class Gen2WsApi
 								$this->logger->debug(
 									'Received message from device could not be decoded',
 									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'gen2-ws-api',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'device' => [
@@ -262,7 +262,7 @@ final class Gen2WsApi
 										$this->logger->error(
 											'Could not handle received device status message',
 											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
 												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
@@ -288,7 +288,7 @@ final class Gen2WsApi
 										$this->logger->error(
 											'Could not handle received event message',
 											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
 												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
@@ -307,7 +307,7 @@ final class Gen2WsApi
 									$this->logger->warning(
 										'Device respond with unsupported method',
 										[
-											'source' => MetadataTypes\Sources\Connector::SHELLY,
+											'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 											'type' => 'gen2-ws-api',
 											'device' => [
 												'id' => $this->id->toString(),
@@ -340,7 +340,7 @@ final class Gen2WsApi
 										$this->logger->error(
 											'Could not handle received response device status message',
 											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
 												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
@@ -478,7 +478,7 @@ final class Gen2WsApi
 								$this->logger->warning(
 									'Device respond with error',
 									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'gen2-ws-api',
 										'device' => [
 											'id' => $this->id->toString(),
@@ -513,7 +513,7 @@ final class Gen2WsApi
 						$this->logger->error(
 							'An error occurred on device connection',
 							[
-								'source' => MetadataTypes\Sources\Connector::SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 								'type' => 'gen2-ws-api',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'device' => [
@@ -531,7 +531,7 @@ final class Gen2WsApi
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
-								'source' => MetadataTypes\Sources\Connector::SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 								'type' => 'gen2-ws-api',
 								'connection' => [
 									'code' => $code,
@@ -556,7 +556,7 @@ final class Gen2WsApi
 					$this->logger->error(
 						'Connection to device failed',
 						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen2-ws-api',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'device' => [
@@ -583,7 +583,7 @@ final class Gen2WsApi
 			$this->logger->error(
 				'Could not create device client',
 				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen2-ws-api',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [

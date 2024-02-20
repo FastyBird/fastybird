@@ -55,7 +55,7 @@ class Channel extends DevicesEntities\Channels\Channel
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL);
+		return MetadataTypes\Sources\Connector::NS_PANEL;
 	}
 
 	public function getDevice(): Entities\Devices\Device

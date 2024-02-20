@@ -39,7 +39,7 @@ abstract class Device extends DevicesEntities\Devices\Device
 
 	public function getSource(): MetadataTypes\Sources\Connector
 	{
-		return MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL);
+		return MetadataTypes\Sources\Connector::NS_PANEL;
 	}
 
 	public function getConnector(): Entities\Connectors\Connector

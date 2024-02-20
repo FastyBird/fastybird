@@ -36,7 +36,7 @@ final class Configuration extends VirtualSchemas\Channels\Channel
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT . '/channel/' . Entities\Channels\Configuration::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value . '/channel/' . Entities\Channels\Configuration::TYPE;
 
 	public function getEntityClass(): string
 	{

@@ -1164,7 +1164,7 @@ final class CloudApi
 				$request->getUri(),
 			),
 			[
-				'source' => MetadataTypes\Sources\Connector::SONOFF,
+				'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 				'type' => 'cloud-api',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -1203,7 +1203,7 @@ final class CloudApi
 							$this->logger->debug(
 								'Received response',
 								[
-									'source' => MetadataTypes\Sources\Connector::SONOFF,
+									'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 									'type' => 'cloud-api',
 									'request' => [
 										'method' => $request->getMethod(),
@@ -1291,7 +1291,7 @@ final class CloudApi
 			$this->logger->debug(
 				'Received response',
 				[
-					'source' => MetadataTypes\Sources\Connector::SONOFF,
+					'source' => MetadataTypes\Sources\Connector::SONOFF->value,
 					'type' => 'cloud-api',
 					'request' => [
 						'method' => $request->getMethod(),

@@ -69,7 +69,7 @@ final class Http implements Server
 			$this->logger->debug(
 				'Creating connector web server',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -90,7 +90,7 @@ final class Http implements Server
 			$this->logger->error(
 				'Connector web server could not be created',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -100,7 +100,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::NS_PANEL,
 				'Socket server could not be created',
 				$ex,
 			));
@@ -126,7 +126,7 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during server handling',
 				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
@@ -136,7 +136,7 @@ final class Http implements Server
 			);
 
 			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-				MetadataTypes\Sources\Connector::get(MetadataTypes\Sources\Connector::NS_PANEL),
+				MetadataTypes\Sources\Connector::NS_PANEL,
 				'HTTP server was terminated',
 				$ex,
 			));
@@ -148,7 +148,7 @@ final class Http implements Server
 		$this->logger->debug(
 			'Closing connector web server',
 			[
-				'source' => MetadataTypes\Sources\Connector::NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'http-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

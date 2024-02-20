@@ -201,7 +201,7 @@ final class AccountsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -285,7 +285,7 @@ final class AccountsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
@@ -361,7 +361,7 @@ final class AccountsV1 extends BaseV1
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\Sources\Module::ACCOUNTS,
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],

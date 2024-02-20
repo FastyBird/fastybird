@@ -60,7 +60,7 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->channel,
 				Nette\Utils\Json::encode([
 					'sender_id' => $this->identifier->getIdentifier(),
-					'source' => $source->getValue(),
+					'source' => $source->value,
 					'routing_key' => $routingKey,
 					'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 					'data' => $entity?->toArray(),
@@ -71,11 +71,11 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->debug(
 					'Received message was pushed into data exchange',
 					[
-						'source' => MetadataTypes\Sources\Plugin::REDISDB,
+						'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 						'type' => 'messages-publisher',
 						'message' => [
 							'routing_key' => $routingKey,
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'data' => $entity?->toArray(),
 						],
 					],
@@ -86,11 +86,11 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->error(
 					'Received message could not be pushed into data exchange',
 					[
-						'source' => MetadataTypes\Sources\Plugin::REDISDB,
+						'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 						'type' => 'messages-publisher',
 						'message' => [
 							'routing_key' => $routingKey,
-							'source' => $source->getValue(),
+							'source' => $source->value,
 							'data' => $entity?->toArray(),
 						],
 					],
@@ -102,12 +102,12 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\Sources\Plugin::REDISDB,
+					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-publisher',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'message' => [
 						'routing_key' => $routingKey,
-						'source' => $source->getValue(),
+						'source' => $source->value,
 						'data' => $entity?->toArray(),
 					],
 				],

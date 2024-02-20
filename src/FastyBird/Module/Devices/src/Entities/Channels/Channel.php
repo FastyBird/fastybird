@@ -274,7 +274,7 @@ abstract class Channel implements Entities\Entity,
 
 	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\Sources\Module::get(MetadataTypes\Sources\Module::DEVICES);
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 	/**
