@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connection states
  *
@@ -26,25 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectionState extends Consistence\Enum\Enum
+enum ConnectionState: string
 {
 
-	public const ONLINE = 'online';
+	case ONLINE = 'online';
 
-	public const OFFLINE = 'offline';
+	case OFFLINE = 'offline';
 
-	public const UNKNOWN = 'unknown';
+	case UNKNOWN = 'unknown';
 
-	public const ALERT = 'alert';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case ALERT = 'alert';
 
 }

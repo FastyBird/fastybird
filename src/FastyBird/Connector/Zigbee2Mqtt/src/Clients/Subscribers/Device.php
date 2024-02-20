@@ -27,9 +27,12 @@ use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 use function is_array;
+use function strval;
 
 /**
  * Zigbee2MQTT MQTT devices messages subscriber
@@ -60,6 +63,8 @@ readonly class Device
 
 	/**
 	 * @throws Exceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onMessage(NetMqtt\Message $message): void
 	{
@@ -83,16 +88,16 @@ readonly class Device
 					);
 
 					if (array_key_exists('type', $data)) {
-						if (!Types\DeviceMessageType::isValidValue($data['type'])) {
+						if (Types\DeviceMessageType::tryFrom(strval($data['type'])) === null) {
 							throw new Exceptions\ParseMessage('Received unsupported device message type');
 						}
 
-						$type = Types\DeviceMessageType::get($data['type']);
+						$type = Types\DeviceMessageType::from(strval($data['type']));
 
-						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
+						if ($type === Types\DeviceMessageType::AVAILABILITY) {
 							if (
 								$message->getPayload() !== ''
-								&& Types\ConnectionState::isValidValue($message->getPayload())
+								&& Types\ConnectionState::tryFrom($message->getPayload()) !== null
 							) {
 								$this->queue->append(
 									$this->messageBuilder->create(
@@ -131,7 +136,7 @@ readonly class Device
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
+						} elseif ($type === Types\DeviceMessageType::GET) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -234,11 +239,11 @@ readonly class Device
 
 		foreach ($payload as $key => $value) {
 			$converted[] = is_array($value) ? [
-				'type' => Types\ExposeDataType::COMPOSITE,
+				'type' => Types\ExposeDataType::COMPOSITE->value,
 				'identifier' => $key,
 				'states' => $this->convertStatePayload($value),
 			] : [
-				'type' => Types\ExposeDataType::SINGLE,
+				'type' => Types\ExposeDataType::SINGLE->value,
 				'identifier' => $key,
 				'value' => $value,
 			];

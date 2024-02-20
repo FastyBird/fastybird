@@ -37,7 +37,7 @@ final class NumericType extends Type
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::NUMERIC])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::NUMERIC->value])]
 		private readonly string $type,
 		string $name,
 		string $label,
@@ -71,9 +71,13 @@ final class NumericType extends Type
 		parent::__construct($name, $label, $property, $access);
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeType
 	{
-		return Types\ExposeType::get($this->type);
+		return Types\ExposeType::from($this->type);
 	}
 
 	/**

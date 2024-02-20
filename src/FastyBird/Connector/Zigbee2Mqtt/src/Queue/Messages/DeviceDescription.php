@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_map;
 
@@ -49,7 +48,7 @@ final readonly class DeviceDescription implements Message
 		private bool $interviewCompleted,
 		#[ObjectMapper\Rules\BoolValue()]
 		private bool $interviewing,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\DeviceType::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceType::class)]
 		private Types\DeviceType $type,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(DeviceDefinition::class),
@@ -161,7 +160,7 @@ final readonly class DeviceDescription implements Message
 			'network_address' => $this->getNetworkAddress(),
 			'interview_completed' => $this->isInterviewCompleted(),
 			'interviewing' => $this->isInterviewing(),
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'definition' => $this->getDefinition()?->toArray(),
 			'description' => $this->getDescription(),
 			'manufacturer' => $this->getManufacturer(),

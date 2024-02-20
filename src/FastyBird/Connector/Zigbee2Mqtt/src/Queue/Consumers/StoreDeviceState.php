@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -29,6 +30,8 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function implode;
 use function preg_match;
@@ -62,10 +65,13 @@ final class StoreDeviceState implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -73,7 +79,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
@@ -99,7 +105,7 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byValue($message->getDevice());
 
 		if (preg_match(Zigbee2Mqtt\Constants::IEEE_ADDRESS_REGEX, $message->getDevice()) === 1) {
@@ -165,6 +171,8 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processStates(
 		Documents\Devices\Bridge $bridge,

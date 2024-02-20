@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 
@@ -35,7 +37,7 @@ final class CompositeType extends Type
 	 * @param array<BinaryType|EnumType|NumericType|TextType|CompositeType> $features
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::COMPOSITE])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::COMPOSITE->value])]
 		private readonly string $type,
 		string $name,
 		string $label,
@@ -57,9 +59,13 @@ final class CompositeType extends Type
 		parent::__construct($name, $label, $property, $access);
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeType
 	{
-		return Types\ExposeType::get($this->type);
+		return Types\ExposeType::from($this->type);
 	}
 
 	/**

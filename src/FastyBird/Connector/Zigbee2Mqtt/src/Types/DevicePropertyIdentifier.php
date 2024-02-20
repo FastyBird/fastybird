@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
 use FastyBird\Module\Devices\Types as DevicesTypes;
-use function strval;
 
 /**
  * Connector property name types
@@ -27,39 +25,29 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	public const STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
+	case STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const BASE_TOPIC = 'base_topic';
+	case BASE_TOPIC = 'base_topic';
 
-	public const MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
+	case MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
+	case MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
+	case VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const COMMIT = 'commit';
+	case COMMIT = 'commit';
 
-	public const IEEE_ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
+	case IEEE_ADDRESS = DevicesTypes\DevicePropertyIdentifier::ADDRESS->value;
 
-	public const TYPE = 'type';
+	case TYPE = 'type';
 
-	public const SUPPORTED = 'supported';
+	case SUPPORTED = 'supported';
 
-	public const DISABLED = 'disabled';
+	case DISABLED = 'disabled';
 
-	public const FRIENDLY_NAME = 'friendly_name';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case FRIENDLY_NAME = 'friendly_name';
 
 }

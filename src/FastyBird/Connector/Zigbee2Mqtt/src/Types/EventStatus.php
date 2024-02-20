@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Event statuses
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class EventStatus extends Consistence\Enum\Enum
+enum EventStatus: string
 {
 
-	public const STARTED = 'started';
+	case STARTED = 'started';
 
-	public const SUCCESSFUL = 'successful';
+	case SUCCESSFUL = 'successful';
 
-	public const FAILED = 'failed';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case FAILED = 'failed';
 
 }

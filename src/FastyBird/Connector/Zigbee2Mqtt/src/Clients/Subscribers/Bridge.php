@@ -27,8 +27,11 @@ use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
+use function strval;
 
 /**
  * Zigbee2MQTT MQTT bridge messages subscriber
@@ -59,6 +62,8 @@ readonly class Bridge
 
 	/**
 	 * @throws Exceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onMessage(NetMqtt\Message $message): void
 	{
@@ -77,13 +82,13 @@ readonly class Bridge
 					);
 
 					if (array_key_exists('type', $data)) {
-						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
+						if (Types\BridgeMessageType::tryFrom(strval($data['type'])) === null) {
 							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
 						}
 
-						$type = Types\BridgeMessageType::get($data['type']);
+						$type = Types\BridgeMessageType::from(strval($data['type']));
 
-						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
+						if ($type === Types\BridgeMessageType::INFO) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -113,10 +118,10 @@ readonly class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
+						} elseif ($type === Types\BridgeMessageType::STATE) {
 							if (
 								$message->getPayload() !== ''
-								&& Types\ConnectionState::isValidValue($message->getPayload())
+								&& Types\ConnectionState::tryFrom($message->getPayload()) !== null
 							) {
 								$this->queue->append(
 									$this->messageBuilder->create(
@@ -155,7 +160,7 @@ readonly class Bridge
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
+						} elseif ($type === Types\BridgeMessageType::LOGGING) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -185,7 +190,7 @@ readonly class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
+						} elseif ($type === Types\BridgeMessageType::DEVICES) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -215,7 +220,7 @@ readonly class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
+						} elseif ($type === Types\BridgeMessageType::GROUPS) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -245,7 +250,7 @@ readonly class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
+						} elseif ($type === Types\BridgeMessageType::EVENT) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
@@ -275,7 +280,7 @@ readonly class Bridge
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EXTENSIONS)) {
+						} elseif ($type === Types\BridgeMessageType::EXTENSIONS) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {

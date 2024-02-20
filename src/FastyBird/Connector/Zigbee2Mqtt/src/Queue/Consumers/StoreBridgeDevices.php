@@ -29,7 +29,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -86,7 +85,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
@@ -220,49 +219,49 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$deviceDescription->getFriendlyName(),
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::FRIENDLY_NAME,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getIeeeAddress(),
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::IEEE_ADDRESS,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isDisabled(),
 				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::DISABLED,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isSupported(),
 				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::SUPPORTED,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
-				$deviceDescription->getType()->getValue(),
+				$deviceDescription->getType()->value,
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::TYPE,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getModel(),
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MODEL,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getVendor(),
 				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MANUFACTURER,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER->value),
 			);
 
 			if ($device instanceof Entities\Devices\SubDevice) {
@@ -342,7 +341,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->processExposes(
 					$device,
 					$expose->getFeatures(),
-					array_merge($identifiers, [$expose->getType()->getValue()]),
+					array_merge($identifiers, [$expose->getType()->value]),
 				);
 
 			} elseif (
@@ -354,7 +353,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 			) {
 				$channelIdentifier = implode(
 					'_',
-					array_merge($identifiers, [$expose->getType()->getValue(), $expose->getProperty()]),
+					array_merge($identifiers, [$expose->getType()->value, $expose->getProperty()]),
 				);
 
 				if (

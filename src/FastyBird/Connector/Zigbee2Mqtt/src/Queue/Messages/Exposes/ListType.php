@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 /**
@@ -31,7 +33,7 @@ final class ListType extends Type
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::LIGHT])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::LIGHT->value])]
 		private readonly string $type,
 		string $name,
 		string $label,
@@ -54,9 +56,13 @@ final class ListType extends Type
 		parent::__construct($name, $label, $property, $access);
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeType
 	{
-		return Types\ExposeType::get($this->type);
+		return Types\ExposeType::from($this->type);
 	}
 
 	public function getLengthMin(): int|null

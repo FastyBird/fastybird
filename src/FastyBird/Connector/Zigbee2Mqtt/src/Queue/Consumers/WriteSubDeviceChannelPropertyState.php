@@ -81,6 +81,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -308,7 +309,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 		if (
 			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) === 1
 			&& array_key_exists('type', $matches)
-			&& Types\ExposeType::isValidValue($matches['type'])
+			&& Types\ExposeType::tryFrom($matches['type']) !== null
 			&& array_key_exists('identifier', $matches)
 		) {
 			$writeData = new stdClass();
@@ -323,7 +324,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				}
 			}
 
-			if ($matches['type'] === Types\ExposeType::COMPOSITE) {
+			if ($matches['type'] === Types\ExposeType::COMPOSITE->value) {
 				$payload = new stdClass();
 				$payload->{$matches['identifier']} = $writeData;
 			} else {
@@ -336,9 +337,9 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				$matches,
 			) === 1
 			&& array_key_exists('type', $matches)
-			&& Types\ExposeType::isValidValue($matches['type'])
+			&& Types\ExposeType::tryFrom($matches['type']) !== null
 			&& array_key_exists('subtype', $matches)
-			&& Types\ExposeType::isValidValue($matches['subtype'])
+			&& Types\ExposeType::tryFrom($matches['subtype']) !== null
 			&& array_key_exists('identifier', $matches)
 		) {
 			$writeData = new stdClass();
@@ -353,7 +354,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				}
 			}
 
-			if ($matches['subtype'] === Types\ExposeType::COMPOSITE) {
+			if ($matches['subtype'] === Types\ExposeType::COMPOSITE->value) {
 				$payload = new stdClass();
 				$payload->{$matches['identifier']} = $writeData;
 			} else {
@@ -445,7 +446,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 									'connector' => $connector->getId(),
 									'base_topic' => $this->bridgeHelper->getBaseTopic($bridge),
 									'identifier' => $bridge->getIdentifier(),
-									'state' => Types\ConnectionState::UNKNOWN,
+									'state' => Types\ConnectionState::UNKNOWN->value,
 								],
 							),
 						);
@@ -538,6 +539,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError

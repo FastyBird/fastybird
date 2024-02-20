@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device message types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceMessageType extends Consistence\Enum\Enum
+enum DeviceMessageType: string
 {
 
-	public const GET = 'get';
+	case GET = 'get';
 
-	public const AVAILABILITY = 'availability';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case AVAILABILITY = 'availability';
 
 }

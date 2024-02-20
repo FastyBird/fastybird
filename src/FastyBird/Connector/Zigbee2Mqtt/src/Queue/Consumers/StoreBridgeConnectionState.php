@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
@@ -67,6 +68,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
@@ -81,7 +83,7 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
@@ -109,11 +111,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 
 		$state = DevicesTypes\ConnectionState::UNKNOWN;
 
-		if ($message->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
+		if ($message->getState() === Types\ConnectionState::ONLINE) {
 			$state = DevicesTypes\ConnectionState::CONNECTED;
-		} elseif ($message->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
+		} elseif ($message->getState() === Types\ConnectionState::OFFLINE) {
 			$state = DevicesTypes\ConnectionState::DISCONNECTED;
-		} elseif ($message->getState()->equalsValue(Types\ConnectionState::ALERT)) {
+		} elseif ($message->getState() === Types\ConnectionState::ALERT) {
 			$state = DevicesTypes\ConnectionState::ALERT;
 		}
 

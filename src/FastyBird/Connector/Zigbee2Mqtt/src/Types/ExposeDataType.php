@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Expose data type types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ExposeDataType extends Consistence\Enum\Enum
+enum ExposeDataType: string
 {
 
-	public const SINGLE = 'single';
+	case SINGLE = 'single';
 
-	public const COMPOSITE = 'composite';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case COMPOSITE = 'composite';
 
 }

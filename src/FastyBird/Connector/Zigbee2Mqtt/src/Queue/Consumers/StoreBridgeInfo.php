@@ -18,6 +18,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -25,7 +27,6 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
@@ -59,6 +60,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -66,7 +68,7 @@ final class StoreBridgeInfo implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
@@ -104,35 +106,35 @@ final class StoreBridgeInfo implements Queue\Consumer
 			$message->getCoordinator()->getType(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::MODEL,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
-			Types\DeviceType::COORDINATOR,
+			Types\DeviceType::COORDINATOR->value,
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::TYPE,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE->value),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$message->getVersion(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::VERSION,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION->value),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$message->getCommit(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::COMMIT,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::COMMIT->value),
 		);
 		$this->setDeviceProperty(
 			$bridge->getId(),
 			$message->getCoordinator()->getIeeeAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IEEE_ADDRESS,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS->value),
 		);
 
 		$this->logger->debug(

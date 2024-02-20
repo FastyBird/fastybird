@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_map;
 
 /**
@@ -34,7 +36,7 @@ final readonly class CompositeExposeData implements Message
 	 * @param array<SingleExposeData|CompositeExposeData> $states
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeDataType::COMPOSITE])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeDataType::COMPOSITE->value])]
 		private string $type,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $identifier,
@@ -50,9 +52,13 @@ final readonly class CompositeExposeData implements Message
 	{
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeDataType
 	{
-		return Types\ExposeDataType::get($this->type);
+		return Types\ExposeDataType::from($this->type);
 	}
 
 	public function getIdentifier(): string
@@ -68,10 +74,14 @@ final readonly class CompositeExposeData implements Message
 		return $this->states;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function toArray(): array
 	{
 		return [
-			'type' => $this->getType()->getValue(),
+			'type' => $this->getType()->value,
 			'identifier' => $this->getIdentifier(),
 			'states' => array_map(
 				static fn (SingleExposeData|self $item): array => $item->toArray(),

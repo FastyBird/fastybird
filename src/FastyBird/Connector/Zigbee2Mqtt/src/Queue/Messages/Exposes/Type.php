@@ -20,6 +20,8 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function sprintf;
 
 /**
@@ -59,6 +61,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getDataType(): MetadataTypes\DataType
 	{
@@ -73,7 +77,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -83,6 +87,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getName(): string|null
 	{
@@ -97,7 +103,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -107,6 +113,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLabel(): string|null
 	{
@@ -121,7 +129,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -131,6 +139,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getProperty(): string
 	{
@@ -145,7 +155,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -154,7 +164,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Property is wrongly configured for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -166,6 +176,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 	 * @return array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFormat(): array|null
 	{
@@ -180,7 +192,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -190,6 +202,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getUnit(): string|null
 	{
@@ -204,7 +218,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -214,6 +228,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAccess(): int
 	{
@@ -228,7 +244,7 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			throw new Exceptions\InvalidState(
 				sprintf(
 					'Accessing to property which is not allowed for given expose type: %s',
-					$this->getType()->getValue(),
+					$this->getType()->value,
 				),
 			);
 		}
@@ -238,6 +254,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isSettable(): bool
 	{
@@ -246,6 +264,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isQueryable(): bool
 	{
@@ -254,6 +274,8 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 
 	/**
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
@@ -264,9 +286,9 @@ abstract class Type implements Zigbee2Mqtt\Queue\Messages\Message
 			|| $this instanceof LockType
 			|| $this instanceof SwitchType
 		 ? [
-			 'type' => $this->getType()->getValue(),
+			 'type' => $this->getType()->value,
 		 ] : [
-			 'type' => $this->getType()->getValue(),
+			 'type' => $this->getType()->value,
 			 'name' => $this->getName(),
 			 'label' => $this->getLabel(),
 			 'property' => $this->getProperty(),

@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 
@@ -35,7 +37,7 @@ final class LockType extends Type
 	 * @param array<BinaryType|EnumType|NumericType|TextType|CompositeType> $features
 	 */
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::LOCK])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::LOCK->value])]
 		private readonly string $type,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\AnyOf([
@@ -53,9 +55,13 @@ final class LockType extends Type
 		parent::__construct();
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeType
 	{
-		return Types\ExposeType::get($this->type);
+		return Types\ExposeType::from($this->type);
 	}
 
 	/**

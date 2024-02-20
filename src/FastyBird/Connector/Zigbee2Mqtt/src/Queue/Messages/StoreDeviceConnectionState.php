@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
@@ -35,7 +35,7 @@ final class StoreDeviceConnectionState extends Device implements Message
 		Uuid\UuidInterface $connector,
 		string $baseTopic,
 		string $identifier,
-		#[ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\ConnectionState::class)]
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ConnectionState::class)]
 		private readonly Types\ConnectionState $state,
 	)
 	{
@@ -53,7 +53,7 @@ final class StoreDeviceConnectionState extends Device implements Message
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 		]);
 	}
 

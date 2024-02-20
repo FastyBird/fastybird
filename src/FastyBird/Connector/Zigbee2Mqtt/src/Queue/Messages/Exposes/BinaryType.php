@@ -18,6 +18,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages\Exposes;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function is_bool;
 
@@ -33,7 +35,7 @@ final class BinaryType extends Type
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::BINARY])]
+		#[ObjectMapper\Rules\ArrayEnumValue(cases: [Types\ExposeType::BINARY->value])]
 		private readonly string $type,
 		string $name,
 		string $label,
@@ -63,9 +65,13 @@ final class BinaryType extends Type
 		parent::__construct($name, $label, $property, $access);
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getType(): Types\ExposeType
 	{
-		return Types\ExposeType::get($this->type);
+		return Types\ExposeType::from($this->type);
 	}
 
 	public function getDataType(): MetadataTypes\DataType

@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
 use FastyBird\Module\Devices\Types as DevicesTypes;
-use function strval;
 
 /**
  * Connector property name types
@@ -27,33 +25,23 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
+enum ConnectorPropertyIdentifier: string
 {
 
-	public const STATE = DevicesTypes\ConnectorPropertyIdentifier::STATE->value;
+	case STATE = DevicesTypes\ConnectorPropertyIdentifier::STATE->value;
 
-	public const SERVER = DevicesTypes\ConnectorPropertyIdentifier::SERVER->value;
+	case SERVER = DevicesTypes\ConnectorPropertyIdentifier::SERVER->value;
 
-	public const PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
+	case PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
 
-	public const SECURED_PORT = DevicesTypes\ConnectorPropertyIdentifier::SECURED_PORT->value;
+	case SECURED_PORT = DevicesTypes\ConnectorPropertyIdentifier::SECURED_PORT->value;
 
-	public const CLIENT_MODE = 'mode';
+	case CLIENT_MODE = 'mode';
 
-	public const USERNAME = 'username';
+	case USERNAME = 'username';
 
-	public const PASSWORD = 'password';
+	case PASSWORD = 'password';
 
-	public const BASE_TOPIC = 'base_topic';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case BASE_TOPIC = 'base_topic';
 
 }

@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -39,7 +38,7 @@ final readonly class EventData implements Message
 		#[ObjectMapper\Modifiers\FieldName('ieee_address')]
 		private string $ieeeAddress,
 		#[ObjectMapper\Rules\AnyOf([
-			new ApplicationObjectMapper\Rules\ConsistenceEnumValue(class: Types\BridgeEvent::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\EventStatus::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private Types\EventStatus|null $status = null,
@@ -77,9 +76,9 @@ final readonly class EventData implements Message
 				'ieee_address' => $this->getIeeeAddress(),
 			],
 			$this->getStatus() !== null
-				? ['status' => $this->getStatus()->getValue()]
+				? ['status' => $this->getStatus()->value]
 				: [],
-			$this->getStatus() !== null && $this->getStatus()->equalsValue(Types\EventStatus::SUCCESSFUL)
+			$this->getStatus() !== null && $this->getStatus() === Types\EventStatus::SUCCESSFUL
 				? ['supported' => $this->getSupported()]
 				: [],
 		);

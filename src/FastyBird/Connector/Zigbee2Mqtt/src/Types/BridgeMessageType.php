@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Bridge message types
  *
@@ -26,31 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class BridgeMessageType extends Consistence\Enum\Enum
+enum BridgeMessageType: string
 {
 
-	public const INFO = 'info';
+	case INFO = 'info';
 
-	public const STATE = 'state';
+	case STATE = 'state';
 
-	public const LOGGING = 'logging';
+	case LOGGING = 'logging';
 
-	public const DEVICES = 'devices';
+	case DEVICES = 'devices';
 
-	public const GROUPS = 'groups';
+	case GROUPS = 'groups';
 
-	public const EVENT = 'event';
+	case EVENT = 'event';
 
-	public const EXTENSIONS = 'extensions';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case EXTENSIONS = 'extensions';
 
 }

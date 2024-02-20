@@ -17,13 +17,13 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use function sprintf;
 
@@ -50,6 +50,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -57,7 +58,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
 		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
@@ -84,7 +85,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 		}
 
 		$this->logger->info(
-			sprintf('Bridge published event: %s', $message->getType()),
+			sprintf('Bridge published event: %s', $message->getType()->value),
 			[
 				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				'type' => 'bridge-event',
@@ -95,7 +96,7 @@ final class StoreBridgeEvent implements Queue\Consumer
 					'id' => $bridge->getId()->toString(),
 				],
 				'data' => [
-					'type' => $message->getType()->getValue(),
+					'type' => $message->getType()->value,
 					'data' => $message->getData()->toArray(),
 				],
 			],
