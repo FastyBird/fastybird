@@ -18,20 +18,21 @@ namespace FastyBird\Connector\HomeKit\Queries\Configuration;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use function sprintf;
 
 /**
  * Find connector variable properties entities query
  *
  * @template T of DevicesDocuments\Connectors\Properties\Variable
- * @extends  FindConnectorProperties<T>
+ * @extends  DevicesQueries\Configuration\FindConnectorVariableProperties<T>
  *
  * @package        FastyBird:HomeKitConnector!
  * @subpackage     Queries
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindConnectorVariableProperties extends FindConnectorProperties
+class FindConnectorVariableProperties extends DevicesQueries\Configuration\FindConnectorVariableProperties
 {
 
 	/**
