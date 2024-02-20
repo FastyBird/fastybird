@@ -984,7 +984,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->set(
 			$hvacModeState,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF->value,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
@@ -999,7 +999,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->set(
 			$presetModeState,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL->value,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
@@ -1571,7 +1571,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->set(
 			$hvacModeState,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\HvacMode::OFF->value,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
@@ -1588,7 +1588,7 @@ class Install extends Console\Command\Command
 		$this->channelPropertiesStatesManager->set(
 			$presetModeState,
 			Utils\ArrayHash::from([
-				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL,
+				DevicesStates\Property::ACTUAL_VALUE_FIELD => Types\Preset::MANUAL->value,
 				DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
