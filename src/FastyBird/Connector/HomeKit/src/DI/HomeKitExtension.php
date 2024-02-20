@@ -314,33 +314,33 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		// ACCESSORIES
-		$builder->addDefinition($this->prefix('entities.accessory.factory.bridge'))
+		$builder->addDefinition($this->prefix('protocol.accessory.factory.bridge'))
 			->setType(Protocol\Accessories\BridgeFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.accessory.factory.generic'))
+		$builder->addDefinition($this->prefix('protocol.accessory.factory.generic'))
 			->setType(Protocol\Accessories\GenericFactory::class);
 
 		// SERVICES
-		$builder->addDefinition($this->prefix('entities.service.factory.generic'))
+		$builder->addDefinition($this->prefix('protocol.service.factory.generic'))
 			->setType(Protocol\Services\GenericFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.service.factory.lightBulb'))
+		$builder->addDefinition($this->prefix('protocol.service.factory.lightBulb'))
 			->setType(Protocol\Services\LightBulbFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.service.factory.battery'))
+		$builder->addDefinition($this->prefix('protocol.service.factory.battery'))
 			->setType(Protocol\Services\BatteryFactory::class);
 
 		// CHARACTERISTICS
-		$builder->addDefinition($this->prefix('entities.characteristic.factory.generic'))
+		$builder->addDefinition($this->prefix('protocol.characteristic.factory.generic'))
 			->setType(Protocol\Characteristics\GenericFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.characteristic.factory.dynamicProperty'))
+		$builder->addDefinition($this->prefix('protocol.characteristic.factory.dynamicProperty'))
 			->setType(Protocol\Characteristics\DynamicPropertyFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.characteristic.factory.mappedProperty'))
+		$builder->addDefinition($this->prefix('protocol.characteristic.factory.mappedProperty'))
 			->setType(Protocol\Characteristics\MappedPropertyFactory::class);
 
-		$builder->addDefinition($this->prefix('entities.characteristic.factory.variableProperty'))
+		$builder->addDefinition($this->prefix('protocol.characteristic.factory.variableProperty'))
 			->setType(Protocol\Characteristics\VariablePropertyFactory::class);
 
 		$builder->addDefinition($this->prefix('protocol.tlv'), new DI\Definitions\ServiceDefinition())
@@ -478,8 +478,12 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$httpServerServiceFactory = $builder->getDefinition($httpServerServiceFactoryName);
 			assert($httpServerServiceFactory instanceof DI\Definitions\FactoryDefinition);
 
-			$accessoriesFactories = $builder->findByType(Protocol\Accessories\AccessoryFactory::class);
-			$servicesFactories = $builder->findByType(Protocol\Services\ServiceFactory::class);
+			$accessoriesFactories = $builder->findByType(
+				Protocol\Accessories\AccessoryFactory::class,
+			);
+			$servicesFactories = $builder->findByType(
+				Protocol\Services\ServiceFactory::class,
+			);
 			$characteristicsFactories = $builder->findByType(
 				Protocol\Characteristics\CharacteristicFactory::class,
 			);

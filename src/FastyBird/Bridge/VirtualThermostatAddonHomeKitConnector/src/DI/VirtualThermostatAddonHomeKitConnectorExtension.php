@@ -22,6 +22,7 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Builders;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Commands;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Controllers;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Hydrators;
+use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Protocol;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Router;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Schemas;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
@@ -129,6 +130,16 @@ class VirtualThermostatAddonHomeKitConnectorExtension extends DI\CompilerExtensi
 
 		$builder->addDefinition($this->prefix('hydrators.channel.thermostat'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Channels\Thermostat::class);
+
+		/**
+		 * HOMEKIT PROTOCOL
+		 */
+
+		$builder->addDefinition($this->prefix('protocol.accessory.factory.thermostat'))
+			->setType(Protocol\Accessories\ThermostatFactory::class);
+
+		$builder->addDefinition($this->prefix('protocol.service.factory.thermostat'))
+			->setType(Protocol\Services\ThermostatFactory::class);
 
 		/**
 		 * COMMANDS

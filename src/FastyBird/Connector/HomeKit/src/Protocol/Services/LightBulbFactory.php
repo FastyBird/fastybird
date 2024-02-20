@@ -47,7 +47,7 @@ class LightBulbFactory implements ServiceFactory
 		array $virtualCharacteristics = [],
 		bool $primary = false,
 		bool $hidden = false,
-	): Generic
+	): LightBulb
 	{
 		return new LightBulb(
 			$typeId,

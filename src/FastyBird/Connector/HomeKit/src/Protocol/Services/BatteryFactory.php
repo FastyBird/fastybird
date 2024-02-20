@@ -47,7 +47,7 @@ class BatteryFactory implements ServiceFactory
 		array $virtualCharacteristics = [],
 		bool $primary = false,
 		bool $hidden = false,
-	): Generic
+	): Battery
 	{
 		return new Battery(
 			$typeId,
