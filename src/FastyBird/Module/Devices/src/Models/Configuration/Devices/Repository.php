@@ -26,6 +26,7 @@ use Ramsey\Uuid;
 use stdClass;
 use Throwable;
 use function array_map;
+use function array_merge;
 use function is_array;
 use function md5;
 
@@ -148,6 +149,8 @@ final class Repository extends Models\Configuration\Repository
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
 				function () use ($queryObject, $type): array {
+					$children = [];
+
 					$space = $this->builder
 						->load()
 						->find('.' . Devices\Constants::DATA_STORAGE_DEVICES_KEY . '.*');
@@ -155,6 +158,12 @@ final class Repository extends Models\Configuration\Repository
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
 					if ($metadata->getDiscriminatorValue() !== null) {
+						if ($metadata->getSubClasses() !== []) {
+							foreach ($metadata->getSubClasses() as $subClass) {
+								$children = array_merge($children, $this->findAllBy($queryObject, $subClass));
+							}
+						}
+
 						$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
 					}
 
@@ -164,12 +173,15 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_map(
-						fn (stdClass $item): Documents\Devices\Device => $this->documentFactory->create(
-							$type,
-							$item,
+					return array_merge(
+						array_map(
+							fn (stdClass $item): Documents\Devices\Device => $this->documentFactory->create(
+								$type,
+								$item,
+							),
+							$result,
 						),
-						$result,
+						$children,
 					);
 				},
 			);

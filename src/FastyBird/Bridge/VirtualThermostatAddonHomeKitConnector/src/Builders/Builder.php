@@ -231,7 +231,7 @@ class Builder
 					'entity' => Entities\Devices\Thermostat::class,
 					'connector' => $homeKitConnector,
 					'identifier' => $identifier,
-					'parent' => $thermostat,
+					'parents' => [$thermostat],
 					'name' => $thermostat->getName(),
 				]));
 				assert($accessory instanceof Entities\Devices\Thermostat);
@@ -794,7 +794,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::HEATING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacMode::HEAT->value,
 					1,
 					1,
 				];
@@ -802,7 +802,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::COOLING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacMode::COOL->value,
 					2,
 					2,
 				];
@@ -827,7 +827,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::HEAT->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacMode::HEAT->value,
 					1,
 					1,
 				];
@@ -835,7 +835,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::COOL->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacMode::COOL->value,
 					2,
 					2,
 				];
@@ -843,7 +843,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacMode::AUTO->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacMode::AUTO->value,
 					3,
 					3,
 				];
