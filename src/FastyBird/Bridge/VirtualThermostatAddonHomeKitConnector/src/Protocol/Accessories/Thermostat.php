@@ -15,10 +15,7 @@
 
 namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Protocol\Accessories;
 
-use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Documents;
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
-use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
-use Ramsey\Uuid;
 
 /**
  * HAP thermostat device accessory
@@ -28,27 +25,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Thermostat extends HomeKitProtocol\Accessories\Accessory
+class Thermostat extends HomeKitProtocol\Accessories\Generic
 {
-
-	public function __construct(
-		string $name,
-		int|null $aid,
-		HomeKitTypes\AccessoryCategory $category,
-		private readonly Documents\Devices\Thermostat $device,
-	)
-	{
-		parent::__construct($name, $aid, $category);
-	}
-
-	public function getId(): Uuid\UuidInterface
-	{
-		return $this->device->getId();
-	}
-
-	public function getDevice(): Documents\Devices\Thermostat
-	{
-		return $this->device;
-	}
 
 }
