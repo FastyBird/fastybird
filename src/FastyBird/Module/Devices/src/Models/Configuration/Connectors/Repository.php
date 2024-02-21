@@ -27,6 +27,7 @@ use stdClass;
 use Throwable;
 use function array_map;
 use function array_merge;
+use function implode;
 use function is_array;
 use function md5;
 
@@ -120,7 +121,9 @@ final class Repository extends Models\Configuration\Repository
 							$space = $space->find('.[?(@.type in [' . ('"' . implode('","', $types) . '"') . '])]');
 
 						} else {
-							$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
+							$space = $space->find(
+								'.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]',
+							);
 						}
 					}
 
