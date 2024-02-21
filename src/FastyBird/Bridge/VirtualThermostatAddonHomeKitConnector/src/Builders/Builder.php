@@ -486,26 +486,46 @@ class Builder
 			&& in_array(
 				$propertyType,
 				[
-					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_FLOOR_TEMPERATURE,
 					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_TEMPERATURE,
 					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_ROOM_HUMIDITY,
-					VirtualThermostatTypes\ChannelPropertyIdentifier::CURRENT_OPENINGS_STATE,
-					VirtualThermostatTypes\ChannelPropertyIdentifier::FLOOR_OVERHEATING,
-					VirtualThermostatTypes\ChannelPropertyIdentifier::PRESET_MODE,
 					VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE,
 					VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE,
+					VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
+					VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY,
+					VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
+					VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
 				],
 				true,
 			)
 		) {
 			$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-			$findPropertyQuery->forChannel($thermostat->getState());
+
+			if (
+				in_array(
+					$propertyType,
+					[
+						VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_TEMPERATURE,
+						VirtualThermostatTypes\ChannelPropertyIdentifier::TARGET_ROOM_HUMIDITY,
+						VirtualThermostatTypes\ChannelPropertyIdentifier::COOLING_THRESHOLD_TEMPERATURE,
+						VirtualThermostatTypes\ChannelPropertyIdentifier::HEATING_THRESHOLD_TEMPERATURE,
+					],
+					true,
+				)
+			) {
+				$findPropertyQuery->forChannel(
+					$thermostat->getPreset(VirtualThermostatTypes\ChannelIdentifier::PRESET_MANUAL),
+				);
+			} else {
+				$findPropertyQuery->forChannel($thermostat->getState());
+			}
+
 			$findPropertyQuery->byIdentifier($propertyType->value);
 
 			$connectProperty = $this->channelsPropertiesRepository->findOneBy(
 				$findPropertyQuery,
 				DevicesEntities\Channels\Properties\Dynamic::class,
 			);
+
 			assert(
 				(
 					!$optional && $connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic

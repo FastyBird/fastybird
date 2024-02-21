@@ -9,7 +9,9 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Exceptions;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
+use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -63,6 +65,29 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 
 		self::assertCount(1, $bridge->getChannels());
 		self::assertInstanceOf(Entities\Channels\Thermostat::class, $bridge->getChannels()[0]);
+
+		$actual = [];
+
+		foreach ($bridge->getChannels() as $channel) {
+			$actual[$channel->getIdentifier()] = [];
+
+			foreach ($channel->getProperties() as $property) {
+				$actual[$channel->getIdentifier()][$property->getIdentifier()] = $property::class;
+			}
+		}
+
+		self::assertSame([
+			'thermostat_1' => [
+				HomeKitTypes\ChannelPropertyIdentifier::CURRENT_HEATING_COOLING_STATE->value => DevicesEntities\Channels\Properties\Mapped::class,
+				HomeKitTypes\ChannelPropertyIdentifier::TARGET_HEATING_COOLING_STATE->value => DevicesEntities\Channels\Properties\Mapped::class,
+				HomeKitTypes\ChannelPropertyIdentifier::CURRENT_TEMPERATURE->value => DevicesEntities\Channels\Properties\Mapped::class,
+				HomeKitTypes\ChannelPropertyIdentifier::TARGET_TEMPERATURE->value => DevicesEntities\Channels\Properties\Mapped::class,
+
+				HomeKitTypes\ChannelPropertyIdentifier::TEMPERATURE_DISPLAY_UNITS->value => DevicesEntities\Channels\Properties\Dynamic::class,
+
+				HomeKitTypes\ChannelPropertyIdentifier::NAME->value => DevicesEntities\Channels\Properties\Variable::class,
+			],
+		], $actual);
 	}
 
 }
