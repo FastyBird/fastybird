@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -23,7 +23,7 @@ const VALID_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZmFzdH
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RouterTest extends DbTestCase
+final class RouterTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

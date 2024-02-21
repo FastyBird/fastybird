@@ -5,7 +5,7 @@ namespace FastyBird\Connector\Modbus\Tests\Cases\Unit\API;
 use Error;
 use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Exceptions;
-use FastyBird\Connector\Modbus\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Connector\Modbus\Tests;
 use FastyBird\Connector\Modbus\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
@@ -14,7 +14,7 @@ use function pack;
 use function round;
 use function unpack;
 
-final class TransformerTest extends BaseTestCase
+final class TransformerTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

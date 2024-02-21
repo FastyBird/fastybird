@@ -9,8 +9,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Middleware;
 use FastyBird\Connector\HomeKit\Queries;
 use FastyBird\Connector\HomeKit\Servers;
-use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Connector\HomeKit\Tests\Tools;
+use FastyBird\Connector\HomeKit\Tests;
 use FastyBird\Library\Application\EventLoop\Wrapper;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -33,7 +32,7 @@ use function call_user_func;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class CharacteristicsTest extends DbTestCase
+final class CharacteristicsTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	private Servers\Http|null $httpServer = null;
@@ -121,7 +120,7 @@ final class CharacteristicsTest extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

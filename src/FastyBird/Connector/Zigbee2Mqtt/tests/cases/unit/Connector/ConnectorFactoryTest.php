@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
-use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
@@ -17,7 +17,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ConnectorFactoryTest extends DbTestCase
+final class ConnectorFactoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

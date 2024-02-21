@@ -23,6 +23,10 @@ use React;
 use React\EventLoop;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 

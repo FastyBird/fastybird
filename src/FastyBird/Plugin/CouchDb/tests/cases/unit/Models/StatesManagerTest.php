@@ -11,7 +11,7 @@ use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
-use FastyBird\Plugin\CouchDb\Tests\Fixtures;
+use FastyBird\Plugin\CouchDb\Tests;
 use InvalidArgumentException;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -82,7 +82,7 @@ final class StatesManagerTest extends TestCase
 
 		$expected['id'] = $id->toString();
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertSame(Tests\Fixtures\CustomState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -172,11 +172,11 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\CustomState::class, $document);
+		$original = $factory->create(Tests\Fixtures\CustomState::class, $document);
 
 		$state = $manager->update($original, Utils\ArrayHash::from($data));
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertSame(Tests\Fixtures\CustomState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -247,13 +247,13 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\CustomState::class, $document);
+		$original = $factory->create(Tests\Fixtures\CustomState::class, $document);
 
 		self::assertTrue($manager->delete($original));
 	}
 
 	/**
-	 * @return Models\States\StatesManager<Fixtures\CustomState>
+	 * @return Models\States\StatesManager<Tests\Fixtures\CustomState>
 	 */
 	private function createManager(
 		Connections\Connection $couchClient,
@@ -279,7 +279,12 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		return new Models\States\StatesManager($couchClient, $factory, $dateTimeFactory, Fixtures\CustomState::class);
+		return new Models\States\StatesManager(
+			$couchClient,
+			$factory,
+			$dateTimeFactory,
+			Tests\Fixtures\CustomState::class,
+		);
 	}
 
 	/**

@@ -4,10 +4,10 @@ namespace FastyBird\Plugin\WsServer\Tests\Cases\Unit\DI;
 
 use FastyBird\Plugin\WsServer\Commands;
 use FastyBird\Plugin\WsServer\Subscribers;
-use FastyBird\Plugin\WsServer\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Plugin\WsServer\Tests;
 use Nette;
 
-final class WsServerExtensionTest extends BaseTestCase
+final class WsServerExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

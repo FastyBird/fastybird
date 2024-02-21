@@ -7,7 +7,7 @@ use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Hydrators;
 use FastyBird\Automator\DevicesModule\Schemas;
 use FastyBird\Automator\DevicesModule\Subscribers;
-use FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Automator\DevicesModule\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
@@ -16,7 +16,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DevicesModuleExtensionTest extends DbTestCase
+final class DevicesModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

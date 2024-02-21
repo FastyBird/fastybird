@@ -7,7 +7,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Triggers\Tests;
 use FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyActionEntity;
 use Nette;
 use Ramsey\Uuid;
@@ -17,7 +17,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ActionTest extends DbTestCase
+final class ActionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

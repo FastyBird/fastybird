@@ -8,7 +8,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Publishers;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures;
+use FastyBird\Plugin\RedisDb\Tests;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 use Nette\Utils;
@@ -62,7 +62,7 @@ final class PublisherTest extends TestCase
 		$publisher->publish(
 			MetadataTypes\Sources\Module::DEVICES,
 			'testing.routing.key',
-			new Fixtures\Dummy\DummyDocument(
+			new Tests\Fixtures\Dummy\DummyDocument(
 				'someAttribute',
 				10,
 			),

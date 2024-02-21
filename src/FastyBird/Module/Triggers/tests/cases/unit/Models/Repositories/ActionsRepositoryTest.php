@@ -7,7 +7,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Triggers\Tests;
 use FastyBird\Module\Triggers\Tests\Fixtures\Dummy\DummyActionEntity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -18,7 +18,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ActionsRepositoryTest extends DbTestCase
+final class ActionsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

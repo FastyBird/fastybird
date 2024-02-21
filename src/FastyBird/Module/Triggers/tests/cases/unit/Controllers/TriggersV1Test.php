@@ -5,8 +5,7 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Triggers\Tests\Tools;
+use FastyBird\Module\Triggers\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -25,7 +24,7 @@ use function strval;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class TriggersV1Test extends DbTestCase
+final class TriggersV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -58,7 +57,7 @@ final class TriggersV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -243,7 +242,7 @@ final class TriggersV1Test extends DbTestCase
 		$actual = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
 		self::assertTrue(is_array($actual));
 
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			$responseBody,
 			static function (string $expectation) use ($actual): string {
@@ -375,7 +374,7 @@ final class TriggersV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -488,7 +487,7 @@ final class TriggersV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

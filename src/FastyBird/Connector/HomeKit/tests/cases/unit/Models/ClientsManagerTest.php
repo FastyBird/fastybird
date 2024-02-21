@@ -8,7 +8,7 @@ use FastyBird\Connector\HomeKit\Entities;
 use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Models;
 use FastyBird\Connector\HomeKit\Queries;
-use FastyBird\Connector\HomeKit\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\HomeKit\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use IPub\DoctrineCrud;
@@ -22,7 +22,7 @@ use function random_bytes;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ClientsManagerTest extends DbTestCase
+final class ClientsManagerTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

@@ -4,13 +4,12 @@ namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Documents;
 
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
-use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
-use FastyBird\Library\Metadata\Tests\Fixtures;
+use FastyBird\Library\Metadata\Tests;
 use Nette;
 use Throwable;
 use function file_get_contents;
 
-final class DocumentTest extends BaseTestCase
+final class DocumentTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
@@ -66,7 +65,7 @@ final class DocumentTest extends BaseTestCase
 		return [
 			'dummy_one' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/dummy.one.json'),
-				Fixtures\Dummy\DummyOneDocument::class,
+				Tests\Fixtures\Dummy\DummyOneDocument::class,
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'identifier' => 'dummy-document-one',
@@ -78,7 +77,7 @@ final class DocumentTest extends BaseTestCase
 			],
 			'dummy_two' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/dummy.two.json'),
-				Fixtures\Dummy\DummyTwoDocument::class,
+				Tests\Fixtures\Dummy\DummyTwoDocument::class,
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'identifier' => 'dummy-document-two',
@@ -99,11 +98,11 @@ final class DocumentTest extends BaseTestCase
 		return [
 			'missing' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/dummy.two.missing.json'),
-				Fixtures\Dummy\DummyTwoDocument::class,
+				Tests\Fixtures\Dummy\DummyTwoDocument::class,
 			],
 			'type-mismatch' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/dummy.two.mismatch.json'),
-				Fixtures\Dummy\DummyTwoDocument::class,
+				Tests\Fixtures\Dummy\DummyTwoDocument::class,
 			],
 		];
 	}

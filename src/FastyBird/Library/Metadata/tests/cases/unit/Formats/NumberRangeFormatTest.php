@@ -4,12 +4,12 @@ namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Formats;
 
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
-use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Metadata\Tests;
 use TypeError;
 use ValueError;
 use function strval;
 
-final class NumberRangeFormatTest extends BaseTestCase
+final class NumberRangeFormatTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

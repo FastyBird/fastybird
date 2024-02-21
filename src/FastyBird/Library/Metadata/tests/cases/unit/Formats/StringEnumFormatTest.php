@@ -3,10 +3,10 @@
 namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Formats;
 
 use FastyBird\Library\Metadata\Formats;
-use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Metadata\Tests;
 use function strval;
 
-final class StringEnumFormatTest extends BaseTestCase
+final class StringEnumFormatTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	public function testFromString(): void

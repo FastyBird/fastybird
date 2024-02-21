@@ -5,7 +5,7 @@ namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\States;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
-use FastyBird\Plugin\CouchDb\Tests\Fixtures;
+use FastyBird\Plugin\CouchDb\Tests;
 use InvalidArgumentException;
 use Orisai\ObjectMapper;
 use PHPOnCouch;
@@ -18,7 +18,7 @@ final class FactoryTest extends TestCase
 {
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<Tests\Fixtures\CustomState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -70,7 +70,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<Tests\Fixtures\CustomState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 * @param class-string<Throwable> $exception
 	 *

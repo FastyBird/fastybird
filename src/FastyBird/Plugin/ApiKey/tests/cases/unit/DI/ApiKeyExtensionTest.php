@@ -5,10 +5,10 @@ namespace FastyBird\Plugin\ApiKey\Tests\Cases\Unit\DI;
 use FastyBird\Plugin\ApiKey\Commands;
 use FastyBird\Plugin\ApiKey\Middleware;
 use FastyBird\Plugin\ApiKey\Models;
-use FastyBird\Plugin\ApiKey\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Plugin\ApiKey\Tests;
 use Nette;
 
-final class ApiKeyExtensionTest extends BaseTestCase
+final class ApiKeyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

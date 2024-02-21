@@ -32,6 +32,10 @@ use function openssl_encrypt;
 use function strval;
 use const OPENSSL_RAW_DATA;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 

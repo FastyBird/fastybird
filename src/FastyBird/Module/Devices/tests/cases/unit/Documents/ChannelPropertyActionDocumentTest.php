@@ -7,11 +7,11 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Documents;
-use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use function file_get_contents;
 
-final class ChannelPropertyActionDocumentTest extends BaseTestCase
+final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

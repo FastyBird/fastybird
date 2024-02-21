@@ -4,7 +4,7 @@ namespace FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\Models;
 
 use Exception;
 use FastyBird\Bridge\RedisDbPluginDevicesModule\Models;
-use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests;
 use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools\JsonAssert;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\States as DevicesStates;
@@ -12,7 +12,7 @@ use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use Nette\Utils;
 use Ramsey\Uuid;
 
-final class ChannelPropertiesManagerTest extends BaseTestCase
+final class ChannelPropertiesManagerTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	private static int $getCalled = 0;

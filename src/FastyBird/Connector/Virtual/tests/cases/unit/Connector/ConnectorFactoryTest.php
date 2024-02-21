@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Connector\Virtual\Connector;
 use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Exceptions;
-use FastyBird\Connector\Virtual\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\Virtual\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
@@ -17,7 +17,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ConnectorFactoryTest extends DbTestCase
+final class ConnectorFactoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

@@ -6,8 +6,7 @@ use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Accounts\Tests\Tools;
+use FastyBird\Module\Accounts\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -22,7 +21,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class AccessTest extends DbTestCase
+final class AccessTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -58,7 +57,7 @@ final class AccessTest extends DbTestCase
 
 		$response = $router->handle($request);
 
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

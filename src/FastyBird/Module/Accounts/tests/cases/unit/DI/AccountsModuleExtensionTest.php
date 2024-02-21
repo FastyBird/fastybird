@@ -13,7 +13,7 @@ use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Subscribers;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use Nette;
 use RuntimeException;
 
@@ -21,7 +21,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class AccountsModuleExtensionTest extends DbTestCase
+final class AccountsModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

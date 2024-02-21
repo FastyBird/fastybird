@@ -4,7 +4,7 @@ namespace FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\Models;
 
 use Exception;
 use FastyBird\Bridge\RedisDbPluginDevicesModule\Models;
-use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Plugin\RedisDb\Clients as RedisDbClient;
 use FastyBird\Plugin\RedisDb\Exceptions as RedisDbExceptions;
@@ -12,7 +12,7 @@ use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
 
-final class ChannelPropertiesRepositoryTest extends BaseTestCase
+final class ChannelPropertiesRepositoryTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

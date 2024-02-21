@@ -9,7 +9,7 @@ use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -21,7 +21,7 @@ use function assert;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DevicePropertyEntityTest extends DbTestCase
+final class DevicePropertyEntityTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

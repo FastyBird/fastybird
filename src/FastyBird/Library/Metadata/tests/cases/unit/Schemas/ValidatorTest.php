@@ -4,11 +4,11 @@ namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Schemas;
 
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Schemas;
-use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Metadata\Tests;
 use Nette\Utils;
 use function file_get_contents;
 
-final class ValidatorTest extends BaseTestCase
+final class ValidatorTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

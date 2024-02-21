@@ -9,7 +9,6 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
-use FastyBird\Connector\NsPanel\Tests\Tools;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -23,6 +22,10 @@ use function is_array;
 use function str_replace;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
@@ -339,7 +342,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/synchronise_devices.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -491,7 +494,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -616,7 +619,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_online.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -830,7 +833,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/set_sub_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {

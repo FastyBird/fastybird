@@ -18,6 +18,10 @@ use Psr\Http;
 use RuntimeException;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class CloudApiTest extends Tests\Cases\Unit\DbTestCase
 {
 

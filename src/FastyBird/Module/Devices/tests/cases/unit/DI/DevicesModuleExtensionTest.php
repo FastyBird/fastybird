@@ -13,7 +13,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use FastyBird\Module\Devices\Utilities;
 use Nette;
 use RuntimeException;
@@ -22,7 +22,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DevicesModuleExtensionTest extends DbTestCase
+final class DevicesModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

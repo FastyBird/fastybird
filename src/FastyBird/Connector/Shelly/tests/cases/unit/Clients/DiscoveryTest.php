@@ -29,6 +29,10 @@ use RuntimeException;
 use function is_string;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 

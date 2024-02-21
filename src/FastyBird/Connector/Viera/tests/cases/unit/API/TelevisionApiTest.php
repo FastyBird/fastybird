@@ -16,6 +16,10 @@ use Psr\Http;
 use RuntimeException;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class TelevisionApiTest extends Tests\Cases\Unit\DbTestCase
 {
 

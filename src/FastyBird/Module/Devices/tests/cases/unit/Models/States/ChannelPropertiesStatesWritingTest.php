@@ -11,14 +11,14 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Module\Devices\Tests;
 use FastyBird\Module\Devices\Types;
 use Nette\DI;
 use Nette\Utils;
 use Ramsey\Uuid;
 use Throwable;
 
-final class ChannelPropertiesStatesWritingTest extends BaseTestCase
+final class ChannelPropertiesStatesWritingTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

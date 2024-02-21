@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
-use FastyBird\Automator\DateTime\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Automator\DateTime\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
@@ -15,7 +15,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DateTimeExtensionTest extends DbTestCase
+final class DateTimeExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

@@ -8,14 +8,14 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
-use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Module\Devices\Tests;
 use FastyBird\Module\Devices\Types;
 use Nette;
 use Ramsey\Uuid;
 use function file_get_contents;
 use function method_exists;
 
-final class ChannelPropertyDocumentTest extends BaseTestCase
+final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

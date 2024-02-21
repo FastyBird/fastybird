@@ -8,7 +8,7 @@ use FastyBird\DateTimeFactory;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Channels;
 use FastyBird\Plugin\RabbitMq\Publishers;
-use FastyBird\Plugin\RabbitMq\Tests\Fixtures;
+use FastyBird\Plugin\RabbitMq\Tests;
 use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
 use Nette\Utils;
@@ -77,7 +77,7 @@ final class PublisherTest extends TestCase
 		$publisher->publish(
 			MetadataTypes\Sources\Module::DEVICES,
 			'testing.routing.key',
-			new Fixtures\Dummy\DummyDocument(
+			new Tests\Fixtures\Dummy\DummyDocument(
 				'someAttribute',
 				10,
 			),

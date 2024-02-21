@@ -9,8 +9,7 @@ use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy\DummyState;
+use FastyBird\Plugin\RedisDb\Tests;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use PHPUnit\Framework\MockObject;
@@ -53,7 +52,7 @@ final class StatesManagerTest extends TestCase
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
-		self::assertSame(Fixtures\Dummy\DummyState::class, $state::class);
+		self::assertSame(Tests\Fixtures\Dummy\DummyState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -113,12 +112,12 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\Dummy\DummyState::class, Utils\Json::encode($originalData));
+		$original = $factory->create(Tests\Fixtures\Dummy\DummyState::class, Utils\Json::encode($originalData));
 
 		$state = $manager->update($original->getId(), Utils\ArrayHash::from($data));
 
 		self::assertIsObject($state);
-		self::assertSame(Fixtures\Dummy\DummyState::class, $state::class);
+		self::assertSame(Tests\Fixtures\Dummy\DummyState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -149,7 +148,7 @@ final class StatesManagerTest extends TestCase
 	}
 
 	/**
-	 * @return Models\States\StatesManager<DummyState>
+	 * @return Models\States\StatesManager<Tests\Fixtures\Dummy\DummyState>
 	 */
 	private function createManager(
 		Clients\Client&MockObject\MockObject $redisClient,
@@ -182,7 +181,7 @@ final class StatesManagerTest extends TestCase
 			$redisClient,
 			$factory,
 			$dateTimeFactory,
-			Fixtures\Dummy\DummyState::class,
+			Tests\Fixtures\Dummy\DummyState::class,
 		);
 	}
 

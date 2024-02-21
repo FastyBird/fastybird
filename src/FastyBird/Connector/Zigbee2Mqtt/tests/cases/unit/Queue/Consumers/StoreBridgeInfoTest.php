@@ -9,7 +9,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
-use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -23,7 +23,7 @@ use function assert;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class StoreBridgeInfoTest extends DbTestCase
+final class StoreBridgeInfoTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

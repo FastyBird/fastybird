@@ -7,11 +7,11 @@ use FastyBird\Plugin\RedisDb\Connections;
 use FastyBird\Plugin\RedisDb\Exchange;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Plugin\RedisDb\Tests;
 use FastyBird\Plugin\RedisDb\Utilities;
 use Nette;
 
-final class RedisDbExtensionTest extends BaseTestCase
+final class RedisDbExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

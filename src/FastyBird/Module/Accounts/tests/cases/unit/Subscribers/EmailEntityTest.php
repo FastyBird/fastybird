@@ -7,7 +7,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -18,7 +18,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class EmailEntityTest extends DbTestCase
+final class EmailEntityTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

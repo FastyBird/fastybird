@@ -13,7 +13,7 @@ use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Triggers\Tests;
 use Nette;
 use RuntimeException;
 
@@ -21,7 +21,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class TriggersModuleExtensionTest extends DbTestCase
+final class TriggersModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

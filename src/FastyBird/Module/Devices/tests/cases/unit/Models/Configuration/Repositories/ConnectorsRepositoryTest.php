@@ -8,7 +8,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use RuntimeException;
 
@@ -16,7 +16,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ConnectorsRepositoryTest extends DbTestCase
+final class ConnectorsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

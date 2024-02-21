@@ -8,11 +8,11 @@ use FastyBird\Plugin\WebServer\Http;
 use FastyBird\Plugin\WebServer\Middleware;
 use FastyBird\Plugin\WebServer\Server;
 use FastyBird\Plugin\WebServer\Subscribers;
-use FastyBird\Plugin\WebServer\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Plugin\WebServer\Tests;
 use Nette;
 use React\EventLoop;
 
-final class WebServerExtensionTest extends BaseTestCase
+final class WebServerExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

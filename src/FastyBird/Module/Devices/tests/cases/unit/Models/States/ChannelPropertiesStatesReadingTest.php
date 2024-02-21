@@ -12,13 +12,12 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Tests\Cases\Unit\BaseTestCase;
-use FastyBird\Module\Devices\Tests\Fixtures;
+use FastyBird\Module\Devices\Tests;
 use FastyBird\Module\Devices\Types;
 use Nette\DI;
 use Ramsey\Uuid;
 
-final class ChannelPropertiesStatesReadingTest extends BaseTestCase
+final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
@@ -174,7 +173,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					127,
@@ -206,7 +205,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					127.0,
@@ -238,7 +237,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'0127',
@@ -270,7 +269,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -317,7 +316,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -365,7 +364,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -413,7 +412,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -461,7 +460,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -510,7 +509,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'1000',
 					'1000',
@@ -553,7 +552,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					MetadataTypes\Payloads\Switcher::ON,
 					MetadataTypes\Payloads\Switcher::OFF,
@@ -635,7 +634,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					MetadataTypes\Payloads\Switcher::ON,
 					MetadataTypes\Payloads\Switcher::OFF,
@@ -681,7 +680,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -713,7 +712,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -745,7 +744,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -777,7 +776,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'254',
 					'127',
@@ -824,7 +823,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -872,7 +871,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -920,7 +919,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -968,7 +967,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					'equation:x=y*2.54|y=x/2.54',
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -1016,7 +1015,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'250',
 					'120',
@@ -1066,7 +1065,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					'100',
 					'1000',
@@ -1109,7 +1108,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					MetadataTypes\Payloads\Switcher::ON,
 					MetadataTypes\Payloads\Switcher::OFF,
@@ -1158,7 +1157,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					true,
 				),
 				null,
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					MetadataTypes\Payloads\Switcher::ON,
 					MetadataTypes\Payloads\Switcher::OFF,
@@ -1240,7 +1239,7 @@ final class ChannelPropertiesStatesReadingTest extends BaseTestCase
 					null,
 					true,
 				),
-				new Fixtures\Dummy\ChannelPropertyState(
+				new Tests\Fixtures\Dummy\ChannelPropertyState(
 					$property01,
 					MetadataTypes\Payloads\Switcher::ON,
 					MetadataTypes\Payloads\Switcher::OFF,

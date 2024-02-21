@@ -3,10 +3,10 @@
 namespace FastyBird\Library\Metadata\Tests\Cases\Unit\Common;
 
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Metadata\Tests;
 use function preg_match;
 
-final class ConstantsTest extends BaseTestCase
+final class ConstantsTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	public function testValueFormatStringEnum(): void

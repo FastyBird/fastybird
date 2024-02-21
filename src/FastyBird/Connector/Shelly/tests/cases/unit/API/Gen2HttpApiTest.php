@@ -7,7 +7,6 @@ use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Tests;
-use FastyBird\Connector\Shelly\Tests\Tools;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
@@ -20,6 +19,10 @@ use function is_array;
 use function str_replace;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
@@ -271,7 +274,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/Gen2Http/request/set_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {

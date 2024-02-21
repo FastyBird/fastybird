@@ -3,8 +3,7 @@
 namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools;
+use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use Fig\Http\Message\RequestMethodInterface;
@@ -25,7 +24,7 @@ use function strval;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class BridgesV1Test extends DbTestCase
+final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -58,7 +57,7 @@ final class BridgesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -229,7 +228,7 @@ final class BridgesV1Test extends DbTestCase
 		$actual = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
 		self::assertTrue(is_array($actual));
 
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 			static function (string $expectation) use ($actual): string {
@@ -428,7 +427,7 @@ final class BridgesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -542,7 +541,7 @@ final class BridgesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

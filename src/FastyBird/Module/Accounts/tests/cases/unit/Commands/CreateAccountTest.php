@@ -11,7 +11,7 @@ use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use FastyBird\SimpleAuth;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -24,7 +24,7 @@ use Symfony\Component\Console\Tester\CommandTester;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class CreateAccountTest extends DbTestCase
+final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

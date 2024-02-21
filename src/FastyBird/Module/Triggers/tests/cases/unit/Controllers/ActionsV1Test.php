@@ -5,8 +5,7 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 use Error;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Triggers\Tests\Tools;
+use FastyBird\Module\Triggers\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -22,7 +21,7 @@ use function file_get_contents;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class ActionsV1Test extends DbTestCase
+final class ActionsV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -55,7 +54,7 @@ final class ActionsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -240,7 +239,7 @@ final class ActionsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -358,7 +357,7 @@ final class ActionsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -488,7 +487,7 @@ final class ActionsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

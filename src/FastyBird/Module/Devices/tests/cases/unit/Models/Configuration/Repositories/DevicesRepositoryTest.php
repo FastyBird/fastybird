@@ -9,8 +9,7 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Devices\Tests\Fixtures;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
@@ -19,7 +18,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DevicesRepositoryTest extends DbTestCase
+final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -40,7 +39,7 @@ final class DevicesRepositoryTest extends DbTestCase
 		$entity = $repository->find(Uuid\Uuid::fromString('69786d15-fd0c-4d9f-9378-33287c2009fa'));
 
 		self::assertIsObject($entity);
-		self::assertInstanceOf(Fixtures\Dummy\DummyDeviceDocument::class, $entity);
+		self::assertInstanceOf(Tests\Fixtures\Dummy\DummyDeviceDocument::class, $entity);
 		self::assertSame('first-device', $entity->getIdentifier());
 	}
 

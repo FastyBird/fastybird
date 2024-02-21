@@ -7,8 +7,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Devices\Tests\Fixtures;
+use FastyBird\Module\Devices\Tests;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -19,7 +18,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class DeviceEntitiesTest extends DbTestCase
+final class DeviceEntitiesTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -76,7 +75,7 @@ final class DeviceEntitiesTest extends DbTestCase
 		self::assertSame('first-device', $parent->getIdentifier());
 
 		$child = $manager->create(Utils\ArrayHash::from([
-			'entity' => Fixtures\Dummy\DummyDeviceEntity::class,
+			'entity' => Tests\Fixtures\Dummy\DummyDeviceEntity::class,
 			'identifier' => 'new-child-device',
 			'connector' => $parent->getConnector(),
 			'name' => 'New child device',

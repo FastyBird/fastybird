@@ -7,8 +7,7 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Accounts\Tests\Tools;
+use FastyBird\Module\Accounts\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -24,7 +23,7 @@ use function file_get_contents;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class RolesV1Test extends DbTestCase
+final class RolesV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	private const ROLE_ID = 'efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61';
@@ -62,7 +61,7 @@ final class RolesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -244,7 +243,7 @@ final class RolesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

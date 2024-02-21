@@ -26,6 +26,10 @@ use RuntimeException;
 use function array_diff;
 use function sprintf;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 

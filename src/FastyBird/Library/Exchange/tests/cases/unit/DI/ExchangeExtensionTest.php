@@ -5,10 +5,10 @@ namespace FastyBird\Library\Exchange\Tests\Cases\Unit\DI;
 use FastyBird\Library\Exchange\Consumers;
 use FastyBird\Library\Exchange\Documents;
 use FastyBird\Library\Exchange\Publisher;
-use FastyBird\Library\Exchange\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Library\Exchange\Tests;
 use Nette;
 
-final class ExchangeExtensionTest extends BaseTestCase
+final class ExchangeExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

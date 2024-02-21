@@ -7,7 +7,7 @@ use FastyBird\Addon\VirtualThermostat\Entities as VirtualThermostatEntities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Builders;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Exceptions;
-use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -20,7 +20,7 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class BuilderTest extends DbTestCase
+final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**

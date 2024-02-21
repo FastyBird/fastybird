@@ -3,10 +3,10 @@
 namespace FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\DI;
 
 use FastyBird\Bridge\RedisDbPluginDevicesModule\Models;
-use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Bridge\RedisDbPluginDevicesModule\Tests;
 use Nette;
 
-final class RedisDbPluginDevicesModuleExtensionTest extends BaseTestCase
+final class RedisDbPluginDevicesModuleExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
