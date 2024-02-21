@@ -511,6 +511,10 @@ class Builder
 					!$optional && $connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic
 				) || $optional,
 			);
+
+			if ($connectProperty === null) {
+				return;
+			}
 		}
 
 		$metadata = $this->loader->loadCharacteristics();
@@ -546,6 +550,7 @@ class Builder
 			$queryable = $connectProperty->isQueryable();
 
 			$format = $this->mapPropertyFormat($connectProperty, $characteristicType);
+			$default = $connectProperty->getDefault();
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
 				$dataTypes = array_map(
@@ -580,6 +585,7 @@ class Builder
 
 			$settable = $queryable = false;
 			$format = null;
+			$default = null;
 
 			if (
 				$characteristicMetadata->offsetExists('Permissions')
@@ -597,6 +603,7 @@ class Builder
 				$format = new MetadataFormats\StringEnum(
 					array_values((array) $characteristicMetadata->offsetGet('ValidValues')),
 				);
+				$default = array_values((array) $characteristicMetadata->offsetGet('ValidValues'))[0];
 			}
 
 			if (
@@ -681,6 +688,11 @@ class Builder
 								'settable' => $settable,
 								'queryable' => $queryable,
 							],
+						$entity !== DevicesEntities\Channels\Properties\Mapped::class
+							? [
+								'default' => $default,
+							]
+							: [],
 					)),
 				);
 
@@ -725,6 +737,11 @@ class Builder
 								'settable' => $settable,
 								'queryable' => $queryable,
 							],
+						$entity !== DevicesEntities\Channels\Properties\Mapped::class
+							? [
+								'default' => $default,
+							]
+							: [],
 					)),
 				);
 

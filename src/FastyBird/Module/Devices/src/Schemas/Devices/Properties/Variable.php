@@ -80,7 +80,6 @@ final class Variable extends Property
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'value' => MetadataUtilities\Value::flattenValue($resource->getValue()),
-			'default' => MetadataUtilities\Value::flattenValue($resource->getDefault()),
 		]);
 	}
 

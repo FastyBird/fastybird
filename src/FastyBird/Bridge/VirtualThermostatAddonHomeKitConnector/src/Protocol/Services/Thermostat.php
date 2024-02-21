@@ -16,6 +16,7 @@
 namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
+use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 
 /**
  * HAP thermostat service
@@ -27,5 +28,23 @@ use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
  */
 final class Thermostat extends HomeKitProtocol\Services\Generic
 {
+
+	public function getCharacteristics(): array
+	{
+		$characteristics = parent::getCharacteristics();
+
+		foreach ($characteristics as $characteristic) {
+			if (
+				$characteristic->getName() === HomeKitTypes\CharacteristicType::TEMPERATURE_DISPLAY_UNITS->value
+				&& $characteristic->getValue() === null
+			) {
+				$validValues = $characteristic->getValidValues();
+
+				$characteristic->setActualValue($validValues !== null ? $validValues[0] : null);
+			}
+		}
+
+		return $characteristics;
+	}
 
 }

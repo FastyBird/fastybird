@@ -59,6 +59,7 @@ final class Variable extends Property
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
@@ -68,14 +69,6 @@ final class Variable extends Property
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly bool|float|int|string|null $value = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
-		private readonly bool|float|int|string|null $default = null,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ApplicationObjectMapper\Rules\UuidValue(),
 		)]
@@ -97,6 +90,7 @@ final class Variable extends Property
 			$invalid,
 			$scale,
 			$step,
+			$default,
 			$valueTransformer,
 			$owner,
 			$createdAt,
@@ -137,25 +131,6 @@ final class Variable extends Property
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
-	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
-	{
-		try {
-			return MetadataUtilities\Value::normalizeValue(
-				$this->default,
-				$this->getDataType(),
-				$this->getFormat(),
-			);
-		} catch (MetadataExceptions\InvalidValue) {
-			return null;
-		}
-	}
-
-	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -166,7 +141,6 @@ final class Variable extends Property
 	{
 		return array_merge(parent::toArray(), [
 			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
-			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),

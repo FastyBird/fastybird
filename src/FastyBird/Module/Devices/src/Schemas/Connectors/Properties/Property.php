@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -81,6 +82,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),
+			'default' => MetadataUtilities\Value::flattenValue($resource->getDefault()),
 			'value_transformer' => $resource->getValueTransformer() !== null
 				? strval($resource->getValueTransformer())
 				: null,

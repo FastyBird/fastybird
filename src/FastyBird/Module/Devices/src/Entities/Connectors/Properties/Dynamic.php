@@ -56,32 +56,4 @@ class Dynamic extends Property
 		);
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
-	{
-		throw new Exceptions\InvalidState(
-			sprintf(
-				'Reading default  value is not allowed for property type: %s',
-				static::getType(),
-			),
-		);
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setDefault(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
-	): void
-	{
-		throw new Exceptions\InvalidState(
-			sprintf(
-				'Writing default value is not allowed for property type: %s',
-				static::getType(),
-			),
-		);
-	}
-
 }

@@ -165,10 +165,6 @@ class Mapped extends Property
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
-		if (!$this->getParent() instanceof Variable) {
-			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
-		}
-
 		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
 			return null;
 		}
@@ -194,10 +190,6 @@ class Mapped extends Property
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
 	): void
 	{
-		if (!$this->getParent() instanceof Variable) {
-			throw new Exceptions\InvalidState('Setting default value is allowed only for variable parent properties');
-		}
-
 		throw new Exceptions\InvalidState('Default value setter is allowed only for parent');
 	}
 
@@ -286,6 +278,7 @@ class Mapped extends Property
 		return array_merge(parent::toArray(), [
 			'parent' => $this->getParent()->getId()->toString(),
 
+			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 		]);

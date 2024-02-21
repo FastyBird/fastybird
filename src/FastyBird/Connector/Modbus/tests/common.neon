@@ -74,6 +74,9 @@ nettrineDbal:
         typesMapping:
             uuid_binary: binary
 
+    debug:
+        panel: false
+
 nettrineOrm:
     configuration:
         proxyDir: %tempDir%/cache/doctrine.proxies

@@ -11,6 +11,7 @@
   "invalid": 99,
   "scale": 0,
   "step": null,
+  "default": null,
   "value_transformer": null,
   "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
   "created_at" : null,

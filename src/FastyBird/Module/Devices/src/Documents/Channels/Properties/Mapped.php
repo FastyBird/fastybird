@@ -59,6 +59,7 @@ final class Mapped extends Property
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
@@ -78,14 +79,6 @@ final class Mapped extends Property
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private readonly bool|float|int|string|null $value = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\IntValue(),
-			new ObjectMapper\Rules\FloatValue(),
-			new ObjectMapper\Rules\StringValue(notEmpty: true),
-			new ObjectMapper\Rules\NullValue(castEmptyString: true),
-		])]
-		private readonly bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|null $owner = null,
 		DateTimeInterface|null $createdAt = null,
 		DateTimeInterface|null $updatedAt = null,
@@ -103,6 +96,7 @@ final class Mapped extends Property
 			$invalid,
 			$scale,
 			$step,
+			$default,
 			$valueTransformer,
 			$owner,
 			$createdAt,
@@ -150,25 +144,6 @@ final class Mapped extends Property
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
-	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
-	{
-		try {
-			return MetadataUtilities\Value::normalizeValue(
-				$this->default,
-				$this->getDataType(),
-				$this->getFormat(),
-			);
-		} catch (MetadataExceptions\InvalidValue) {
-			return null;
-		}
-	}
-
-	/**
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -181,7 +156,6 @@ final class Mapped extends Property
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
-			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 
 			'parent' => $this->getParent()->toString(),
 		]);

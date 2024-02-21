@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use Flow\JSONPath;
 use Nette\Caching;
 use Orisai\DataSources;
@@ -134,38 +135,62 @@ final class Builder
 
 		foreach ($this->connectorsRepository->findAll() as $connector) {
 			$data[Devices\Constants::DATA_STORAGE_CONNECTORS_KEY][] = $connector->toArray();
-		}
 
-		foreach ($this->connectorsPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
+			$findConnectorProperties = new Queries\Entities\FindConnectorProperties();
+			$findConnectorProperties->forConnector($connector);
 
-		foreach ($this->connectorsControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-		}
+			foreach ($this->connectorsPropertiesRepository->findAllBy($findConnectorProperties) as $property) {
+				$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
+			}
 
-		foreach ($this->devicesRepository->findAll() as $device) {
-			$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
-		}
+			$findConnectorControls = new Queries\Entities\FindConnectorControls();
+			$findConnectorControls->forConnector($connector);
 
-		foreach ($this->devicesPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
+			foreach ($this->connectorsControlsRepository->findAllBy($findConnectorControls) as $control) {
+				$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
+			}
 
-		foreach ($this->devicesControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-		}
+			$findConnectorDevices = new Queries\Entities\FindDevices();
+			$findConnectorDevices->forConnector($connector);
 
-		foreach ($this->channelsRepository->findAll() as $channel) {
-			$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
-		}
+			foreach ($this->devicesRepository->findAllBy($findConnectorDevices) as $device) {
+				$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
 
-		foreach ($this->channelsPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
+				$findDeviceProperties = new Queries\Entities\FindDeviceProperties();
+				$findDeviceProperties->forDevice($device);
 
-		foreach ($this->channelsControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
+				foreach ($this->devicesPropertiesRepository->findAllBy($findDeviceProperties) as $property) {
+					$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
+				}
+
+				$findDeviceControls = new Queries\Entities\FindDeviceControls();
+				$findDeviceControls->forDevice($device);
+
+				foreach ($this->devicesControlsRepository->findAllBy($findDeviceControls) as $control) {
+					$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
+				}
+
+				$findDeviceChannels = new Queries\Entities\FindChannels();
+				$findDeviceChannels->forDevice($device);
+
+				foreach ($this->channelsRepository->findAllBy($findDeviceChannels) as $channel) {
+					$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
+
+					$findChannelProperties = new Queries\Entities\FindChannelProperties();
+					$findChannelProperties->forChannel($channel);
+
+					foreach ($this->channelsPropertiesRepository->findAllBy($findChannelProperties) as $property) {
+						$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
+					}
+
+					$findChannelControls = new Queries\Entities\FindChannelControls();
+					$findChannelControls->forChannel($channel);
+
+					foreach ($this->channelsControlsRepository->findAllBy($findChannelControls) as $control) {
+						$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
+					}
+				}
+			}
 		}
 
 		try {

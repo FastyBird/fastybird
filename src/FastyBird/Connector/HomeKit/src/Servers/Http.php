@@ -221,9 +221,9 @@ final class Http implements Server
 				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
 				$findChannelPropertiesQuery->forChannel($channel);
 
-				foreach ($this->channelsPropertiesConfigurationRepository->findAllBy(
-					$findChannelPropertiesQuery,
-				) as $property) {
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy($findChannelPropertiesQuery);
+
+				foreach ($properties as $property) {
 					$format = $property->getFormat();
 
 					$characteristic = $this->buildCharacteristic(
@@ -243,6 +243,7 @@ final class Http implements Server
 							? Types\CharacteristicUnit::from($property->getUnit())
 							: null,
 					);
+					$characteristic->setActualValue($property->getDefault());
 
 					$service->addCharacteristic($characteristic);
 				}
@@ -917,7 +918,7 @@ final class Http implements Server
 	 * @throws ValueError
 	 */
 	public function buildCharacteristic(
-		Types\ChannelPropertyIdentifier $name,
+		Types\ChannelPropertyIdentifier $identifier,
 		Protocol\Services\Service $service,
 		DevicesDocuments\Channels\Properties\Property|null $property = null,
 		array|null $validValues = [],
@@ -928,7 +929,7 @@ final class Http implements Server
 		Types\CharacteristicUnit|null $unit = null,
 	): Protocol\Characteristics\Characteristic
 	{
-		$name = str_replace(' ', '', ucwords(str_replace('_', ' ', $name->value)));
+		$name = str_replace(' ', '', ucwords(str_replace('_', ' ', $identifier->value)));
 
 		$metadata = $this->loader->loadCharacteristics();
 

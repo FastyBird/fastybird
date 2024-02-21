@@ -684,6 +684,7 @@ abstract class Property implements Entity,
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
@@ -691,7 +692,6 @@ abstract class Property implements Entity,
 
 		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			return array_merge($data, [
-				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
 		} elseif (static::getType() === Types\PropertyType::DYNAMIC->value) {

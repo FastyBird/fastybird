@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -180,6 +181,14 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 		])]
 		private readonly int|float|null $step = null,
 		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\BoolValue(),
+			new ObjectMapper\Rules\IntValue(),
+			new ObjectMapper\Rules\FloatValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private readonly bool|float|int|string|null $default = null,
+		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -270,6 +279,25 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 	}
 
 	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
+	{
+		try {
+			return MetadataUtilities\Value::normalizeValue(
+				$this->default,
+				$this->getDataType(),
+				$this->getFormat(),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			return null;
+		}
+	}
+
+	/**
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getValueTransformer(): Uuid\UuidInterface|string|null
@@ -328,6 +356,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 
 			'device' => $this->getDevice()->toString(),

@@ -58,6 +58,7 @@ final class Dynamic extends Property
 		float|int|string|null $invalid = null,
 		int|null $scale = null,
 		int|float|null $step = null,
+		bool|float|int|string|null $default = null,
 		Uuid\UuidInterface|string|null $valueTransformer = null,
 		#[ObjectMapper\Rules\BoolValue()]
 		private readonly bool $settable = false,
@@ -84,6 +85,7 @@ final class Dynamic extends Property
 			$invalid,
 			$scale,
 			$step,
+			$default,
 			$valueTransformer,
 			$owner,
 			$createdAt,
