@@ -16,6 +16,10 @@ use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette\DI;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class BuilderTest extends DbTestCase
 {
 

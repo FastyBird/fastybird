@@ -11,6 +11,10 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DateTimeExtensionTest extends DbTestCase
 {
 

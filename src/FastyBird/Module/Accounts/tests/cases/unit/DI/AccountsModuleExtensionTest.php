@@ -17,6 +17,10 @@ use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class AccountsModuleExtensionTest extends DbTestCase
 {
 

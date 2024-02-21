@@ -15,6 +15,10 @@ use Nette;
 use Nette\Utils;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DeviceEntitiesTest extends DbTestCase
 {
 

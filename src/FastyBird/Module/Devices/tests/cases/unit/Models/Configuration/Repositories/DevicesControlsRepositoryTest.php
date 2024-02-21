@@ -14,6 +14,10 @@ use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DevicesControlsRepositoryTest extends DbTestCase
 {
 

@@ -18,6 +18,10 @@ use FastyBird\Module\Devices\Utilities;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DevicesModuleExtensionTest extends DbTestCase
 {
 

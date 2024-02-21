@@ -12,6 +12,10 @@ use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class ConnectorsRepositoryTest extends DbTestCase
 {
 

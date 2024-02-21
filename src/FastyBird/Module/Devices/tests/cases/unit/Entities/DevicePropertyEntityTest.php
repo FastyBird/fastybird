@@ -17,6 +17,10 @@ use Nette\Utils;
 use RuntimeException;
 use function assert;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DevicePropertyEntityTest extends DbTestCase
 {
 

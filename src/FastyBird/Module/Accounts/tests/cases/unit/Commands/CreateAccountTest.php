@@ -20,6 +20,10 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class CreateAccountTest extends DbTestCase
 {
 

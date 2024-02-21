@@ -12,6 +12,10 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DevicesModuleExtensionTest extends DbTestCase
 {
 

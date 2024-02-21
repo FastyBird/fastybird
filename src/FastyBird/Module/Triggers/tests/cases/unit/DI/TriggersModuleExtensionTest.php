@@ -17,6 +17,10 @@ use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
 use Nette;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class TriggersModuleExtensionTest extends DbTestCase
 {
 

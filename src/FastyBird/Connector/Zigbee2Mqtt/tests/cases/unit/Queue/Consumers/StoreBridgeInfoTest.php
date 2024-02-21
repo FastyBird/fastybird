@@ -19,6 +19,10 @@ use Ramsey\Uuid;
 use RuntimeException;
 use function assert;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class StoreBridgeInfoTest extends DbTestCase
 {
 

@@ -15,6 +15,10 @@ use Nette;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class RouterTest extends DbTestCase
 {
 
