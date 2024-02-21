@@ -104,7 +104,24 @@ final class Repository extends Models\Configuration\Repository
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
 					if ($metadata->getDiscriminatorValue() !== null) {
-						$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
+						if ($metadata->getSubClasses() !== []) {
+							$types = [
+								$metadata->getDiscriminatorValue(),
+							];
+
+							foreach ($metadata->getSubClasses() as $subClass) {
+								$subMetadata = $this->classMetadataFactory->getMetadataFor($subClass);
+
+								if ($subMetadata->getDiscriminatorValue() !== null) {
+									$types[] = $subMetadata->getDiscriminatorValue();
+								}
+							}
+
+							$space = $space->find('.[?(@.type in [' . ('"' . implode('","', $types) . '"') . '])]');
+
+						} else {
+							$space = $space->find('.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]');
+						}
 					}
 
 					$result = $queryObject->fetch($space);
