@@ -120,6 +120,9 @@ final class Repository extends Models\Configuration\Repository
 
 							$space = $space->find('.[?(@.type in [' . ('"' . implode('","', $types) . '"') . '])]');
 
+							// Reset type to root class
+							$type = Documents\Devices\Device::class;
+
 						} else {
 							$space = $space->find(
 								'.[?(@.type =~ /(?i).*^' . $metadata->getDiscriminatorValue() . '*$/)]',

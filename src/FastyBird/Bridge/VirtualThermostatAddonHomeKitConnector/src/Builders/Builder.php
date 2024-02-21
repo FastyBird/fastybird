@@ -823,7 +823,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::OFF->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::OFF->value,
+					VirtualThermostatTypes\HvacState::OFF->value,
 					0,
 					0,
 				];
@@ -831,7 +831,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::HEATING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::HEAT->value,
+					VirtualThermostatTypes\HvacState::HEATING->value,
 					1,
 					1,
 				];
@@ -839,7 +839,7 @@ class Builder
 
 			if ($property->getFormat()->hasItem(VirtualThermostatTypes\HvacState::COOLING->value)) {
 				$format[] = [
-					VirtualThermostatTypes\HvacMode::COOL->value,
+					VirtualThermostatTypes\HvacState::COOLING->value,
 					2,
 					2,
 				];
