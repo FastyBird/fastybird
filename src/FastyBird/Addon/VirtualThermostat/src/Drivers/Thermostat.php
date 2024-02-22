@@ -37,6 +37,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette\Utils;
 use React\Promise;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_filter;
@@ -54,6 +55,7 @@ use function is_string;
 use function max;
 use function min;
 use function preg_match;
+use function sprintf;
 
 /**
  * Thermostat service
@@ -597,6 +599,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
@@ -606,6 +610,8 @@ class Thermostat implements VirtualDrivers\Driver
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue,
 	): Promise\PromiseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
@@ -616,12 +622,11 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if ($channel === null) {
-				return Promise\reject(
+				$deferred->reject(
 					new Exceptions\InvalidArgument('Channel for provided property could not be found'),
 				);
-			}
 
-			if ($channel->getIdentifier() === Types\ChannelIdentifier::STATE->value) {
+			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::STATE->value) {
 				if ($property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE->value) {
 					if (
 						is_string($expectedValue)
@@ -643,9 +648,16 @@ class Thermostat implements VirtualDrivers\Driver
 							),
 						);
 
-						return Promise\resolve(true);
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+
 					} else {
-						return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+						$deferred->reject(new Exceptions\InvalidArgument('Provided value is not valid'));
 					}
 				} elseif ($property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE->value) {
 					if (
@@ -668,10 +680,22 @@ class Thermostat implements VirtualDrivers\Driver
 							),
 						);
 
-						return Promise\resolve(true);
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+
 					} else {
-						return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+						$deferred->reject(new Exceptions\InvalidArgument('Provided value is not valid'));
 					}
+				} else {
+					$deferred->reject(new Exceptions\InvalidArgument(sprintf(
+						'Provided property: %s is unsupported',
+						$property->getIdentifier(),
+					)));
 				}
 			} elseif (
 				preg_match(
@@ -701,26 +725,49 @@ class Thermostat implements VirtualDrivers\Driver
 						),
 					);
 
-					return Promise\resolve(true);
+					if ($matches['preset'] === $this->presetMode?->value) {
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					} else {
+						$deferred->resolve(true);
+					}
 				} else {
-					return Promise\reject(new Exceptions\InvalidArgument('Provided value is not valid'));
+					$deferred->reject(new Exceptions\InvalidArgument('Provided value is not valid'));
 				}
+			} else {
+				$deferred->reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
 			}
+		} else {
+			$deferred->reject(new Exceptions\InvalidArgument('Provided property type is unsupported'));
 		}
 
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
+		return $deferred->promise();
 	}
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws VirtualExceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function notifyState(
 		DevicesDocuments\Devices\Properties\Mapped|DevicesDocuments\Channels\Properties\Mapped $property,
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 	): Promise\PromiseInterface
 	{
+		$deferred = new Promise\Deferred();
+
 		if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
@@ -731,12 +778,9 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if ($channel === null) {
-				return Promise\reject(
-					new Exceptions\InvalidArgument('Channel for provided property could not be found'),
-				);
-			}
+				$deferred->reject(new Exceptions\InvalidArgument('Channel for provided property could not be found'));
 
-			if ($channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value) {
+			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value) {
 				if (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -746,7 +790,13 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->heaters[$property->getId()->toString()] = $actualValue;
 
-					return Promise\resolve(true);
+					$this->process()
+						->then(static function () use ($deferred): void {
+							$deferred->resolve(true);
+						})
+						->catch(static function (Throwable $ex) use ($deferred): void {
+							$deferred->reject($ex);
+						});
 				} elseif (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -756,7 +806,18 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->coolers[$property->getId()->toString()] = $actualValue;
 
-					return Promise\resolve(true);
+					$this->process()
+						->then(static function () use ($deferred): void {
+							$deferred->resolve(true);
+						})
+						->catch(static function (Throwable $ex) use ($deferred): void {
+							$deferred->reject($ex);
+						});
+				} else {
+					$deferred->reject(new Exceptions\InvalidArgument(sprintf(
+						'Provided actor type: %s is unsupported',
+						$property->getIdentifier(),
+					)));
 				}
 			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value) {
 				if (
@@ -768,7 +829,13 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->currentTemperature[$property->getId()->toString()] = floatval($actualValue);
 
-					return Promise\resolve(true);
+					$this->process()
+						->then(static function () use ($deferred): void {
+							$deferred->resolve(true);
+						})
+						->catch(static function (Throwable $ex) use ($deferred): void {
+							$deferred->reject($ex);
+						});
 				} elseif (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -779,9 +846,15 @@ class Thermostat implements VirtualDrivers\Driver
 					if ($this->hasFloorTemperatureSensors) {
 						$this->currentFloorTemperature[$property->getId()->toString()] = floatval($actualValue);
 
-						return Promise\resolve(true);
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
 					} else {
-						return Promise\reject(
+						$deferred->reject(
 							new Exceptions\InvalidArgument('Thermostat does not support floor temperature sensors'),
 						);
 					}
@@ -795,9 +868,15 @@ class Thermostat implements VirtualDrivers\Driver
 					if ($this->hasOpeningsSensors) {
 						$this->openingsState[$property->getId()->toString()] = $actualValue;
 
-						return Promise\resolve(true);
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
 					} else {
-						return Promise\reject(
+						$deferred->reject(
 							new Exceptions\InvalidArgument('Thermostat does not support openings sensors'),
 						);
 					}
@@ -817,11 +896,20 @@ class Thermostat implements VirtualDrivers\Driver
 							new Exceptions\InvalidArgument('Thermostat does not support humidity sensors sensors'),
 						);
 					}
+				} else {
+					$deferred->reject(new Exceptions\InvalidArgument(sprintf(
+						'Provided sensor type: %s is unsupported',
+						$property->getIdentifier(),
+					)));
 				}
+			} else {
+				$deferred->reject(new Exceptions\InvalidArgument('Provided property channel is unsupported'));
 			}
+		} else {
+			$deferred->reject(new Exceptions\InvalidArgument('Provided property type is unsupported'));
 		}
 
-		return Promise\reject(new Exceptions\InvalidArgument('Provided property is unsupported'));
+		return $deferred->promise();
 	}
 
 	/**
