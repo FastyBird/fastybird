@@ -68,6 +68,8 @@ use function sprintf;
 class Thermostat implements VirtualDrivers\Driver
 {
 
+	private const PROCESSING_DEBOUNCE_DELAY = 120.0;
+
 	/** @var array<string, bool|null> */
 	private array $heaters = [];
 
@@ -102,6 +104,8 @@ class Thermostat implements VirtualDrivers\Driver
 	private bool $connected = false;
 
 	private DateTimeInterface|null $connectedAt = null;
+
+	private DateTimeInterface|null $lastProcessedTime = null;
 
 	public function __construct(
 		private readonly DevicesDocuments\Devices\Device $device,
@@ -371,6 +375,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 */
 	public function process(): Promise\PromiseInterface
 	{
+		$this->lastProcessedTime = $this->dateTimeFactory->getNow();
+
 		if ($this->hvacMode === null || $this->presetMode === null) {
 			$this->stop('Thermostat mode is not configured');
 
@@ -790,13 +796,23 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->heaters[$property->getId()->toString()] = $actualValue;
 
-					$this->process()
-						->then(static function () use ($deferred): void {
-							$deferred->resolve(true);
-						})
-						->catch(static function (Throwable $ex) use ($deferred): void {
-							$deferred->reject($ex);
-						});
+					if (
+						$this->lastProcessedTime instanceof DateTimeInterface
+						&& (
+							$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+							< self::PROCESSING_DEBOUNCE_DELAY
+						)
+					) {
+						$deferred->resolve(true);
+					} else {
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					}
 				} elseif (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -806,13 +822,23 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->coolers[$property->getId()->toString()] = $actualValue;
 
-					$this->process()
-						->then(static function () use ($deferred): void {
-							$deferred->resolve(true);
-						})
-						->catch(static function (Throwable $ex) use ($deferred): void {
-							$deferred->reject($ex);
-						});
+					if (
+						$this->lastProcessedTime instanceof DateTimeInterface
+						&& (
+							$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+							< self::PROCESSING_DEBOUNCE_DELAY
+						)
+					) {
+						$deferred->resolve(true);
+					} else {
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					}
 				} else {
 					$deferred->reject(new Exceptions\InvalidArgument(sprintf(
 						'Provided actor type: %s is unsupported',
@@ -829,13 +855,23 @@ class Thermostat implements VirtualDrivers\Driver
 				) {
 					$this->currentTemperature[$property->getId()->toString()] = floatval($actualValue);
 
-					$this->process()
-						->then(static function () use ($deferred): void {
-							$deferred->resolve(true);
-						})
-						->catch(static function (Throwable $ex) use ($deferred): void {
-							$deferred->reject($ex);
-						});
+					if (
+						$this->lastProcessedTime instanceof DateTimeInterface
+						&& (
+							$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+							< self::PROCESSING_DEBOUNCE_DELAY
+						)
+					) {
+						$deferred->resolve(true);
+					} else {
+						$this->process()
+							->then(static function () use ($deferred): void {
+								$deferred->resolve(true);
+							})
+							->catch(static function (Throwable $ex) use ($deferred): void {
+								$deferred->reject($ex);
+							});
+					}
 				} elseif (
 					Utils\Strings::startsWith(
 						$property->getIdentifier(),
@@ -846,13 +882,23 @@ class Thermostat implements VirtualDrivers\Driver
 					if ($this->hasFloorTemperatureSensors) {
 						$this->currentFloorTemperature[$property->getId()->toString()] = floatval($actualValue);
 
-						$this->process()
-							->then(static function () use ($deferred): void {
-								$deferred->resolve(true);
-							})
-							->catch(static function (Throwable $ex) use ($deferred): void {
-								$deferred->reject($ex);
-							});
+						if (
+							$this->lastProcessedTime instanceof DateTimeInterface
+							&& (
+								$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+								< self::PROCESSING_DEBOUNCE_DELAY
+							)
+						) {
+							$deferred->resolve(true);
+						} else {
+							$this->process()
+								->then(static function () use ($deferred): void {
+									$deferred->resolve(true);
+								})
+								->catch(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								});
+						}
 					} else {
 						$deferred->reject(
 							new Exceptions\InvalidArgument('Thermostat does not support floor temperature sensors'),
@@ -868,13 +914,23 @@ class Thermostat implements VirtualDrivers\Driver
 					if ($this->hasOpeningsSensors) {
 						$this->openingsState[$property->getId()->toString()] = $actualValue;
 
-						$this->process()
-							->then(static function () use ($deferred): void {
-								$deferred->resolve(true);
-							})
-							->catch(static function (Throwable $ex) use ($deferred): void {
-								$deferred->reject($ex);
-							});
+						if (
+							$this->lastProcessedTime instanceof DateTimeInterface
+							&& (
+								$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+								< self::PROCESSING_DEBOUNCE_DELAY
+							)
+						) {
+							$deferred->resolve(true);
+						} else {
+							$this->process()
+								->then(static function () use ($deferred): void {
+									$deferred->resolve(true);
+								})
+								->catch(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								});
+						}
 					} else {
 						$deferred->reject(
 							new Exceptions\InvalidArgument('Thermostat does not support openings sensors'),
@@ -890,9 +946,25 @@ class Thermostat implements VirtualDrivers\Driver
 					if ($this->hasHumiditySensors) {
 						$this->currentHumidity[$property->getId()->toString()] = intval($actualValue);
 
-						return Promise\resolve(true);
+						if (
+							$this->lastProcessedTime instanceof DateTimeInterface
+							&& (
+								$this->dateTimeFactory->getNow()->getTimestamp() - $this->lastProcessedTime->getTimestamp()
+								< self::PROCESSING_DEBOUNCE_DELAY
+							)
+						) {
+							$deferred->resolve(true);
+						} else {
+							$this->process()
+								->then(static function () use ($deferred): void {
+									$deferred->resolve(true);
+								})
+								->catch(static function (Throwable $ex) use ($deferred): void {
+									$deferred->reject($ex);
+								});
+						}
 					} else {
-						return Promise\reject(
+						$deferred->reject(
 							new Exceptions\InvalidArgument('Thermostat does not support humidity sensors sensors'),
 						);
 					}
