@@ -226,8 +226,6 @@ final class Constants
 
 	public const MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.action.channel.property';
 
-	public const MESSAGE_BUS_TRIGGER_CONTROL_ACTION_ROUTING_KEY = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.action.trigger.control';
-
 	public const MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING
 		= [
 			Entities\Connectors\Connector::class => self::MESSAGE_BUS_CONNECTOR_DOCUMENT_CREATED_ROUTING_KEY,

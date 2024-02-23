@@ -30,6 +30,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
+use Nette\Caching;
 use Nette\Utils;
 use Throwable;
 use function in_array;
@@ -46,10 +47,24 @@ use function React\Async\await;
 final class State implements ExchangeConsumers\Consumer
 {
 
-	private const PROPERTIES_ACTIONS_ROUTING_KEYS = [
+	private const PROPERTIES_STATES_ACTIONS_ROUTING_KEYS = [
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
+	];
+
+	private const PROPERTIES_STATES_ROUTING_KEYS = [
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
+
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
+
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
 	];
 
 	public function __construct(
@@ -60,6 +75,7 @@ final class State implements ExchangeConsumers\Consumer
 		private readonly Models\States\Async\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly Caching\Cache $stateCache,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
 	)
 	{
@@ -83,10 +99,45 @@ final class State implements ExchangeConsumers\Consumer
 			return;
 		}
 
-		if (!in_array($routingKey, self::PROPERTIES_ACTIONS_ROUTING_KEYS, true)) {
-			return;
+		if (in_array($routingKey, self::PROPERTIES_STATES_ACTIONS_ROUTING_KEYS, true)) {
+			$this->handlePropertyStateAction($document, $source, $routingKey);
 		}
 
+		if (
+			in_array($routingKey, self::PROPERTIES_STATES_ROUTING_KEYS, true)
+			&& (
+				$document instanceof Documents\Connectors\Properties\Property
+				|| $document instanceof Documents\Devices\Properties\Property
+				|| $document instanceof Documents\Channels\Properties\Property
+			)
+		) {
+			$this->handlePropertyState($document);
+		}
+	}
+
+	private function handlePropertyState(
+		Documents\Connectors\Properties\Property|Documents\Devices\Properties\Property|Documents\Channels\Properties\Property $document,
+	): void
+	{
+		$this->stateCache->clean([
+			Caching\Cache::Tags => [$document->getId()->toString()],
+		]);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ExchangeExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\MalformedInput
+	 */
+	private function handlePropertyStateAction(
+		MetadataDocuments\Document|null $document,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
+	): void
+	{
 		if ($document instanceof Documents\Actions\Properties\Connector) {
 			if ($document->getAction() === Types\PropertyAction::SET) {
 				$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();

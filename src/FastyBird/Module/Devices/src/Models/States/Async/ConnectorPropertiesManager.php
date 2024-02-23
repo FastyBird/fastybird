@@ -31,6 +31,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
+use Nette\Caching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -39,6 +40,7 @@ use React\Promise;
 use Throwable;
 use function array_map;
 use function array_merge;
+use function assert;
 use function boolval;
 use function is_array;
 use function is_bool;
@@ -63,6 +65,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	public function __construct(
 		private readonly bool $useExchange,
+		private readonly Caching\Cache $cache,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
@@ -106,7 +109,21 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			return $this->readState($property);
+			try {
+				$document = $this->cache->load(
+					'read_' . $property->getId()->toString(),
+					async(function (&$dependencies) use ($property) {
+						$dependencies[Caching\Cache::Tags] = [$property->getId()->toString()];
+
+						return await($this->readState($property));
+					}),
+				);
+				assert($document instanceof Documents\States\Properties\Connector || $document === null);
+
+				return Promise\resolve($document);
+			} catch (Throwable $ex) {
+				return Promise\reject($ex);
+			}
 		}
 	}
 
@@ -677,6 +694,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 								return;
 							}
 						}
+
+						$this->cache->clean([
+							Caching\Cache::Tags => [$property->getId()->toString()],
+						]);
 
 						$readValue = $this->convertStoredState($property, null, $result, true);
 						$getValue = $this->convertStoredState($property, null, $result, false);

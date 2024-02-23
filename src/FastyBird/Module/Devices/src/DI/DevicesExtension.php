@@ -23,6 +23,7 @@ use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
@@ -37,6 +38,7 @@ use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
+use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -317,6 +319,15 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * MODELS - STATES
 		 */
 
+		$stateCache = $builder->addDefinition(
+			$this->prefix('models.states.cache'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
+			]);
+
 		// CONNECTORS
 		$builder->addDefinition(
 			$this->prefix('models.states.repositories.connectorsProperties'),
@@ -410,6 +421,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -431,6 +443,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -452,6 +465,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -807,6 +821,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Consumers\State::class)
 			->setArguments([
 				'logger' => $logger,
+				'stateCache' => $stateCache,
 			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 

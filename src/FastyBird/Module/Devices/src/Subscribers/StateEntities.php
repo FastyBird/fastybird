@@ -45,6 +45,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	use Nette\SmartObject;
 
+	private const ACTION_CREATED = 'created';
+
+	private const ACTION_UPDATED = 'updated';
+
+	private const ACTION_DELETED = 'deleted';
+
 	private bool $useAsync = false;
 
 	public function __construct(
@@ -92,6 +98,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$event->getProperty(),
 			$event->getRead(),
 			$event->getGet(),
+			self::ACTION_CREATED,
 		);
 	}
 
@@ -116,6 +123,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$event->getProperty(),
 			$event->getRead(),
 			$event->getGet(),
+			self::ACTION_UPDATED,
 		);
 	}
 
@@ -147,10 +155,30 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState = null,
+		string $action,
 	): Promise\PromiseInterface|bool
 	{
 		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
-			$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
 
 			$document = $this->documentFactory->create(
 				Documents\States\Properties\Connector::class,
@@ -172,7 +200,26 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$property instanceof Documents\Devices\Properties\Dynamic
 			|| $property instanceof Documents\Devices\Properties\Mapped
 		) {
-			$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
 
 			$document = $this->documentFactory->create(
 				Documents\States\Properties\Device::class,
@@ -191,7 +238,26 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 
 		} else {
-			$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY;
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
 
 			$document = $this->documentFactory->create(
 				Documents\States\Properties\Channel::class,

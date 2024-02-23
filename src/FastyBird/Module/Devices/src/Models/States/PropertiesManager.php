@@ -52,7 +52,7 @@ abstract class PropertiesManager
 
 	public function __construct(
 		protected readonly Devices\Logger $logger,
-		private readonly ObjectMapper\Processing\Processor $stateMapper,
+		protected readonly ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
 	}
