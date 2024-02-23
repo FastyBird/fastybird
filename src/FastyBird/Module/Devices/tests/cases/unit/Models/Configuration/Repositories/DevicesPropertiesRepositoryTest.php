@@ -31,9 +31,6 @@ final class DevicesPropertiesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
@@ -95,9 +92,6 @@ final class DevicesPropertiesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Properties\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDeviceProperties();
@@ -181,9 +175,6 @@ final class DevicesPropertiesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllByDevice(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();

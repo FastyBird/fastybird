@@ -29,6 +29,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
+use Nette\Caching;
 use React\Promise;
 use Symfony\Component\EventDispatcher;
 
@@ -55,6 +56,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly Caching\Cache $stateCache,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -92,6 +94,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityCreated|Events\DevicePropertyStateEntityCreated|Events\ChannelPropertyStateEntityCreated $event,
 	): void
 	{
+		$this->cleanCache($event->getProperty());
+
 		$this->publishEntity(
 			$this->useAsync,
 			$event->getSource(),
@@ -117,6 +121,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
+		$this->cleanCache($event->getProperty());
+
 		$this->publishEntity(
 			$this->useAsync,
 			$event->getSource(),
@@ -135,6 +141,15 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public function disableAsync(): void
 	{
 		$this->useAsync = false;
+	}
+
+	private function cleanCache(
+		Documents\Connectors\Properties\Property|Documents\Devices\Properties\Property|Documents\Channels\Properties\Property $document,
+	): void
+	{
+		$this->stateCache->clean([
+			Caching\Cache::Tags => [$document->getId()->toString()],
+		]);
 	}
 
 	/**

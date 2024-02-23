@@ -31,9 +31,6 @@ final class ChannelsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannelControls();
@@ -78,9 +75,6 @@ final class ChannelsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannelControls();
@@ -100,9 +94,6 @@ final class ChannelsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllByChannel(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();

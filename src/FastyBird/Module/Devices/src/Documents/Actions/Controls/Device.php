@@ -59,6 +59,11 @@ final readonly class Device implements MetadataDocuments\Document
 	{
 	}
 
+	public function getId(): Uuid\UuidInterface
+	{
+		return $this->control;
+	}
+
 	public function getAction(): Types\ControlAction
 	{
 		return $this->action;

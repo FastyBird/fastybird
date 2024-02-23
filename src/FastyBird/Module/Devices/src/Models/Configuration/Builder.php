@@ -15,20 +15,18 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
-use Contributte\Cache;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Types;
 use Flow\JSONPath;
 use Nette\Caching;
 use Orisai\DataSources;
 use Throwable;
 use TypeError;
 use ValueError;
+use function array_key_exists;
 use function assert;
 use function is_string;
 
@@ -43,11 +41,8 @@ use function is_string;
 final class Builder
 {
 
-	private JSONPath\JSONPath|null $configuration = null;
-
-	private Caching\Cache $cache;
-
-	private int $buildRetry = 0;
+	/** @var array<string, JSONPath\JSONPath> */
+	private array $configuration = [];
 
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
@@ -60,59 +55,40 @@ final class Builder
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
 		private readonly DataSources\DefaultDataSource $dataSource,
-		private readonly Cache\CacheFactory $cacheFactory,
+		private readonly Caching\Cache $cache,
 	)
 	{
-		$this->cache = $this->cacheFactory->create(
-			MetadataTypes\Sources\Module::DEVICES->value . '_configuration',
-		);
-	}
-
-	public function clean(): void
-	{
-		$this->cache->clean([
-			Caching\Cache::All => true,
-		]);
-
-		$this->configuration = null;
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function load(bool $force = false): JSONPath\JSONPath
+	public function load(Types\ConfigurationType $type, bool $force = false): JSONPath\JSONPath
 	{
-		if ($this->configuration === null || $force) {
+		if (!array_key_exists($type->value, $this->configuration) || $force) {
 			try {
 				if ($force) {
-					$this->cache->remove(Devices\Constants::CONFIGURATION_KEY);
+					$this->cache->remove($type->value);
 				}
 
 				$data = $this->cache->load(
-					Devices\Constants::CONFIGURATION_KEY,
-					fn (): string => $this->build(),
+					$type->value,
+					fn (): string => $this->build($type),
+					[
+						Caching\Cache::Tags => [$type->value],
+					],
 				);
 				assert(is_string($data));
 
 				$decoded = $this->dataSource->decode($data, 'json');
 			} catch (Throwable $ex) {
-				if ($this->buildRetry < 1) {
-					$this->buildRetry++;
-
-					$this->cache->clean();
-
-					return $this->load($force);
-				}
-
 				throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
 			}
 
-			$this->configuration = new JSONPath\JSONPath($decoded);
+			$this->configuration[$type->value] = new JSONPath\JSONPath($decoded);
 		}
 
-		$this->buildRetry = 0;
-
-		return $this->configuration;
+		return $this->configuration[$type->value];
 	}
 
 	/**
@@ -123,73 +99,45 @@ final class Builder
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function build(): string
+	private function build(Types\ConfigurationType $type): string
 	{
-		$data = [
-			Devices\Constants::DATA_STORAGE_CONNECTORS_KEY => [],
-			Devices\Constants::DATA_STORAGE_DEVICES_KEY => [],
-			Devices\Constants::DATA_STORAGE_CHANNELS_KEY => [],
-			Devices\Constants::DATA_STORAGE_PROPERTIES_KEY => [],
-			Devices\Constants::DATA_STORAGE_CONTROLS_KEY => [],
-		];
+		$data = [];
 
-		foreach ($this->connectorsRepository->findAll() as $connector) {
-			$data[Devices\Constants::DATA_STORAGE_CONNECTORS_KEY][] = $connector->toArray();
-
-			$findConnectorProperties = new Queries\Entities\FindConnectorProperties();
-			$findConnectorProperties->forConnector($connector);
-
-			foreach ($this->connectorsPropertiesRepository->findAllBy($findConnectorProperties) as $property) {
-				$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
+		if ($type === Types\ConfigurationType::CONNECTORS) {
+			foreach ($this->connectorsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
 			}
-
-			$findConnectorControls = new Queries\Entities\FindConnectorControls();
-			$findConnectorControls->forConnector($connector);
-
-			foreach ($this->connectorsControlsRepository->findAllBy($findConnectorControls) as $control) {
-				$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
+		} elseif ($type === Types\ConfigurationType::CONNECTORS_PROPERTIES) {
+			foreach ($this->connectorsPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
 			}
-
-			$findConnectorDevices = new Queries\Entities\FindDevices();
-			$findConnectorDevices->forConnector($connector);
-
-			foreach ($this->devicesRepository->findAllBy($findConnectorDevices) as $device) {
-				$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
-
-				$findDeviceProperties = new Queries\Entities\FindDeviceProperties();
-				$findDeviceProperties->forDevice($device);
-
-				foreach ($this->devicesPropertiesRepository->findAllBy($findDeviceProperties) as $property) {
-					$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-				}
-
-				$findDeviceControls = new Queries\Entities\FindDeviceControls();
-				$findDeviceControls->forDevice($device);
-
-				foreach ($this->devicesControlsRepository->findAllBy($findDeviceControls) as $control) {
-					$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-				}
-
-				$findDeviceChannels = new Queries\Entities\FindChannels();
-				$findDeviceChannels->forDevice($device);
-
-				foreach ($this->channelsRepository->findAllBy($findDeviceChannels) as $channel) {
-					$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
-
-					$findChannelProperties = new Queries\Entities\FindChannelProperties();
-					$findChannelProperties->forChannel($channel);
-
-					foreach ($this->channelsPropertiesRepository->findAllBy($findChannelProperties) as $property) {
-						$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-					}
-
-					$findChannelControls = new Queries\Entities\FindChannelControls();
-					$findChannelControls->forChannel($channel);
-
-					foreach ($this->channelsControlsRepository->findAllBy($findChannelControls) as $control) {
-						$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-					}
-				}
+		} elseif ($type === Types\ConfigurationType::CONNECTORS_CONTROLS) {
+			foreach ($this->connectorsControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES) {
+			foreach ($this->devicesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES_PROPERTIES) {
+			foreach ($this->devicesPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES_CONTROLS) {
+			foreach ($this->devicesControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS) {
+			foreach ($this->channelsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS_PROPERTIES) {
+			foreach ($this->channelsPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS_CONTROLS) {
+			foreach ($this->channelsControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
 			}
 		}
 

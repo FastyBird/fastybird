@@ -98,6 +98,40 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setAutowired(false);
 
 		/**
+		 * MODULE CACHING
+		 */
+
+		$configurationRepositoryCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.repository'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_repository',
+			])
+			->setAutowired(false);
+
+		$configurationBuilderCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_builder',
+			])
+			->setAutowired(false);
+
+		$stateCache = $builder->addDefinition(
+			$this->prefix('caching.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
+			])
+			->setAutowired(false);
+
+		/**
 		 * ROUTE MIDDLEWARES & ROUTING
 		 */
 
@@ -256,6 +290,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\Configuration\Builder::class)
 			->setArguments([
 				'dataSource' => $dataSource,
+				'cache' => $configurationBuilderCache,
 			]);
 
 		// CONNECTORS
@@ -263,70 +298,88 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.configuration.repositories.connectors'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Repository::class);
+			->setType(Models\Configuration\Connectors\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Properties\Repository::class);
+			->setType(Models\Configuration\Connectors\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Controls\Repository::class);
+			->setType(Models\Configuration\Connectors\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		// DEVICES
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devices'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Repository::class);
+			->setType(Models\Configuration\Devices\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Properties\Repository::class);
+			->setType(Models\Configuration\Devices\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Controls\Repository::class);
+			->setType(Models\Configuration\Devices\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		// CHANNELS
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channels'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Repository::class);
+			->setType(Models\Configuration\Channels\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Properties\Repository::class);
+			->setType(Models\Configuration\Channels\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channelsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Controls\Repository::class);
+			->setType(Models\Configuration\Channels\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		/**
 		 * MODELS - STATES
 		 */
-
-		$stateCache = $builder->addDefinition(
-			$this->prefix('models.states.cache'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Caching\Cache::class)
-			->setArguments([
-				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
-			]);
 
 		// CONNECTORS
 		$builder->addDefinition(
@@ -474,10 +527,17 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ModuleEntities::class);
+			->setType(Subscribers\ModuleEntities::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\StateEntities::class);
+			->setType(Subscribers\StateEntities::class)
+			->setArguments([
+				'stateCache' => $stateCache,
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Connector::class);
@@ -825,10 +885,21 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		$builder->addDefinition(
-			$this->prefix('exchange.consumer.configuration'),
+			$this->prefix('exchange.consumer.moduleEntities'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Cache::class)
+			->setType(Consumers\ModuleEntities::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.stateEntities'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\StateEntities::class)
 			->setArguments([
 				'stateCache' => $stateCache,
 			])

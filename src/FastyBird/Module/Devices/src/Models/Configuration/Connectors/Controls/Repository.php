@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Controls;
 
-use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use Nette\Caching;
 use Ramsey\Uuid;
 use stdClass;
 use Throwable;
@@ -39,12 +39,11 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
-		Models\Configuration\Builder $builder,
-		Cache\CacheFactory $cacheFactory,
+		private readonly Models\Configuration\Builder $builder,
+		private readonly Caching\Cache $cache,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
-		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
@@ -72,10 +71,9 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject),
-				function () use ($queryObject): Documents\Connectors\Controls\Control|false {
+				function (&$dependencies) use ($queryObject): Documents\Connectors\Controls\Control|false {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CONNECTORS_CONTROLS);
 
 					$result = $queryObject->fetch($space);
 
@@ -83,10 +81,16 @@ final class Repository extends Models\Configuration\Repository
 						return false;
 					}
 
-					return $this->documentFactory->create(
+					$document = $this->documentFactory->create(
 						Documents\Connectors\Controls\Control::class,
 						$result[0],
 					);
+
+					$dependencies = [
+						Caching\Cache::Tags => [$document->getId()->toString()],
+					];
+
+					return $document;
 				},
 			);
 		} catch (Throwable $ex) {
@@ -118,10 +122,9 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject),
-				function () use ($queryObject): array {
+				function (&$dependencies) use ($queryObject): array {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_CONTROLS_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CONNECTORS_CONTROLS);
 
 					$result = $queryObject->fetch($space);
 
@@ -129,13 +132,22 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_map(
+					$documents = array_map(
 						fn (stdClass $item): Documents\Connectors\Controls\Control => $this->documentFactory->create(
 							Documents\Connectors\Controls\Control::class,
 							$item,
 						),
 						$result,
 					);
+
+					$dependencies = [
+						Caching\Cache::Tags => array_map(
+							static fn (Documents\Connectors\Controls\Control $document): string => $document->getId()->toString(),
+							$documents,
+						),
+					];
+
+					return $documents;
 				},
 			);
 		} catch (Throwable $ex) {

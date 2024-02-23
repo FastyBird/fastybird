@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Commands;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Models;
 use Nette\Localization;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -40,7 +39,6 @@ class Install extends Console\Command\Command
 	public const NAME = 'fb:devices-module:install';
 
 	public function __construct(
-		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Devices\Logger $logger,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -93,8 +91,6 @@ class Install extends Console\Command\Command
 
 		try {
 			$this->initializeDatabase($io, $input, $output);
-
-			$this->configurationBuilder->clean();
 
 			if ($input->getOption('quiet') === false) {
 				$io->success($this->translator->translate('//devices-module.cmd.install.messages.success'));

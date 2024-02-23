@@ -265,20 +265,4 @@ final class Constants
 			Entities\Channels\Controls\Control::class => self::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY,
 		];
 
-	/**
-	 * MODULE CONFIGURATION KEYS
-	 */
-
-	public const CONFIGURATION_KEY = 'devices-module-data.json';
-
-	public const DATA_STORAGE_PROPERTIES_KEY = 'properties';
-
-	public const DATA_STORAGE_CONTROLS_KEY = 'controls';
-
-	public const DATA_STORAGE_CONNECTORS_KEY = 'connectors';
-
-	public const DATA_STORAGE_DEVICES_KEY = 'devices';
-
-	public const DATA_STORAGE_CHANNELS_KEY = 'channels';
-
 }

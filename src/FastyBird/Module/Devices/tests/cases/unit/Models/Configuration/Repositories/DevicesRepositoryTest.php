@@ -31,9 +31,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testFindOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$entity = $repository->find(Uuid\Uuid::fromString('69786d15-fd0c-4d9f-9378-33287c2009fa'));
@@ -53,9 +50,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -152,9 +146,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -174,9 +165,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllByParent(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -205,9 +193,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllByChild(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -236,9 +221,6 @@ final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllWithChannels(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();

@@ -28,7 +28,9 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Types;
 use Nette;
+use Nette\Caching;
 use Nette\Utils;
 use ReflectionClass;
 use function count;
@@ -58,7 +60,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
 		private readonly Models\States\Async\ConnectorPropertiesManager $asyncConnectorPropertiesStatesManager,
 		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
@@ -68,6 +69,8 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
+		private readonly Caching\Cache $configurationBuilderCache,
+		private readonly Caching\Cache $configurationRepositoryCache,
 	)
 	{
 	}
@@ -105,7 +108,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->configurationBuilder->clean();
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -143,7 +146,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->configurationBuilder->clean();
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
@@ -206,7 +209,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
 
-		$this->configurationBuilder->clean();
+		$this->cleanCache($entity);
 	}
 
 	public function enableAsync(): void
@@ -217,6 +220,51 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function disableAsync(): void
 	{
 		$this->useAsync = false;
+	}
+
+	private function cleanCache(Entities\Entity $entity): void
+	{
+		if ($entity instanceof Entities\Connectors\Connector) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
+			]);
+		} elseif ($entity instanceof Entities\Connectors\Properties\Property) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
+			]);
+		} elseif ($entity instanceof Entities\Connectors\Controls\Control) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
+			]);
+		} elseif ($entity instanceof Entities\Devices\Device) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
+			]);
+		} elseif ($entity instanceof Entities\Devices\Properties\Property) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
+			]);
+		} elseif ($entity instanceof Entities\Devices\Controls\Control) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
+			]);
+		} elseif ($entity instanceof Entities\Channels\Channel) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
+			]);
+		} elseif ($entity instanceof Entities\Channels\Properties\Property) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
+			]);
+		} elseif ($entity instanceof Entities\Channels\Controls\Control) {
+			$this->configurationBuilderCache->clean([
+				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
+			]);
+		}
+
+		$this->configurationRepositoryCache->clean([
+			Caching\Cache::Tags => [$entity->getId()->toString()],
+		]);
 	}
 
 	/**

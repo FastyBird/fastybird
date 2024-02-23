@@ -48,6 +48,10 @@ class MemoryStorage implements Caching\Storage
 	 */
 	public function write(string $key, mixed $data, array $dependencies = []): void
 	{
+		if ($data === null || (is_array($data) && $data === [])) {
+			return;
+		}
+
 		$this->data[$key] = [
 			self::DATA_KEY => $data,
 			self::DEPENDENCIES_KEY => $dependencies,

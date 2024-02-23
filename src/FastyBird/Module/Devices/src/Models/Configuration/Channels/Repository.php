@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels;
 
-use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use Nette\Caching;
 use Ramsey\Uuid;
 use stdClass;
 use Throwable;
@@ -43,13 +43,12 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
-		Models\Configuration\Builder $builder,
-		Cache\CacheFactory $cacheFactory,
+		private readonly Models\Configuration\Builder $builder,
+		private readonly Caching\Cache $cache,
 		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
-		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
@@ -97,10 +96,9 @@ final class Repository extends Models\Configuration\Repository
 			/** @phpstan-var T|null $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): Documents\Channels\Channel|null {
+				function (&$dependencies) use ($queryObject, $type): Documents\Channels\Channel|null {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CHANNELS);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -142,6 +140,10 @@ final class Repository extends Models\Configuration\Repository
 						throw new Exceptions\InvalidState('Could not load document');
 					}
 
+					$dependencies = [
+						Caching\Cache::Tags => [$document->getId()->toString()],
+					];
+
 					return $document;
 				},
 			);
@@ -171,12 +173,11 @@ final class Repository extends Models\Configuration\Repository
 			/** @phpstan-var array<T> $documents */
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): array {
+				function (&$dependencies) use ($queryObject, $type): array {
 					$children = [];
 
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_CHANNELS_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CHANNELS);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -196,7 +197,7 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_merge(
+					$documents = array_merge(
 						array_map(
 							fn (stdClass $item): Documents\Channels\Channel => $this->documentFactory->create(
 								$type,
@@ -206,6 +207,15 @@ final class Repository extends Models\Configuration\Repository
 						),
 						$children,
 					);
+
+					$dependencies = [
+						Caching\Cache::Tags => array_map(
+							static fn (Documents\Channels\Channel $document): string => $document->getId()->toString(),
+							$documents,
+						),
+					];
+
+					return $documents;
 				},
 			);
 		} catch (Throwable $ex) {

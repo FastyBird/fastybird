@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Properties;
 
-use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use Nette\Caching;
 use Ramsey\Uuid;
 use stdClass;
 use Throwable;
@@ -42,13 +42,12 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
-		Models\Configuration\Builder $builder,
-		Cache\CacheFactory $cacheFactory,
+		private readonly Models\Configuration\Builder $builder,
+		private readonly Caching\Cache $cache,
 		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
-		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
@@ -95,10 +94,9 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): Documents\Connectors\Properties\Property|false {
+				function (&$dependencies) use ($queryObject, $type): Documents\Connectors\Properties\Property|null {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CONNECTORS_PROPERTIES);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -109,7 +107,7 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return false;
+						return null;
 					}
 
 					foreach (
@@ -122,20 +120,24 @@ final class Repository extends Models\Configuration\Repository
 							$document = $this->documentFactory->create($class, $result[0]);
 							assert($document instanceof $type);
 
+							$dependencies = [
+								Caching\Cache::Tags => [$document->getId()->toString()],
+							];
+
 							return $document;
 						} catch (Throwable) {
 							// Just ignore it
 						}
 					}
 
-					return false;
+					return null;
 				},
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		if ($document === false) {
+		if ($document === null) {
 			return null;
 		}
 
@@ -164,10 +166,9 @@ final class Repository extends Models\Configuration\Repository
 		try {
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): array {
+				function (&$dependencies) use ($queryObject, $type): array {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CONNECTORS_PROPERTIES);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -181,7 +182,7 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_filter(
+					$documents = array_filter(
 						array_map(
 							function (stdClass $item): Documents\Connectors\Properties\Property|null {
 								foreach (
@@ -203,6 +204,15 @@ final class Repository extends Models\Configuration\Repository
 						),
 						static fn ($item): bool => $item instanceof $type,
 					);
+
+					$dependencies = [
+						Caching\Cache::Tags => array_map(
+							static fn (Documents\Connectors\Properties\Property $document): string => $document->getId()->toString(),
+							$documents,
+						),
+					];
+
+					return $documents;
 				},
 			);
 		} catch (Throwable $ex) {

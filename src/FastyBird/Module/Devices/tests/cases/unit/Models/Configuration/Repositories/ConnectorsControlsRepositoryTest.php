@@ -31,9 +31,6 @@ final class ConnectorsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectorControls();
@@ -78,9 +75,6 @@ final class ConnectorsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectorControls();
@@ -100,9 +94,6 @@ final class ConnectorsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testReadAllByConnector(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectors();

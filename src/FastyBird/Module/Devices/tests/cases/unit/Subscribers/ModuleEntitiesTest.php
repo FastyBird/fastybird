@@ -14,6 +14,7 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Tests;
+use Nette\Caching;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid;
@@ -54,11 +55,12 @@ final class ModuleEntitiesTest extends TestCase
 
 		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
-		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+		$configurationBuilderCache = $this->createMock(Caching\Cache::class);
+
+		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
 			$devicePropertiesStates,
@@ -68,6 +70,8 @@ final class ModuleEntitiesTest extends TestCase
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
+			$configurationBuilderCache,
+			$configurationRepositoryCache,
 		);
 
 		self::assertSame([
@@ -169,11 +173,12 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+		$configurationBuilderCache = $this->createMock(Caching\Cache::class);
+
+		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
 			$devicePropertiesStates,
@@ -183,6 +188,8 @@ final class ModuleEntitiesTest extends TestCase
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
+			$configurationBuilderCache,
+			$configurationRepositoryCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -290,11 +297,12 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+		$configurationBuilderCache = $this->createMock(Caching\Cache::class);
+
+		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
 			$devicePropertiesStates,
@@ -304,6 +312,8 @@ final class ModuleEntitiesTest extends TestCase
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
+			$configurationBuilderCache,
+			$configurationRepositoryCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -419,11 +429,12 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$configurationBuilder = $this->createMock(Models\Configuration\Builder::class);
+		$configurationBuilderCache = $this->createMock(Caching\Cache::class);
+
+		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
-			$configurationBuilder,
 			$connectorPropertiesStates,
 			$asyncConnectorPropertiesStates,
 			$devicePropertiesStates,
@@ -433,6 +444,8 @@ final class ModuleEntitiesTest extends TestCase
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
+			$configurationBuilderCache,
+			$configurationRepositoryCache,
 		);
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
