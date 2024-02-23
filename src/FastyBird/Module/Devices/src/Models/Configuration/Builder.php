@@ -22,13 +22,10 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Types;
 use Flow\JSONPath;
 use Nette\Caching;
-use Orisai\DataSources;
 use Throwable;
 use TypeError;
 use ValueError;
-use function array_key_exists;
 use function assert;
-use function is_string;
 
 /**
  * Configuration builder
@@ -41,9 +38,6 @@ use function is_string;
 final class Builder
 {
 
-	/** @var array<string, JSONPath\JSONPath> */
-	private array $configuration = [];
-
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
@@ -54,7 +48,6 @@ final class Builder
 		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
-		private readonly DataSources\DefaultDataSource $dataSource,
 		private readonly Caching\Cache $cache,
 	)
 	{
@@ -65,33 +58,29 @@ final class Builder
 	 */
 	public function load(Types\ConfigurationType $type, bool $force = false): JSONPath\JSONPath
 	{
-		if (!array_key_exists($type->value, $this->configuration) || $force) {
-			try {
-				if ($force) {
-					$this->cache->remove($type->value);
-				}
-
-				$data = $this->cache->load(
-					$type->value,
-					fn (): string => $this->build($type),
-					[
-						Caching\Cache::Tags => [$type->value],
-					],
-				);
-				assert(is_string($data));
-
-				$decoded = $this->dataSource->decode($data, 'json');
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
+		try {
+			if ($force) {
+				$this->cache->remove($type->value);
 			}
 
-			$this->configuration[$type->value] = new JSONPath\JSONPath($decoded);
-		}
+			$data = $this->cache->load(
+				$type->value,
+				fn (): JSONPath\JSONPath => new JSONPath\JSONPath($this->build($type)),
+				[
+					Caching\Cache::Tags => [$type->value],
+				],
+			);
+			assert($data instanceof JSONPath\JSONPath);
 
-		return $this->configuration[$type->value];
+			return $data;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
+	 * @return array<mixed>
+	 *
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -99,7 +88,7 @@ final class Builder
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function build(Types\ConfigurationType $type): string
+	private function build(Types\ConfigurationType $type): array
 	{
 		$data = [];
 
@@ -141,15 +130,7 @@ final class Builder
 			}
 		}
 
-		try {
-			return $this->dataSource->encode($data, 'json');
-		} catch (DataSources\Exception\NotSupportedType | DataSources\Exception\EncodingFailure $ex) {
-			throw new Exceptions\InvalidState(
-				'Module configuration structure could not be create',
-				$ex->getCode(),
-				$ex,
-			);
-		}
+		return $data;
 	}
 
 }

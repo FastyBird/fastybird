@@ -23,7 +23,6 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use Nette\Caching;
 use Ramsey\Uuid;
-use stdClass;
 use Throwable;
 use function array_map;
 use function is_array;
@@ -133,7 +132,7 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					$documents = array_map(
-						fn (stdClass $item): Documents\Channels\Controls\Control => $this->documentFactory->create(
+						fn (array $item): Documents\Channels\Controls\Control => $this->documentFactory->create(
 							Documents\Channels\Controls\Control::class,
 							$item,
 						),

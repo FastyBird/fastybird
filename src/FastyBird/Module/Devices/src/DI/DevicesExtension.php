@@ -42,7 +42,6 @@ use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
-use Orisai\DataSources;
 use stdClass;
 use function array_keys;
 use function array_pop;
@@ -270,26 +269,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * MODELS - CONFIGURATION
 		 */
 
-		$manager = new DataSources\DefaultFormatEncoderManager();
-		$manager->addEncoder(new DataSources\JsonFormatEncoder());
-
-		$dataSource = $builder->addDefinition(
-			$this->prefix('models.configuration.builder.datasource'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(DataSources\DefaultDataSource::class)
-			->setArguments([
-				'encoderManager' => $manager,
-			])
-			->setAutowired(false);
-
 		$builder->addDefinition(
 			$this->prefix('models.configuration.builder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\Configuration\Builder::class)
 			->setArguments([
-				'dataSource' => $dataSource,
 				'cache' => $configurationBuilderCache,
 			]);
 

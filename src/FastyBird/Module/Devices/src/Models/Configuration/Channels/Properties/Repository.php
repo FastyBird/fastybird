@@ -23,7 +23,6 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use Nette\Caching;
 use Ramsey\Uuid;
-use stdClass;
 use Throwable;
 use function array_filter;
 use function array_map;
@@ -185,7 +184,7 @@ final class Repository extends Models\Configuration\Repository
 
 					$documents = array_filter(
 						array_map(
-							function (stdClass $item): Documents\Channels\Properties\Property|null {
+							function (array $item): Documents\Channels\Properties\Property|null {
 								foreach (
 									[
 										Documents\Channels\Properties\Dynamic::class,
