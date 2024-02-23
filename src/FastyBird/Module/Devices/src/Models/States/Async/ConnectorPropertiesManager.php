@@ -112,11 +112,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			try {
 				$document = $this->cache->load(
 					'read_' . $property->getId()->toString(),
-					async(function (&$dependencies) use ($property) {
-						$dependencies[Caching\Cache::Tags] = [$property->getId()->toString()];
-
-						return await($this->readState($property));
-					}),
+					async(fn () => await($this->readState($property))),
+					[
+						Caching\Cache::Tags => [$property->getId()->toString()],
+					],
 				);
 				assert($document instanceof Documents\States\Properties\Connector || $document === null);
 

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Configuration.php
+ * Cache.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -19,18 +19,20 @@ use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Models;
+use Nette\Caching;
 use function in_array;
 
 /**
- * Configuration messages subscriber
+ * Module cache subscriber
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Configuration implements ExchangeConsumers\Consumer
+final class Cache implements ExchangeConsumers\Consumer
 {
 
 	private const MODULE_ROUTING_KEYS = [
@@ -63,8 +65,23 @@ final class Configuration implements ExchangeConsumers\Consumer
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_DELETED_ROUTING_KEY,
 	];
 
+	private const PROPERTIES_STATES_ROUTING_KEYS = [
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
+
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
+
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
+		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
+	];
+
 	public function __construct(
 		private readonly Models\Configuration\Builder $configurationBuilder,
+		private readonly Caching\Cache $stateCache,
 	)
 	{
 	}
@@ -81,6 +98,19 @@ final class Configuration implements ExchangeConsumers\Consumer
 
 		if (in_array($routingKey, self::MODULE_ROUTING_KEYS, true)) {
 			$this->configurationBuilder->clean();
+		}
+
+		if (
+			in_array($routingKey, self::PROPERTIES_STATES_ROUTING_KEYS, true)
+			&& (
+				$document instanceof Documents\States\Properties\Connector
+				|| $document instanceof Documents\States\Properties\Device
+				|| $document instanceof Documents\States\Properties\Channel
+			)
+		) {
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		}
 	}
 

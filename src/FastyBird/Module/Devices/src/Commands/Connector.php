@@ -265,7 +265,7 @@ class Connector extends Console\Command\Command
 
 		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
 
-		$this->consumer->enable(Consumers\Configuration::class);
+		$this->consumer->enable(Consumers\Cache::class);
 
 		$service = $this->serviceFactory->create($connector);
 

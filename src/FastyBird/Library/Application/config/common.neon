@@ -26,7 +26,8 @@ extensions:
 ##################################
 
 services:
-    cache.storage: Contributte\Cache\Storages\MemoryAdapterStorage(FastyBird\Library\Application\Caching\FileStorage(%tempDir%/cache, Nette\Caching\Storages\SQLiteJournal(%tempDir%/cache/journal.s3db)))
+    # cache.storage: FastyBird\Library\Application\Caching\MemoryAdapterStorage(FastyBird\Library\Application\Caching\FileStorage(%tempDir%/cache, Nette\Caching\Storages\SQLiteJournal(%tempDir%/cache/journal.s3db)))
+    cache.storage: FastyBird\Library\Application\Caching\MemoryStorage
 
 # Symfony console support extension
 ###################################

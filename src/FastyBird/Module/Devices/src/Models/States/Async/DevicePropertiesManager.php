@@ -114,11 +114,15 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 			try {
 				$document = $this->cache->load(
 					'read_' . $property->getId()->toString(),
-					async(function (&$dependencies) use ($property) {
-						$dependencies[Caching\Cache::Tags] = [$property->getId()->toString()];
-
-						return await($this->readState($property));
-					}),
+					async(fn () => await($this->readState($property))),
+					[
+						Caching\Cache::Tags => array_merge(
+							[$property->getId()->toString()],
+							$property instanceof Documents\Devices\Properties\Mapped
+								? [$property->getParent()->toString()]
+								: [],
+						),
+					],
 				);
 				assert($document instanceof Documents\States\Properties\Device || $document === null);
 

@@ -821,7 +821,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Consumers\State::class)
 			->setArguments([
 				'logger' => $logger,
-				'stateCache' => $stateCache,
 			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
@@ -829,7 +828,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('exchange.consumer.configuration'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\Configuration::class)
+			->setType(Consumers\Cache::class)
+			->setArguments([
+				'stateCache' => $stateCache,
+			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		if (
