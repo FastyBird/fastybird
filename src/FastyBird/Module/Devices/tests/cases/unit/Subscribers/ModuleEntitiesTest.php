@@ -61,6 +61,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$stateCache = $this->createMock(Caching\Cache::class);
 
+		$stateStorageCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -75,6 +77,7 @@ final class ModuleEntitiesTest extends TestCase
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
 			$stateCache,
+			$stateStorageCache,
 		);
 
 		self::assertSame([
@@ -182,6 +185,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$stateCache = $this->createMock(Caching\Cache::class);
 
+		$stateStorageCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -196,6 +201,7 @@ final class ModuleEntitiesTest extends TestCase
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
 			$stateCache,
+			$stateStorageCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -309,6 +315,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$stateCache = $this->createMock(Caching\Cache::class);
 
+		$stateStorageCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -323,6 +331,7 @@ final class ModuleEntitiesTest extends TestCase
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
 			$stateCache,
+			$stateStorageCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -444,6 +453,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$stateCache = $this->createMock(Caching\Cache::class);
 
+		$stateStorageCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -458,6 +469,7 @@ final class ModuleEntitiesTest extends TestCase
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
 			$stateCache,
+			$stateStorageCache,
 		);
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);

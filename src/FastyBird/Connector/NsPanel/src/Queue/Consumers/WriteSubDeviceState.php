@@ -36,6 +36,7 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
+use function is_bool;
 use function React\Async\async;
 use function React\Async\await;
 use function strval;
@@ -286,9 +287,12 @@ final class WriteSubDeviceState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$state = await($this->channelPropertiesStatesManager->readState($property));
+						$state = await($this->channelPropertiesStatesManager->read(
+							$property,
+							MetadataTypes\Sources\Connector::NS_PANEL,
+						));
 
-						if ($state?->getGet()->getExpectedValue() !== null) {
+						if (!is_bool($state) && $state?->getGet()->getExpectedValue() !== null) {
 							$this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,

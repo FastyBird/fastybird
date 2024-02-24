@@ -48,7 +48,10 @@ final class StateEntities implements ExchangeConsumers\Consumer
 		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
 	];
 
-	public function __construct(private readonly Caching\Cache $stateCache)
+	public function __construct(
+		private readonly Caching\Cache $stateCache,
+		private readonly Caching\Cache $stateStorageCache,
+	)
 	{
 	}
 
@@ -71,6 +74,9 @@ final class StateEntities implements ExchangeConsumers\Consumer
 			)
 		) {
 			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
+			$this->stateStorageCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
 		}

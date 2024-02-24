@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
@@ -505,13 +506,23 @@ trait StateWriter
 	): string|int|float|bool|null
 	{
 		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-			$state = await($this->channelPropertiesStatesManager->readState($property));
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::NS_PANEL,
+			));
 
-			$value = $state?->getGet()->getExpectedValue();
+			$value = is_bool($state) ? null : $state?->getGet()->getExpectedValue();
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-			$state = await($this->channelPropertiesStatesManager->readState($property));
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::NS_PANEL,
+			));
 
-			$value = $state?->getRead()->getExpectedValue() ?? ($state?->isValid() === true ? $state->getRead()->getActualValue() : null);
+			if (is_bool($state)) {
+				$value = null;
+			} else {
+				$value = $state?->getRead()->getExpectedValue() ?? ($state?->isValid() === true ? $state->getRead()->getActualValue() : null);
+			}
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 			$value = $property->getValue();
 		} else {

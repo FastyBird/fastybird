@@ -639,10 +639,6 @@ final class DevicePropertiesManager extends PropertiesManager
 			}
 		}
 
-		if ($data->count() === 0) {
-			return;
-		}
-
 		try {
 			if ($state !== null) {
 				$actualValue = MetadataUtilities\Value::flattenValue(
@@ -653,13 +649,15 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 
 				if (
-					(
-						$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
-						&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
-					) || (
-						$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
-						&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
-					)
+					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
+					&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
+				) {
+					$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
+					$data->offsetUnset(States\Property::PENDING_FIELD);
+
+				} elseif (
+					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
+					&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
 				) {
 					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 					$data->offsetSet(States\Property::PENDING_FIELD, false);
@@ -667,6 +665,10 @@ final class DevicePropertiesManager extends PropertiesManager
 			}
 		} catch (MetadataExceptions\InvalidValue) {
 			// Could be ignored
+		}
+
+		if ($data->count() === 0) {
+			return;
 		}
 
 		try {

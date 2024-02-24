@@ -19,8 +19,12 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
+use Nette\Caching;
 use Ramsey\Uuid;
 use React\Promise;
+use Throwable;
+use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Asynchronous channel property repository
@@ -37,6 +41,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\States\Channels\Repository $fallback,
+		private readonly Caching\Cache $cache,
 		private readonly IRepository|null $repository = null,
 	)
 	{
@@ -57,7 +62,26 @@ final class Repository
 			}
 		}
 
-		return $this->repository->find($id);
+		try {
+			/** @phpstan-var States\ChannelProperty|null $state */
+			$state = $this->cache->load(
+				$id->toString(),
+				async(function () use ($id): States\ChannelProperty|null {
+					if ($this->repository === null) {
+						return null;
+					}
+
+					return await($this->repository->find($id));
+				}),
+				[
+					Caching\Cache::Tags => [$id->toString()],
+				],
+			);
+
+			return Promise\resolve($state);
+		} catch (Throwable $ex) {
+			return Promise\reject($ex);
+		}
 	}
 
 }

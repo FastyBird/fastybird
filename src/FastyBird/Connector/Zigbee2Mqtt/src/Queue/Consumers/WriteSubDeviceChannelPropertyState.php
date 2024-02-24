@@ -41,6 +41,7 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
+use function is_bool;
 use function preg_match;
 use function React\Async\await;
 use function sprintf;
@@ -315,9 +316,12 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->readState($property));
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+				));
 
-				if ($state?->getGet()->getExpectedValue() !== null) {
+				if (!is_bool($state) && $state?->getGet()->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
 						$state->getGet()->getExpectedValue(),
 					);
@@ -345,9 +349,12 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->readState($property));
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::NS_PANEL,
+				));
 
-				if ($state?->getGet()->getExpectedValue() !== null) {
+				if (!is_bool($state) && $state?->getGet()->getExpectedValue() !== null) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
 						$state->getGet()->getExpectedValue(),
 					);

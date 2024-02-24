@@ -73,6 +73,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Caching\Cache $configurationBuilderCache,
 		private readonly Caching\Cache $configurationRepositoryCache,
 		private readonly Caching\Cache $stateCache,
+		private readonly Caching\Cache $stateStorageCache,
 	)
 	{
 	}
@@ -329,6 +330,9 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		if (in_array($action, [self::ACTION_UPDATED, self::ACTION_DELETED], true)) {
 			$this->stateCache->clean([
+				Caching\Cache::Tags => [$entity->getId()->toString()],
+			]);
+			$this->stateStorageCache->clean([
 				Caching\Cache::Tags => [$entity->getId()->toString()],
 			]);
 		}

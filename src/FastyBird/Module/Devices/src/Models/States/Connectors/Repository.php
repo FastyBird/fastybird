@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Models\States\Connectors;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use Nette;
+use Nette\Caching;
 use Ramsey\Uuid;
 
 /**
@@ -33,7 +34,10 @@ final class Repository
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly IRepository|null $repository = null)
+	public function __construct(
+		private readonly Caching\Cache $cache,
+		private readonly IRepository|null $repository = null,
+	)
 	{
 	}
 
@@ -48,7 +52,22 @@ final class Repository
 			throw new Exceptions\NotImplemented('Connector properties state repository is not registered');
 		}
 
-		return $this->repository->find($id);
+		/** @phpstan-var States\ConnectorProperty|null $state */
+		$state = $this->cache->load(
+			$id->toString(),
+			function () use ($id): States\ConnectorProperty|null {
+				if ($this->repository === null) {
+					return null;
+				}
+
+				return $this->repository->find($id);
+			},
+			[
+				Caching\Cache::Tags => [$id->toString()],
+			],
+		);
+
+		return $state;
 	}
 
 }

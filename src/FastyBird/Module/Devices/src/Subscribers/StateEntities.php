@@ -57,6 +57,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	public function __construct(
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly Caching\Cache $stateCache,
+		private readonly Caching\Cache $stateStorageCache,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -148,6 +149,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	): void
 	{
 		$this->stateCache->clean([
+			Caching\Cache::Tags => [$document->getId()->toString()],
+		]);
+		$this->stateStorageCache->clean([
 			Caching\Cache::Tags => [$document->getId()->toString()],
 		]);
 	}
