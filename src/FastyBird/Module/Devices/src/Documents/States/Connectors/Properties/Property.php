@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Documents\States\Connectors\Properties;
 use DateTimeInterface;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
