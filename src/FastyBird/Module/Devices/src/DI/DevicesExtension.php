@@ -449,6 +449,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -471,6 +472,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -493,6 +495,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 

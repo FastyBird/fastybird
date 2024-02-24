@@ -131,8 +131,6 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError

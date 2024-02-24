@@ -66,13 +66,13 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Caching\Cache $cache,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\Devices\Async\Repository $devicePropertyStateRepository,
 		private readonly Models\States\Devices\Async\Manager $devicePropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,

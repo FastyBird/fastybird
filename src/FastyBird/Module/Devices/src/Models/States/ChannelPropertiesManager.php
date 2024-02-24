@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
+use Nette\Caching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -42,6 +43,7 @@ use TypeError;
 use ValueError;
 use function array_map;
 use function array_merge;
+use function assert;
 use function boolval;
 use function is_array;
 use function strval;
@@ -69,6 +71,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -78,15 +81,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	}
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
-	 * @throws TypeError
-	 * @throws ValueError
 	 */
 	public function read(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -115,7 +110,21 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			return $this->readState($property);
+			$document = $this->cache->load(
+				'read_' . $property->getId()->toString(),
+				fn () => $this->readState($property),
+				[
+					Caching\Cache::Tags => array_merge(
+						[$property->getId()->toString()],
+						$property instanceof Documents\Channels\Properties\Mapped
+							? [$property->getParent()->toString()]
+							: [],
+					),
+				],
+			);
+			assert($document instanceof Documents\States\Channels\Properties\Property || $document === null);
+
+			return $document;
 		}
 	}
 

@@ -66,13 +66,13 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Caching\Cache $cache,
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\Channels\Async\Repository $channelPropertyStateRepository,
 		private readonly Models\States\Channels\Async\Manager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,

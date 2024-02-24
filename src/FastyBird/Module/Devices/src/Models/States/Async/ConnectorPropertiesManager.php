@@ -65,12 +65,12 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Caching\Cache $cache,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
