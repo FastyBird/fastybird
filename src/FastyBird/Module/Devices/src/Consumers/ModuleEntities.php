@@ -37,6 +37,7 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 	public function __construct(
 		private readonly Caching\Cache $configurationBuilderCache,
 		private readonly Caching\Cache $configurationRepositoryCache,
+		private readonly Caching\Cache $stateCache,
 	)
 	{
 	}
@@ -70,6 +71,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			$this->configurationRepositoryCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
+
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		} elseif (
 			$document instanceof Devices\Documents\Connectors\Properties\Property
 			&& in_array(
@@ -87,6 +92,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
+
+			$this->stateCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
 		} elseif (
@@ -108,6 +117,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			$this->configurationRepositoryCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
+
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		} elseif (
 			$document instanceof Devices\Documents\Devices\Device
 			&& in_array(
@@ -125,6 +138,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
+
+			$this->stateCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
 		} elseif (
@@ -146,6 +163,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			$this->configurationRepositoryCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
+
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		} elseif (
 			$document instanceof Devices\Documents\Devices\Controls\Control
 			&& in_array(
@@ -163,6 +184,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
+
+			$this->stateCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
 		} elseif (
@@ -184,6 +209,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			$this->configurationRepositoryCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
+
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		} elseif (
 			$document instanceof Devices\Documents\Channels\Properties\Property
 			&& in_array(
@@ -203,6 +232,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			$this->configurationRepositoryCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
+
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
 		} elseif (
 			$document instanceof Devices\Documents\Channels\Controls\Control
 			&& in_array(
@@ -220,6 +253,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [$document->getId()->toString()],
+			]);
+
+			$this->stateCache->clean([
 				Caching\Cache::Tags => [$document->getId()->toString()],
 			]);
 		}

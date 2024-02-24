@@ -59,6 +59,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
+		$stateCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -72,6 +74,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
+			$stateCache,
 		);
 
 		self::assertSame([
@@ -177,6 +180,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
+		$stateCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -190,6 +195,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
+			$stateCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -301,6 +307,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
+		$stateCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -314,6 +322,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
+			$stateCache,
 		);
 
 		$connectorEntity = new Tests\Fixtures\Dummy\DummyConnectorEntity(
@@ -433,6 +442,8 @@ final class ModuleEntitiesTest extends TestCase
 
 		$configurationRepositoryCache = $this->createMock(Caching\Cache::class);
 
+		$stateCache = $this->createMock(Caching\Cache::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
 			$connectorPropertiesStates,
@@ -446,6 +457,7 @@ final class ModuleEntitiesTest extends TestCase
 			$asyncPublisher,
 			$configurationBuilderCache,
 			$configurationRepositoryCache,
+			$stateCache,
 		);
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);

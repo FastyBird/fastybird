@@ -71,6 +71,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 		private readonly Caching\Cache $configurationBuilderCache,
 		private readonly Caching\Cache $configurationRepositoryCache,
+		private readonly Caching\Cache $stateCache,
 	)
 	{
 	}
@@ -108,7 +109,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity);
+		$this->cleanCache($entity, self::ACTION_CREATED);
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -146,7 +147,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity);
+		$this->cleanCache($entity, self::ACTION_UPDATED);
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
@@ -209,7 +210,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
 
-		$this->cleanCache($entity);
+		$this->cleanCache($entity, self::ACTION_DELETED);
 	}
 
 	public function enableAsync(): void
@@ -222,7 +223,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		$this->useAsync = false;
 	}
 
-	private function cleanCache(Entities\Entity $entity): void
+	private function cleanCache(Entities\Entity $entity, string $action): void
 	{
 		if ($entity instanceof Entities\Connectors\Connector) {
 			$this->configurationBuilderCache->clean([
@@ -265,6 +266,12 @@ final class ModuleEntities implements Common\EventSubscriber
 		$this->configurationRepositoryCache->clean([
 			Caching\Cache::Tags => [$entity->getId()->toString()],
 		]);
+
+		if (in_array($action, [self::ACTION_UPDATED, self::ACTION_DELETED], true)) {
+			$this->stateCache->clean([
+				Caching\Cache::Tags => [$entity->getId()->toString()],
+			]);
+		}
 	}
 
 	/**

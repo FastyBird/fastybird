@@ -516,6 +516,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setArguments([
 				'configurationBuilderCache' => $configurationBuilderCache,
 				'configurationRepositoryCache' => $configurationRepositoryCache,
+				'stateCache' => $stateCache,
 			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
@@ -877,6 +878,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setArguments([
 				'configurationBuilderCache' => $configurationBuilderCache,
 				'configurationRepositoryCache' => $configurationRepositoryCache,
+				'stateCache' => $stateCache,
 			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
