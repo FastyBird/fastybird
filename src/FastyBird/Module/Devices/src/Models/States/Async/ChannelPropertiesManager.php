@@ -41,7 +41,6 @@ use React\Promise;
 use Throwable;
 use function array_map;
 use function array_merge;
-use function assert;
 use function boolval;
 use function is_array;
 use function is_bool;
@@ -83,6 +82,8 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 
 	/**
 	 * @return Promise\PromiseInterface<bool|Documents\States\Channels\Properties\Property|null>
+	 *
+	 * @throws Exceptions\InvalidState
 	 */
 	public function read(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -111,25 +112,39 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			try {
-				$document = $this->cache->load(
-					'read_' . $property->getId()->toString(),
-					async(fn () => await($this->readState($property))),
-					[
-						Caching\Cache::Tags => array_merge(
-							[$property->getId()->toString()],
-							$property instanceof Documents\Channels\Properties\Mapped
-								? [$property->getParent()->toString()]
-								: [],
-						),
-					],
-				);
-				assert($document instanceof Documents\States\Channels\Properties\Property || $document === null);
+			/** @phpstan-var Documents\States\Channels\Properties\Property|null $document */
+			$document = $this->cache->load('read_' . $property->getId()->toString());
 
+			if ($document !== null) {
 				return Promise\resolve($document);
-			} catch (Throwable $ex) {
-				return Promise\reject($ex);
 			}
+
+			$deferred = new Promise\Deferred();
+
+			$this->readState($property)
+				->then(
+					function (Documents\States\Channels\Properties\Property|null $document) use ($deferred, $property): void {
+						$this->cache->save(
+							'read_' . $property->getId()->toString(),
+							$document,
+							[
+								Caching\Cache::Tags => array_merge(
+									[$property->getId()->toString()],
+									$property instanceof Documents\Channels\Properties\Mapped
+										? [$property->getParent()->toString()]
+										: [],
+								),
+							],
+						);
+
+						$deferred->resolve($document);
+					},
+				)
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
 		}
 	}
 
@@ -765,10 +780,6 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 								return;
 							}
 						}
-
-						$this->cache->clean([
-							Caching\Cache::Tags => [$property->getId()->toString()],
-						]);
 
 						$readValue = $this->convertStoredState($property, null, $result, true);
 						$getValue = $this->convertStoredState($property, null, $result, false);

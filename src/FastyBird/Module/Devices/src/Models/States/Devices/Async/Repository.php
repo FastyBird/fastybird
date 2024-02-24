@@ -23,8 +23,6 @@ use Nette\Caching;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
-use function React\Async\async;
-use function React\Async\await;
 
 /**
  * Asynchronous device property repository
@@ -62,26 +60,32 @@ final class Repository
 			}
 		}
 
-		try {
-			/** @phpstan-var States\DeviceProperty|null $state */
-			$state = $this->cache->load(
-				$id->toString(),
-				async(function () use ($id): States\DeviceProperty|null {
-					if ($this->repository === null) {
-						return null;
-					}
+		/** @phpstan-var States\DeviceProperty|null $state */
+		$state = $this->cache->load($id->toString());
 
-					return await($this->repository->find($id));
-				}),
-				[
-					Caching\Cache::Tags => [$id->toString()],
-				],
-			);
-
+		if ($state !== null) {
 			return Promise\resolve($state);
-		} catch (Throwable $ex) {
-			return Promise\reject($ex);
 		}
+
+		$deferred = new Promise\Deferred();
+
+		$this->repository->find($id)
+			->then(function (States\DeviceProperty|null $state) use ($deferred, $id): void {
+				$this->cache->save(
+					$id->toString(),
+					$state,
+					[
+						Caching\Cache::Tags => [$id->toString()],
+					],
+				);
+
+				$deferred->resolve($state);
+			})
+			->catch(static function (Throwable $ex) use ($deferred): void {
+				$deferred->reject($ex);
+			});
+
+		return $deferred->promise();
 	}
 
 }

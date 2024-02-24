@@ -40,7 +40,6 @@ use React\Promise;
 use Throwable;
 use function array_map;
 use function array_merge;
-use function assert;
 use function boolval;
 use function is_array;
 use function is_bool;
@@ -109,20 +108,34 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
-			try {
-				$document = $this->cache->load(
-					'read_' . $property->getId()->toString(),
-					async(fn () => await($this->readState($property))),
-					[
-						Caching\Cache::Tags => [$property->getId()->toString()],
-					],
-				);
-				assert($document instanceof Documents\States\Connectors\Properties\Property || $document === null);
+			/** @phpstan-var Documents\States\Connectors\Properties\Property|null $document */
+			$document = $this->cache->load('read_' . $property->getId()->toString());
 
+			if ($document !== null) {
 				return Promise\resolve($document);
-			} catch (Throwable $ex) {
-				return Promise\reject($ex);
 			}
+
+			$deferred = new Promise\Deferred();
+
+			$this->readState($property)
+				->then(
+					function (Documents\States\Connectors\Properties\Property|null $document) use ($deferred, $property): void {
+						$this->cache->save(
+							'read_' . $property->getId()->toString(),
+							$document,
+							[
+								Caching\Cache::Tags => [$property->getId()->toString()],
+							],
+						);
+
+						$deferred->resolve($document);
+					},
+				)
+				->catch(static function (Throwable $ex) use ($deferred): void {
+					$deferred->reject($ex);
+				});
+
+			return $deferred->promise();
 		}
 	}
 
