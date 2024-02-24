@@ -68,6 +68,7 @@ final class Repository extends Models\Configuration\Repository
 	): Documents\Channels\Controls\Control|null
 	{
 		try {
+			/** @phpstan-var Documents\Channels\Controls\Control|false $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject),
 				function (&$dependencies) use ($queryObject): Documents\Channels\Controls\Control|false {
@@ -91,6 +92,11 @@ final class Repository extends Models\Configuration\Repository
 
 					return $document;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CHANNELS_CONTROLS->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
@@ -98,10 +104,6 @@ final class Repository extends Models\Configuration\Repository
 
 		if ($document === false) {
 			return null;
-		}
-
-		if (!$document instanceof Documents\Channels\Controls\Control) {
-			throw new Exceptions\InvalidState('Could not load document');
 		}
 
 		return $document;
@@ -119,6 +121,7 @@ final class Repository extends Models\Configuration\Repository
 	): array
 	{
 		try {
+			/** @phpstan-var array<Documents\Channels\Controls\Control> $documents */
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject),
 				function (&$dependencies) use ($queryObject): array {
@@ -148,13 +151,14 @@ final class Repository extends Models\Configuration\Repository
 
 					return $documents;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CHANNELS_CONTROLS->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
-		}
-
-		if (!is_array($documents)) {
-			throw new Exceptions\InvalidState('Could not load documents');
 		}
 
 		return $documents;

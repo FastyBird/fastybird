@@ -91,9 +91,10 @@ final class Repository extends Models\Configuration\Repository
 	): Documents\Connectors\Properties\Property|null
 	{
 		try {
+			/** @phpstan-var T|false $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function (&$dependencies) use ($queryObject, $type): Documents\Connectors\Properties\Property|null {
+				function (&$dependencies) use ($queryObject, $type): Documents\Connectors\Properties\Property|false {
 					$space = $this->builder
 						->load(Devices\Types\ConfigurationType::CONNECTORS_PROPERTIES);
 
@@ -106,7 +107,7 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return null;
+						return false;
 					}
 
 					foreach (
@@ -129,19 +130,20 @@ final class Repository extends Models\Configuration\Repository
 						}
 					}
 
-					return null;
+					return false;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
 		}
 
-		if ($document === null) {
+		if ($document === false) {
 			return null;
-		}
-
-		if (!$document instanceof $type) {
-			throw new Exceptions\InvalidState('Could not load document');
 		}
 
 		return $document;
@@ -163,6 +165,7 @@ final class Repository extends Models\Configuration\Repository
 	): array
 	{
 		try {
+			/** @phpstan-var array<T> $documents */
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): array {
@@ -213,13 +216,14 @@ final class Repository extends Models\Configuration\Repository
 
 					return $documents;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
-		}
-
-		if (!is_array($documents)) {
-			throw new Exceptions\InvalidState('Could not load documents');
 		}
 
 		return $documents;

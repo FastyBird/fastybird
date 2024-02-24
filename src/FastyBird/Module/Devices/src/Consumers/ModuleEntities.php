@@ -69,7 +69,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -92,7 +95,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -111,11 +117,14 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			)
 		) {
 			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
+				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -138,7 +147,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -161,7 +173,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES_PROPERTIES->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -184,7 +199,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES_CONTROLS->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -207,7 +225,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -230,7 +251,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([
@@ -253,7 +277,10 @@ final class ModuleEntities implements ExchangeConsumers\Consumer
 			]);
 
 			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [$document->getId()->toString()],
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS_CONTROLS->value,
+					$document->getId()->toString(),
+				],
 			]);
 
 			$this->stateCache->clean([

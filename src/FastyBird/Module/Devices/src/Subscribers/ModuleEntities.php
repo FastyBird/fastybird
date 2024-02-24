@@ -230,43 +230,102 @@ final class ModuleEntities implements Common\EventSubscriber
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
 			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS->value,
+					$entity->getId()->toString(),
+				],
+			]);
 		} elseif ($entity instanceof Entities\Connectors\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
+			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+					$entity->getId()->toString(),
+				],
 			]);
 		} elseif ($entity instanceof Entities\Connectors\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
 			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+					$entity->getId()->toString(),
+				],
+			]);
 		} elseif ($entity instanceof Entities\Devices\Device) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
+			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES->value,
+					$entity->getId()->toString(),
+				],
 			]);
 		} elseif ($entity instanceof Entities\Devices\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
 			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES_PROPERTIES->value,
+					$entity->getId()->toString(),
+				],
+			]);
 		} elseif ($entity instanceof Entities\Devices\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
+			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::DEVICES_CONTROLS->value,
+					$entity->getId()->toString(),
+				],
 			]);
 		} elseif ($entity instanceof Entities\Channels\Channel) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
 			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS->value,
+					$entity->getId()->toString(),
+				],
+			]);
 		} elseif ($entity instanceof Entities\Channels\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
+			]);
+
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+					$entity->getId()->toString(),
+				],
 			]);
 		} elseif ($entity instanceof Entities\Channels\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
 			]);
-		}
 
-		$this->configurationRepositoryCache->clean([
-			Caching\Cache::Tags => [$entity->getId()->toString()],
-		]);
+			$this->configurationRepositoryCache->clean([
+				Caching\Cache::Tags => [
+					Types\ConfigurationType::CHANNELS_CONTROLS->value,
+					$entity->getId()->toString(),
+				],
+			]);
+		}
 
 		if (in_array($action, [self::ACTION_UPDATED, self::ACTION_DELETED], true)) {
 			$this->stateCache->clean([

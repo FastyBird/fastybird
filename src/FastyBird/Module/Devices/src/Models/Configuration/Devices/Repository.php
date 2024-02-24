@@ -92,10 +92,10 @@ final class Repository extends Models\Configuration\Repository
 	): Documents\Devices\Device|null
 	{
 		try {
-			/** @phpstan-var T|null $document */
+			/** @phpstan-var T|false $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function (&$dependencies) use ($queryObject, $type): Documents\Devices\Device|null {
+				function (&$dependencies) use ($queryObject, $type): Documents\Devices\Device|false {
 					$space = $this->builder
 						->load(Devices\Types\ConfigurationType::DEVICES);
 
@@ -130,7 +130,7 @@ final class Repository extends Models\Configuration\Repository
 					$result = $queryObject->fetch($space);
 
 					if (!is_array($result) || $result === []) {
-						return null;
+						return false;
 					}
 
 					$document = $this->documentFactory->create($type, $result[0]);
@@ -145,9 +145,18 @@ final class Repository extends Models\Configuration\Repository
 
 					return $document;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::DEVICES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
+		}
+
+		if ($document === false) {
+			return null;
 		}
 
 		return $document;
@@ -216,6 +225,11 @@ final class Repository extends Models\Configuration\Repository
 
 					return $documents;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::DEVICES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
