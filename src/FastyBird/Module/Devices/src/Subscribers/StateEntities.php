@@ -196,7 +196,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			}
 
 			$document = $this->documentFactory->create(
-				Documents\States\Properties\Connector::class,
+				Documents\States\Connectors\Properties\Property::class,
 				[
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),
@@ -237,7 +237,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			}
 
 			$document = $this->documentFactory->create(
-				Documents\States\Properties\Device::class,
+				Documents\States\Devices\Properties\Property::class,
 				[
 					'id' => $property->getId()->toString(),
 					'device' => $property->getDevice()->toString(),
@@ -275,7 +275,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			}
 
 			$document = $this->documentFactory->create(
-				Documents\States\Properties\Channel::class,
+				Documents\States\Channels\Properties\Property::class,
 				[
 					'id' => $property->getId()->toString(),
 					'channel' => $property->getChannel()->toString(),

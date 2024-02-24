@@ -80,16 +80,16 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 			->willReturnCallback(
 				static function (
 					DevicesDocuments\Channels\Properties\Property $property,
-				) use ($readInitialStates): DevicesDocuments\States\Properties\Channel|null {
+				) use ($readInitialStates): DevicesDocuments\States\Channels\Properties\Property|null {
 					if (array_key_exists($property->getId()->toString(), $readInitialStates)) {
-						return new DevicesDocuments\States\Properties\Channel(
+						return new DevicesDocuments\States\Channels\Properties\Property(
 							$property->getId(),
 							$property->getChannel(),
-							new DevicesDocuments\States\Properties\Values(
+							new DevicesDocuments\States\StateValues(
 								$readInitialStates[$property->getId()->toString()],
 								null,
 							),
-							new DevicesDocuments\States\Properties\Values(
+							new DevicesDocuments\States\StateValues(
 								$readInitialStates[$property->getId()->toString()],
 								null,
 							),

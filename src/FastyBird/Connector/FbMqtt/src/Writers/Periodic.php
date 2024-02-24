@@ -264,7 +264,7 @@ abstract class Periodic
 
 		if (is_bool($state)) {
 			return $state;
-		} elseif (!$state instanceof DevicesDocuments\States\Properties\Device) {
+		} elseif (!$state instanceof DevicesDocuments\States\Devices\Properties\Property) {
 			// Property state is not set
 			return false;
 		}
@@ -334,7 +334,7 @@ abstract class Periodic
 
 		if (is_bool($state)) {
 			return $state;
-		} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
+		} elseif (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 			// Property state is not set
 			return false;
 		}

@@ -75,7 +75,7 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 			MetadataTypes\Sources\Module::DEVICES,
 		);
 
-		self::assertInstanceOf(Documents\States\Properties\Channel::class, $state);
+		self::assertInstanceOf(Documents\States\Channels\Properties\Property::class, $state);
 		self::assertSame($actual, $state->getRead()->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getRead()->getExpectedValue(), 'expected value check');
 	}
@@ -135,7 +135,7 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 			MetadataTypes\Sources\Module::DEVICES,
 		);
 
-		self::assertInstanceOf(Documents\States\Properties\Channel::class, $state);
+		self::assertInstanceOf(Documents\States\Channels\Properties\Property::class, $state);
 		self::assertSame($actual, $state->getGet()->getActualValue(), 'actual value check');
 		self::assertSame($expected, $state->getGet()->getExpectedValue(), 'expected value check');
 	}

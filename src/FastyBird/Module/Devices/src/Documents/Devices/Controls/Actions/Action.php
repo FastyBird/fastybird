@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Channel.php
+ * Action.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -10,10 +10,10 @@
  * @subpackage     Documents
  * @since          1.0.0
  *
- * @date           31.05.22
+ * @date           01.06.22
  */
 
-namespace FastyBird\Module\Devices\Documents\Actions\Controls;
+namespace FastyBird\Module\Devices\Documents\Devices\Controls\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
@@ -25,7 +25,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Channel control action document
+ * Device control action document
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Documents
@@ -34,16 +34,16 @@ use Ramsey\Uuid;
  */
 #[DOC\Document]
 #[EXCHANGE\RoutingMap([
-	Devices\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY,
+	Devices\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY,
 ])]
-final readonly class Channel implements MetadataDocuments\Document
+final readonly class Action implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ControlAction::class)]
 		private Types\ControlAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private Uuid\UuidInterface $channel,
+		private Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private Uuid\UuidInterface $control,
 		#[ObjectMapper\Rules\AnyOf([
@@ -69,9 +69,9 @@ final readonly class Channel implements MetadataDocuments\Document
 		return $this->action;
 	}
 
-	public function getChannel(): Uuid\UuidInterface
+	public function getDevice(): Uuid\UuidInterface
 	{
-		return $this->channel;
+		return $this->device;
 	}
 
 	public function getControl(): Uuid\UuidInterface
@@ -87,9 +87,10 @@ final readonly class Channel implements MetadataDocuments\Document
 	public function toArray(): array
 	{
 		return [
-			'action' => $this->getAction()->value,
-			'channel' => $this->getChannel()->toString(),
+			'id' => $this->getId()->toString(),
+			'device' => $this->getDevice()->toString(),
 			'control' => $this->getControl()->toString(),
+			'action' => $this->getAction()->value,
 			'expected_value' => $this->getExpectedValue(),
 		];
 	}

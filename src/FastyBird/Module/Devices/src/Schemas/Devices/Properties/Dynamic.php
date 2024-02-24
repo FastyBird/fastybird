@@ -225,7 +225,7 @@ final class Dynamic extends Property
 	 */
 	protected function getState(
 		Entities\Devices\Properties\Dynamic $property,
-	): Documents\States\Properties\Device|null
+	): Documents\States\Devices\Properties\Property|null
 	{
 		$configuration = $this->devicesPropertiesConfigurationRepository->find($property->getId());
 		assert($configuration instanceof Documents\Devices\Properties\Dynamic);

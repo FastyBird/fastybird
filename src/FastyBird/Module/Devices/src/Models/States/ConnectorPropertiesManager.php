@@ -88,7 +88,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	public function read(
 		Documents\Connectors\Properties\Dynamic $property,
 		MetadataTypes\Sources\Source|null $source,
-	): bool|Documents\States\Properties\Connector|null
+	): bool|Documents\States\Connectors\Properties\Property|null
 	{
 		if ($this->useExchange) {
 			try {
@@ -96,7 +96,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Connector::class,
+						Documents\States\Connectors\Properties\Actions\Action::class,
 						[
 							'action' => Types\PropertyAction::GET->value,
 							'connector' => $property->getConnector()->toString(),
@@ -137,7 +137,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Connector::class,
+						Documents\States\Connectors\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -189,7 +189,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Connector::class,
+						Documents\States\Connectors\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -363,7 +363,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	 */
 	public function readState(
 		Documents\Connectors\Properties\Dynamic $property,
-	): Documents\States\Properties\Connector|null
+	): Documents\States\Connectors\Properties\Property|null
 	{
 		try {
 			$state = $this->connectorPropertyStateRepository->find($property->getId());
@@ -389,7 +389,7 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			$getValue = $this->convertStoredState($property, null, $state, false);
 
 			return $this->documentFactory->create(
-				Documents\States\Properties\Connector::class,
+				Documents\States\Connectors\Properties\Property::class,
 				[
 					'id' => $property->getId()->toString(),
 					'connector' => $property->getConnector()->toString(),

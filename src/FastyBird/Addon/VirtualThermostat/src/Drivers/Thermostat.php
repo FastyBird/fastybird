@@ -157,7 +157,7 @@ class Thermostat implements VirtualDrivers\Driver
 				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
-			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
+			if (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 				continue;
 			}
 
@@ -192,7 +192,7 @@ class Thermostat implements VirtualDrivers\Driver
 				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
-			if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
+			if (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 				continue;
 			}
 
@@ -251,7 +251,7 @@ class Thermostat implements VirtualDrivers\Driver
 					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 
-				if (!$state instanceof DevicesDocuments\States\Properties\Channel) {
+				if (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 					continue;
 				}
 
@@ -274,7 +274,7 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if (
-				$state instanceof DevicesDocuments\States\Properties\Channel
+				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\Preset::tryFrom(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null
@@ -298,7 +298,7 @@ class Thermostat implements VirtualDrivers\Driver
 			);
 
 			if (
-				$state instanceof DevicesDocuments\States\Properties\Channel
+				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\HvacMode::tryFrom(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null

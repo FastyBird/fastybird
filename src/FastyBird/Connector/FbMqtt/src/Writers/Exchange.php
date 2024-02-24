@@ -107,7 +107,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof DevicesDocuments\States\Properties\Device) {
+		if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
 			if (
 				$document->getGet()->getExpectedValue() === null
 				|| $document->getPending() !== true
@@ -147,7 +147,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				),
 			);
 
-		} elseif ($document instanceof DevicesDocuments\States\Properties\Channel) {
+		} elseif ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
 			if (
 				$document->getGet()->getExpectedValue() === null
 				|| $document->getPending() !== true

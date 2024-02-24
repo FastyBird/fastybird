@@ -34,6 +34,7 @@ use Nette\Caching;
 use Nette\Utils;
 use ReflectionClass;
 use function count;
+use function in_array;
 use function is_a;
 use function str_starts_with;
 

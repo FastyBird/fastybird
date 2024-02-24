@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Values.php
+ * ActionValues.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           23.01.24
  */
 
-namespace FastyBird\Module\Devices\Documents\Actions\Properties;
+namespace FastyBird\Module\Devices\Documents\States;
 
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Constants as MetadataConstants;
@@ -33,7 +33,7 @@ use function array_merge;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[DOC\Document]
-final readonly class Values implements MetadataDocuments\Document
+final readonly class ActionValues implements MetadataDocuments\Document
 {
 
 	public function __construct(

@@ -225,7 +225,7 @@ abstract class Periodic implements Writer
 
 				// Requesting property state failed
 				continue;
-			} elseif (!$state instanceof DevicesDocuments\States\Properties\Channel) {
+			} elseif (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 				// Property state is not set
 				continue;
 			}

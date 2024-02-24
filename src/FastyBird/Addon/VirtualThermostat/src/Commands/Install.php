@@ -3439,7 +3439,7 @@ class Install extends Console\Command\Command
 				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
-			if ($state instanceof DevicesDocuments\States\Properties\Channel) {
+			if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 				$targetTemp = $state->getGet()->getActualValue();
 			}
 

@@ -203,7 +203,7 @@ final class Dynamic extends Property
 	 */
 	protected function getState(
 		Entities\Connectors\Properties\Dynamic $property,
-	): Documents\States\Properties\Connector|null
+	): Documents\States\Connectors\Properties\Property|null
 	{
 		$configuration = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
 		assert($configuration instanceof Documents\Connectors\Properties\Dynamic);

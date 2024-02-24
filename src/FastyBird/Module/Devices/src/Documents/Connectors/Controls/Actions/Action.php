@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Device.php
+ * Action.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,7 +13,7 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Module\Devices\Documents\Actions\Controls;
+namespace FastyBird\Module\Devices\Documents\Connectors\Controls\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
@@ -25,7 +25,7 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 
 /**
- * Device control action document
+ * Connector control action document
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Documents
@@ -34,16 +34,16 @@ use Ramsey\Uuid;
  */
 #[DOC\Document]
 #[EXCHANGE\RoutingMap([
-	Devices\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY,
+	Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY,
 ])]
-final readonly class Device implements MetadataDocuments\Document
+final readonly class Action implements MetadataDocuments\Document
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\ControlAction::class)]
 		private Types\ControlAction $action,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private Uuid\UuidInterface $device,
+		private Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private Uuid\UuidInterface $control,
 		#[ObjectMapper\Rules\AnyOf([
@@ -69,9 +69,9 @@ final readonly class Device implements MetadataDocuments\Document
 		return $this->action;
 	}
 
-	public function getDevice(): Uuid\UuidInterface
+	public function getConnector(): Uuid\UuidInterface
 	{
-		return $this->device;
+		return $this->connector;
 	}
 
 	public function getControl(): Uuid\UuidInterface
@@ -87,9 +87,10 @@ final readonly class Device implements MetadataDocuments\Document
 	public function toArray(): array
 	{
 		return [
-			'action' => $this->getAction()->value,
-			'device' => $this->getDevice()->toString(),
+			'id' => $this->getId()->toString(),
+			'connector' => $this->getConnector()->toString(),
 			'control' => $this->getControl()->toString(),
+			'action' => $this->getAction()->value,
 			'expected_value' => $this->getExpectedValue(),
 		];
 	}

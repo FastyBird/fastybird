@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * State.php
+ * Property.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,14 +13,12 @@
  * @date           23.01.24
  */
 
-namespace FastyBird\Module\Devices\Documents\States\Properties;
+namespace FastyBird\Module\Devices\Documents\States;
 
 use DateTimeInterface;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Module\Devices;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function is_bool;
@@ -33,14 +31,8 @@ use function is_bool;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document]
-#[EXCHANGE\RoutingMap([
-	Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
-	Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
-	Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
-	Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY,
-])]
-final class Channel implements MetadataDocuments\Document, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
+#[DOC\MappedSuperclass]
+abstract class Property implements MetadataDocuments\Document, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
 {
 
 	use MetadataDocuments\TCreatedAt;
@@ -49,12 +41,10 @@ final class Channel implements MetadataDocuments\Document, MetadataDocuments\Cre
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $id,
-		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $channel,
-		#[ObjectMapper\Rules\MappedObjectValue(class: Values::class)]
-		private readonly Values $read,
-		#[ObjectMapper\Rules\MappedObjectValue(class: Values::class)]
-		private readonly Values $get,
+		#[ObjectMapper\Rules\MappedObjectValue(class: StateValues::class)]
+		private readonly StateValues $read,
+		#[ObjectMapper\Rules\MappedObjectValue(class: StateValues::class)]
+		private readonly StateValues $get,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\BoolValue(),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
@@ -83,17 +73,12 @@ final class Channel implements MetadataDocuments\Document, MetadataDocuments\Cre
 		return $this->id;
 	}
 
-	public function getChannel(): Uuid\UuidInterface
-	{
-		return $this->channel;
-	}
-
-	public function getRead(): Values
+	public function getRead(): StateValues
 	{
 		return $this->read;
 	}
 
-	public function getGet(): Values
+	public function getGet(): StateValues
 	{
 		return $this->get;
 	}
@@ -117,7 +102,6 @@ final class Channel implements MetadataDocuments\Document, MetadataDocuments\Cre
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'channel' => $this->getChannel()->toString(),
 			'read' => $this->getRead()->toArray(),
 			'get' => $this->getGet()->toArray(),
 			'pending' => $this->getPending() instanceof DateTimeInterface

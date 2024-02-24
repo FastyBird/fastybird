@@ -219,21 +219,21 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				if ($data !== null) {
 					if ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY) {
 						$document = $this->documentFactory->create(
-							Documents\Actions\Properties\Connector::class,
+							Documents\States\Connectors\Properties\Actions\Action::class,
 							$data,
 						);
 
 						$this->handleConnectorAction($client, $topic, $document);
 					} elseif ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY) {
 						$document = $this->documentFactory->create(
-							Documents\Actions\Properties\Device::class,
+							Documents\States\Devices\Properties\Actions\Action::class,
 							$data,
 						);
 
 						$this->handleDeviceAction($client, $topic, $document);
 					} elseif ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY) {
 						$document = $this->documentFactory->create(
-							Documents\Actions\Properties\Channel::class,
+							Documents\States\Channels\Properties\Actions\Action::class,
 							$data,
 						);
 
@@ -266,7 +266,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleConnectorAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		Documents\Actions\Properties\Connector $entity,
+		Documents\States\Connectors\Properties\Actions\Action $entity,
 	): void
 	{
 		if ($entity->getAction() === Types\PropertyAction::SET) {
@@ -355,7 +355,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleDeviceAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		Documents\Actions\Properties\Device $entity,
+		Documents\States\Devices\Properties\Actions\Action $entity,
 	): void
 	{
 		if ($entity->getAction() === Types\PropertyAction::SET) {
@@ -447,7 +447,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	private function handleChannelAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		Documents\Actions\Properties\Channel $entity,
+		Documents\States\Channels\Properties\Actions\Action $entity,
 	): void
 	{
 		if ($entity->getAction() === Types\PropertyAction::SET) {

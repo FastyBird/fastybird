@@ -228,7 +228,7 @@ final class Dynamic extends Property
 	 */
 	protected function getState(
 		Entities\Channels\Properties\Dynamic $property,
-	): Documents\States\Properties\Channel|null
+	): Documents\States\Channels\Properties\Property|null
 	{
 		$configuration = $this->channelsPropertiesConfigurationRepository->find($property->getId());
 		assert($configuration instanceof Documents\Channels\Properties\Dynamic);

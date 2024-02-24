@@ -29,7 +29,7 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 	{
 		$factory = $this->getContainer()->getByType(MetadataDocuments\DocumentFactory::class);
 
-		$document = $factory->create(Documents\Actions\Properties\Channel::class, $data);
+		$document = $factory->create(Documents\States\Channels\Properties\Actions\Action::class, $data);
 
 		self::assertTrue($document instanceof $class);
 	}
@@ -51,7 +51,7 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 
 		$this->expectException(MetadataExceptions\InvalidArgument::class);
 
-		$factory->create(Documents\Actions\Properties\Channel::class, $data);
+		$factory->create(Documents\States\Channels\Properties\Actions\Action::class, $data);
 	}
 
 	/**
@@ -62,11 +62,11 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 		return [
 			'get' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/channel.property.action.get.json'),
-				Documents\Actions\Properties\Channel::class,
+				Documents\States\Channels\Properties\Actions\Action::class,
 			],
 			'set' => [
 				file_get_contents(__DIR__ . '/../../../fixtures/Documents/channel.property.action.set.json'),
-				Documents\Actions\Properties\Channel::class,
+				Documents\States\Channels\Properties\Actions\Action::class,
 			],
 		];
 	}

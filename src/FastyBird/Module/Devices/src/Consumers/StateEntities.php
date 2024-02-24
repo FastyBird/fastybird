@@ -65,9 +65,9 @@ final class StateEntities implements ExchangeConsumers\Consumer
 		if (
 			in_array($routingKey, self::PROPERTIES_STATES_ROUTING_KEYS, true)
 			&& (
-				$document instanceof Documents\States\Properties\Connector
-				|| $document instanceof Documents\States\Properties\Device
-				|| $document instanceof Documents\States\Properties\Channel
+				$document instanceof Documents\States\Connectors\Properties\Property
+				|| $document instanceof Documents\States\Devices\Properties\Property
+				|| $document instanceof Documents\States\Channels\Properties\Property
 			)
 		) {
 			$this->stateCache->clean([

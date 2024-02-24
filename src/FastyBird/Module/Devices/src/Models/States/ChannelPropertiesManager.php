@@ -91,7 +91,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	public function read(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
 		MetadataTypes\Sources\Source|null $source,
-	): bool|Documents\States\Properties\Channel|null
+	): bool|Documents\States\Channels\Properties\Property|null
 	{
 		if ($this->useExchange) {
 			try {
@@ -99,7 +99,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Channel::class,
+						Documents\States\Channels\Properties\Actions\Action::class,
 						[
 							'action' => Types\PropertyAction::GET->value,
 							'channel' => $property->getChannel()->toString(),
@@ -140,7 +140,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Channel::class,
+						Documents\States\Channels\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -192,7 +192,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Channel::class,
+						Documents\States\Channels\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -376,7 +376,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 */
 	public function readState(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
-	): Documents\States\Properties\Channel|null
+	): Documents\States\Channels\Properties\Property|null
 	{
 		$mappedProperty = null;
 
@@ -416,7 +416,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 			$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
 
 			return $this->documentFactory->create(
-				Documents\States\Properties\Channel::class,
+				Documents\States\Channels\Properties\Property::class,
 				[
 					'id' => $property->getId()->toString(),
 					'channel' => $property->getChannel()->toString(),

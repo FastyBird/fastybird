@@ -82,7 +82,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool|Documents\States\Properties\Device|null>
+	 * @return Promise\PromiseInterface<bool|Documents\States\Devices\Properties\Property|null>
 	 */
 	public function read(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -95,7 +95,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Device::class,
+						Documents\States\Devices\Properties\Actions\Action::class,
 						[
 							'action' => Types\PropertyAction::GET->value,
 							'device' => $property->getDevice()->toString(),
@@ -124,7 +124,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 						),
 					],
 				);
-				assert($document instanceof Documents\States\Properties\Device || $document === null);
+				assert($document instanceof Documents\States\Devices\Properties\Property || $document === null);
 
 				return Promise\resolve($document);
 			} catch (Throwable $ex) {
@@ -150,7 +150,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Device::class,
+						Documents\States\Devices\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -198,7 +198,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 					$source ?? MetadataTypes\Sources\Module::DEVICES,
 					Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 					$this->documentFactory->create(
-						Documents\Actions\Properties\Device::class,
+						Documents\States\Devices\Properties\Actions\Action::class,
 						array_merge(
 							[
 								'action' => Types\PropertyAction::SET->value,
@@ -384,7 +384,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Documents\States\Properties\Device|null>
+	 * @return Promise\PromiseInterface<Documents\States\Devices\Properties\Property|null>
 	 *
 	 * @throws Exceptions\InvalidState
 	 *
@@ -430,7 +430,7 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 						$getValue = $this->convertStoredState($property, $mappedProperty, $state, false);
 
 						$deferred->resolve($this->documentFactory->create(
-							Documents\States\Properties\Device::class,
+							Documents\States\Devices\Properties\Property::class,
 							[
 								'id' => $property->getId()->toString(),
 								'device' => $property->getDevice()->toString(),

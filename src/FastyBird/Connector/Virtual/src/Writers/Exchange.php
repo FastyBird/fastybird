@@ -108,7 +108,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof DevicesDocuments\States\Properties\Device) {
+		if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
 			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($document->getDevice());
@@ -171,7 +171,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 					),
 				);
 			}
-		} elseif ($document instanceof DevicesDocuments\States\Properties\Channel) {
+		} elseif ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
 			$findChannelQuery = new Queries\Configuration\FindChannels();
 			$findChannelQuery->byId($document->getChannel());
 

@@ -243,7 +243,7 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof DevicesDocuments\States\Properties\Device) {
+				} elseif ($state instanceof DevicesDocuments\States\Devices\Properties\Property) {
 					// Property state is set
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
@@ -263,7 +263,7 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof DevicesDocuments\States\Properties\Channel) {
+				} elseif ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 					// Property state is set
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
@@ -283,7 +283,7 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof DevicesDocuments\States\Properties\Device) {
+				} elseif ($state instanceof DevicesDocuments\States\Devices\Properties\Property) {
 					// Property state is set
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
@@ -303,7 +303,7 @@ abstract class Periodic
 
 					// Requesting property state failed
 					continue;
-				} elseif ($state instanceof DevicesDocuments\States\Properties\Channel) {
+				} elseif ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 					// Property state is set
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Channel.php
+ * Action.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -13,13 +13,14 @@
  * @date           01.06.22
  */
 
-namespace FastyBird\Module\Devices\Documents\Actions\Properties;
+namespace FastyBird\Module\Devices\Documents\States\Channels\Properties\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
@@ -39,7 +40,7 @@ use function sprintf;
 #[EXCHANGE\RoutingMap([
 	Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
 ])]
-final readonly class Channel implements MetadataDocuments\Document
+final readonly class Action implements MetadataDocuments\Document
 {
 
 	public function __construct(
@@ -50,15 +51,15 @@ final readonly class Channel implements MetadataDocuments\Document
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: Values::class),
+			new ObjectMapper\Rules\MappedObjectValue(class: Documents\States\ActionValues::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private Values|null $set = null,
+		private Documents\States\ActionValues|null $set = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(class: Values::class),
+			new ObjectMapper\Rules\MappedObjectValue(class: Documents\States\ActionValues::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		private Values|null $write = null,
+		private Documents\States\ActionValues|null $write = null,
 	)
 	{
 	}
@@ -86,7 +87,7 @@ final readonly class Channel implements MetadataDocuments\Document
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getSet(): Values|null
+	public function getSet(): Documents\States\ActionValues|null
 	{
 		if ($this->getAction() !== Types\PropertyAction::SET) {
 			throw new Exceptions\InvalidState(
@@ -100,7 +101,7 @@ final readonly class Channel implements MetadataDocuments\Document
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getWrite(): Values|null
+	public function getWrite(): Documents\States\ActionValues|null
 	{
 		if ($this->getAction() !== Types\PropertyAction::SET) {
 			throw new Exceptions\InvalidState(
@@ -117,9 +118,10 @@ final readonly class Channel implements MetadataDocuments\Document
 	public function toArray(): array
 	{
 		$data = [
-			'action' => $this->getAction()->value,
+			'id' => $this->getId()->toString(),
 			'channel' => $this->getChannel()->toString(),
 			'property' => $this->getProperty()->toString(),
+			'action' => $this->getAction()->value,
 		];
 
 		if ($this->getAction() === Types\PropertyAction::SET) {

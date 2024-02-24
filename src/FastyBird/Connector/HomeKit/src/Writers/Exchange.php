@@ -125,10 +125,10 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	): void
 	{
 		if (
-			$document instanceof DevicesDocuments\States\Properties\Device
-			|| $document instanceof DevicesDocuments\States\Properties\Channel
+			$document instanceof DevicesDocuments\States\Devices\Properties\Property
+			|| $document instanceof DevicesDocuments\States\Channels\Properties\Property
 		) {
-			if ($document instanceof DevicesDocuments\States\Properties\Device) {
+			if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
 				$findDeviceQuery = new Queries\Configuration\FindDevices();
 				$findDeviceQuery->forConnector($this->connector);
 				$findDeviceQuery->byId($document->getDevice());

@@ -66,7 +66,7 @@ final class State extends JsonApiSchemas\JsonApi
 
 	public function getEntityClass(): string
 	{
-		return Documents\States\Properties\Device::class;
+		return Documents\States\Devices\Properties\Property::class;
 	}
 
 	public function getType(): string

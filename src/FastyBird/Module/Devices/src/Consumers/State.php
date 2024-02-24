@@ -102,7 +102,7 @@ final class State implements ExchangeConsumers\Consumer
 		string $routingKey,
 	): void
 	{
-		if ($document instanceof Documents\Actions\Properties\Connector) {
+		if ($document instanceof Documents\States\Connectors\Properties\Actions\Action) {
 			if ($document->getAction() === Types\PropertyAction::SET) {
 				$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 				$findConnectorPropertyQuery->byId($document->getProperty());
@@ -234,7 +234,7 @@ final class State implements ExchangeConsumers\Consumer
 						);
 					});
 			}
-		} elseif ($document instanceof Documents\Actions\Properties\Device) {
+		} elseif ($document instanceof Documents\States\Devices\Properties\Actions\Action) {
 			if ($document->getAction() === Types\PropertyAction::SET) {
 				$findConnectorPropertyQuery = new Queries\Configuration\FindDeviceProperties();
 				$findConnectorPropertyQuery->byId($document->getProperty());
@@ -366,7 +366,7 @@ final class State implements ExchangeConsumers\Consumer
 						);
 					});
 			}
-		} elseif ($document instanceof Documents\Actions\Properties\Channel) {
+		} elseif ($document instanceof Documents\States\Channels\Properties\Actions\Action) {
 			if ($document->getAction() === Types\PropertyAction::SET) {
 				$findConnectorPropertyQuery = new Queries\Configuration\FindChannelProperties();
 				$findConnectorPropertyQuery->byId($document->getProperty());
