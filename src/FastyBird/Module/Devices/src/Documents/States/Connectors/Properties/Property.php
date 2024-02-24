@@ -43,9 +43,6 @@ use function array_merge;
 final class Property extends Devices\Documents\States\Property
 {
 
-	use MetadataDocuments\TCreatedAt;
-	use MetadataDocuments\TUpdatedAt;
-
 	public function __construct(
 		Uuid\UuidInterface $id,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
