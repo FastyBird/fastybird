@@ -29,12 +29,8 @@ jobs:
       matrix:
         operating-system: [ "ubuntu-latest" ]
 
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4"
-
-      - name: "Check of ${{ matrix.package.name }}"
-        uses: "FastyBird/.github/workflows/ci.yml@main"
-        with:
-          php-version: "8.2"
-          working-directory: ".src/FastyBird/Library/Application"
+    uses: "FastyBird/.github/workflows/ci.yml@main"
+    secrets: "inherit"
+    with:
+      php-version: "8.2"
+      working-directory: ".src/FastyBird/Library/Application"
