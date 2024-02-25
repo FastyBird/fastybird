@@ -44,17 +44,16 @@ jobs:
           path: "./.github/workflows/monorepo-matrix.json"
 
   ci:
-    name: "Package CI - ${{ matrix.package.name }}"
+    name: "Package CI"
     needs: [ "build_matrix" ]
 
     uses: "FastyBird/.github/.github/workflows/ci-php.yaml@main"
     secrets: "inherit"
     with:
       php-version: "8.2"
-      working-directory: "${{ matrix.package.local-path }}"
+      working-directory: "src/FastyBird/Library/Application"
 
     strategy:
       fail-fast: false
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
