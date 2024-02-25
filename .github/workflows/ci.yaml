@@ -20,10 +20,42 @@ env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ORGANIZATION_ACCESS_TOKEN }}"}}'
 
 jobs:
+  build_matrix:
+    name: "Create list of packages for split"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ "ubuntu-latest" ]
+
+    # This step is needed, so the output gets to the next defined job
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.content }}
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "Read matrix configuration"
+        id: "set-matrix"
+        uses: "juliangruber/read-file-action@v1"
+        with:
+          path: "./.github/workflows/monorepo-matrix.json"
+
   ci:
-    name: "CI test"
+    name: "Package CI"
+    runs-on: "${{ matrix.operating-system }}"
+    needs: [ "build_matrix" ]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ "ubuntu-latest" ]
+        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
+
     uses: "FastyBird/.github/.github/workflows/ci-php.yaml@main"
     secrets: "inherit"
     with:
       php-version: "8.2"
-      working-directory: "./src/FastyBird/Library/Application"
+      working-directory: "${{ matrix.package.local-path }}"

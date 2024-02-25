@@ -50,7 +50,7 @@ mutations: ## Check code for mutants
 
 mutations-tests:
 	mkdir -p var/coverage
- 	$(PRE_PHP) $(PHPUNIT_MUTATIONS) --coverage-xml=var/coverage/xml --log-junit=var/coverage/junit.xml
+	$(PRE_PHP) $(PHPUNIT_MUTATIONS) --coverage-xml=var/coverage/xml --log-junit=var/coverage/junit.xml
 
 mutations-infection:
 	$(PRE_PHP) vendor/bin/infection \
