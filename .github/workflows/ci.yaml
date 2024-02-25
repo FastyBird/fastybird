@@ -44,7 +44,7 @@ jobs:
           path: "./.github/workflows/monorepo-matrix.json"
 
   ci:
-    name: "Package CI"
+    name: "Package CI - ${{ matrix.package.name }}"
     runs-on: "${{ matrix.operating-system }}"
     needs: [ "build_matrix" ]
 
