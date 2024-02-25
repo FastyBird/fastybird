@@ -34,4 +34,4 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: "Check of ${{ matrix.package.name }}"
-        uses: "src/FastyBird/Library/Application/.github/workflows/ci.yml@main"
+        uses: "./src/FastyBird/Library/Application/.github/workflows/ci.yml@main"
