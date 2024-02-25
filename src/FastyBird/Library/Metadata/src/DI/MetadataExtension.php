@@ -19,6 +19,7 @@ use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Schemas;
+use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -79,6 +80,16 @@ class MetadataExtension extends DI\CompilerExtension
 		 * DOCUMENTS SERVICES
 		 */
 
+		$metadataCache = $builder->addDefinition(
+			$this->prefix('document.cache'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => 'metadata_class_metadata',
+			])
+			->setAutowired(false);
+
 		$builder->addDefinition('document.factory', new DI\Definitions\ServiceDefinition())
 			->setType(Documents\DocumentFactory::class);
 
@@ -104,6 +115,7 @@ class MetadataExtension extends DI\CompilerExtension
 			->setType(Documents\Mapping\ClassMetadataFactory::class)
 			->setArguments([
 				'driver' => $mappingDriver,
+				'cache' => $metadataCache,
 			]);
 
 		foreach ($configuration->documents->mapping as $namespace => $path) {

@@ -18,7 +18,6 @@ final class DocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Mapping
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *
@@ -39,7 +38,6 @@ final class DocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Mapping
 	 * @throws Exceptions\MalformedInput
 	 * @throws Nette\DI\MissingServiceException
 	 *

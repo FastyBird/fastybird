@@ -85,7 +85,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -107,7 +106,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -143,7 +141,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -173,7 +170,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
 	 */
 	private function publishEntity(Entities\Entity $entity, string $action): void

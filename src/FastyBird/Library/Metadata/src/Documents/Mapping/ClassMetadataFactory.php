@@ -15,7 +15,6 @@
 
 namespace FastyBird\Library\Metadata\Documents\Mapping;
 
-use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Documents\Mapping;
 use FastyBird\Library\Metadata\Events;
@@ -59,15 +58,12 @@ final class ClassMetadataFactory
 
 	private string $cacheSalt = '__CLASS_METADATA__';
 
-	private Caching\Cache|null $cache;
-
 	public function __construct(
 		private readonly Mapping\Driver\MappingDriver $driver,
-		private readonly Cache\CacheFactory|null $cacheFactory = null,
+		private readonly Caching\Cache $cache,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->cache = $this->cacheFactory?->create('metadata_class_metadata');
 	}
 
 	/**
@@ -78,7 +74,6 @@ final class ClassMetadataFactory
 	 * @return Mapping\ClassMetadata<T>
 	 *
 	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\Mapping
 	 */
 	public function getMetadataFor(string $className): Mapping\ClassMetadata
 	{
@@ -99,14 +94,10 @@ final class ClassMetadataFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided document class: "%s" is non existing', $className));
 		}
 
-		if ($this->cache !== null) {
-			$this->cache->load(
-				$this->getCacheKey($className),
-				fn () => $this->loadMetadata($className),
-			);
-		} else {
-			$this->loadMetadata($className);
-		}
+		$this->cache->load(
+			$this->getCacheKey($className),
+			fn () => $this->loadMetadata($className),
+		);
 
 		/** @var ClassMetadata<T> $metadata */
 		$metadata = $this->loadedMetadata[$className];

@@ -19,7 +19,7 @@ extensions:
     contributteMonolog      : Contributte\Monolog\DI\MonologExtension
     contributteCacheFactory : Contributte\Cache\DI\CacheFactoryExtension
     orisaiObjectMapper      : OriNette\ObjectMapper\DI\ObjectMapperExtension
-    fbApplicationLibrary      : FastyBird\Library\Application\DI\ApplicationExtension
+    fbApplicationLibrary    : FastyBird\Library\Application\DI\ApplicationExtension
 
 ##################################
 # Nette extensions configuration #

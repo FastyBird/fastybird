@@ -42,6 +42,7 @@
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
+    "orisai/object-mapper": "^0.1",
     "psr/log": "^3.0"
   },
   "require-dev": {
