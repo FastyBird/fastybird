@@ -230,7 +230,6 @@
         }
     },
     "extra": {
-        "enable-patching": false,
         "patches": {
             "contributte/monolog": {
                 "Bug: invalid callback definition": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/contributte-monolog-src-loggerholder-php.patch"
@@ -242,6 +241,9 @@
                 "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
                 "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch",
                 "Feature: Dynamic discriminator map": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-mapping-classmetadatafactory-php.patch"
+            },
+            "doctrine/dbal": {
+                "Bug: PDO:Quote null patch": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-dbal-src-connection-php.patch"
             },
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
@@ -255,7 +257,8 @@
             "softcreatr/jsonpath": {
                 "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
             }
-        }
+        },
+        "enable-patching": false
     },
     "config": {
         "sort-packages": true,
