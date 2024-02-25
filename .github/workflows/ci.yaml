@@ -21,7 +21,7 @@ env:
 
 jobs:
   ci:
-    name: "CI"
+    name: "CI test"
     uses: "FastyBird/.github/.github/workflows/ci-php.yaml@main"
     secrets: "inherit"
     with:
