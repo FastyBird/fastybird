@@ -22,14 +22,7 @@ env:
 jobs:
   ci:
     name: "CI"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    uses: "FastyBird/.github/workflows/ci-php.yaml@main"
+    uses: FastyBird/.github/workflows/ci-php.yaml@main
     secrets: "inherit"
     with:
       php-version: "8.2"
