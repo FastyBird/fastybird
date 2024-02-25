@@ -9,6 +9,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Commands;
 use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
 use FastyBird\Connector\Zigbee2Mqtt\Subscribers;
@@ -52,6 +53,8 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
+
+		self::assertNotNull($container->getByType(Models\StateRepository::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
