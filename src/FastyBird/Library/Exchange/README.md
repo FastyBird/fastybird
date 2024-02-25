@@ -27,9 +27,17 @@ implementing data exchange services.
 - Publisher container for aggregating all application publishers
 - Messages events
 
+Exchange library is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
+and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).
+
+## Requirements
+
+Application library is tested against PHP 8.2.
+
 ## Installation
 
-The best way to install **fastybird/exchange-library** is using [Composer](http://getcomposer.org/):
+This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.
+In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
 composer require fastybird/exchange-library
@@ -37,8 +45,7 @@ composer require fastybird/exchange-library
 
 ## Documentation
 
-Learn how to consume & publish messages
-in [documentation](https://github.com/FastyBird/exchange-library/blob/main/docs/index.md).
+:book: Learn how to consume & publish messages in [documentation](https://github.com/FastyBird/exchange-library/wiki).
 
 # FastyBird
 
@@ -50,17 +57,17 @@ FastyBird is an Open Source IOT solution built from decoupled components with po
 
 ## Documentation
 
-Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+:book: Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 
-The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome
+contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
-or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
-project.
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs reporting or send an [mail](mailto:code@fastybird.com)
+to us or you could reach us on [X newtwork](https://x.com/fastybird) for any idea that can improve the project.
 
 Thank you for testing, reporting and contributing.
 

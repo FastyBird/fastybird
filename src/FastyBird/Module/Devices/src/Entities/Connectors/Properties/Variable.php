@@ -16,18 +16,18 @@
 namespace FastyBird\Module\Devices\Entities\Connectors\Properties;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Variable extends Property
 {
 
-	public function getType(): MetadataTypes\PropertyType
+	public const TYPE = Types\PropertyType::VARIABLE->value;
+
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_VARIABLE);
+		return self::TYPE;
 	}
 
 	/**

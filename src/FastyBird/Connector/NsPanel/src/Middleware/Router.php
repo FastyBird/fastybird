@@ -20,7 +20,7 @@ use FastyBird\Connector\NsPanel\Events;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -102,9 +102,9 @@ final class Router
 			$this->logger->warning(
 				'Request ended with error',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $request->getMethod(),
 						'path' => $request->getUri()->getPath(),
@@ -118,12 +118,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));
@@ -131,9 +131,9 @@ final class Router
 			$this->logger->warning(
 				'Received invalid HTTP request',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'request' => [
 						'method' => $request->getMethod(),
 						'path' => $request->getUri()->getPath(),
@@ -147,12 +147,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));
@@ -160,9 +160,9 @@ final class Router
 			$this->logger->error(
 				'An unhandled error occurred during handling server HTTP request',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'router-middleware',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -172,12 +172,12 @@ final class Router
 			$response = $response->withBody(SlimRouter\Http\Stream::fromBodyString(Utils\Json::encode([
 				'event' => [
 					'header' => [
-						'name' => Types\Header::ERROR_RESPONSE,
+						'name' => Types\Header::ERROR_RESPONSE->value,
 						'message_id' => $this->getMessageId($request),
 						'version' => '1',
 					],
 					'payload' => [
-						'type' => Types\ServerStatus::INTERNAL_ERROR,
+						'type' => Types\ServerStatus::INTERNAL_ERROR->value,
 					],
 				],
 			])));

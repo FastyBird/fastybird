@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
 use function in_array;
-use function strval;
 
 /**
  * Capability types
@@ -27,50 +25,45 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Capability extends Consistence\Enum\Enum
+enum Capability: string
 {
 
-	public const POWER = 'power';
+	case POWER = 'power';
 
-	public const TOGGLE = 'toggle';
+	case TOGGLE = 'toggle';
 
-	public const BRIGHTNESS = 'brightness';
+	case BRIGHTNESS = 'brightness';
 
-	public const COLOR_TEMPERATURE = 'color-temperature';
+	case COLOR_TEMPERATURE = 'color-temperature';
 
-	public const COLOR_RGB = 'color-rgb';
+	case COLOR_RGB = 'color-rgb';
 
-	public const PERCENTAGE = 'percentage';
+	case PERCENTAGE = 'percentage';
 
-	public const MOTOR_CONTROL = 'motor-control';
+	case MOTOR_CONTROL = 'motor-control';
 
-	public const MOTOR_REVERSE = 'motor-reverse';
+	case MOTOR_REVERSE = 'motor-reverse';
 
-	public const MOTOR_CALIBRATION = 'motor-clb';
+	case MOTOR_CALIBRATION = 'motor-clb';
 
-	public const STARTUP = 'startup';
+	case STARTUP = 'startup';
 
-	public const CAMERA_STREAM = 'camera-stream';
+	case CAMERA_STREAM = 'camera-stream';
 
-	public const DETECT = 'detect';
+	case DETECT = 'detect';
 
-	public const HUMIDITY = 'humidity';
+	case HUMIDITY = 'humidity';
 
-	public const TEMPERATURE = 'temperature';
+	case TEMPERATURE = 'temperature';
 
-	public const BATTERY = 'battery';
+	case BATTERY = 'battery';
 
-	public const PRESS = 'press';
+	case PRESS = 'press';
 
-	public const RSSI = 'rssi';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
+	case RSSI = 'rssi';
 
 	/**
-	 * @return array<string>
+	 * @return array<Capability>
 	 */
 	public function getReadWrite(): array
 	{
@@ -88,7 +81,7 @@ class Capability extends Consistence\Enum\Enum
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Capability>
 	 */
 	public function getRead(): array
 	{
@@ -106,17 +99,12 @@ class Capability extends Consistence\Enum\Enum
 
 	public function hasReadWritePermission(): bool
 	{
-		return in_array(self::getValue(), self::getReadWrite(), true);
+		return in_array($this, self::getReadWrite(), true);
 	}
 
 	public function hasReadPermission(): bool
 	{
-		return in_array(self::getValue(), self::getRead(), true);
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
+		return in_array($this, self::getRead(), true);
 	}
 
 }

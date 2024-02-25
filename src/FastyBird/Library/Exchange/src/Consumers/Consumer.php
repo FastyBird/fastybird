@@ -30,9 +30,9 @@ interface Consumer
 {
 
 	public function consume(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
+		MetadataDocuments\Document|null $document,
 	): void;
 
 }

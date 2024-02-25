@@ -1,7 +1,7 @@
 {
   "data" : {
     "id" : "05f28df9-5f19-4923-b3f8-b9090116dadc",
-    "type" : "com.fastybird.triggers-module/action/channel-property",
+    "type" : "com.fastybird.devices-module-automator/action/channel-property",
     "attributes" : {
       "channel" : "0aa74659-784d-49cf-b833-5d21f74e8c82",
       "device" : "a830828c-6768-4274-b909-20ce0e222347",

@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Devices\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Models;
 use Nette\Localization;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
@@ -40,7 +39,6 @@ class Install extends Console\Command\Command
 	public const NAME = 'fb:devices-module:install';
 
 	public function __construct(
-		private readonly Models\Configuration\Builder $configurationBuilder,
 		private readonly Devices\Logger $logger,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
@@ -94,8 +92,6 @@ class Install extends Console\Command\Command
 		try {
 			$this->initializeDatabase($io, $input, $output);
 
-			$this->configurationBuilder->clean();
-
 			if ($input->getOption('quiet') === false) {
 				$io->success($this->translator->translate('//devices-module.cmd.install.messages.success'));
 			}
@@ -103,11 +99,14 @@ class Install extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'initialize-cmd',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'install-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//devices-module.cmd.install.messages.error'));

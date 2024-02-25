@@ -15,14 +15,14 @@
 
 namespace FastyBird\Module\Devices\Models\Entities\Devices;
 
-use Evenement;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Models;
 use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher;
 use function assert;
 
 /**
@@ -33,25 +33,30 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DevicesManager extends Evenement\EventEmitter implements Evenement\EventEmitterInterface
+final class DevicesManager
 {
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Devices\Device>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Devices\Device> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Devices\Device> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+	)
 	{
-		// Transformer CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Devices\Device
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Devices\Device);
 
-		$this->emit(Devices\Constants::EVENT_ENTITY_CREATED, [$entity]);
+		$this->dispatcher?->dispatch(new Events\EntityCreated($entity));
 
 		return $entity;
 	}
@@ -64,10 +69,10 @@ final class DevicesManager extends Evenement\EventEmitter implements Evenement\E
 		Utils\ArrayHash $values,
 	): Entities\Devices\Device
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Devices\Device);
 
-		$this->emit(Devices\Constants::EVENT_ENTITY_UPDATED, [$entity]);
+		$this->dispatcher?->dispatch(new Events\EntityUpdated($entity));
 
 		return $entity;
 	}
@@ -78,13 +83,25 @@ final class DevicesManager extends Evenement\EventEmitter implements Evenement\E
 	public function delete(Entities\Devices\Device $entity): bool
 	{
 		// Delete entity from database
-		$result = $this->entityCrud->getEntityDeleter()->delete($entity);
+		$result = $this->getEntityCrud()->getEntityDeleter()->delete($entity);
 
 		if ($result) {
-			$this->emit(Devices\Constants::EVENT_ENTITY_DELETED, [$entity]);
+			$this->dispatcher?->dispatch(new Events\EntityDeleted($entity));
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Devices\Device>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Devices\Device::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

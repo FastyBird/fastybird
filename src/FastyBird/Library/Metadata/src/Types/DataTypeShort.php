@@ -15,8 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
+use function in_array;
 
 /**
  * Device or channel property data types
@@ -26,59 +25,57 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DataTypeShort extends Consistence\Enum\Enum
+enum DataTypeShort: string
 {
 
-	/**
-	 * Define data types
-	 */
-	public const DATA_TYPE_CHAR = 'i8';
+	case CHAR = 'i8';
 
-	public const DATA_TYPE_UCHAR = 'u8';
+	case UCHAR = 'u8';
 
-	public const DATA_TYPE_SHORT = 'i16';
+	case SHORT = 'i16';
 
-	public const DATA_TYPE_USHORT = 'u16';
+	case USHORT = 'u16';
 
-	public const DATA_TYPE_INT = 'i32';
+	case INT = 'i32';
 
-	public const DATA_TYPE_UINT = 'u32';
+	case UINT = 'u32';
 
-	public const DATA_TYPE_FLOAT = 'f';
+	case FLOAT = 'f';
 
-	public const DATA_TYPE_BOOLEAN = 'b';
+	case BOOLEAN = 'b';
 
-	public const DATA_TYPE_STRING = 's';
+	case STRING = 's';
 
-	public const DATA_TYPE_ENUM = 'e';
+	case ENUM = 'e';
 
-	public const DATA_TYPE_DATE = 'd';
+	case DATE = 'd';
 
-	public const DATA_TYPE_TIME = 't';
+	case TIME = 't';
 
-	public const DATA_TYPE_DATETIME = 'dt';
+	case DATETIME = 'dt';
 
-	public const DATA_TYPE_BUTTON = 'btn';
+	case BUTTON = 'btn';
 
-	public const DATA_TYPE_SWITCH = 'sw';
+	case SWITCH = 'sw';
 
-	public const DATA_TYPE_COVER = 'cvr';
+	case COVER = 'cvr';
 
-	public const DATA_TYPE_UNKNOWN = 'unk';
+	case UNKNOWN = 'unk';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::DATA_TYPE_CHAR)
-			|| self::equalsValue(self::DATA_TYPE_UCHAR)
-			|| self::equalsValue(self::DATA_TYPE_SHORT)
-			|| self::equalsValue(self::DATA_TYPE_USHORT)
-			|| self::equalsValue(self::DATA_TYPE_INT)
-			|| self::equalsValue(self::DATA_TYPE_UINT);
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
+		return in_array(
+			$this,
+			[
+				self::CHAR,
+				self::UCHAR,
+				self::SHORT,
+				self::USHORT,
+				self::INT,
+				self::UINT,
+			],
+			true,
+		);
 	}
 
 }

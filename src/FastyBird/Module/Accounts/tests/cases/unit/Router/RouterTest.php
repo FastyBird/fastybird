@@ -3,10 +3,10 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Router;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -15,11 +15,15 @@ use Nette;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
 
-final class RouterTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class RouterTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -33,7 +37,7 @@ final class RouterTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException

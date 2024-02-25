@@ -3,8 +3,8 @@
 namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Hydrators;
+use FastyBird\Module\Triggers\Types;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
@@ -59,7 +59,7 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 	 */
 	protected function hydrateOperatorAttribute(
 		JsonAPIDocument\Objects\IStandardObject $attributes,
-	): MetadataTypes\TriggerConditionOperator
+	): Types\ConditionOperator
 	{
 		// Condition operator have to be set
 		if (
@@ -77,7 +77,7 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 			);
 
 			// ...and have to be valid value
-		} elseif (!MetadataTypes\TriggerConditionOperator::isValidValue($attributes->get('operator'))) {
+		} elseif (Types\ConditionOperator::tryFrom($attributes->get('operator')) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
@@ -88,7 +88,7 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 			);
 		}
 
-		return MetadataTypes\TriggerConditionOperator::get($attributes->get('operator'));
+		return Types\ConditionOperator::from($attributes->get('operator'));
 	}
 
 	/**

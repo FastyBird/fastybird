@@ -126,13 +126,7 @@ final class Factory implements ExchangeExchange\Factory
 
 					$channel->consume(
 						function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
-							try {
-								$result = $this->messagesHandler->handle($message);
-							} catch (Exceptions\Terminate) {
-								$client->stop();
-
-								return;
-							}
+							$result = $this->messagesHandler->handle($message);
 
 							switch ($result) {
 								case Handlers\Message::MESSAGE_ACK:

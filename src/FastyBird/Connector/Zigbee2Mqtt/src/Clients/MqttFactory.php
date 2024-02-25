@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Zigbee2MQTT MQTT client factory
@@ -31,6 +31,6 @@ interface MqttFactory extends ClientFactory
 
 	public const MODE = Types\ClientMode::MQTT;
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Mqtt;
+	public function create(Documents\Connectors\Connector $connector): Mqtt;
 
 }

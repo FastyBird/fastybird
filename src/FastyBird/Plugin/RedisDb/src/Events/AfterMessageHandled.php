@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           09.10.21
+ * @date           15.02.24
  */
 
 namespace FastyBird\Plugin\RedisDb\Events;
@@ -28,13 +28,13 @@ use Symfony\Contracts\EventDispatcher;
 class AfterMessageHandled extends EventDispatcher\Event
 {
 
-	public function __construct(private readonly string $payload)
+	public function __construct(private readonly string $message)
 	{
 	}
 
-	public function getPayload(): string
+	public function getMessage(): string
 	{
-		return $this->payload;
+		return $this->message;
 	}
 
 }

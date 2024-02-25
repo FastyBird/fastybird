@@ -31,7 +31,7 @@ use function is_scalar;
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Channel extends JsonApiHydrators\Hydrator
+abstract class Channel extends JsonApiHydrators\Hydrator
 {
 
 	/** @var array<int|string, string> */
@@ -49,11 +49,6 @@ class Channel extends JsonApiHydrators\Hydrator
 		= [
 			Schemas\Channels\Channel::RELATIONSHIPS_DEVICE,
 		];
-
-	public function getEntityName(): string
-	{
-		return Entities\Channels\Channel::class;
-	}
 
 	protected function hydrateNameAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
 	{

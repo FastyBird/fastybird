@@ -17,7 +17,6 @@ namespace FastyBird\Connector\FbMqtt\API;
 
 use BinSoul\Net\Mqtt;
 use Closure;
-use Evenement;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Clients\Flow;
 use FastyBird\Connector\FbMqtt\Exceptions;
@@ -25,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use InvalidArgumentException;
 use Nette;
+use Nette\Utils;
 use React\EventLoop;
 use React\Promise;
 use React\Socket;
@@ -59,11 +59,37 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Client implements Evenement\EventEmitterInterface
+final class Client
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
+
+	/** @var array<Closure(Mqtt\Connection $connection): void> */
+	public array $onConnect = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnect = [];
+
+	/** @var array<Closure(): void> */
+	public array $onClose = [];
+
+	/** @var array<Closure(Mqtt\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Mqtt\Message $message): void> */
+	public array $onPublish = [];
+
+	/** @var array<Closure(Mqtt\Subscription $subscription): void> */
+	public array $onSubscribe = [];
+
+	/** @var array<Closure(Mqtt\Subscription $subscription): void> */
+	public array $onUnsubscribe = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onWarning = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $isConnected = false;
 
@@ -169,7 +195,7 @@ final class Client implements Evenement\EventEmitterInterface
 						$this->logger->info(
 							sprintf('Connected to MQTT broker with client id %s', $connection->getClientID()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $connection->getUsername(),
@@ -178,7 +204,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('connect');
+						Utils\Arrays::invoke($this->onConnect, $connection);
 
 						$deferred->resolve($result ?? $connection);
 					})
@@ -232,7 +258,7 @@ final class Client implements Evenement\EventEmitterInterface
 					$this->logger->info(
 						sprintf('Disconnected from MQTT broker with client id %s', $connection->getClientID()),
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+							'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 							'type' => 'api-client',
 							'credentials' => [
 								'username' => $connection->getUsername(),
@@ -241,7 +267,7 @@ final class Client implements Evenement\EventEmitterInterface
 						],
 					);
 
-					$this->emit('disconnect');
+					Utils\Arrays::invoke($this->onDisconnect);
 				}
 
 				$deferred->resolve($flowResult ?? $connection);
@@ -335,7 +361,7 @@ final class Client implements Evenement\EventEmitterInterface
 		$this->logger->info(
 			'Established connection to MQTT broker',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'credentials' => [
 					'username' => $connection->getUsername(),
@@ -364,7 +390,7 @@ final class Client implements Evenement\EventEmitterInterface
 				$exception = new Exceptions\Runtime(sprintf('Connection timed out after %d seconds', $timeout));
 				$deferred->reject($exception);
 
-				/** @phpstan-ignore-next-line */
+				// @phpstan-ignore-next-line
 				if ($future instanceof Promise\PromiseInterface) {
 					$future->cancel();
 				}
@@ -588,7 +614,7 @@ final class Client implements Evenement\EventEmitterInterface
 			$this->logger->info(
 				'Connection to MQTT broker has been closed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'api-client',
 					'credentials' => [
 						'username' => $connection->getUsername(),
@@ -597,7 +623,7 @@ final class Client implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$this->emit('close');
+			Utils\Arrays::invoke($this->onClose);
 		}
 	}
 
@@ -610,7 +636,7 @@ final class Client implements Evenement\EventEmitterInterface
 		$this->logger->warning(
 			sprintf('There was an error %s', $error->getMessage()),
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
@@ -622,7 +648,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit('warning', [$error]);
+		Utils\Arrays::invoke($this->onWarning, $error);
 	}
 
 	/**
@@ -634,7 +660,7 @@ final class Client implements Evenement\EventEmitterInterface
 		$this->logger->error(
 			sprintf('There was an error %s', $error->getMessage()),
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'api-client',
 				'error' => [
 					'message' => $error->getMessage(),
@@ -646,7 +672,7 @@ final class Client implements Evenement\EventEmitterInterface
 			],
 		);
 
-		$this->emit('error', [$error]);
+		Utils\Arrays::invoke($this->onError, $error);
 	}
 
 	/**
@@ -734,7 +760,7 @@ final class Client implements Evenement\EventEmitterInterface
 						$this->logger->info(
 							sprintf('Connected to MQTT broker with client id %s', $result->getClientID()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
@@ -743,7 +769,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('connect');
+						Utils\Arrays::invoke($this->onConnect, $result);
 
 						break;
 					case 'disconnect':
@@ -754,7 +780,7 @@ final class Client implements Evenement\EventEmitterInterface
 						$this->logger->info(
 							sprintf('Disconnected from MQTT broker with client id %s', $result->getClientID()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'credentials' => [
 									'username' => $result->getUsername(),
@@ -763,7 +789,7 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('disconnect');
+						Utils\Arrays::invoke($this->onDisconnect);
 
 						break;
 					case 'message':
@@ -778,12 +804,12 @@ final class Client implements Evenement\EventEmitterInterface
 								$result->getPayload(),
 							),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'api-client',
 								'message' => [
 									'topic' => $result->getTopic(),
 									'payload' => $result->getPayload(),
-									'isRetained' => $result->isRetained(),
+									'is_retained' => $result->isRetained(),
 									'qos' => $result->getQosLevel(),
 								],
 								'credentials' => [
@@ -792,28 +818,28 @@ final class Client implements Evenement\EventEmitterInterface
 							],
 						);
 
-						$this->emit('message', [$result]);
+						Utils\Arrays::invoke($this->onMessage, $result);
 
 						break;
 					case 'publish':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Message);
 
-						$this->emit('publish', [$result]);
+						Utils\Arrays::invoke($this->onPublish, $result);
 
 						break;
 					case 'subscribe':
 						$result = $flow->getResult();
 						assert($result instanceof Mqtt\Subscription);
 
-						$this->emit('subscribe', [$result]);
+						Utils\Arrays::invoke($this->onSubscribe, $result);
 
 						break;
 					case 'unsubscribe':
 						/** @var array<Mqtt\Subscription> $result */
 						$result = $flow->getResult();
 
-						$this->emit('unsubscribe', [$result]);
+						Utils\Arrays::invoke($this->onUnsubscribe, $result);
 
 						break;
 				}

@@ -16,22 +16,20 @@
 namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -56,7 +54,7 @@ final class DirectiveController extends BaseController
 
 	public function __construct(
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly NsPanel\Helpers\MessageBuilder $messageBuilder,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -80,7 +78,7 @@ final class DirectiveController extends BaseController
 		$this->logger->debug(
 			'Requested updating of characteristics of selected accessories',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'directive-controller',
 				'request' => [
 					'method' => $request->getMethod(),
@@ -97,7 +95,7 @@ final class DirectiveController extends BaseController
 		if (!Uuid\Uuid::isValid($connectorId)) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Connector id could not be determined',
 			);
 		}
@@ -122,7 +120,7 @@ final class DirectiveController extends BaseController
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				Types\ServerStatus::INVALID_DIRECTIVE,
 				'Could not validate received response payload',
 				$ex->getCode(),
 				$ex,
@@ -130,7 +128,7 @@ final class DirectiveController extends BaseController
 		} catch (Exceptions\InvalidArgument $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Could not validate received response payload',
 				$ex->getCode(),
 				$ex,
@@ -138,22 +136,22 @@ final class DirectiveController extends BaseController
 		}
 
 		try {
-			$requestData = $this->entityHelper->create(
-				Entities\API\Request\SetDeviceState::class,
+			$requestData = $this->messageBuilder->create(
+				NsPanel\API\Messages\Request\SetDeviceState::class,
 				(array) Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
-				'Could not map data to request entity',
+				Types\ServerStatus::INVALID_DIRECTIVE,
+				'Could not map data to request message',
 				$ex->getCode(),
 				$ex,
 			);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INVALID_DIRECTIVE),
+				Types\ServerStatus::INVALID_DIRECTIVE,
 				'Request data are not valid JSON data',
 				$ex->getCode(),
 				$ex,
@@ -175,17 +173,17 @@ final class DirectiveController extends BaseController
 
 			foreach ($item->getProtocols() as $protocol => $value) {
 				$state[] = [
-					'capability' => $item->getType()->getValue(),
+					'capability' => $item->getType()->value,
 					'protocol' => $protocol,
-					'value' => MetadataUtilities\ValueHelper::flattenValue($value),
+					'value' => MetadataUtilities\Value::flattenValue($value),
 					'identifier' => $identifier,
 				];
 			}
 		}
 
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\StoreDeviceState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\StoreDeviceState::class,
 				[
 					'connector' => $connectorId,
 					'gateway' => $gateway->getId(),
@@ -196,12 +194,12 @@ final class DirectiveController extends BaseController
 		);
 
 		try {
-			$responseData = $this->entityHelper->create(
-				Entities\API\Response\SetDeviceState::class,
+			$responseData = $this->messageBuilder->create(
+				NsPanel\API\Messages\Response\SetDeviceState::class,
 				[
 					'event' => [
 						'header' => [
-							'name' => Types\Header::UPDATE_DEVICE_STATES_RESPONSE,
+							'name' => Types\Header::UPDATE_DEVICE_STATES_RESPONSE->value,
 							'message_id' => $requestData->getDirective()->getHeader()->getMessageId(),
 							'version' => NsPanel\Constants::NS_PANEL_API_VERSION_V1,
 						],
@@ -213,15 +211,15 @@ final class DirectiveController extends BaseController
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
-				'Could not map data to response entity',
+				Types\ServerStatus::INTERNAL_ERROR,
+				'Could not map data to response message',
 				$ex->getCode(),
 				$ex,
 			);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Response data are not valid JSON data',
 				$ex->getCode(),
 				$ex,
@@ -229,7 +227,7 @@ final class DirectiveController extends BaseController
 		} catch (RuntimeException $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::INTERNAL_ERROR),
+				Types\ServerStatus::INTERNAL_ERROR,
 				'Could not write data to response',
 				$ex->getCode(),
 				$ex,
@@ -246,28 +244,31 @@ final class DirectiveController extends BaseController
 	private function findGateway(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-	): MetadataDocuments\DevicesModule\Device
+	): Documents\Devices\Gateway
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
 
 		try {
-			$findQuery = new DevicesQueries\Configuration\FindDevices();
+			$findQuery = new Queries\Configuration\FindGatewayDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 
-			$gateway = $this->devicesConfigurationRepository->findOneBy($findQuery);
+			$gateway = $this->devicesConfigurationRepository->findOneBy(
+				$findQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			if ($gateway === null) {
 				throw new Exceptions\ServerRequestError(
 					$request,
-					Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+					Types\ServerStatus::ENDPOINT_UNREACHABLE,
 					'Device gateway could could not be found',
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
 				'Device gateway could could not be found',
 			);
 		}
@@ -282,30 +283,33 @@ final class DirectiveController extends BaseController
 	private function findDevice(
 		Message\ServerRequestInterface $request,
 		Uuid\UuidInterface $connectorId,
-		MetadataDocuments\DevicesModule\Device $gateway,
-	): MetadataDocuments\DevicesModule\Device
+		Documents\Devices\Gateway $gateway,
+	): Documents\Devices\Device
 	{
 		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
 
 		try {
-			$findQuery = new DevicesQueries\Configuration\FindDevices();
+			$findQuery = new Queries\Configuration\FindDevices();
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 			$findQuery->byConnectorId($connectorId);
 			$findQuery->forParent($gateway);
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				throw new Exceptions\ServerRequestError(
 					$request,
-					Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+					Types\ServerStatus::ENDPOINT_UNREACHABLE,
 					'Device could could not be found',
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new Exceptions\ServerRequestError(
 				$request,
-				Types\ServerStatus::get(Types\ServerStatus::ENDPOINT_UNREACHABLE),
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
 				'Device could could not be found',
 			);
 		}

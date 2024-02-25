@@ -18,18 +18,21 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Clients\Subscribers;
 use BinSoul\Net\Mqtt as NetMqtt;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
 use function is_array;
+use function strval;
 
 /**
  * Zigbee2MQTT MQTT devices messages subscriber
@@ -39,30 +42,29 @@ use function is_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Device
+readonly class Device
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector,
-		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
+		private Zigbee2Mqtt\Logger $logger,
+		private Queue\Queue $queue,
+		private Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
 
 	public function subscribe(API\Client $client): void
 	{
-		$client->on('message', [$this, 'onMessage']);
-	}
-
-	public function unsubscribe(API\Client $client): void
-	{
-		$client->removeListener('message', [$this, 'onMessage']);
+		$client->onMessage[] = function (NetMqtt\Message $message): void {
+			$this->onMessage($message);
+		};
 	}
 
 	/**
 	 * @throws Exceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onMessage(NetMqtt\Message $message): void
 	{
@@ -86,20 +88,20 @@ class Device
 					);
 
 					if (array_key_exists('type', $data)) {
-						if (!Types\DeviceMessageType::isValidValue($data['type'])) {
+						if (Types\DeviceMessageType::tryFrom(strval($data['type'])) === null) {
 							throw new Exceptions\ParseMessage('Received unsupported device message type');
 						}
 
-						$type = Types\DeviceMessageType::get($data['type']);
+						$type = Types\DeviceMessageType::from(strval($data['type']));
 
-						if ($type->equalsValue(Types\DeviceMessageType::AVAILABILITY)) {
+						if ($type === Types\DeviceMessageType::AVAILABILITY) {
 							if (
-								$message->getPayload() === ''
-								&& Types\ConnectionState::isValidValue($message->getPayload())
+								$message->getPayload() !== ''
+								&& Types\ConnectionState::tryFrom($message->getPayload()) !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										array_merge($data, ['state' => $message->getPayload()]),
 									),
 								);
@@ -111,10 +113,15 @@ class Device
 									$this->logger->warning(
 										'Received message payload is not valid for device connection state message',
 										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+											'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 											'type' => 'device-messages-subscriber',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
+											],
+											'message' => [
+												'topic' => $message->getTopic(),
+												'payload' => $message->getPayload(),
+												'qos' => $message->getQosLevel(),
 											],
 										],
 									);
@@ -123,23 +130,28 @@ class Device
 								}
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreDeviceConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
 										array_merge($data, $payload),
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\DeviceMessageType::GET)) {
+						} elseif ($type === Types\DeviceMessageType::GET) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for device get state message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'device-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -151,9 +163,16 @@ class Device
 							$this->logger->error(
 								'No handler for GET message type',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 									'type' => 'device-messages-subscriber',
-									'payload' => $message->getPayload(),
+									'connector' => [
+										'id' => $this->connector->getId()->toString(),
+									],
+									'message' => [
+										'topic' => $message->getTopic(),
+										'payload' => $message->getPayload(),
+										'qos' => $message->getQosLevel(),
+									],
 								],
 							);
 						}
@@ -164,10 +183,15 @@ class Device
 							$this->logger->warning(
 								'Received message payload is not valid for device state message',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 									'type' => 'device-messages-subscriber',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
+									],
+									'message' => [
+										'topic' => $message->getTopic(),
+										'payload' => $message->getPayload(),
+										'qos' => $message->getQosLevel(),
 									],
 								],
 							);
@@ -176,8 +200,8 @@ class Device
 						}
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceState::class,
 								array_merge($data, ['states' => $this->convertStatePayload($payload)]),
 							),
 						);
@@ -187,11 +211,16 @@ class Device
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'device-messages-subscriber',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
+						],
+						'message' => [
+							'topic' => $message->getTopic(),
+							'payload' => $message->getPayload(),
+							'qos' => $message->getQosLevel(),
 						],
 					],
 				);
@@ -210,11 +239,11 @@ class Device
 
 		foreach ($payload as $key => $value) {
 			$converted[] = is_array($value) ? [
-				'type' => Types\ExposeDataType::COMPOSITE,
+				'type' => Types\ExposeDataType::COMPOSITE->value,
 				'identifier' => $key,
 				'states' => $this->convertStatePayload($value),
 			] : [
-				'type' => Types\ExposeDataType::SINGLE,
+				'type' => Types\ExposeDataType::SINGLE->value,
 				'identifier' => $key,
 				'value' => $value,
 			];
@@ -236,11 +265,16 @@ class Device
 			$this->logger->error(
 				'Received device message payload is not valid JSON message',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'device-messages-subscriber',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
+					],
+					'message' => [
+						'topic' => $message->getTopic(),
+						'payload' => $message->getPayload(),
+						'qos' => $message->getQosLevel(),
 					],
 				],
 			);

@@ -15,17 +15,19 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function count;
+use function implode;
 use function serialize;
 
 /**
  * Find connectors configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\Connector
+ * @template T of Documents\Connectors\Connector
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -43,9 +45,20 @@ class FindConnectors extends QueryObject
 		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
-	public function byType(string $type): void
+	/**
+	 * @interal
+	 */
+	public function byType(string|int $type): void
 	{
 		$this->filter[] = '.[?(@.type =~ /(?i).*^' . $type . '*$/)]';
+	}
+
+	/**
+	 * @param array<string> $types
+	 */
+	public function byTypes(array $types): void
+	{
+		$this->filter[] = '.[?(@.type in [' . (count($types) > 0 ? ('"' . implode('","', $types) . '"') : '') . '])]';
 	}
 
 	public function byIdentifier(string $identifier): void

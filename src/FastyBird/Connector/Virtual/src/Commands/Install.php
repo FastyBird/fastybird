@@ -16,13 +16,12 @@
 namespace FastyBird\Connector\Virtual\Commands;
 
 use Doctrine\DBAL;
-use Doctrine\Persistence;
 use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queries;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -66,8 +65,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
-		private readonly BootstrapHelpers\Database $databaseHelper,
-		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -86,7 +84,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -113,10 +111,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -131,7 +126,7 @@ class Install extends Console\Command\Command
 
 				if ($this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\VirtualConnector::class,
+					Entities\Connectors\Connector::class,
 				) !== null) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
@@ -157,7 +152,7 @@ class Install extends Console\Command\Command
 
 				if ($this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\VirtualConnector::class,
+					Entities\Connectors\Connector::class,
 				) === null) {
 					break;
 				}
@@ -176,17 +171,17 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$connector = $this->connectorsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\VirtualConnector::class,
+				'entity' => Entities\Connectors\Connector::class,
 				'identifier' => $identifier,
 				'name' => $name === '' ? null : $name,
 			]));
-			assert($connector instanceof Entities\VirtualConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -199,9 +194,9 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'type' => 'install-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -209,17 +204,12 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -276,16 +266,16 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$connector = $this->connectorsManager->update($connector, Utils\ArrayHash::from([
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\VirtualConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -298,9 +288,9 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'type' => 'install-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -308,11 +298,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -329,18 +314,16 @@ class Install extends Console\Command\Command
 
 		$connector = $this->connectorsRepository->find(
 			$connector->getId(),
-			Entities\VirtualConnector::class,
+			Entities\Connectors\Connector::class,
 		);
-		assert($connector instanceof Entities\VirtualConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteConnector(Style\SymfonyStyle $io): void
 	{
@@ -372,12 +355,12 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->connectorsManager->delete($connector);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -390,25 +373,20 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
-					'type' => 'initialize-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'type' => 'install-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//virtual-connector.cmd.install.messages.remove.connector.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -438,10 +416,13 @@ class Install extends Console\Command\Command
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
-		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\VirtualConnector::class);
+		$connectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\Connectors\Connector::class,
+		);
 		usort(
 			$connectors,
-			static fn (Entities\VirtualConnector $a, Entities\VirtualConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -457,7 +438,7 @@ class Install extends Console\Command\Command
 			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 
 			$table->addRow([
 				$index + 1,
@@ -472,12 +453,10 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
-	private function deleteDevice(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
+	private function deleteDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
@@ -507,12 +486,12 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->devicesManager->delete($device);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -525,19 +504,14 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 					'type' => 'devices-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//virtual-connector.cmd.install.messages.remove.device.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -545,15 +519,15 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function listDevices(Style\SymfonyStyle $io, Entities\VirtualConnector $connector): void
+	private function listDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\VirtualDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		usort(
 			$devices,
-			static fn (Entities\VirtualDevice $a, Entities\VirtualDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -569,7 +543,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$device->getType(),
+				$device::getType(),
 			]);
 		}
 
@@ -579,7 +553,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -663,7 +637,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
@@ -675,7 +649,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
-		Entities\VirtualConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -718,7 +692,7 @@ class Install extends Console\Command\Command
 
 	private function askConnectorName(
 		Style\SymfonyStyle $io,
-		Entities\VirtualConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -734,7 +708,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): Entities\VirtualConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -742,11 +716,11 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			Entities\VirtualConnector::class,
+			Entities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (Entities\VirtualConnector $a, Entities\VirtualConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -768,7 +742,7 @@ class Install extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\VirtualConnector {
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -790,7 +764,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\VirtualConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -807,7 +781,7 @@ class Install extends Console\Command\Command
 		});
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof Entities\VirtualConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		return $connector;
 	}
@@ -817,8 +791,8 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
-		Entities\VirtualConnector $connector,
-	): Entities\VirtualDevice|null
+		Entities\Connectors\Connector $connector,
+	): Entities\Devices\Device|null
 	{
 		$devices = [];
 
@@ -827,11 +801,11 @@ class Install extends Console\Command\Command
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
-			Entities\VirtualDevice::class,
+			Entities\Devices\Device::class,
 		);
 		usort(
 			$connectorDevices,
-			static fn (Entities\VirtualDevice $a, Entities\VirtualDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -854,7 +828,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//virtual-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\VirtualDevice {
+			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -877,7 +851,7 @@ class Install extends Console\Command\Command
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						Entities\VirtualDevice::class,
+						Entities\Devices\Device::class,
 					);
 
 					if ($device !== null) {
@@ -895,23 +869,9 @@ class Install extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\VirtualDevice);
+		assert($device instanceof Entities\Devices\Device);
 
 		return $device;
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	private function getOrmConnection(): DBAL\Connection
-	{
-		$connection = $this->managerRegistry->getConnection();
-
-		if ($connection instanceof DBAL\Connection) {
-			return $connection;
-		}
-
-		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

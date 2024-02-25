@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Server status types
  *
@@ -26,31 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ServerStatus extends Consistence\Enum\Enum
+enum ServerStatus: string
 {
 
-	public const SUCCESS = 0;
+	case SUCCESS = '0';
 
-	public const ENDPOINT_UNREACHABLE = 'ENDPOINT_UNREACHABLE';
+	case ENDPOINT_UNREACHABLE = 'ENDPOINT_UNREACHABLE';
 
-	public const ENDPOINT_LOW_POWER = 'ENDPOINT_LOW_POWER';
+	case ENDPOINT_LOW_POWER = 'ENDPOINT_LOW_POWER';
 
-	public const INVALID_DIRECTIVE = 'INVALID_DIRECTIVE';
+	case INVALID_DIRECTIVE = 'INVALID_DIRECTIVE';
 
-	public const NO_SUCH_ENDPOINT = 'NO_SUCH_ENDPOINT';
+	case NO_SUCH_ENDPOINT = 'NO_SUCH_ENDPOINT';
 
-	public const NOT_SUPPORTED_IN_CURRENT_MODE = 'NOT_SUPPORTED_IN_CURRENT_MODE';
+	case NOT_SUPPORTED_IN_CURRENT_MODE = 'NOT_SUPPORTED_IN_CURRENT_MODE';
 
-	public const INTERNAL_ERROR = 'INTERNAL_ERROR';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case INTERNAL_ERROR = 'INTERNAL_ERROR';
 
 }

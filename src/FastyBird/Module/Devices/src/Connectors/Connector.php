@@ -15,6 +15,8 @@
 
 namespace FastyBird\Module\Devices\Connectors;
 
+use React\Promise;
+
 /**
  * Devices connector interface
  *
@@ -26,9 +28,15 @@ namespace FastyBird\Module\Devices\Connectors;
 interface Connector
 {
 
-	public function execute(): void;
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function execute(bool $standalone = true): Promise\PromiseInterface;
 
-	public function discover(): void;
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface;
 
 	public function terminate(): void;
 

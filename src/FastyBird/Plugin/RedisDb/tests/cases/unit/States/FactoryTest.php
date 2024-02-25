@@ -2,14 +2,14 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\States;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures;
+use FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy\DummyState;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid;
 use stdClass;
 use Throwable;
 
@@ -17,7 +17,7 @@ final class FactoryTest extends TestCase
 {
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<DummyState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 *
 	 * @throws Exceptions\InvalidArgument
@@ -39,8 +39,7 @@ final class FactoryTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -65,7 +64,7 @@ final class FactoryTest extends TestCase
 	}
 
 	/**
-	 * @param class-string<Fixtures\CustomState> $class
+	 * @param class-string<DummyState> $class
 	 * @param array<string, array<string|array<string, mixed>>> $data
 	 * @param class-string<Throwable> $exception
 	 *
@@ -90,8 +89,7 @@ final class FactoryTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -116,13 +114,13 @@ final class FactoryTest extends TestCase
 			'one' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 			'two' => [
 				States\State::class,
 				[
-					'id' => Uuid::uuid4()->toString(),
+					'id' => Uuid\Uuid::uuid4()->toString(),
 				],
 			],
 		];

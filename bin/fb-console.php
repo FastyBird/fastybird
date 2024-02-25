@@ -12,14 +12,14 @@ for ($i = 0;$i < 10;$i++) {
 	$srcPath = realpath($path . DS . 'src');
 
 	if ($srcPath !== false) {
-		$boostrapFile = realpath($path) . DS . 'src' . DS . 'FastyBird' . DS . 'Library' . DS . 'Bootstrap' . DS . 'bin' . DS . 'fb-console.php';
+		$boostrapFile = realpath($path) . DS . 'src' . DS . 'FastyBird' . DS . 'Library' . DS . 'Application' . DS . 'bin' . DS . 'fb-console.php';
 
 		break;
 	}
 }
 
 if ($boostrapFile === false || !file_exists($boostrapFile)) {
-	echo "Bootstrap file not found." . PHP_EOL;
+	echo "Application file not found." . PHP_EOL;
 
 	exit(1);
 }

@@ -30,4 +30,24 @@ final class Constants
 
 	public const VALUE_NOT_AVAILABLE = 'n/a';
 
+	public const WRITE_DEBOUNCE_DELAY = 2_000.0;
+
+	public const COAP_ADDRESS = '224.0.1.187';
+
+	public const COAP_PORT = 5_683;
+
+	public const STATE_READING_DELAY = 5_000.0;
+
+	public const EVENT_ERROR = 'error';
+
+	public const EVENT_CLOSED = 'closed';
+
+	public const EVENT_MESSAGE = 'message';
+
+	public const EVENT_CONNECTED = 'connected';
+
+	public const EVENT_DISCONNECTED = 'disconnected';
+
+	public const EVENT_LOST = 'lost';
+
 }

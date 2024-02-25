@@ -26,14 +26,14 @@ use function strtolower;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class MdnsResult implements ObjectMapper\MappedObject
+final readonly class MdnsResult implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $address,
+		private string $address,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $name,
+		private string $name,
 	)
 	{
 	}

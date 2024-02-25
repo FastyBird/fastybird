@@ -9,19 +9,20 @@ use FastyBird\Connector\Zigbee2Mqtt\Commands;
 use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
 use FastyBird\Connector\Zigbee2Mqtt\Subscribers;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Connector\Zigbee2Mqtt\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
@@ -29,7 +30,7 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(API\ConnectionManager::class, false));
 		self::assertNotNull($container->getByType(API\ClientFactory::class, false));
@@ -45,16 +46,18 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\Zigbee2MqttConnector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\SubDevice::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\Zigbee2MqttConnector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
-		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Models\StateRepository::class, false));
+
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\Bridge::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
 

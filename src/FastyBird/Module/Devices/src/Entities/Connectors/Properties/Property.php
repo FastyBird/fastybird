@@ -18,45 +18,48 @@ namespace FastyBird\Module\Devices\Entities\Connectors\Properties;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use FastyBird\Module\Devices\Exceptions;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_connectors_properties",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Connectors properties"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="property_identifier_unique", columns={"property_identifier", "connector_id"})
- *     },
- *     indexes={
- *       @ORM\Index(name="property_identifier_idx", columns={"property_identifier"}),
- *       @ORM\Index(name="property_settable_idx", columns={"property_settable"}),
- *       @ORM\Index(name="property_queryable_idx", columns={"property_queryable"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="property_type", type="string", length=40)
- * @ORM\DiscriminatorMap({
- *    "variable" = "FastyBird\Module\Devices\Entities\Connectors\Properties\Variable",
- *    "dynamic"  = "FastyBird\Module\Devices\Entities\Connectors\Properties\Dynamic"
- * })
- * @ORM\MappedSuperclass
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_connectors_properties',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Connectors properties',
+	],
+)]
+#[ORM\Index(columns: ['property_identifier'], name: 'property_identifier_idx')]
+#[ORM\Index(columns: ['property_settable'], name: 'property_settable_idx')]
+#[ORM\Index(columns: ['property_queryable'], name: 'property_queryable_idx')]
+#[ORM\UniqueConstraint(name: 'property_identifier_unique', columns: ['property_identifier', 'connector_id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'property_type', type: 'string', length: 100)]
+#[ORM\DiscriminatorMap([
+	Entities\Connectors\Properties\Variable::TYPE => Entities\Connectors\Properties\Variable::class,
+	Entities\Connectors\Properties\Dynamic::TYPE => Entities\Connectors\Properties\Dynamic::class,
+])]
 abstract class Property extends Entities\Property
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="properties", cascade={"persist"})
-	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Connectors\Connector::class,
+		cascade: ['persist'],
+		inversedBy: 'properties',
+	)]
+	#[ORM\JoinColumn(
+		name: 'connector_id',
+		referencedColumnName: 'connector_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	protected Entities\Connectors\Connector $connector;
 
 	public function __construct(
@@ -90,9 +93,12 @@ abstract class Property extends Entities\Property
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function __toString(): string
 	{

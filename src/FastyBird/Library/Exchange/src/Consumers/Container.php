@@ -44,12 +44,12 @@ class Container implements Consumer
 	}
 
 	public function consume(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\BeforeMessageConsumed($source, $routingKey, $document));
 
 		$this->consumers->rewind();
 
@@ -61,31 +61,24 @@ class Container implements Consumer
 				$info->isEnabled()
 				&& (
 					$info->getRoutingKey() === null
-					|| $info->getRoutingKey()->equals($routingKey)
+					|| $info->getRoutingKey() === $routingKey
 				)
 			) {
-				$consumer->consume($source, $routingKey, $entity);
+				$consumer->consume($source, $routingKey, $document);
 			}
 
 			$this->consumers->next();
 		}
 
-		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $entity));
+		$this->dispatcher?->dispatch(new Events\AfterMessageConsumed($source, $routingKey, $document));
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function register(Consumer $consumer, string|null $routingKey, bool $status = true): void
 	{
-		if ($routingKey !== null && !MetadataTypes\RoutingKey::isValidValue($routingKey)) {
-			throw new Exceptions\InvalidArgument('Provided routing key is not valid');
-		}
-
 		if (!$this->consumers->contains($consumer)) {
 			$this->consumers->attach(
 				$consumer,
-				new Info($routingKey !== null ? MetadataTypes\RoutingKey::get($routingKey) : null, $status),
+				new Info($routingKey, $status),
 			);
 		}
 	}

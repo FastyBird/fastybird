@@ -18,11 +18,13 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -46,25 +48,26 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		protected readonly DevicesUtilities\Database $databaseHelper,
+		protected readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreThirdPartyDevice) {
+		if (!$message instanceof Queue\Messages\StoreThirdPartyDevice) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\ThirdPartyDevice::class);
 
@@ -72,18 +75,18 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'store-third-party-device-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'gateway' => [
-						'id' => $entity->getGateway()->toString(),
+						'id' => $message->getGateway()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -92,27 +95,27 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
-			$entity->getGatewayIdentifier(),
-			MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+			$message->getGatewayIdentifier(),
+			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER,
-			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER),
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::GATEWAY_IDENTIFIER->value),
 		);
 
 		$this->logger->debug(
 			'Consumed store device message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'store-third-party-device-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'gateway' => [
-					'id' => $entity->getGateway()->toString(),
+					'id' => $message->getGateway()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getIdentifier(),
+					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

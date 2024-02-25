@@ -17,27 +17,27 @@ namespace FastyBird\Automator\DateTime\Entities\Conditions;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
 use function array_merge;
 use function assert;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class DateCondition extends TriggersEntities\Conditions\Condition
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="datetime", name="condition_date", nullable=true)
-	 */
+	public const TYPE = 'date';
+
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_date', type: 'datetime', nullable: true)]
 	private DateTimeInterface|null $date;
 
 	public function __construct(
 		DateTimeInterface $date,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -46,9 +46,9 @@ class DateCondition extends TriggersEntities\Conditions\Condition
 		$this->date = $date;
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
-		return 'date';
+		return self::TYPE;
 	}
 
 	public function getDate(): DateTimeInterface
@@ -68,11 +68,6 @@ class DateCondition extends TriggersEntities\Conditions\Condition
 		assert($this->date instanceof DateTimeInterface);
 
 		return $date->getTimestamp() === $this->date->getTimestamp();
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return $this->getType();
 	}
 
 	/**

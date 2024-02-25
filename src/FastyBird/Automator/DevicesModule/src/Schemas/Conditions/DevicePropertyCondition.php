@@ -16,11 +16,14 @@
 namespace FastyBird\Automator\DevicesModule\Schemas\Conditions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Metadata\Types\ModuleSource;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function array_merge;
-use function strval;
 
 /**
  * Device property condition entity schema
@@ -37,7 +40,8 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = ModuleSource::SOURCE_MODULE_TRIGGERS . '/condition/device-property';
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Automator::DEVICE_MODULE->value . '/condition/' . Entities\Conditions\DevicePropertyCondition::TYPE;
 
 	public function getType(): string
 	{
@@ -52,6 +56,10 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 	/**
 	 * @return iterable<string, string|bool|array<int>|null>
 	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getAttributes(
@@ -62,8 +70,8 @@ final class DevicePropertyCondition extends TriggersSchemas\Conditions\Condition
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'device' => $resource->getDevice()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'operator' => strval($resource->getOperator()->getValue()),
-			'operand' => strval($resource->getOperand()),
+			'operator' => $resource->getOperator()->value,
+			'operand' => MetadataUtilities\Value::toString($resource->getOperand()),
 		]);
 	}
 

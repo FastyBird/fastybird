@@ -10,7 +10,7 @@
     "self" : "/v1/triggers/1b17bcaa-a19e-45f0-98b4-56211cc648ae/conditions/09c453b3-c55f-4050-8f1c-b50f8d5728c2?include=trigger"
   },
   "data" : {
-    "type" : "com.fastybird.triggers-module/condition/time",
+    "type" : "com.fastybird.date-time-automator/condition/time",
     "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2",
     "attributes" : {
       "enabled" : true,
@@ -66,7 +66,7 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/condition/time",
+              "type" : "com.fastybird.date-time-automator/condition/time",
               "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2"
             }
           ]
@@ -83,11 +83,11 @@
           },
           "data" : [
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.devices-module-automator/action/channel-property",
               "id" : "c40e6e57-4fe0-43b0-88ed-4f0374e8623d"
             },
             {
-              "type" : "com.fastybird.triggers-module/action/channel-property",
+              "type" : "com.fastybird.devices-module-automator/action/channel-property",
               "id" : "ea072fff-125e-43b0-9d76-4a65738f4b88"
             }
           ]

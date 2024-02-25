@@ -15,8 +15,8 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients\Subscribers;
 
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 
 /**
  * Device subscriber factory
@@ -29,6 +29,8 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface DeviceFactory
 {
 
-	public function create(MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector): Device;
+	public function create(
+		Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
+	): Device;
 
 }

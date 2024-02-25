@@ -42,7 +42,7 @@ export interface IEmail {
 
 	account: IPlainRelation;
 
-	// Transformer transformers
+	// Entity transformers
 	isDefault: boolean;
 	isPrivate: boolean;
 	isVerified: boolean;

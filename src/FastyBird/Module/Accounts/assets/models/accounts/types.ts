@@ -58,7 +58,7 @@ export interface IAccount {
 	identities: IPlainRelation[];
 	roles: IPlainRelation[];
 
-	// Transformer transformers
+	// Entity transformers
 	name: string;
 	email?: IEmail | null;
 }

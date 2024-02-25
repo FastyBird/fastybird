@@ -5,13 +5,13 @@ namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Commands;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use FastyBird\SimpleAuth;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
@@ -20,11 +20,15 @@ use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-final class CreateAccountTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Console\Exception\CommandNotFoundException

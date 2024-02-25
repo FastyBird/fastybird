@@ -27,9 +27,9 @@ use Ramsey\Uuid;
  * @template T of Entities\Conditions\Condition
  * @extends DoctrineOrmQuery\QueryObject<T>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindConditions extends DoctrineOrmQuery\QueryObject
 {

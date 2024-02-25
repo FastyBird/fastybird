@@ -11,7 +11,7 @@
   },
   "data" : [
     {
-      "type" : "com.fastybird.triggers-module/condition/time",
+      "type" : "com.fastybird.date-time-automator/condition/time",
       "id" : "09c453b3-c55f-4050-8f1c-b50f8d5728c2",
       "attributes" : {
         "enabled" : true,

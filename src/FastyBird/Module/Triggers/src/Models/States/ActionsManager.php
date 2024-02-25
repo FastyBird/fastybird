@@ -15,11 +15,11 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers;
+use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
@@ -42,7 +42,7 @@ final class ActionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly ExchangeEntities\DocumentFactory $entityFactory,
+		protected readonly MetadataDocuments\DocumentFactory $documentFactory,
 		protected readonly IActionsManager|null $manager = null,
 		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
@@ -51,11 +51,9 @@ final class ActionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function create(
 		Entities\Actions\Action $action,
@@ -75,11 +73,9 @@ final class ActionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function update(
 		Entities\Actions\Action $action,
@@ -91,7 +87,11 @@ final class ActionsManager
 			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		$updatedState = $this->manager->update($state, $values);
+		$updatedState = $this->manager->update($action->getId(), $values);
+
+		if ($updatedState === false) {
+			return $state;
+		}
 
 		$this->publishEntity($action, $updatedState);
 
@@ -100,11 +100,9 @@ final class ActionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	public function delete(
 		Entities\Actions\Action $action,
@@ -115,7 +113,7 @@ final class ActionsManager
 			throw new Exceptions\NotImplemented('Action state manager is not registered');
 		}
 
-		$result = $this->manager->delete($state);
+		$result = $this->manager->delete($action->getId());
 
 		if ($result) {
 			$this->publishEntity($action, null);
@@ -125,11 +123,9 @@ final class ActionsManager
 	}
 
 	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 */
 	private function publishEntity(
 		Entities\Actions\Action $action,
@@ -142,10 +138,16 @@ final class ActionsManager
 
 		$this->publisher->publish(
 			$action->getSource(),
-			MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED),
-			$this->entityFactory->create(Utils\Json::encode(array_merge($action->toArray(), [
-				'is_triggered' => !($state === null) && $state->isTriggered(),
-			])), MetadataTypes\RoutingKey::get(MetadataTypes\RoutingKey::TRIGGER_ACTION_DOCUMENT_UPDATED)),
+			Triggers\Constants::MESSAGE_BUS_ACTION_DOCUMENT_UPDATED_ROUTING_KEY,
+			$this->documentFactory->create(
+				Documents\Actions\Action::class,
+				array_merge(
+					$action->toArray(),
+					[
+						'is_triggered' => !($state === null) && $state->isTriggered(),
+					],
+				),
+			),
 		);
 	}
 

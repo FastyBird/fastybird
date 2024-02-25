@@ -14,14 +14,14 @@ use FastyBird\Connector\Virtual\Schemas;
 use FastyBird\Connector\Virtual\Subscribers;
 use FastyBird\Connector\Virtual\Tests;
 use FastyBird\Connector\Virtual\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
@@ -29,7 +29,7 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreDeviceConnectionState::class, false));
 		self::assertNotNull($container->getByType(Queue\Consumers\StoreDevicePropertyState::class, false));
@@ -42,15 +42,15 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\VirtualConnector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\VirtualConnector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 
 		self::assertNotNull($container->getByType(Devices\DevicesFactory::class, false));
 
 		self::assertNotNull($container->getByType(Drivers\DriversManager::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));
 		self::assertNotNull($container->getByType(Commands\Install::class, false));

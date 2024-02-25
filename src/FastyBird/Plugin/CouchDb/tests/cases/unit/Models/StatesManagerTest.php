@@ -2,16 +2,16 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\Models;
 
-use Consistence;
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\Models;
 use FastyBird\Plugin\CouchDb\States;
-use FastyBird\Plugin\CouchDb\Tests\Fixtures;
+use FastyBird\Plugin\CouchDb\Tests;
 use InvalidArgumentException;
 use Nette\Utils;
 use Orisai\ObjectMapper;
@@ -82,7 +82,7 @@ final class StatesManagerTest extends TestCase
 
 		$expected['id'] = $id->toString();
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertSame(Tests\Fixtures\CustomState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -119,7 +119,7 @@ final class StatesManagerTest extends TestCase
 			->method('set')
 			->willReturnCallback(
 				static function (string $key, string|null $value = null) use ($data, &$originalData): void {
-					if ($data[$key] instanceof Consistence\Enum\Enum) {
+					if ($data[$key] instanceof BackedEnum) {
 						self::assertEquals((string) $data[$key], $value);
 
 					} else {
@@ -159,8 +159,7 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -173,11 +172,11 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\CustomState::class, $document);
+		$original = $factory->create(Tests\Fixtures\CustomState::class, $document);
 
 		$state = $manager->update($original, Utils\ArrayHash::from($data));
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertSame(Tests\Fixtures\CustomState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -235,8 +234,7 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -249,13 +247,13 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\CustomState::class, $document);
+		$original = $factory->create(Tests\Fixtures\CustomState::class, $document);
 
 		self::assertTrue($manager->delete($original));
 	}
 
 	/**
-	 * @return Models\States\StatesManager<Fixtures\CustomState>
+	 * @return Models\States\StatesManager<Tests\Fixtures\CustomState>
 	 */
 	private function createManager(
 		Connections\Connection $couchClient,
@@ -266,8 +264,7 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -282,7 +279,12 @@ final class StatesManagerTest extends TestCase
 
 		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
 
-		return new Models\States\StatesManager($couchClient, $factory, $dateTimeFactory, Fixtures\CustomState::class);
+		return new Models\States\StatesManager(
+			$couchClient,
+			$factory,
+			$dateTimeFactory,
+			Tests\Fixtures\CustomState::class,
+		);
 	}
 
 	/**

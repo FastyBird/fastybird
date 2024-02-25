@@ -12,7 +12,7 @@
   },
   "data": [
     {
-      "type": "com.fastybird.devices-module/device/blank",
+      "type": "com.fastybird.devices-module/device/dummy",
       "id": "a1036ff8-6ee8-4405-aaed-58bae0814596"
     }
   ]

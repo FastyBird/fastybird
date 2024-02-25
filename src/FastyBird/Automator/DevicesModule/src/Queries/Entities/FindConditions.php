@@ -17,10 +17,9 @@ namespace FastyBird\Automator\DevicesModule\Queries\Entities;
 
 use Doctrine\ORM;
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Automator\DevicesModule\Exceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use FastyBird\Module\Triggers\Queries as TriggersQueries;
+use FastyBird\Module\Triggers\Types as TriggersTypes;
 use Ramsey\Uuid;
 
 /**
@@ -59,20 +58,13 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 		};
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
 	public function withPropertyValue(
 		string $value,
-		string $operator = MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL,
+		TriggersTypes\ConditionOperator $operator = TriggersTypes\ConditionOperator::EQUAL,
 	): void
 	{
-		if (!MetadataTypes\TriggerConditionOperator::isValidValue($operator)) {
-			throw new Exceptions\InvalidArgument('Invalid operator given');
-		}
-
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($operator): void {
-			$qb->andWhere('cdc.operator = :operator')->setParameter('operator', $operator);
+			$qb->andWhere('cdc.operator = :operator')->setParameter('operator', $operator->value);
 		};
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($value): void {
@@ -94,9 +86,9 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 					)
 					->setParameter('value', $value)
 					->setParameter('previousValue', $previousValue)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', TriggersTypes\ConditionOperator::ABOVE->value)
+					->setParameter('operatorBelow', TriggersTypes\ConditionOperator::BELOW->value)
+					->setParameter('operatorEqual', TriggersTypes\ConditionOperator::EQUAL->value);
 
 			} else {
 				$qb
@@ -108,9 +100,9 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 						. '(cdc.operand = :value AND cdc.operator = :operatorEqual)',
 					)
 					->setParameter('value', $value)
-					->setParameter('operatorAbove', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)
-					->setParameter('operatorBelow', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)
-					->setParameter('operatorEqual', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL);
+					->setParameter('operatorAbove', TriggersTypes\ConditionOperator::ABOVE->value)
+					->setParameter('operatorBelow', TriggersTypes\ConditionOperator::BELOW->value)
+					->setParameter('operatorEqual', TriggersTypes\ConditionOperator::EQUAL->value);
 			}
 		};
 	}
@@ -122,7 +114,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 				->andWhere('cdc.operand >= :previousValue AND cdc.operand < :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE);
+				->setParameter('operator', TriggersTypes\ConditionOperator::ABOVE->value);
 		};
 	}
 
@@ -133,7 +125,7 @@ class FindConditions extends TriggersQueries\Entities\FindConditions
 				->andWhere('cdc.operand <= :previousValue AND cdc.operand > :value AND cdc.operator = :operator')
 				->setParameter('value', $value)
 				->setParameter('previousValue', $previousValue)
-				->setParameter('operator', MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW);
+				->setParameter('operator', TriggersTypes\ConditionOperator::BELOW->value);
 		};
 	}
 

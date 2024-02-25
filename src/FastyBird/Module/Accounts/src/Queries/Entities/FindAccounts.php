@@ -17,20 +17,21 @@ namespace FastyBird\Module\Accounts\Queries\Entities;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
+use function in_array;
 
 /**
  * Find accounts entities query
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Accounts\Account>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindAccounts extends DoctrineOrmQuery\QueryObject
 {
@@ -52,15 +53,15 @@ class FindAccounts extends DoctrineOrmQuery\QueryObject
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function inState(string $state): void
+	public function inState(Types\AccountState $state): void
 	{
-		if (!MetadataTypes\AccountState::isValidValue($state)) {
+		if (!in_array($state, Types\AccountState::getAllowed(), true)) {
 			throw new Exceptions\InvalidArgument('Invalid account state given');
 		}
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
 			$qb->andWhere('a.state = :state')
-				->setParameter('state', $state);
+				->setParameter('state', $state->value);
 		};
 	}
 

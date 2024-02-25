@@ -3,7 +3,9 @@
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
 use FastyBird\Module\Devices\Connectors;
+use FastyBird\Module\Devices\Exceptions;
 use Ramsey\Uuid;
+use React\Promise;
 
 class DummyConnector implements Connectors\Connector
 {
@@ -13,14 +15,20 @@ class DummyConnector implements Connectors\Connector
 		return Uuid\Uuid::fromString('7a3dd94c-7294-46fd-8c61-1b375c313d4d');
 	}
 
-	public function execute(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		// NOT IMPLEMENTED
+		return Promise\reject(new Exceptions\InvalidState('Not implemented'));
 	}
 
-	public function discover(): void
+	/**
+	 * @return Promise\PromiseInterface<bool>
+	 */
+	public function discover(): Promise\PromiseInterface
 	{
-		// NOT IMPLEMENTED
+		return Promise\reject(new Exceptions\InvalidState('Not implemented'));
 	}
 
 	public function terminate(): void

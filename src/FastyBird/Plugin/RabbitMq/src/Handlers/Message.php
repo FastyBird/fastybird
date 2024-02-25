@@ -16,18 +16,21 @@
 namespace FastyBird\Plugin\RabbitMq\Handlers;
 
 use Bunny;
-use Evenement;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Events;
 use FastyBird\Plugin\RabbitMq\Exceptions;
 use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
-use Psr\EventDispatcher as PsrEventDispatcher;
+use Nette\Utils;
+use Psr\EventDispatcher;
 use Psr\Log;
 use Throwable;
+use TypeError;
+use ValueError;
+use function assert;
 use function is_array;
 use function strval;
 
@@ -39,7 +42,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Message extends Evenement\EventEmitter
+final class Message
 {
 
 	public const MESSAGE_ACK = 1;
@@ -52,14 +55,18 @@ final class Message extends Evenement\EventEmitter
 
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangeConsumer\Container $consumer,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function handle(Bunny\Message $message): int
 	{
 		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($message));
@@ -70,14 +77,14 @@ final class Message extends Evenement\EventEmitter
 			if (is_array($data) && $message->hasHeader('source')) {
 				return $this->consume(
 					strval($message->getHeader('source')),
-					MetadataTypes\RoutingKey::get($message->routingKey),
+					$message->routingKey,
 					Nette\Utils\Json::encode($data),
 					$message->hasHeader('sender_id') ? strval($message->getHeader('sender_id')) : null,
 				);
 			} else {
 				// Log error action reason
 				$this->logger->warning('Received message is not in valid format', [
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 					'type' => 'messages-handler',
 				]);
 
@@ -86,9 +93,9 @@ final class Message extends Evenement\EventEmitter
 		} catch (Nette\Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning('Received message is not valid json', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 
@@ -97,9 +104,13 @@ final class Message extends Evenement\EventEmitter
 		return self::MESSAGE_REJECT;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function consume(
 		string $source,
-		MetadataTypes\RoutingKey $routingKey,
+		string $routingKey,
 		string $data,
 		string|null $senderId = null,
 	): int
@@ -115,13 +126,17 @@ final class Message extends Evenement\EventEmitter
 		}
 
 		try {
-			$entity = $this->entityFactory->create($data, $routingKey);
+			$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+			assert(is_array($data));
+			$data = Utils\ArrayHash::from($data);
+
+			$entity = $this->documentFactory->create($data, $routingKey);
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Message could not be transformed into entity', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'data' => $data,
 			]);
 
@@ -137,14 +152,18 @@ final class Message extends Evenement\EventEmitter
 
 			$this->consumer->consume($source, $routingKey, $entity);
 
-			$this->emit('message', [$source, $routingKey, $entity]);
+			$this->dispatcher?->dispatch(new Events\MessageConsumed(
+				$source,
+				$routingKey,
+				$entity,
+			));
 
 		} catch (Exceptions\UnprocessableMessage $ex) {
 			// Log error consume reason
 			$this->logger->error('Message could not be handled', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			return self::MESSAGE_REJECT;
@@ -153,24 +172,36 @@ final class Message extends Evenement\EventEmitter
 		return self::MESSAGE_ACK;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function validateSource(
 		string $source,
-	): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource|MetadataTypes\AutomatorSource|null
+	): MetadataTypes\Sources\Source|null
 	{
-		if (MetadataTypes\ModuleSource::isValidValue($source)) {
-			return MetadataTypes\ModuleSource::get($source);
+		if (MetadataTypes\Sources\Module::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Module::from($source);
 		}
 
-		if (MetadataTypes\PluginSource::isValidValue($source)) {
-			return MetadataTypes\PluginSource::get($source);
+		if (MetadataTypes\Sources\Plugin::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Plugin::from($source);
 		}
 
-		if (MetadataTypes\ConnectorSource::isValidValue($source)) {
-			return MetadataTypes\ConnectorSource::get($source);
+		if (MetadataTypes\Sources\Connector::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Connector::from($source);
 		}
 
-		if (MetadataTypes\AutomatorSource::isValidValue($source)) {
-			return MetadataTypes\AutomatorSource::get($source);
+		if (MetadataTypes\Sources\Automator::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Automator::from($source);
+		}
+
+		if (MetadataTypes\Sources\Addon::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Addon::from($source);
+		}
+
+		if (MetadataTypes\Sources\Bridge::tryFrom($source) !== null) {
+			return MetadataTypes\Sources\Bridge::from($source);
 		}
 
 		return null;

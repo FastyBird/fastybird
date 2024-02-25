@@ -19,9 +19,9 @@ use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 
 /**
- * Find device channels entities query
+ * Find channels entities query
  *
- * @template T of Entities\FbMqttChannel
+ * @template T of Entities\Channels\Channel
  * @extends  DevicesQueries\Entities\FindChannels<T>
  *
  * @package        FastyBird:FbMqttConnector!

@@ -15,17 +15,19 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function count;
+use function implode;
 use function serialize;
 
 /**
  * Find devices configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\Device
+ * @template T of Documents\Devices\Device
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -43,9 +45,20 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.id =~ /(?i).*^' . $id->toString() . '*$/)]';
 	}
 
-	public function byType(string $type): void
+	/**
+	 * @interal
+	 */
+	public function byType(string|int $type): void
 	{
 		$this->filter[] = '.[?(@.type =~ /(?i).*^' . $type . '*$/)]';
+	}
+
+	/**
+	 * @param array<string> $types
+	 */
+	public function byTypes(array $types): void
+	{
+		$this->filter[] = '.[?(@.type in [' . (count($types) > 0 ? ('"' . implode('","', $types) . '"') : '') . '])]';
 	}
 
 	public function byIdentifier(string $identifier): void
@@ -63,7 +76,7 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.identifier =~ /^[\w\d\-_]+(?i).*' . $identifier . '*$/)]';
 	}
 
-	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void
+	public function forConnector(Documents\Connectors\Connector $connector): void
 	{
 		$this->filter[] = '.[?(@.connector =~ /(?i).*^' . $connector->getId()->toString() . '*$/)]';
 	}
@@ -73,7 +86,7 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.connector =~ /(?i).*^' . $connectorId->toString() . '*$/)]';
 	}
 
-	public function forParent(MetadataDocuments\DevicesModule\Device $parent): void
+	public function forParent(Documents\Devices\Device $parent): void
 	{
 		$this->filter[] = '.[?(@.parents in "' . $parent->getId()->toString() . '")]';
 	}
@@ -88,7 +101,7 @@ class FindDevices extends QueryObject
 		$this->filter[] = '.[?(@.parents > 0)]';
 	}
 
-	public function forChild(MetadataDocuments\DevicesModule\Device $child): void
+	public function forChild(Documents\Devices\Device $child): void
 	{
 		$this->filter[] = '.[?(@.children in "' . $child->getId()->toString() . '")]';
 	}

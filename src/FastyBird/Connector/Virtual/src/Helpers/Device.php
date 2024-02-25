@@ -15,13 +15,17 @@
 
 namespace FastyBird\Connector\Virtual\Helpers;
 
+use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Entities;
+use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_numeric;
@@ -34,33 +38,36 @@ use function is_numeric;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device
+final readonly class Device
 {
 
 	public function __construct(
-		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		protected DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getStateProcessingDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getStateProcessingDelay(Documents\Devices\Device $device): float
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE_PROCESSING_DELAY);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\VirtualDevice::STATE_PROCESSING_DELAY;
+			return Entities\Devices\Device::STATE_PROCESSING_DELAY;
 		}
 
 		$value = $property->getValue();

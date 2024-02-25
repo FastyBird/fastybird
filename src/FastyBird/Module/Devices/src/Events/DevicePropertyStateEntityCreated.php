@@ -15,7 +15,8 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\States;
 use Symfony\Contracts\EventDispatcher;
 
@@ -31,20 +32,32 @@ class DevicePropertyStateEntityCreated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\DeviceDynamicProperty $property,
-		private readonly States\DeviceProperty $state,
+		private readonly Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
+		private readonly States\DeviceProperty $read,
+		private readonly States\DeviceProperty $get,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\DeviceDynamicProperty
+	public function getProperty(): Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped
 	{
 		return $this->property;
 	}
 
-	public function getState(): States\DeviceProperty
+	public function getRead(): States\DeviceProperty
 	{
-		return $this->state;
+		return $this->read;
+	}
+
+	public function getGet(): States\DeviceProperty
+	{
+		return $this->get;
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return $this->source;
 	}
 
 }

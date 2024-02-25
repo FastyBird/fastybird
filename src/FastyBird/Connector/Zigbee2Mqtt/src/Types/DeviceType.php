@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device types
  *
@@ -26,23 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceType extends Consistence\Enum\Enum
+enum DeviceType: string
 {
 
-	public const END_DEVICE = 'EndDevice';
+	case END_DEVICE = 'EndDevice';
 
-	public const COORDINATOR = 'Coordinator';
+	case COORDINATOR = 'Coordinator';
 
-	public const ROUTER = 'Router';
+	case ROUTER = 'Router';
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case UNKNOWN = 'Unknown';
 
 }

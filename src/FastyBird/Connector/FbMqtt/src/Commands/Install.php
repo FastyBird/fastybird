@@ -16,20 +16,18 @@
 namespace FastyBird\Connector\FbMqtt\Commands;
 
 use Doctrine\DBAL;
-use Doctrine\Persistence;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -37,6 +35,8 @@ use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
 use Symfony\Component\Console\Style;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_search;
 use function array_values;
@@ -68,8 +68,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesManager,
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
-		private readonly BootstrapHelpers\Database $databaseHelper,
-		private readonly Persistence\ManagerRegistry $managerRegistry,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -88,7 +87,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -96,6 +95,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -111,12 +112,11 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
@@ -133,7 +133,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\FbMqttConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -161,7 +161,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\FbMqttConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector === null) {
@@ -188,43 +188,43 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$connector = $this->connectorsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\FbMqttConnector::class,
+				'entity' => Entities\Connectors\Connector::class,
 				'identifier' => $identifier,
 				'name' => $name,
 			]));
-			assert($connector instanceof Entities\FbMqttConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-				'value' => $protocol->getValue(),
+				'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION->value,
+				'dataType' => MetadataTypes\DataType::STRING,
+				'value' => $protocol->value,
 				'connector' => $connector,
 			]));
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				'identifier' => Types\ConnectorPropertyIdentifier::SERVER->value,
+				'dataType' => MetadataTypes\DataType::STRING,
 				'value' => $serverAddress,
 				'connector' => $connector,
 			]));
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+				'identifier' => Types\ConnectorPropertyIdentifier::PORT->value,
+				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverPort,
 				'connector' => $connector,
 			]));
 
 			$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-				'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+				'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT->value,
+				'dataType' => MetadataTypes\DataType::UINT,
 				'value' => $serverSecuredPort,
 				'connector' => $connector,
 			]));
@@ -232,8 +232,8 @@ class Install extends Console\Command\Command
 			if ($username !== null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $username,
 					'connector' => $connector,
 				]));
@@ -242,15 +242,15 @@ class Install extends Console\Command\Command
 			if ($password !== null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $password,
 					'connector' => $connector,
 				]));
 			}
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -263,9 +263,9 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -273,11 +273,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -289,21 +284,23 @@ class Install extends Console\Command\Command
 		$createDevices = (bool) $io->askQuestion($question);
 
 		if ($createDevices) {
-			$connector = $this->connectorsRepository->find($connector->getId(), Entities\FbMqttConnector::class);
-			assert($connector instanceof Entities\FbMqttConnector);
+			$connector = $this->connectorsRepository->find($connector->getId(), Entities\Connectors\Connector::class);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			$this->createDevice($io, $connector);
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function editConnector(Style\SymfonyStyle $io): void
 	{
@@ -326,7 +323,7 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION);
 
@@ -380,31 +377,31 @@ class Install extends Console\Command\Command
 		$username = $this->askConnectorUsername($io, $connector);
 		$password = $this->askConnectorPassword($io, $connector);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
 
 		$serverAddressProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PORT);
 
 		$serverPortProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SECURED_PORT);
 
 		$serverSecuredProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
 		$usernameProperty = $this->connectorsPropertiesRepository->findOneBy($findConnectorPropertyQuery);
 
-		$findConnectorPropertyQuery = new DevicesQueries\Entities\FindConnectorProperties();
+		$findConnectorPropertyQuery = new Queries\Entities\FindConnectorProperties();
 		$findConnectorPropertyQuery->forConnector($connector);
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
@@ -412,13 +409,13 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$connector = $this->connectorsManager->update($connector, Utils\ArrayHash::from([
 				'name' => $name === '' ? null : $name,
 				'enabled' => $enabled,
 			]));
-			assert($connector instanceof Entities\FbMqttConnector);
+			assert($connector instanceof Entities\Connectors\Connector);
 
 			if ($protocolProperty === null) {
 				if ($protocol === null) {
@@ -427,22 +424,22 @@ class Install extends Console\Command\Command
 
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
-					'value' => $protocol->getValue(),
+					'identifier' => Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION->value,
+					'dataType' => MetadataTypes\DataType::STRING,
+					'value' => $protocol->value,
 					'connector' => $connector,
 				]));
 			} elseif ($protocol !== null) {
 				$this->connectorsPropertiesManager->update($protocolProperty, Utils\ArrayHash::from([
-					'value' => $protocol->getValue(),
+					'value' => $protocol->value,
 				]));
 			}
 
 			if ($serverAddressProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SERVER,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+					'identifier' => Types\ConnectorPropertyIdentifier::SERVER->value,
+					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $serverAddress,
 					'connector' => $connector,
 				]));
@@ -455,8 +452,8 @@ class Install extends Console\Command\Command
 			if ($serverPortProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'identifier' => Types\ConnectorPropertyIdentifier::PORT->value,
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverPort,
 					'connector' => $connector,
 				]));
@@ -469,8 +466,8 @@ class Install extends Console\Command\Command
 			if ($serverSecuredProperty === null) {
 				$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT,
-					'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+					'identifier' => Types\ConnectorPropertyIdentifier::SECURED_PORT->value,
+					'dataType' => MetadataTypes\DataType::UINT,
 					'value' => $serverSecuredPort,
 					'connector' => $connector,
 				]));
@@ -484,8 +481,8 @@ class Install extends Console\Command\Command
 				if ($usernameProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'identifier' => Types\ConnectorPropertyIdentifier::USERNAME->value,
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $username,
 						'connector' => $connector,
 					]));
@@ -502,8 +499,8 @@ class Install extends Console\Command\Command
 				if ($passwordProperty === null) {
 					$this->connectorsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+						'identifier' => Types\ConnectorPropertyIdentifier::PASSWORD->value,
+						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $password,
 						'connector' => $connector,
 					]));
@@ -517,7 +514,7 @@ class Install extends Console\Command\Command
 			}
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -530,9 +527,9 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -540,11 +537,6 @@ class Install extends Console\Command\Command
 
 			return;
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 
@@ -559,17 +551,15 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$connector = $this->connectorsRepository->find($connector->getId(), Entities\FbMqttConnector::class);
-		assert($connector instanceof Entities\FbMqttConnector);
+		$connector = $this->connectorsRepository->find($connector->getId(), Entities\Connectors\Connector::class);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$this->askManageConnectorAction($io, $connector);
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteConnector(Style\SymfonyStyle $io): void
 	{
@@ -601,12 +591,12 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->connectorsManager->delete($connector);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -619,25 +609,20 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.remove.connector.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -663,15 +648,20 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function listConnectors(Style\SymfonyStyle $io): void
 	{
 		$findConnectorsQuery = new Queries\Entities\FindConnectors();
 
-		$connectors = $this->connectorsRepository->findAllBy($findConnectorsQuery, Entities\FbMqttConnector::class);
+		$connectors = $this->connectorsRepository->findAllBy(
+			$findConnectorsQuery,
+			Entities\Connectors\Connector::class,
+		);
 		usort(
 			$connectors,
-			static fn (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -688,13 +678,13 @@ class Install extends Console\Command\Command
 			$findDevicesQuery = new Queries\Entities\FindDevices();
 			$findDevicesQuery->forConnector($connector);
 
-			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class);
+			$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
 				$this->translator->translate(
-					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->getValue(),
+					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->value,
 				),
 				count($devices),
 			]);
@@ -706,12 +696,9 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
+	 * @throws ApplicationExceptions\InvalidState
 	 */
-	private function createDevice(Style\SymfonyStyle $io, Entities\FbMqttConnector $connector): void
+	private function createDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.device.identifier'),
@@ -723,7 +710,7 @@ class Install extends Console\Command\Command
 				$findDeviceQuery->byIdentifier($answer);
 
 				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class) !== null
+					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
 						$this->translator->translate(
@@ -748,7 +735,7 @@ class Install extends Console\Command\Command
 				$findDeviceQuery->byIdentifier($identifier);
 
 				if (
-					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class) === null
+					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) === null
 				) {
 					break;
 				}
@@ -767,18 +754,18 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$device = $this->devicesManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\FbMqttDevice::class,
+				'entity' => Entities\Devices\Device::class,
 				'connector' => $connector,
 				'identifier' => $identifier,
 				'name' => $name,
 			]));
-			assert($device instanceof Entities\FbMqttDevice);
+			assert($device instanceof Entities\Devices\Device);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -791,30 +778,23 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.create.device.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
-	private function editDevice(Style\SymfonyStyle $io, Entities\FbMqttConnector $connector): void
+	private function editDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
@@ -839,14 +819,14 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$device = $this->devicesManager->update($device, Utils\ArrayHash::from([
 				'name' => $name,
 			]));
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -859,30 +839,23 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.update.device.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 */
-	private function deleteDevice(Style\SymfonyStyle $io, Entities\FbMqttConnector $connector): void
+	private function deleteDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$device = $this->askWhichDevice($io, $connector);
 
@@ -912,12 +885,12 @@ class Install extends Console\Command\Command
 
 		try {
 			// Start transaction connection to the database
-			$this->getOrmConnection()->beginTransaction();
+			$this->databaseHelper->beginTransaction();
 
 			$this->devicesManager->delete($device);
 
 			// Commit all changes into database
-			$this->getOrmConnection()->commit();
+			$this->databaseHelper->commitTransaction();
 
 			$io->success(
 				$this->translator->translate(
@@ -930,19 +903,14 @@ class Install extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+					'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 					'type' => 'install-cmd',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.remove.device.error'));
 		} finally {
-			// Revert all changes when error occur
-			if ($this->getOrmConnection()->isTransactionActive()) {
-				$this->getOrmConnection()->rollBack();
-			}
-
 			$this->databaseHelper->clear();
 		}
 	}
@@ -950,15 +918,15 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function listDevices(Style\SymfonyStyle $io, Entities\FbMqttConnector $connector): void
+	private function listDevices(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$findDevicesQuery = new Queries\Entities\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
-		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\FbMqttDevice::class);
+		$devices = $this->devicesRepository->findAllBy($findDevicesQuery, Entities\Devices\Device::class);
 		usort(
 			$devices,
-			static fn (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -982,7 +950,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -990,6 +958,8 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
@@ -1065,7 +1035,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -1075,7 +1045,7 @@ class Install extends Console\Command\Command
 	 */
 	private function askManageConnectorAction(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector $connector,
+		Entities\Connectors\Connector $connector,
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
@@ -1166,7 +1136,7 @@ class Install extends Console\Command\Command
 				)
 				|| $answer === '0'
 			) {
-				return Types\ProtocolVersion::get(Types\ProtocolVersion::VERSION_1);
+				return Types\ProtocolVersion::VERSION_1;
 			}
 
 			throw new Exceptions\Runtime(
@@ -1185,7 +1155,7 @@ class Install extends Console\Command\Command
 
 	private function askConnectorName(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -1201,15 +1171,17 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorServerAddress(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.address'),
-			$connector?->getServerAddress() ?? Entities\FbMqttConnector::DEFAULT_SERVER_ADDRESS,
+			$connector?->getServerAddress() ?? FbMqtt\Constants::DEFAULT_SERVER_ADDRESS,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1230,15 +1202,17 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorServerPort(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): int
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.port'),
-			$connector?->getServerPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_PORT,
+			$connector?->getServerPort() ?? FbMqtt\Constants::DEFAULT_SERVER_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1259,15 +1233,17 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorServerSecuredPort(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): int
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.securedPort'),
-			$connector?->getServerSecuredPort() ?? Entities\FbMqttConnector::DEFAULT_SERVER_SECURED_PORT,
+			$connector?->getServerSecuredPort() ?? FbMqtt\Constants::DEFAULT_SERVER_SECURED_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
@@ -1288,10 +1264,12 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorUsername(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -1307,10 +1285,12 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function askConnectorPassword(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector|null $connector = null,
+		Entities\Connectors\Connector|null $connector = null,
 	): string|null
 	{
 		$question = new Console\Question\Question(
@@ -1323,7 +1303,7 @@ class Install extends Console\Command\Command
 		return strval($password) === '' ? null : strval($password);
 	}
 
-	private function askDeviceName(Style\SymfonyStyle $io, Entities\FbMqttDevice|null $device = null): string|null
+	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
 			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.device.name'),
@@ -1338,7 +1318,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
-	private function askWhichConnector(Style\SymfonyStyle $io): Entities\FbMqttConnector|null
+	private function askWhichConnector(Style\SymfonyStyle $io): Entities\Connectors\Connector|null
 	{
 		$connectors = [];
 
@@ -1346,11 +1326,11 @@ class Install extends Console\Command\Command
 
 		$systemConnectors = $this->connectorsRepository->findAllBy(
 			$findConnectorsQuery,
-			Entities\FbMqttConnector::class,
+			Entities\Connectors\Connector::class,
 		);
 		usort(
 			$systemConnectors,
-			static fn (Entities\FbMqttConnector $a, Entities\FbMqttConnector $b): int => (
+			static fn (Entities\Connectors\Connector $a, Entities\Connectors\Connector $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -1372,7 +1352,7 @@ class Install extends Console\Command\Command
 		$question->setErrorMessage(
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
-		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\FbMqttConnector {
+		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
@@ -1394,7 +1374,7 @@ class Install extends Console\Command\Command
 
 				$connector = $this->connectorsRepository->findOneBy(
 					$findConnectorQuery,
-					Entities\FbMqttConnector::class,
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector !== null) {
@@ -1411,7 +1391,7 @@ class Install extends Console\Command\Command
 		});
 
 		$connector = $io->askQuestion($question);
-		assert($connector instanceof Entities\FbMqttConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		return $connector;
 	}
@@ -1421,8 +1401,8 @@ class Install extends Console\Command\Command
 	 */
 	private function askWhichDevice(
 		Style\SymfonyStyle $io,
-		Entities\FbMqttConnector $connector,
-	): Entities\FbMqttDevice|null
+		Entities\Connectors\Connector $connector,
+	): Entities\Devices\Device|null
 	{
 		$devices = [];
 
@@ -1431,11 +1411,11 @@ class Install extends Console\Command\Command
 
 		$connectorDevices = $this->devicesRepository->findAllBy(
 			$findDevicesQuery,
-			Entities\FbMqttDevice::class,
+			Entities\Devices\Device::class,
 		);
 		usort(
 			$connectorDevices,
-			static fn (Entities\FbMqttDevice $a, Entities\FbMqttDevice $b): int => (
+			static fn (Entities\Devices\Device $a, Entities\Devices\Device $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -1458,7 +1438,7 @@ class Install extends Console\Command\Command
 			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($connector, $devices): Entities\FbMqttDevice {
+			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -1481,7 +1461,7 @@ class Install extends Console\Command\Command
 
 					$device = $this->devicesRepository->findOneBy(
 						$findDeviceQuery,
-						Entities\FbMqttDevice::class,
+						Entities\Devices\Device::class,
 					);
 
 					if ($device !== null) {
@@ -1499,23 +1479,9 @@ class Install extends Console\Command\Command
 		);
 
 		$device = $io->askQuestion($question);
-		assert($device instanceof Entities\FbMqttDevice);
+		assert($device instanceof Entities\Devices\Device);
 
 		return $device;
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	private function getOrmConnection(): DBAL\Connection
-	{
-		$connection = $this->managerRegistry->getConnection();
-
-		if ($connection instanceof DBAL\Connection) {
-			return $connection;
-		}
-
-		throw new Exceptions\Runtime('Database connection could not be established');
 	}
 
 }

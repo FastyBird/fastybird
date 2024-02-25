@@ -74,7 +74,7 @@ const recordFactory = async (data: IEmailRecordFactoryPayload): Promise<IEmail> 
 			type: account.type,
 		},
 
-		// Transformer transformers
+		// Entity transformers
 		get isDefault(): boolean {
 			return this.default;
 		},
@@ -264,7 +264,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 					return this.data[createdEmailModel.id];
 				} catch (e: any) {
-					// Transformer could not be created on api, we have to remove it from database
+					// Entity could not be created on api, we have to remove it from database
 					delete this.data[newEmail.id];
 
 					throw new ApiError('accounts-module.emails.create.failed', e, 'Create new email failed.');

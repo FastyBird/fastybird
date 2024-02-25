@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Bridge events
  *
@@ -26,25 +23,15 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class BridgeEvent extends Consistence\Enum\Enum
+enum BridgeEvent: string
 {
 
-	public const DEVICE_JOINED = 'device_joined';
+	case DEVICE_JOINED = 'device_joined';
 
-	public const DEVICE_INTERVIEW = 'device_interview';
+	case DEVICE_INTERVIEW = 'device_interview';
 
-	public const DEVICE_LEAVE = 'device_leave';
+	case DEVICE_LEAVE = 'device_leave';
 
-	public const DEVICE_ANNOUNCE = 'device_announce';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case DEVICE_ANNOUNCE = 'device_announce';
 
 }

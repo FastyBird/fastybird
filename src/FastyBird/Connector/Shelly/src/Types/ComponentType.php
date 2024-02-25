@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Generation 2 devices component types
  *
@@ -26,41 +23,31 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ComponentType extends Consistence\Enum\Enum
+enum ComponentType: string
 {
 
-	public const SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const COVER = 'cover';
+	case COVER = 'cover';
 
-	public const LIGHT = 'light';
+	case LIGHT = 'light';
 
-	public const INPUT = 'input';
+	case INPUT = 'input';
 
-	public const TEMPERATURE = 'temperature';
+	case TEMPERATURE = 'temperature';
 
-	public const HUMIDITY = 'humidity';
+	case HUMIDITY = 'humidity';
 
-	public const VOLTMETER = 'voltmeter';
+	case VOLTMETER = 'voltmeter';
 
-	public const SCRIPT = 'script';
+	case SCRIPT = 'script';
 
-	public const DEVICE_POWER = 'devicepower';
+	case DEVICE_POWER = 'devicepower';
 
-	public const SMOKE = 'smoke';
+	case SMOKE = 'smoke';
 
-	public const ETHERNET = 'ethernet';
+	case ETHERNET = 'ethernet';
 
-	public const WIFI = 'wifi';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case WIFI = 'wifi';
 
 }

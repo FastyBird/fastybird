@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -33,67 +33,76 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Sockets implements ExchangeConsumer\Consumer
+final readonly class Sockets implements ExchangeConsumer\Consumer
 {
 
 	public function __construct(
-		private readonly Devices\Logger $logger,
-		private readonly WebSockets\Router\LinkGenerator $linkGenerator,
-		private readonly WebSocketsWAMP\Topics\IStorage $topicsStorage,
+		private Devices\Logger $logger,
+		private WebSockets\Router\LinkGenerator $linkGenerator,
+		private WebSocketsWAMP\Topics\IStorage $topicsStorage,
 	)
 	{
 	}
 
 	public function consume(
-		MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES)) {
+		if ($source === MetadataTypes\Sources\Module::DEVICES) {
 			return;
 		}
 
 		$result = $this->sendMessage(
 			[
-				'routing_key' => $routingKey->getValue(),
-				'source' => $source->getValue(),
-				'data' => $entity?->toArray(),
+				'routing_key' => $routingKey,
+				'source' => $source->value,
+				'data' => $document?->toArray(),
 			],
 		);
 
 		if ($result) {
-			$this->logger->debug('Successfully published message', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-consumer',
-				'message' => [
-					'routing_key' => $routingKey->getValue(),
-					'source' => $source->getValue(),
-					'data' => $entity?->toArray(),
+			$this->logger->debug(
+				'Successfully published message',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'sockets-consumer',
+					'message' => [
+						'routing_key' => $routingKey,
+						'source' => $source->value,
+						'data' => $document?->toArray(),
+					],
 				],
-			]);
+			);
 
 		} else {
-			$this->logger->error('Message could not be published to exchange', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-consumer',
-				'message' => [
-					'routing_key' => $routingKey->getValue(),
-					'source' => $source->getValue(),
-					'data' => $entity?->toArray(),
+			$this->logger->error(
+				'Message could not be published to exchange',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'sockets-consumer',
+					'message' => [
+						'routing_key' => $routingKey,
+						'source' => $source->value,
+						'data' => $document?->toArray(),
+					],
 				],
-			]);
+			);
 		}
 
-		$this->logger->debug('Received message from exchange was pushed to WS clients', [
-			'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-			'type' => 'exchange-consumer',
-			'message' => [
-				'source' => $source->getValue(),
-				'routing_key' => $routingKey->getValue(),
-				'entity' => $entity?->toArray(),
+		$this->logger->debug(
+			'Received message from exchange was pushed to WS clients',
+			[
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
+				'type' => 'sockets-consumer',
+				'message' => [
+					'routing_key' => $routingKey,
+					'source' => $source->value,
+					'entity' => $document?->toArray(),
+				],
 			],
-		]);
+		);
 	}
 
 	/**
@@ -107,29 +116,38 @@ final class Sockets implements ExchangeConsumer\Consumer
 			if ($this->topicsStorage->hasTopic($link)) {
 				$topic = $this->topicsStorage->getTopic($link);
 
-				$this->logger->debug('Broadcasting message to topic', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'exchange-consumer',
-					'link' => $link,
-				]);
+				$this->logger->debug(
+					'Broadcasting message to topic',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'sockets-consumer',
+						'link' => $link,
+					],
+				);
 
 				$topic->broadcast(Utils\Json::encode($data));
 			}
 
 			return true;
 		} catch (Utils\JsonException $ex) {
-			$this->logger->error('Data could not be converted to message', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-consumer',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'Data could not be converted to message',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'sockets-consumer',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 		} catch (Throwable $ex) {
-			$this->logger->error('Data could not be broadcasts to clients', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-consumer',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'Data could not be broadcasts to clients',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'sockets-consumer',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		}
 
 		return false;

@@ -16,7 +16,7 @@
   },
   "data" : [
     {
-      "type" : "com.fastybird.triggers-module/action/channel-property",
+      "type" : "com.fastybird.devices-module-automator/action/channel-property",
       "id" : "827d61f7-5dcf-4cab-9662-f386f6fb0bce",
       "attributes" : {
         "enabled" : true,

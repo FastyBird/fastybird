@@ -17,17 +17,17 @@ namespace FastyBird\Module\Accounts\Entities\Tokens;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 use function sprintf;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: 'refresh_token')]
 class RefreshToken extends SimpleAuthEntities\Tokens\Token implements
 	Entities\Entity,
 	Entities\EntityParams,
@@ -42,10 +42,8 @@ class RefreshToken extends SimpleAuthEntities\Tokens\Token implements
 
 	public const TOKEN_EXPIRATION = '+3 days';
 
-	/**
-	 * @IPubDoctrine\Crud(is={"writable"})
-	 * @ORM\Column(name="token_valid_till", type="datetime", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'token_valid_till', type: 'datetime', nullable: false)]
 	private DateTimeInterface|null $validTill = null;
 
 	public function __construct(

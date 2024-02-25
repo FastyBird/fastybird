@@ -26,9 +26,9 @@ use Ramsey\Uuid;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Roles\Role>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindRoles extends DoctrineOrmQuery\QueryObject
 {

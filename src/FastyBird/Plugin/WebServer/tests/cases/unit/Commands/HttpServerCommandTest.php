@@ -38,7 +38,7 @@ final class HttpServerCommandTest extends TestCase
 				self::callback(static function (...$args): bool {
 					$valid = [
 						[
-							'Launching HTTP Server',
+							'Starting HTTP Server',
 						],
 						[
 							'Listening on "http://127.0.0.1:8001"',
@@ -51,13 +51,13 @@ final class HttpServerCommandTest extends TestCase
 					$valid = [
 						[
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 								'type' => 'server-command',
 							],
 						],
 						[
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+								'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 								'type' => 'factory',
 							],
 						],

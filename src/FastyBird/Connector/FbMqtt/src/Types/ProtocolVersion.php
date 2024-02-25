@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\FbMqtt\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Protocol versions
  *
@@ -26,22 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ProtocolVersion extends Consistence\Enum\Enum
+enum ProtocolVersion: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const VERSION_1 = 'v1';
+	case VERSION_1 = 'v1';
 
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case VERSION_2 = 'v2';
 
 }

@@ -26,9 +26,9 @@ use Ramsey\Uuid;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Emails\Email>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindEmails extends DoctrineOrmQuery\QueryObject
 {

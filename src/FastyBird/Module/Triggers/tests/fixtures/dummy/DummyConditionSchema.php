@@ -6,7 +6,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Schemas;
 use Neomerx\JsonApi;
 use function array_merge;
-use function strval;
 
 final class DummyConditionSchema extends Schemas\Conditions\Condition
 {
@@ -14,7 +13,7 @@ final class DummyConditionSchema extends Schemas\Conditions\Condition
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS . '/condition/dummy';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::TRIGGERS->value . '/condition/' . DummyConditionEntity::TYPE;
 
 	public function getEntityClass(): string
 	{
@@ -33,7 +32,7 @@ final class DummyConditionSchema extends Schemas\Conditions\Condition
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'watch_item' => $resource->getWatchItem()->toString(),
-			'operator' => strval($resource->getOperator()->getValue()),
+			'operator' => $resource->getOperator()->value,
 			'operand' => $resource->getOperand(),
 		]);
 	}

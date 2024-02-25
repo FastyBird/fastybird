@@ -23,15 +23,18 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 use function floatval;
 use function is_string;
@@ -73,11 +76,13 @@ final class Properties implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -96,7 +101,7 @@ final class Properties implements Common\EventSubscriber
 				$this->processRequiredCapability($entity);
 			}
 		} elseif (
-			$entity instanceof Entities\NsPanelChannel
+			$entity instanceof Entities\Channels\Channel
 			&& $entity->getDevice() instanceof Entities\Devices\SubDevice
 		) {
 			$this->processSubDeviceChannelProperties($entity);
@@ -104,12 +109,13 @@ final class Properties implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
-	private function processDeviceProperties(Entities\NsPanelDevice $device): void
+	private function processDeviceProperties(Entities\Devices\Device $device): void
 	{
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertyQuery->forDevice($device);
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE);
 
@@ -123,13 +129,13 @@ final class Properties implements Common\EventSubscriber
 
 		if ($stateProperty !== null) {
 			$this->devicesPropertiesManager->update($stateProperty, Utils\ArrayHash::from([
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					DevicesTypes\ConnectionState::CONNECTED->value,
+					DevicesTypes\ConnectionState::DISCONNECTED->value,
+					DevicesTypes\ConnectionState::ALERT->value,
+					DevicesTypes\ConnectionState::UNKNOWN->value,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -138,15 +144,15 @@ final class Properties implements Common\EventSubscriber
 			$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 				'device' => $device,
 				'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
-				'identifier' => Types\DevicePropertyIdentifier::STATE,
-				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE),
-				'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+				'identifier' => Types\DevicePropertyIdentifier::STATE->value,
+				'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::STATE->value),
+				'dataType' => MetadataTypes\DataType::ENUM,
 				'unit' => null,
 				'format' => [
-					MetadataTypes\ConnectionState::STATE_CONNECTED,
-					MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-					MetadataTypes\ConnectionState::STATE_ALERT,
-					MetadataTypes\ConnectionState::STATE_UNKNOWN,
+					DevicesTypes\ConnectionState::CONNECTED->value,
+					DevicesTypes\ConnectionState::DISCONNECTED->value,
+					DevicesTypes\ConnectionState::ALERT->value,
+					DevicesTypes\ConnectionState::UNKNOWN->value,
 				],
 				'settable' => false,
 				'queryable' => false,
@@ -157,60 +163,64 @@ final class Properties implements Common\EventSubscriber
 	/**
 	 * INFO: NS Panel has bug, RSSI capability is required
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processRequiredCapability(Entities\Devices\ThirdPartyDevice $device): void
 	{
 		$findChannelQuery = new Queries\Entities\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(
-			Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+			Helpers\Name::convertCapabilityToChannel(Types\Capability::RSSI),
 		);
 
-		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\NsPanelChannel::class);
+		$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 		if ($channel === null) {
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\NsPanelChannel::class,
-				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::get(Types\Capability::RSSI)),
+				'entity' => Entities\Channels\Channel::class,
+				'identifier' => Helpers\Name::convertCapabilityToChannel(Types\Capability::RSSI),
 				'name' => 'RSSI',
 				'device' => $device,
 			]));
-			assert($channel instanceof Entities\NsPanelChannel);
+			assert($channel instanceof Entities\Channels\Channel);
 
 			$this->processSubDeviceChannelProperties($channel);
 		}
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function processSubDeviceChannelProperties(Entities\NsPanelChannel $channel): void
+	private function processSubDeviceChannelProperties(Entities\Channels\Channel $channel): void
 	{
 		$metadata = $this->loader->loadCapabilities();
 
-		if (!$metadata->offsetExists($channel->getCapability()->getValue())) {
+		if (!$metadata->offsetExists($channel->getCapability()->value)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
-				$channel->getCapability()->getValue(),
+				$channel->getCapability()->value,
 			));
 		}
 
-		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->getValue());
+		$capabilityMetadata = $metadata->offsetGet($channel->getCapability()->value);
 
 		if (
 			!$capabilityMetadata instanceof Utils\ArrayHash
 			|| !$capabilityMetadata->offsetExists('permission')
 			|| !is_string($capabilityMetadata->offsetGet('permission'))
-			|| !Types\Permission::isValidValue($capabilityMetadata->offsetGet('permission'))
+			|| Types\Permission::tryFrom($capabilityMetadata->offsetGet('permission')) === null
 			|| !$capabilityMetadata->offsetExists('protocol')
 			|| !$capabilityMetadata->offsetGet('protocol') instanceof Utils\ArrayHash
 		) {
@@ -235,13 +245,14 @@ final class Properties implements Common\EventSubscriber
 				!$protocolMetadata instanceof Utils\ArrayHash
 				|| !$protocolMetadata->offsetExists('data_type')
 				|| !is_string($protocolMetadata->offsetGet('data_type'))
+				|| MetadataTypes\DataType::tryFrom($protocolMetadata->offsetGet('data_type')) === null
 			) {
 				throw new Exceptions\InvalidState('Protocol definition is missing required attributes');
 			}
 
-			$dataType = MetadataTypes\DataType::get($protocolMetadata->offsetGet('data_type'));
+			$dataType = MetadataTypes\DataType::from($protocolMetadata->offsetGet('data_type'));
 
-			$permission = Types\Permission::get($capabilityMetadata->offsetGet('permission'));
+			$permission = Types\Permission::from($capabilityMetadata->offsetGet('permission'));
 
 			$format = null;
 
@@ -261,9 +272,9 @@ final class Properties implements Common\EventSubscriber
 
 			if (
 				(
-					$dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SWITCH)
-					|| $dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_BUTTON)
+					$dataType === MetadataTypes\DataType::ENUM
+					|| $dataType === MetadataTypes\DataType::SWITCH
+					|| $dataType === MetadataTypes\DataType::BUTTON
 				)
 			) {
 				if (
@@ -281,15 +292,11 @@ final class Properties implements Common\EventSubscriber
 
 			$this->processChannelProperty(
 				$channel,
-				Types\Protocol::get($protocol),
+				Types\Protocol::from($protocol),
 				$dataType,
 				$format,
-				$permission->equalsValue(Types\Permission::READ_WRITE) || $permission->equalsValue(
-					Types\Permission::WRITE,
-				),
-				$permission->equalsValue(Types\Permission::READ_WRITE) || $permission->equalsValue(
-					Types\Permission::READ,
-				),
+				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::WRITE,
+				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::READ,
 				$protocolMetadata->offsetExists('unit') ? strval($protocolMetadata->offsetGet('unit')) : null,
 				$protocolMetadata->offsetExists('invalid_value')
 					? strval($protocolMetadata->offsetGet('invalid_value'))
@@ -301,11 +308,11 @@ final class Properties implements Common\EventSubscriber
 	/**
 	 * @param string|array<int, string>|array<int, string|int|float|array<int, string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrud\Exceptions\InvalidArgumentException
 	 */
 	private function processChannelProperty(
-		Entities\NsPanelChannel $channel,
+		Entities\Channels\Channel $channel,
 		Types\Protocol $protocol,
 		MetadataTypes\DataType $dataType,
 		array|string|null $format = null,
@@ -337,7 +344,7 @@ final class Properties implements Common\EventSubscriber
 				'invalid' => $invalidValue,
 			]));
 		} else {
-			if ($protocol->equalsValue(Types\Protocol::RSSI)) {
+			if ($protocol === Types\Protocol::RSSI) {
 				$this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Channels\Properties\Variable::class,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),

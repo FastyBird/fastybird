@@ -10,7 +10,7 @@
  * @subpackage     Events
  * @since          1.0.0
  *
- * @date           22.10.22
+ * @date           15.02.24
  */
 
 namespace FastyBird\Plugin\RedisDb\Events;
@@ -31,19 +31,19 @@ class MessageReceived extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		private readonly MetadataTypes\RoutingKey $routingKey,
+		private readonly MetadataTypes\Sources\Source $source,
+		private readonly string $routingKey,
 		private readonly MetadataDocuments\Document|null $entity,
 	)
 	{
 	}
 
-	public function getSource(): MetadataTypes\AutomatorSource|MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return $this->source;
 	}
 
-	public function getRoutingKey(): MetadataTypes\RoutingKey
+	public function getRoutingKey(): string
 	{
 		return $this->routingKey;
 	}

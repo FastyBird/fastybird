@@ -17,10 +17,10 @@ namespace FastyBird\Module\Triggers\Models\Entities\Actions;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Triggers\Entities;
-use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Queries;
-use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use function is_array;
@@ -42,7 +42,7 @@ final class ActionsRepository
 	private array $repository = [];
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
@@ -52,7 +52,7 @@ final class ActionsRepository
 	 * @param Queries\Entities\FindActions<Entities\Actions\Action> $queryObject
 	 * @param class-string<Entities\Actions\Action> $type
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindActions $queryObject,
@@ -70,7 +70,7 @@ final class ActionsRepository
 	 *
 	 * @return array<Entities\Actions\Action>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\Entities\FindActions $queryObject,
@@ -100,7 +100,7 @@ final class ActionsRepository
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Actions\Action>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\Entities\FindActions $queryObject,

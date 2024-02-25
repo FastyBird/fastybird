@@ -21,7 +21,7 @@ use FastyBird\Module\Triggers\Schemas;
 /**
  * Automatic trigger entity hydrator
  *
- * @extends Trigger<Entities\Triggers\AutomaticTrigger>
+ * @extends Trigger<Entities\Triggers\Automatic>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Hydrators
@@ -32,14 +32,14 @@ final class AutomaticTrigger extends Trigger
 
 	/** @var array<string> */
 	protected array $relationships = [
-		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_CONDITIONS,
-		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_ACTIONS,
-		Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_NOTIFICATIONS,
+		Schemas\Triggers\Automatic::RELATIONSHIPS_CONDITIONS,
+		Schemas\Triggers\Automatic::RELATIONSHIPS_ACTIONS,
+		Schemas\Triggers\Automatic::RELATIONSHIPS_NOTIFICATIONS,
 	];
 
 	public function getEntityName(): string
 	{
-		return Entities\Triggers\AutomaticTrigger::class;
+		return Entities\Triggers\Automatic::class;
 	}
 
 }

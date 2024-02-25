@@ -18,28 +18,35 @@ namespace FastyBird\Connector\NsPanel\Clients;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function in_array;
 use function is_string;
 use function preg_match;
+use function React\Async\async;
 use function strval;
 
 /**
@@ -63,7 +70,7 @@ final class Gateway implements Client
 
 	private const CMD_HEARTBEAT = 'heartbeat';
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Gateway>  */
 	private array $devices = [];
 
 	/** @var array<string> */
@@ -77,20 +84,24 @@ final class Gateway implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
-		API\LanApiFactory $lanApiFactory,
+		private readonly Documents\Connectors\Connector $connector,
+		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->lanApi = $lanApiFactory->create($this->connector->getIdentifier());
+		$this->lanApi = $this->lanApiFactory->create($this->connector->getIdentifier());
 	}
 
 	/**
@@ -103,20 +114,53 @@ final class Gateway implements Client
 
 		$this->handlerTimer = null;
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindGatewayDevices();
 		$findDevicesQuery->forConnector($this->connector);
 		$findDevicesQuery->withoutParents();
-		$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Gateway::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
+
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
+
+			foreach ($channels as $channel) {
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
+				);
+
+				foreach ($properties as $property) {
+					$state = $this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\Sources\Connector::NS_PANEL,
+					);
+
+					if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
+						$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+					}
+				}
+			}
 		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -132,10 +176,15 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -159,12 +208,17 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
+	private function processDevice(Documents\Devices\Gateway $device): bool
 	{
 		if ($this->readDeviceInformation($device)) {
 			return true;
@@ -176,24 +230,29 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function readDeviceInformation(MetadataDocuments\DevicesModule\Device $gateway): bool
+	private function readDeviceInformation(Documents\Devices\Gateway $gateway): bool
 	{
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null
 			|| $this->gatewayHelper->getAccessToken($gateway) === null
 		) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -223,7 +282,7 @@ final class Gateway implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$gateway->getId()->toString()]);
 
 			return false;
@@ -235,12 +294,12 @@ final class Gateway implements Client
 					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -250,9 +309,9 @@ final class Gateway implements Client
 						$this->logger->error(
 							'Calling NS Panel API failed with error',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -263,12 +322,12 @@ final class Gateway implements Client
 						);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -276,9 +335,9 @@ final class Gateway implements Client
 						$this->logger->error(
 							'Could not NS Panel API',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -297,12 +356,12 @@ final class Gateway implements Client
 						);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -310,9 +369,9 @@ final class Gateway implements Client
 						$this->logger->error(
 							'Calling NS Panel API failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -324,9 +383,7 @@ final class Gateway implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\ConnectorSource::get(
-									MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								),
+								MetadataTypes\Sources\Connector::NS_PANEL,
 								'Unhandled error occur',
 							),
 						);
@@ -336,9 +393,9 @@ final class Gateway implements Client
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'gateway-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -357,24 +414,29 @@ final class Gateway implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function readDeviceState(MetadataDocuments\DevicesModule\Device $gateway): bool
+	private function readDeviceState(Documents\Devices\Gateway $gateway): bool
 	{
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null
 			|| $this->gatewayHelper->getAccessToken($gateway) === null
 		) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -404,7 +466,7 @@ final class Gateway implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$gateway->getId()->toString()]);
 
 			return false;
@@ -415,16 +477,16 @@ final class Gateway implements Client
 				$this->gatewayHelper->getIpAddress($gateway),
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
-				->then(function (Entities\API\Response\GetSubDevices $subDevices) use ($gateway): void {
+				->then(function (API\Messages\Response\GetSubDevices $subDevices) use ($gateway): void {
 					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $gateway->getConnector(),
 								'identifier' => $gateway->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
 					);
@@ -436,14 +498,14 @@ final class Gateway implements Client
 						}
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $subDevice->getSerialNumber(),
 									'state' => $subDevice->isOnline()
-										? MetadataTypes\ConnectionState::STATE_CONNECTED
-										: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+										? DevicesTypes\ConnectionState::CONNECTED
+										: DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -463,7 +525,7 @@ final class Gateway implements Client
 
 							foreach ($item->getProtocols() as $protocol => $value) {
 								$state[] = [
-									'capability' => $item->getType()->getValue(),
+									'capability' => $item->getType()->value,
 									'protocol' => $protocol,
 									'value' => $value,
 									'identifier' => $identifier,
@@ -472,8 +534,8 @@ final class Gateway implements Client
 						}
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'gateway' => $gateway->getId(),
@@ -489,9 +551,9 @@ final class Gateway implements Client
 						$this->logger->error(
 							'Calling NS Panel API failed with error',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -502,12 +564,12 @@ final class Gateway implements Client
 						);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
 						);
@@ -515,7 +577,7 @@ final class Gateway implements Client
 						$this->logger->warning(
 							'Calling NS Panel API failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
 								'error' => $ex->getMessage(),
 								'connector' => [
@@ -536,12 +598,12 @@ final class Gateway implements Client
 						);
 
 						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
+							$this->messageBuilder->create(
+								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
 									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -549,9 +611,9 @@ final class Gateway implements Client
 						$this->logger->error(
 							'Calling NS Panel API failed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 								'type' => 'gateway-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -563,9 +625,7 @@ final class Gateway implements Client
 
 						$this->dispatcher?->dispatch(
 							new DevicesEvents\TerminateConnector(
-								MetadataTypes\ConnectorSource::get(
-									MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								),
+								MetadataTypes\Sources\Connector::NS_PANEL,
 								'Unhandled error occur',
 							),
 						);
@@ -575,9 +635,9 @@ final class Gateway implements Client
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'gateway-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -597,9 +657,9 @@ final class Gateway implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

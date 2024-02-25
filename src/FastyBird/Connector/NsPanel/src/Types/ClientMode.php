@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connector client modes
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ClientMode extends Consistence\Enum\Enum
+enum ClientMode: string
 {
 
-	public const GATEWAY = 'gateway';
+	case GATEWAY = 'gateway';
 
-	public const DEVICE = 'device';
+	case DEVICE = 'device';
 
-	public const BOTH = 'both';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case BOTH = 'both';
 
 }

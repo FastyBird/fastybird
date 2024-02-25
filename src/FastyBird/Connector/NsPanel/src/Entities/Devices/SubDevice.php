@@ -19,16 +19,19 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function count;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
-class SubDevice extends Entities\NsPanelDevice
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class SubDevice extends Entities\Devices\Device
 {
 
 	public const TYPE = 'ns-panel-connector-sub-device';
@@ -39,7 +42,7 @@ class SubDevice extends Entities\NsPanelDevice
 	public function __construct(
 		string $identifier,
 		Gateway $parent,
-		DevicesEntities\Connectors\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		string|null $name = null,
 		Uuid\UuidInterface|null $id = null,
 	)
@@ -49,12 +52,7 @@ class SubDevice extends Entities\NsPanelDevice
 		$this->setParents([$parent]);
 	}
 
-	public function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
@@ -76,7 +74,7 @@ class SubDevice extends Entities\NsPanelDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		if (count($parents) !== 1 || !$parents[0] instanceof Gateway) {
 			throw new Exceptions\InvalidState('Sub-device could have only one parent and it have to be gateway');
@@ -88,37 +86,41 @@ class SubDevice extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getDisplayCategory(): Types\Category
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::CATEGORY->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\Category::isValidValue($property->getValue())
+			&& Types\Category::tryFrom($property->getValue()) !== null
 		) {
-			return Types\Category::get($property->getValue());
+			return Types\Category::from($property->getValue());
 		}
 
-		return Types\Category::get(Types\Category::UNKNOWN);
+		return Types\Category::UNKNOWN;
 	}
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getManufacturer(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER->value
 			)
 			->first();
 
@@ -135,13 +137,15 @@ class SubDevice extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getModel(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL->value
 			)
 			->first();
 

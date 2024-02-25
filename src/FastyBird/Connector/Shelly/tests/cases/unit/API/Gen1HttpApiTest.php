@@ -7,7 +7,7 @@ use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Fig\Http\Message\StatusCodeInterface;
 use GuzzleHttp;
 use Nette\DI;
@@ -16,11 +16,15 @@ use Psr\Http;
 use RuntimeException;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class Gen1HttpApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -91,7 +95,7 @@ final class Gen1HttpApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -162,7 +166,7 @@ final class Gen1HttpApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -233,7 +237,7 @@ final class Gen1HttpApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall

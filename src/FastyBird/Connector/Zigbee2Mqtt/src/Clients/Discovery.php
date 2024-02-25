@@ -16,29 +16,31 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 
 use BinSoul\Net\Mqtt as NetMqtt;
-use Evenement;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use React\Promise;
 use stdClass;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function sprintf;
 
@@ -50,33 +52,32 @@ use function sprintf;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const DISCOVERY_TIMEOUT = 100;
 
 	public const DISCOVERY_TOPIC = '%s/bridge/request/permit_join';
 
-	private MetadataDocuments\DevicesModule\Device|null $onlyBridge = null;
+	private Documents\Devices\Bridge|null $onlyBridge = null;
 
 	private Clients\Subscribers\Bridge $bridgeSubscriber;
 
 	private bool $subscribed = false;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesUtilities\ConnectorPropertiesStates $connectorPropertiesStatesManager,
+		private readonly DevicesUtilities\ConnectorConnection $connectorConnectionManager,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
@@ -85,18 +86,24 @@ final class Discovery implements Evenement\EventEmitterInterface
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function discover(MetadataDocuments\DevicesModule\Device|null $onlyBridge = null): void
+	public function discover(Documents\Devices\Bridge|null $onlyBridge = null): void
 	{
 		$this->onlyBridge = $onlyBridge;
 
 		$client = $this->getClient();
-
-		$client->on('connect', [$this, 'onConnect']);
+		$client->onConnect[] = function (): void {
+			$this->onConnect();
+		};
 
 		if (!$this->isRunning()) {
 			$this->bridgeSubscriber->subscribe($client);
@@ -109,20 +116,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
 		$client = $this->getClient();
 
 		$client->disconnect();
-
-		$client->removeListener('connect', [$this, 'onConnect']);
-
-		if ($this->subscribed) {
-			$this->bridgeSubscriber->unsubscribe($client);
-		}
 	}
 
 	/**
@@ -130,6 +134,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onConnect(): void
 	{
@@ -139,7 +145,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected Zigbee2MQTT bridge',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -156,7 +162,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered Zigbee2MQTT bridges',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -164,11 +170,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindBridgeDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Bridge::TYPE);
 
-			$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+			$bridges = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Bridge::class,
+			);
 
 			foreach ($bridges as $bridge) {
 				$promises[] = $this->discoverSubDevices($bridge);
@@ -178,11 +186,21 @@ final class Discovery implements Evenement\EventEmitterInterface
 		Promise\all($promises)
 			->then(function (): void {
 				$this->eventLoop->addTimer(self::DISCOVERY_TIMEOUT, function (): void {
-					$this->emit('finished');
+					$this->dispatcher?->dispatch(
+						new DevicesEvents\TerminateConnector(
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							'Devices discovery failed',
+						),
+					);
 				});
 			})
 			->catch(function (): void {
-				$this->emit('finished');
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						'Devices discovery failed',
+					),
+				);
 			});
 	}
 
@@ -190,11 +208,14 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @return Promise\PromiseInterface<true>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverSubDevices(
-		MetadataDocuments\DevicesModule\Device $bridge,
+		Documents\Devices\Bridge $bridge,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -212,7 +233,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'discovery-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -232,9 +253,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'discovery-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -260,33 +281,29 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function isRunning(): bool
 	{
-		$findConnectorProperty = new DevicesQueries\Configuration\FindConnectorDynamicProperties();
-		$findConnectorProperty->byConnectorId($this->connector->getId());
-		$findConnectorProperty->byIdentifier(Types\ConnectorPropertyIdentifier::STATE);
-
-		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
-			$findConnectorProperty,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
-		);
-
-		$state = $property !== null ? $this->connectorPropertiesStatesManager->readValue($property) : null;
-
-		return $state?->getActualValue() === MetadataTypes\ConnectionState::STATE_RUNNING;
+		return $this->connectorConnectionManager->isRunning($this->connector);
 	}
 
 	/**
 	 * @return Promise\PromiseInterface<true>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function publishDiscoveryRequest(
-		MetadataDocuments\DevicesModule\Device $bridge,
+		Documents\Devices\Bridge $bridge,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -319,8 +336,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getClient(): API\Client
 	{

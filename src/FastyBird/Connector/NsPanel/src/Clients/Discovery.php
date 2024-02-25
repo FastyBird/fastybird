@@ -15,24 +15,25 @@
 
 namespace FastyBird\Connector\NsPanel\Clients;
 
-use Evenement;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
-use function array_key_exists;
+use TypeError;
+use ValueError;
 use function array_merge;
 
 /**
@@ -43,30 +44,33 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function discover(MetadataDocuments\DevicesModule\Device|null $onlyGateway = null): void
+	public function discover(Documents\Devices\Gateway|null $onlyGateway = null): void
 	{
 		$promises = [];
 
@@ -74,7 +78,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for selected NS Panel',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -91,7 +95,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting sub-devices discovery for all registered NS Panels',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -99,11 +103,13 @@ final class Discovery implements Evenement\EventEmitterInterface
 				],
 			);
 
-			$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDevicesQuery = new Queries\Configuration\FindGatewayDevices();
 			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->byType(Entities\Devices\Gateway::TYPE);
 
-			$gateways = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+			$gateways = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			foreach ($gateways as $gateway) {
 				$promises[] = $this->discoverSubDevices($gateway);
@@ -111,23 +117,22 @@ final class Discovery implements Evenement\EventEmitterInterface
 		}
 
 		Promise\all($promises)
-			->then(function (array $results): void {
-				$foundSubDevices = [];
-
-				foreach ($results as $result) {
-					foreach ($result as $device) {
-						if (!array_key_exists($device->getParent()->toString(), $foundSubDevices)) {
-							$foundSubDevices[$device->getParent()->toString()] = [];
-						}
-
-						$foundSubDevices[$device->getParent()->toString()][] = $device;
-					}
-				}
-
-				$this->emit('finished', [$foundSubDevices]);
+			->then(function (): void {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::NS_PANEL,
+						'Devices discovery finished',
+					),
+				);
 			})
-			->catch(function (): void {
-				$this->emit('finished', [[]]);
+			->catch(function (Throwable $ex): void {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::NS_PANEL,
+						'Devices discovery failed',
+						$ex,
+					),
+				);
 			});
 	}
 
@@ -137,14 +142,17 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<array<Entities\Clients\DiscoveredSubDevice>>
+	 * @return Promise\PromiseInterface<true>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function discoverSubDevices(
-		MetadataDocuments\DevicesModule\Device $gateway,
+		Documents\Devices\Gateway $gateway,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -165,8 +173,10 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->gatewayHelper->getIpAddress($gateway),
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
-				->then(function (Entities\API\Response\GetSubDevices $response) use ($deferred, $gateway): void {
-					$deferred->resolve($this->handleFoundSubDevices($gateway, $response));
+				->then(function (API\Messages\Response\GetSubDevices $response) use ($deferred, $gateway): void {
+					$this->handleFoundSubDevices($gateway, $response);
+
+					$deferred->resolve(true);
 				})
 				->catch(static function (Throwable $ex) use ($deferred): void {
 					$deferred->reject($ex);
@@ -175,9 +185,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading sub-devices from NS Panel failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -193,16 +203,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 		return $deferred->promise();
 	}
 
-	/**
-	 * @return array<Entities\Clients\DiscoveredSubDevice>
-	 */
 	private function handleFoundSubDevices(
-		MetadataDocuments\DevicesModule\Device $gateway,
-		Entities\API\Response\GetSubDevices $subDevices,
-	): array
+		Documents\Devices\Gateway $gateway,
+		API\Messages\Response\GetSubDevices $subDevices,
+	): void
 	{
-		$processedSubDevices = [];
-
 		foreach ($subDevices->getData()->getDevicesList() as $subDevice) {
 			// Ignore third-party sub-devices (registered as virtual devices via connector)
 			if ($subDevice->getThirdSerialNumber() !== null) {
@@ -210,19 +215,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$processedSubDevices[] = $this->entityHelper->create(
-					Entities\Clients\DiscoveredSubDevice::class,
-					array_merge(
-						$subDevice->toArray(),
-						[
-							'parent' => $gateway->getId(),
-						],
-					),
-				);
-
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreSubDevice::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreSubDevice::class,
 						array_merge(
 							[
 								'connector' => $gateway->getConnector(),
@@ -236,9 +231,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Could not map discovered device to result',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -249,8 +244,6 @@ final class Discovery implements Evenement\EventEmitterInterface
 				);
 			}
 		}
-
-		return $processedSubDevices;
 	}
 
 }

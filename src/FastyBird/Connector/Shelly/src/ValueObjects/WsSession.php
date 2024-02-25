@@ -18,31 +18,31 @@ namespace FastyBird\Connector\Shelly\ValueObjects;
 use Orisai\ObjectMapper;
 
 /**
- * Websocket session entity
+ * Websocket session
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WsSession implements ObjectMapper\MappedObject
+final readonly class WsSession implements ObjectMapper\MappedObject
 {
 
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $realm,
+		private string $realm,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $username,
+		private string $username,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $nonce,
+		private int $nonce,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $cnonce,
+		private int $cnonce,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $response,
+		private string $response,
 		#[ObjectMapper\Rules\IntValue()]
-		private readonly int $nc,
+		private int $nc,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		private readonly string $algorithm,
+		private string $algorithm,
 	)
 	{
 	}

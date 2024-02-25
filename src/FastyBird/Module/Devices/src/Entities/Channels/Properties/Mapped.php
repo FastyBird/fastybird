@@ -22,17 +22,20 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
+use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function assert;
 use function sprintf;
-use function strval;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Mapped extends Property
 {
+
+	public const TYPE = Types\PropertyType::MAPPED->value;
 
 	public function __construct(
 		Entities\Channels\Channel $channel,
@@ -46,9 +49,9 @@ class Mapped extends Property
 		$this->parent = $parent;
 	}
 
-	public function getType(): MetadataTypes\PropertyType
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_MAPPED);
+		return self::TYPE;
 	}
 
 	/**
@@ -71,7 +74,7 @@ class Mapped extends Property
 	public function getChildren(): array
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Reading children is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Reading children is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -81,7 +84,7 @@ class Mapped extends Property
 	public function setChildren(array $children): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Assigning children is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Assigning children is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -91,7 +94,7 @@ class Mapped extends Property
 	public function addChild(Property $child): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Adding child is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Adding child is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -101,7 +104,7 @@ class Mapped extends Property
 	public function removeChild(Property $child): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Removing child is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Removing child is not allowed for property type: %s', static::getType()),
 		);
 	}
 
@@ -157,30 +160,36 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
-		if (!$this->getParent() instanceof Variable) {
-			throw new Exceptions\InvalidState('Reading default value is allowed only for variable parent properties');
+		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
+			return null;
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
-			$this->getDataType(),
-			$this->getParent()->getDataType(),
-			$this->getParent()->getDefault(),
-		);
+		try {
+			return MetadataUtilities\Value::normalizeValue(
+				MetadataUtilities\Value::transformDataType(
+					MetadataUtilities\Value::flattenValue($this->getParent()->getDefault()),
+					$this->getDataType(),
+				),
+				$this->getDataType(),
+				$this->getFormat(),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setDefault(string|null $default): void
+	public function setDefault(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
+	): void
 	{
-		if (!$this->getParent() instanceof Variable) {
-			throw new Exceptions\InvalidState('Setting default value is allowed only for variable parent properties');
-		}
-
 		throw new Exceptions\InvalidState('Default value setter is allowed only for parent');
 	}
 
@@ -188,27 +197,37 @@ class Mapped extends Property
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueFromMappedParent(
-			$this->getDataType(),
-			$this->getParent()->getDataType(),
-			$this->getParent()->getValue(),
-		);
+		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
+			return null;
+		}
+
+		try {
+			return MetadataUtilities\Value::normalizeValue(
+				MetadataUtilities\Value::transformDataType(
+					MetadataUtilities\Value::flattenValue($this->getParent()->getValue()),
+					$this->getDataType(),
+				),
+				$this->getDataType(),
+				$this->getFormat(),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			return null;
+		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		if (!$this->getParent() instanceof Variable) {
 			throw new Exceptions\InvalidState('Setting value is allowed only for variable parent properties');
@@ -218,11 +237,32 @@ class Mapped extends Property
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 */
+	public function setDataType(MetadataTypes\DataType $dataType): void
+	{
+		if (!Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $dataType)) {
+			throw new Exceptions\InvalidArgument(
+				sprintf(
+					'Mapped property data type: %s is not compatible with parent data type: %s',
+					$dataType->value,
+					$this->getParent()->getDataType()->value,
+				),
+			);
+		}
+
+		parent::setDataType($dataType);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
@@ -230,14 +270,15 @@ class Mapped extends Property
 			return array_merge(parent::toArray(), [
 				'parent' => $this->getParent()->getId()->toString(),
 
-				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
 		}
 
 		return array_merge(parent::toArray(), [
 			'parent' => $this->getParent()->getId()->toString(),
 
+			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 		]);

@@ -3,12 +3,12 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Models\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Triggers\Tests;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Ramsey\Uuid;
@@ -18,11 +18,11 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class NotificationsRepositoryTest extends DbTestCase
+final class NotificationsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -39,7 +39,7 @@ final class NotificationsRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Notifications\EmailNotification);
+		self::assertTrue($entity instanceof Entities\Notifications\Email);
 
 		$findQuery = new Queries\Entities\FindNotifications();
 		$findQuery->byId(Uuid\Uuid::fromString('4fe1019c-f49e-4cbf-83e6-20b394e76317'));
@@ -47,11 +47,11 @@ final class NotificationsRepositoryTest extends DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertTrue($entity instanceof Entities\Notifications\SmsNotification);
+		self::assertTrue($entity instanceof Entities\Notifications\Sms);
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

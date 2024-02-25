@@ -41,7 +41,7 @@ final class Control extends JsonApiSchemas\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/control/connector';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES->value . '/control/connector';
 
 	/**
 	 * Define relationships names
@@ -94,8 +94,8 @@ final class Control extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CONNECTOR_CONTROL,
 				[
-					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -139,7 +139,7 @@ final class Control extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getId()->toString(),
 					],
 				),
 				false,

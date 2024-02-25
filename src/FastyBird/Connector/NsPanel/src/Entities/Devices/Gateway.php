@@ -18,16 +18,18 @@ namespace FastyBird\Connector\NsPanel\Entities\Devices;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use TypeError;
+use ValueError;
 use function floatval;
 use function is_numeric;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
-class Gateway extends Entities\NsPanelDevice
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class Gateway extends Entities\Devices\Device
 {
 
 	public const TYPE = 'ns-panel-connector-gateway';
@@ -36,12 +38,7 @@ class Gateway extends Entities\NsPanelDevice
 
 	public const HEARTBEAT_DELAY = 2_500.0;
 
-	public function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
@@ -49,13 +46,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getIpAddress(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS->value
 			)
 			->first();
 
@@ -72,13 +71,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getDomain(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DOMAIN
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DOMAIN->value
 			)
 			->first();
 
@@ -95,13 +96,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getAccessToken(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ACCESS_TOKEN
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ACCESS_TOKEN->value
 			)
 			->first();
 
@@ -118,13 +121,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getMacAddress(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS->value
 			)
 			->first();
 
@@ -141,13 +146,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFirmwareVersion(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value
 			)
 			->first();
 
@@ -164,13 +171,15 @@ class Gateway extends Entities\NsPanelDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getStateReadingDelay(): float
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY->value
 			)
 			->first();
 

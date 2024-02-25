@@ -15,15 +15,15 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Ramsey\Uuid;
 
 /**
  * Find device dynamic properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\DeviceDynamicProperty
+ * @template T of Documents\Devices\Properties\Dynamic
  * @extends  FindDeviceProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -37,15 +37,13 @@ class FindDeviceDynamicProperties extends FindDeviceProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::DYNAMIC->value . '")]';
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function forParent(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\DeviceVariableProperty $parent,
-	): void
+	public function forParent(Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Variable $parent): void
 	{
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');
 	}

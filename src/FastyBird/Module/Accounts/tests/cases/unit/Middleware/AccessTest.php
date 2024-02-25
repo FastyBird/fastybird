@@ -3,11 +3,10 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Middleware;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Accounts\Tests\Tools;
+use FastyBird\Module\Accounts\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -18,11 +17,15 @@ use Nette\Utils;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
 
-final class AccessTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class AccessTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
@@ -54,7 +57,7 @@ final class AccessTest extends DbTestCase
 
 		$response = $router->handle($request);
 
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

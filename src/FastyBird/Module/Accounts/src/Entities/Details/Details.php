@@ -17,21 +17,19 @@ namespace FastyBird\Module\Accounts\Entities\Details;
 
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Module\Accounts\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_accounts_module_accounts_details",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Accounts details"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_accounts_module_accounts_details',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Accounts details',
+	],
+)]
 class Details implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated,
 	DoctrineTimestampable\Entities\IEntityUpdated
@@ -41,37 +39,35 @@ class Details implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="detail_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'detail_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty
-	 *
-	 * @ORM\OneToOne(targetEntity="FastyBird\Module\Accounts\Entities\Accounts\Account", inversedBy="details")
-	 * @ORM\JoinColumn(name="account_id", referencedColumnName="account_id", unique=true, onDelete="cascade", nullable=false)
-	 */
+	/** @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty */
+	#[ORM\OneToOne(
+		inversedBy: 'details',
+		targetEntity: Entities\Accounts\Account::class,
+	)]
+	#[ORM\JoinColumn(
+		name: 'account_id',
+		referencedColumnName: 'account_id',
+		unique: true,
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	private Entities\Accounts\Account $account;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="detail_first_name", length=100, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'detail_first_name', type: 'string', length: 100, nullable: false)]
 	private string $firstName;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="detail_last_name", length=100, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'detail_last_name', type: 'string', length: 100, nullable: false)]
 	private string $lastName;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="detail_middle_name", length=100, nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'detail_middle_name', type: 'string', nullable: true, options: ['default' => null])]
 	private string|null $middleName = null;
 
 	public function __construct(

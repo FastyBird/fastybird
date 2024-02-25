@@ -17,16 +17,23 @@ namespace FastyBird\Module\Devices\Utilities;
 
 use DateTimeInterface;
 use Doctrine\DBAL;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 
 /**
@@ -46,33 +53,36 @@ final class DeviceConnection
 		private readonly Models\Entities\Devices\DevicesRepository $devicesEntitiesRepository,
 		private readonly Models\Entities\Devices\Properties\PropertiesManager $devicesPropertiesEntitiesManager,
 		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicePropertiesStates $propertiesStates,
-		private readonly Database $databaseHelper,
+		private readonly Models\States\DevicePropertiesManager $propertiesStatesManager,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setState(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
-		MetadataTypes\ConnectionState $state,
+		Entities\Devices\Device|Documents\Devices\Device $device,
+		Types\ConnectionState $state,
 	): bool
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
 		if ($property === null) {
@@ -86,18 +96,18 @@ final class DeviceConnection
 					$property = $this->devicesPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'device' => $device,
 						'entity' => Entities\Devices\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'identifier' => Types\ConnectorPropertyIdentifier::STATE->value,
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::STATE_CONNECTED,
-							MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-							MetadataTypes\ConnectionState::STATE_RUNNING,
-							MetadataTypes\ConnectionState::STATE_SLEEPING,
-							MetadataTypes\ConnectionState::STATE_STOPPED,
-							MetadataTypes\ConnectionState::STATE_LOST,
-							MetadataTypes\ConnectionState::STATE_ALERT,
-							MetadataTypes\ConnectionState::STATE_UNKNOWN,
+							Types\ConnectionState::CONNECTED->value,
+							Types\ConnectionState::DISCONNECTED->value,
+							Types\ConnectionState::RUNNING->value,
+							Types\ConnectionState::SLEEPING->value,
+							Types\ConnectionState::STOPPED->value,
+							Types\ConnectionState::LOST->value,
+							Types\ConnectionState::ALERT->value,
+							Types\ConnectionState::UNKNOWN->value,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -109,14 +119,16 @@ final class DeviceConnection
 			);
 		}
 
-		$this->propertiesStates->writeValue(
+		$property = $this->devicesPropertiesConfigurationRepository->find($property->getId());
+		assert($property instanceof Documents\Devices\Properties\Dynamic);
+
+		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+				States\Property::ACTUAL_VALUE_FIELD => $state->value,
 				States\Property::EXPECTED_VALUE_FIELD => null,
-				States\Property::PENDING_FIELD => false,
-				States\Property::VALID_FIELD => true,
 			]),
+			MetadataTypes\Sources\Module::DEVICES,
 		);
 
 		return false;
@@ -127,33 +139,41 @@ final class DeviceConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getState(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
-	): MetadataTypes\ConnectionState
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): Types\ConnectionState
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+		if ($property instanceof Documents\Devices\Properties\Dynamic) {
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+				$state?->getRead()->getActualValue() !== null
+				&& Types\ConnectionState::tryFrom(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				) !== null
 			) {
-				return MetadataTypes\ConnectionState::get($state->getActualValue());
+				return Types\ConnectionState::from(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				);
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		return Types\ConnectionState::UNKNOWN;
 	}
 
 	/**
@@ -161,28 +181,34 @@ final class DeviceConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getLostAt(
-		Entities\Devices\Device|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 	): DateTimeInterface|null
 	{
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
-		$findDevicePropertyQuery->byIdentifier(MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE);
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+			Documents\Devices\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+		if ($property instanceof Documents\Devices\Properties\Dynamic) {
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
-				&& $state->getActualValue() === MetadataTypes\ConnectionState::STATE_LOST
+				$state?->getRead()->getActualValue() !== null
+				&& Types\ConnectionState::tryFrom(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				) !== null
+				&& $state->getRead()->getActualValue() === Types\ConnectionState::LOST->value
 			) {
 				return $state->getUpdatedAt();
 			}

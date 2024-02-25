@@ -18,24 +18,29 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
-use Nette\Utils;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_merge;
+use function React\Async\async;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -52,21 +57,24 @@ final class WriteSubDeviceState implements Queue\Consumer
 	use StateWriter;
 	use Nette\SmartObject;
 
+	private const WRITE_PENDING_DELAY = 2_000.0;
+
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
-		protected readonly Helpers\Channel $channelHelper,
+		protected readonly Helpers\Channels\Channel $channelHelper,
+		protected readonly Models\StateRepository $stateRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		protected readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
 		private readonly Helpers\Devices\SubDevice $subDeviceHelper,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 	)
 	{
@@ -81,63 +89,77 @@ final class WriteSubDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\WriteSubDeviceState) {
+		if (!$message instanceof Queue\Messages\WriteSubDeviceState) {
 			return false;
 		}
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
-		$findConnectorQuery->byId($entity->getConnector());
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
+		$findConnectorQuery->byId($message->getConnector());
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy($findConnectorQuery);
+		$connector = $this->connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
 
 		if ($connector === null) {
 			$this->logger->error(
 				'Connector could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
 		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byId($entity->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
+		$findDeviceQuery->byId($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\SubDevice::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -151,12 +173,12 @@ final class WriteSubDeviceState implements Queue\Consumer
 
 		if ($ipAddress === null || $accessToken === null) {
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $connector->getId(),
 						'identifier' => $gateway->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
@@ -164,46 +186,55 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device owning NS Panel is not configured',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 
 			return true;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byId($entity->getChannel());
+		$findChannelQuery->byId($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			$this->logger->error(
 				'Channel could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 
@@ -214,44 +245,156 @@ final class WriteSubDeviceState implements Queue\Consumer
 			$this->logger->error(
 				'Device state is not writable',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 
 			return true;
 		}
 
-		$mapped = $this->mapChannelToState($channel);
+		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+		$findChannelPropertyQuery->forChannel($channel);
+		$findChannelPropertyQuery->byId($message->getProperty());
+
+		$propertyToUpdate = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
+
+		if ($propertyToUpdate === null) {
+			$this->logger->error(
+				'Channel property could not be loaded',
+				[
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+					'type' => 'write-sub-device-state-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+					'channel' => [
+						'id' => $channel->getId()->toString(),
+					],
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
+				],
+			);
+
+			return true;
+		}
+
+		if (
+			$propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic
+			&& !$propertyToUpdate->isSettable()
+		) {
+			$this->logger->warning(
+				'Channel property is not writable',
+				[
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+					'type' => 'write-sub-device-state-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+					'channel' => [
+						'id' => $channel->getId()->toString(),
+					],
+					'property' => [
+						'id' => $propertyToUpdate->getId()->toString(),
+					],
+					'data' => $message->toArray(),
+				],
+			);
+
+			return true;
+		}
+
+		$state = null;
+
+		if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+			$state = $message->getState();
+
+			if ($state === null) {
+				return true;
+			}
+
+			if ($state->getExpectedValue() === null) {
+				await($this->channelPropertiesStatesManager->setPendingState(
+					$propertyToUpdate,
+					false,
+					MetadataTypes\Sources\Connector::NS_PANEL,
+				));
+
+				return true;
+			}
+
+			$now = $this->dateTimeFactory->getNow();
+			$pending = $state->getPending();
+
+			if (
+				$pending === false
+				|| (
+					$pending instanceof DateTimeInterface
+					&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
+				)
+			) {
+				return true;
+			}
+
+			await($this->channelPropertiesStatesManager->setPendingState(
+				$propertyToUpdate,
+				true,
+				MetadataTypes\Sources\Connector::NS_PANEL,
+			));
+		}
+
+		$mapped = $this->mapChannelToState($channel, $propertyToUpdate, $state);
 
 		if ($mapped === null) {
 			$this->logger->error(
 				'Device state could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $propertyToUpdate->getId()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
+
+			if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+				await($this->channelPropertiesStatesManager->setPendingState(
+					$propertyToUpdate,
+					false,
+					MetadataTypes\Sources\Connector::NS_PANEL,
+				));
+			}
 
 			return true;
 		}
@@ -263,128 +406,126 @@ final class WriteSubDeviceState implements Queue\Consumer
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($channel): void {
-					$now = $this->dateTimeFactory->getNow();
-
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-					$findPropertiesQuery->forChannel($channel);
-					$findPropertiesQuery->settable(true);
-
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				->then(function () use ($connector, $device, $channel, $propertyToUpdate, $message): void {
+					$this->logger->debug(
+						'Channel state was successfully sent to device',
+						[
+							'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+							'type' => 'write-sub-device-state-message-consumer',
+							'connector' => [
+								'id' => $connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+							'channel' => [
+								'id' => $channel->getId()->toString(),
+							],
+							'property' => [
+								'id' => $propertyToUpdate->getId()->toString(),
+							],
+							'data' => $message->toArray(),
+						],
 					);
-
-					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->getValue($property);
-
-						if ($state?->getExpectedValue() !== null) {
-							$this->channelPropertiesStatesManager->setValue(
-								$property,
-								Utils\ArrayHash::from([
-									DevicesStates\Property::PENDING_FIELD => $now->format(DateTimeInterface::ATOM),
-								]),
-							);
-						}
-					}
 				})
-				->catch(function (Throwable $ex) use ($entity, $connector, $gateway, $channel): void {
-					$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-					$findPropertiesQuery->forChannel($channel);
-					$findPropertiesQuery->settable(true);
+				->catch(
+					async(
+						function (Throwable $ex) use ($message, $connector, $gateway, $device, $channel, $propertyToUpdate): void {
+							if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+								await($this->channelPropertiesStatesManager->setPendingState(
+									$propertyToUpdate,
+									false,
+									MetadataTypes\Sources\Connector::NS_PANEL,
+								));
+							}
 
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-					);
+							$extra = [];
 
-					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValue(
-							$property,
-							Utils\ArrayHash::from([
-								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-								DevicesStates\Property::PENDING_FIELD => false,
-							]),
-						);
-					}
+							if ($ex instanceof Exceptions\LanApiCall) {
+								$extra = [
+									'request' => [
+										'method' => $ex->getRequest()?->getMethod(),
+										'url' => $ex->getRequest() !== null ? strval(
+											$ex->getRequest()->getUri(),
+										) : null,
+										'body' => $ex->getRequest()?->getBody()->getContents(),
+									],
+									'response' => [
+										'body' => $ex->getResponse()?->getBody()->getContents(),
+									],
+								];
 
-					$extra = [];
+								$this->queue->append(
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
+										[
+											'connector' => $connector->getId(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+										],
+									),
+								);
 
-					if ($ex instanceof Exceptions\LanApiCall) {
-						$extra = [
-							'request' => [
-								'method' => $ex->getRequest()?->getMethod(),
-								'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-								'body' => $ex->getRequest()?->getBody()->getContents(),
-							],
-							'response' => [
-								'body' => $ex->getResponse()?->getBody()->getContents(),
-							],
-						];
+							} else {
+								$this->queue->append(
+									$this->messageBuilder->create(
+										Queue\Messages\StoreDeviceConnectionState::class,
+										[
+											'connector' => $connector->getId(),
+											'identifier' => $gateway->getIdentifier(),
+											'state' => DevicesTypes\ConnectionState::LOST,
+										],
+									),
+								);
+							}
 
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $connector->getId(),
-									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-								],
-							),
-						);
-
-					} else {
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $connector->getId(),
-									'identifier' => $gateway->getIdentifier(),
-									'state' => MetadataTypes\ConnectionState::STATE_LOST,
-								],
-							),
-						);
-					}
-
-					$this->logger->error(
-						'Could write state to sub-device',
-						array_merge(
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
-								'type' => 'write-sub-device-state-message-consumer',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'connector' => [
-									'id' => $entity->getConnector()->toString(),
-								],
-								'device' => [
-									'id' => $entity->getDevice()->toString(),
-								],
-								'channel' => [
-									'id' => $entity->getChannel()->toString(),
-								],
-								'data' => $entity->toArray(),
-							],
-							$extra,
-						),
-					);
-				});
+							$this->logger->error(
+								'Could write state to sub-device',
+								array_merge(
+									[
+										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+										'type' => 'write-sub-device-state-message-consumer',
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'connector' => [
+											'id' => $connector->getId()->toString(),
+										],
+										'device' => [
+											'id' => $device->getId()->toString(),
+										],
+										'channel' => [
+											'id' => $channel->getId()->toString(),
+										],
+										'property' => [
+											'id' => $propertyToUpdate->getId()->toString(),
+										],
+										'data' => $message->toArray(),
+									],
+									$extra,
+								),
+							);
+						},
+					),
+				);
 		} catch (Throwable $ex) {
 			$this->logger->error(
 				'An unhandled error occurred',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $connector->getId()->toString(),
 					],
 					'device' => [
-						'id' => $entity->getDevice()->toString(),
+						'id' => $device->getId()->toString(),
 					],
 					'channel' => [
-						'id' => $entity->getChannel()->toString(),
+						'id' => $channel->getId()->toString(),
 					],
-					'data' => $entity->toArray(),
+					'property' => [
+						'id' => $propertyToUpdate->getId()->toString(),
+					],
+					'data' => $message->toArray(),
 				],
 			);
 		}
@@ -392,25 +533,28 @@ final class WriteSubDeviceState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed write sub-device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'write-sub-device-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $connector->getId()->toString(),
 				],
 				'device' => [
-					'id' => $entity->getDevice()->toString(),
+					'id' => $device->getId()->toString(),
 				],
 				'channel' => [
-					'id' => $entity->getChannel()->toString(),
+					'id' => $channel->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'property' => [
+					'id' => $propertyToUpdate->getId()->toString(),
+				],
+				'data' => $message->toArray(),
 			],
 		);
 
 		return true;
 	}
 
-	private function getApiClient(MetadataDocuments\DevicesModule\Connector $connector): API\LanApi
+	private function getApiClient(Documents\Connectors\Connector $connector): API\LanApi
 	{
 		if ($this->lanApiApi === null) {
 			$this->lanApiApi = $this->lanApiApiFactory->create($connector->getIdentifier());

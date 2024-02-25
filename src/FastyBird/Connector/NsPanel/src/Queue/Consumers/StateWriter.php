@@ -15,18 +15,20 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
-use DateTimeInterface;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use TypeError;
+use ValueError;
 use function boolval;
 use function floatval;
 use function intval;
@@ -43,9 +45,9 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read Helpers\Channel $channelHelper
+ * @property-read Helpers\Channels\Channel $channelHelper
+ * @property-read Models\StateRepository $stateRepository
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
- * @property-read DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -53,504 +55,521 @@ trait StateWriter
 	/**
 	 * @return array<mixed>|null
 	 *
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function mapChannelToState(
-		MetadataDocuments\DevicesModule\Channel $channel,
+		Documents\Channels\Channel $channel,
+		DevicesDocuments\Channels\Properties\Property $propertyToUpdate,
+		Queue\Messages\State|null $writeState,
 	): array|null
 	{
-		switch ($this->channelHelper->getCapability($channel)->getValue()) {
+		switch ($this->channelHelper->getCapability($channel)) {
 			case Types\Capability::POWER:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::POWER_STATE));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::POWER_STATE);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || !Types\PowerPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
-				}
-
-				if ($value === null) {
+				if ($value === null || $property->getInvalid() === null) {
 					return null;
 				}
 
+				if (Types\Payloads\PowerPayload::tryFrom(strval($value)) === null) {
+					$value = $property->getInvalid();
+				}
+
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::POWER_STATE => $value,
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::POWER_STATE->value => $value,
 					],
 				];
 			case Types\Capability::TOGGLE:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::TOGGLE_STATE));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::TOGGLE_STATE);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || !Types\TogglePayload::isValidValue($value)) {
-					$value = $property->getInvalid();
-				}
-
-				if ($value === null) {
+				if ($value === null || $property->getInvalid() === null) {
 					return null;
 				}
 
+				if (Types\Payloads\TogglePayload::tryFrom(strval($value)) === null) {
+					$value = $property->getInvalid();
+				}
+
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
+					$this->channelHelper->getCapability($channel)->value => [
 						$channel->getIdentifier() => [
-							Types\Protocol::TOGGLE_STATE => $value,
+							Types\Protocol::TOGGLE_STATE->value => $value,
 						],
 					],
 				];
 			case Types\Capability::BRIGHTNESS:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::BRIGHTNESS));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::BRIGHTNESS);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::BRIGHTNESS => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::BRIGHTNESS->value => intval($value),
 					],
 				];
 			case Types\Capability::COLOR_TEMPERATURE:
 				$property = $this->findProtocolProperty(
 					$channel,
-					Types\Protocol::get(Types\Protocol::COLOR_TEMPERATURE),
+					Types\Protocol::COLOR_TEMPERATURE,
 				);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::COLOR_TEMPERATURE => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::COLOR_TEMPERATURE->value => intval($value),
 					],
 				];
 			case Types\Capability::COLOR_RGB:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_RED));
+				$propertyRed = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::COLOR_RED,
+				);
 
-				if ($property === null) {
+				if ($propertyRed === null) {
 					return null;
 				}
 
-				$red = $this->getPropertyValue($property);
+				$red = $propertyToUpdate->getId()->equals($propertyRed->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyRed);
+
+				$propertyGreen = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::COLOR_GREEN,
+				);
+
+				if ($propertyGreen === null) {
+					return null;
+				}
+
+				$green = $propertyToUpdate->getId()->equals($propertyGreen->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyGreen);
+
+				$propertyBlue = $this->findProtocolProperty(
+					$channel,
+					Types\Protocol::COLOR_BLUE,
+				);
+
+				if ($propertyBlue === null) {
+					return null;
+				}
+
+				$blue = $propertyToUpdate->getId()->equals($propertyBlue->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyBlue);
+
+				if (
+					$red === null || $propertyRed->getInvalid() === null
+					|| $green === null || $propertyGreen->getInvalid() === null
+					|| $blue === null || $propertyBlue->getInvalid() === null
+				) {
+					return null;
+				}
 
 				if (!is_int($red)) {
-					$red = $property->getInvalid();
+					$red = $propertyRed->getInvalid();
 				}
-
-				if ($red === null) {
-					return null;
-				}
-
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_GREEN));
-
-				if ($property === null) {
-					return null;
-				}
-
-				$green = $this->getPropertyValue($property);
 
 				if (!is_int($green)) {
-					$green = $property->getInvalid();
+					$green = $propertyGreen->getInvalid();
 				}
-
-				if ($green === null) {
-					return null;
-				}
-
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::COLOR_BLUE));
-
-				if ($property === null) {
-					return null;
-				}
-
-				$blue = $this->getPropertyValue($property);
 
 				if (!is_int($blue)) {
-					$blue = $property->getInvalid();
-				}
-
-				if ($blue === null) {
-					return null;
+					$blue = $propertyBlue->getInvalid();
 				}
 
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::COLOR_RED => intval($red),
-						Types\Protocol::COLOR_GREEN => intval($green),
-						Types\Protocol::COLOR_BLUE => intval($blue),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::COLOR_RED->value => intval($red),
+						Types\Protocol::COLOR_GREEN->value => intval($green),
+						Types\Protocol::COLOR_BLUE->value => intval($blue),
 					],
 				];
 			case Types\Capability::PERCENTAGE:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::PERCENTAGE));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::PERCENTAGE);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::PERCENTAGE => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::PERCENTAGE->value => intval($value),
 					],
 				];
 			case Types\Capability::MOTOR_CONTROL:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::MOTOR_CONTROL));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::MOTOR_CONTROL);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || !Types\MotorControlPayload::isValidValue($value)) {
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
+
+				if (Types\Payloads\MotorControlPayload::tryFrom(strval($value)) === null) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::MOTOR_CONTROL => $value,
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::MOTOR_CONTROL->value => $value,
 					],
 				];
 			case Types\Capability::MOTOR_REVERSE:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::MOTOR_REVERSE));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::MOTOR_REVERSE);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_bool($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::MOTOR_REVERSE => boolval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::MOTOR_REVERSE->value => boolval($value),
 					],
 				];
 			case Types\Capability::MOTOR_CALIBRATION:
 				$property = $this->findProtocolProperty(
 					$channel,
-					Types\Protocol::get(Types\Protocol::MOTOR_CALIBRATION),
+					Types\Protocol::MOTOR_CALIBRATION,
 				);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || !Types\MotorCalibrationPayload::isValidValue($value)) {
-					$value = $property->getInvalid();
-				}
-
-				if ($value === null) {
+				if ($value === null || $property->getInvalid() === null) {
 					return null;
 				}
 
+				if (Types\Payloads\MotorCalibrationPayload::tryFrom(strval($value)) === null) {
+					$value = $property->getInvalid();
+				}
+
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::MOTOR_CALIBRATION => $value,
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::MOTOR_CALIBRATION->value => $value,
 					],
 				];
 			case Types\Capability::STARTUP:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::STARTUP));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::STARTUP);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || !Types\StartupPayload::isValidValue($value)) {
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
+
+				if (Types\Payloads\StartupPayload::tryFrom(strval($value)) === null) {
 					$value = $property->getInvalid();
 				}
+
+				return [
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::STARTUP->value => $value,
+					],
+				];
+			case Types\Capability::CAMERA_STREAM:
+				$property = $this->findProtocolProperty($channel, Types\Protocol::STREAM_URL);
+
+				if ($property === null) {
+					return null;
+				}
+
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null) {
 					return null;
 				}
 
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::STARTUP => $value,
-					],
-				];
-			case Types\Capability::CAMERA_STREAM:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::STREAM_URL));
-
-				if ($property === null) {
-					return null;
-				}
-
-				$value = $this->getPropertyValue($property);
-
-				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::CONFIGURATION => [
-							Types\Protocol::STREAM_URL => strval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::CONFIGURATION->value => [
+							Types\Protocol::STREAM_URL->value => strval($value),
 						],
 					],
 				];
 			case Types\Capability::DETECT:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::DETECT));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::DETECT);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_bool($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::DETECT => boolval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::DETECT->value => boolval($value),
 					],
 				];
 			case Types\Capability::HUMIDITY:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::HUMIDITY));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::HUMIDITY);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::HUMIDITY => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::HUMIDITY->value => intval($value),
 					],
 				];
 			case Types\Capability::TEMPERATURE:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::TEMPERATURE));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::TEMPERATURE);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_float($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::TEMPERATURE => floatval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::TEMPERATURE->value => floatval($value),
 					],
 				];
 			case Types\Capability::BATTERY:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::BATTERY));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::BATTERY);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::BATTERY => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::BATTERY->value => intval($value),
 					],
 				];
 			case Types\Capability::PRESS:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::PRESS));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::PRESS);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
-				if ($value === null || Types\PressPayload::isValidValue($value)) {
+				if ($value === null || Types\Payloads\PressPayload::tryFrom(strval($value)) === null) {
 					return null;
 				}
 
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::PRESS => $value,
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::PRESS->value => $value,
 					],
 				];
 			case Types\Capability::RSSI:
-				$property = $this->findProtocolProperty($channel, Types\Protocol::get(Types\Protocol::RSSI));
+				$property = $this->findProtocolProperty($channel, Types\Protocol::RSSI);
 
 				if ($property === null) {
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
+
+				if ($value === null || $property->getInvalid() === null) {
+					return null;
+				}
 
 				if (!is_int($value)) {
 					$value = $property->getInvalid();
 				}
 
-				if ($value === null) {
-					return null;
-				}
-
 				return [
-					$this->channelHelper->getCapability($channel)->getValue() => [
-						Types\Protocol::RSSI => intval($value),
+					$this->channelHelper->getCapability($channel)->value => [
+						Types\Protocol::RSSI->value => intval($value),
 					],
 				];
+			default:
+				throw new Exceptions\InvalidArgument('Provided property type is not supported');
 		}
-
-		throw new Exceptions\InvalidArgument('Provided property type is not supported');
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getPropertyValue(
-		MetadataDocuments\DevicesModule\ChannelProperty $property,
+		DevicesDocuments\Channels\Properties\Property $property,
 	): string|int|float|bool|null
 	{
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-		) {
-			$actualValue = $this->getActualValue($property);
-			$expectedValue = $this->getExpectedValue($property);
-
-			$value = $expectedValue ?? $actualValue;
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty) {
-			$value = $property->getValue();
-		} else {
-			throw new Exceptions\InvalidArgument('Provided property is not valid');
+		try {
+			if (
+				$property instanceof DevicesDocuments\Channels\Properties\Dynamic
+				|| $property instanceof DevicesDocuments\Channels\Properties\Mapped
+			) {
+				$value = $this->stateRepository->get($property->getId());
+			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
+				$value = $property->getValue();
+			} else {
+				throw new Exceptions\InvalidArgument('Provided property is not valid');
+			}
+		} catch (Exceptions\MissingValue) {
+			return null;
 		}
 
-		return MetadataUtilities\ValueHelper::transformValueToDevice(
-			$property->getDataType(),
-			$property->getFormat(),
-			$value,
-		);
+		return MetadataUtilities\Value::flattenValue($value);
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function findProtocolProperty(
-		MetadataDocuments\DevicesModule\Channel $channel,
+		Documents\Channels\Channel $channel,
 		Types\Protocol $protocol,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+	): DevicesDocuments\Channels\Properties\Property|null
 	{
 		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 		$findChannelPropertyQuery->forChannel($channel);
 		$findChannelPropertyQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($protocol));
 
 		return $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	public function getActualValue(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		return $this->channelPropertiesStatesManager->readValue($property)?->getActualValue();
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 */
-	public function getExpectedValue(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-	): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		return $this->channelPropertiesStatesManager->readValue($property)?->getExpectedValue();
 	}
 
 }

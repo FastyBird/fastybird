@@ -29,12 +29,12 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Router
+final readonly class Router
 {
 
 	public function __construct(
-		private readonly Routing\IRouter $router,
-		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+		private Routing\IRouter $router,
+		private EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}

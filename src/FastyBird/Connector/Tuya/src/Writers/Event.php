@@ -15,11 +15,12 @@
 
 namespace FastyBird\Connector\Tuya\Writers;
 
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queries;
+use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -51,46 +52,47 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$property = $event->getProperty();
-
-		$state = $event->getState();
-
-		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
+		if (
+			$event->getGet()->getExpectedValue() === null
+			|| $event->getGet()->getPending() !== true
+		) {
 			return;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-		$findChannelQuery->byId($property->getChannel());
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
+		$findChannelQuery = new Queries\Configuration\FindChannels();
+		$findChannelQuery->byId($event->getProperty()->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			return;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
+		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->byId($channel->getDevice());
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			return;
 		}
 
-		if (!$device->getConnector()->equals($this->connector->getId())) {
-			return;
-		}
-
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteChannelPropertyState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\WriteChannelPropertyState::class,
 				[
-					'connector' => $device->getConnector(),
+					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),
 					'channel' => $channel->getId(),
-					'property' => $property->getId(),
+					'property' => $event->getProperty()->getId(),
+					'state' => $event->getGet()->toArray(),
 				],
 			),
 		);

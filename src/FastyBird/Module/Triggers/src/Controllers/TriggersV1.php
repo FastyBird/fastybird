@@ -18,7 +18,9 @@ namespace FastyBird\Module\Triggers\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -42,10 +44,10 @@ use function strval;
 /**
  * API triggers controller
  *
- * @package         FastyBird:TriggersModule!
- * @subpackage      Controllers
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Controllers
  *
- * @author          Adam Kadlec <adam.kadlec@fastybird.com>
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @Secured
  * @Secured\User(loggedIn)
@@ -63,6 +65,7 @@ final class TriggersV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function index(
@@ -177,11 +180,14 @@ final class TriggersV1 extends BaseV1
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-triggers-controller',
-					'type' => 'create',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+						'type' => 'triggers-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -249,11 +255,14 @@ final class TriggersV1 extends BaseV1
 				throw $ex;
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-triggers-controller',
-					'type' => 'update',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+						'type' => 'triggers-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -310,11 +319,14 @@ final class TriggersV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => 'triggers-module-triggers-controller',
-				'type' => 'delete',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+					'type' => 'triggers-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -351,13 +363,13 @@ final class TriggersV1 extends BaseV1
 		} elseif ($relationEntity === Schemas\Triggers\Trigger::RELATIONSHIPS_NOTIFICATIONS) {
 			return $this->buildResponse($request, $response, $trigger->getNotifications());
 		} elseif (
-			$relationEntity === Schemas\Triggers\AutomaticTrigger::RELATIONSHIPS_CONDITIONS
-			&& $trigger instanceof Entities\Triggers\AutomaticTrigger
+			$relationEntity === Schemas\Triggers\Automatic::RELATIONSHIPS_CONDITIONS
+			&& $trigger instanceof Entities\Triggers\Automatic
 		) {
 			return $this->buildResponse($request, $response, $trigger->getConditions());
 		} elseif (
-			$relationEntity === Schemas\Triggers\ManualTrigger::RELATIONSHIPS_CONTROLS
-			&& $trigger instanceof Entities\Triggers\ManualTrigger
+			$relationEntity === Schemas\Triggers\Manual::RELATIONSHIPS_CONTROLS
+			&& $trigger instanceof Entities\Triggers\Manual
 		) {
 			return $this->buildResponse($request, $response, $trigger->getControls());
 		}

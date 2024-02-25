@@ -18,7 +18,8 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Entities;
@@ -60,6 +61,7 @@ final class AccountIdentitiesV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 *
@@ -194,11 +196,14 @@ final class AccountIdentitiesV1 extends BaseV1
 			throw $ex;
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'account-identities-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'account-identities-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,

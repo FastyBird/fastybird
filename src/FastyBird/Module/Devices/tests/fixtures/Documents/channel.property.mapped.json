@@ -1,0 +1,55 @@
+{
+  "id" : "176984ad-7cf7-465d-9e53-71668a74a688",
+  "type" : "mapped",
+  "category": "generic",
+  "identifier" : "property-identifier",
+  "name" : null,
+  "settable" : true,
+  "queryable" : false,
+  "data_type" : "switch",
+  "unit" : null,
+  "format" : [
+    [
+      [
+        "sw",
+        "switch_on"
+      ],
+      "1000",
+      [
+        "s",
+        "on"
+      ]
+    ],
+    [
+      [
+        "sw",
+        "switch_off"
+      ],
+      "2000",
+      [
+        "s",
+        "off"
+      ]
+    ],
+    [
+      [
+        "sw",
+        "switch_toggle"
+      ],
+      null,
+      [
+        "s",
+        "toggle"
+      ]
+    ]
+  ],
+  "invalid" : 99,
+  "scale" : null,
+  "step": null,
+  "default": null,
+  "value_transformer": null,
+  "channel" : "247fd6b5-8466-4323-81de-cec3e315015a",
+  "parent" : "f42a8b4c-d5c8-4242-8ff0-6e5f867dcfb1",
+  "created_at" : null,
+  "updated_at" : null
+}

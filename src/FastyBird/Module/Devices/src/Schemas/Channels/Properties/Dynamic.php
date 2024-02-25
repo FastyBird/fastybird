@@ -15,24 +15,26 @@
 
 namespace FastyBird\Module\Devices\Schemas\Channels\Properties;
 
-use DateTimeInterface;
 use Exception;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
-use FastyBird\Module\Devices\Utilities;
+use FastyBird\Module\Devices\Types;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function array_merge;
+use function assert;
 use function count;
-use function is_bool;
 
 /**
  * Channel property entity schema
@@ -50,15 +52,16 @@ final class Dynamic extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/property/channel/' . MetadataTypes\PropertyType::TYPE_DYNAMIC;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES->value . '/property/channel/' . Types\PropertyType::DYNAMIC->value;
 
 	public function __construct(
 		Routing\IRouter $router,
-		Models\Entities\Channels\Properties\PropertiesRepository $propertiesRepository,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
-		parent::__construct($router, $propertiesRepository);
+		parent::__construct($router, $channelsPropertiesRepository);
 	}
 
 	public function getEntityClass(): string
@@ -76,11 +79,11 @@ final class Dynamic extends Property
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -89,21 +92,9 @@ final class Dynamic extends Property
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		$state = $this->channelPropertiesStates->readValue($resource);
-
 		return array_merge((array) parent::getAttributes($resource, $context), [
 			'settable' => $resource->isSettable(),
 			'queryable' => $resource->isQueryable(),
-			'actual_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getActualValue()),
-			'expected_value' => MetadataUtilities\ValueHelper::flattenValue($state?->getExpectedValue()),
-			'pending' => $state !== null
-				? (
-					is_bool($state->getPending())
-						? $state->getPending()
-						: $state->getPending()->format(DateTimeInterface::ATOM)
-				)
-				: false,
-			'is_valid' => $state !== null && $state->isValid(),
 		]);
 	}
 
@@ -112,8 +103,18 @@ final class Dynamic extends Property
 	 *
 	 * @return iterable<string, mixed>
 	 *
-	 * @throws Exception
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exception
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -125,6 +126,11 @@ final class Dynamic extends Property
 		return array_merge((array) parent::getRelationships($resource, $context), [
 			self::RELATIONSHIPS_CHILDREN => [
 				self::RELATIONSHIP_DATA => $this->getChildren($resource),
+				self::RELATIONSHIP_LINKS_SELF => true,
+				self::RELATIONSHIP_LINKS_RELATED => true,
+			],
+			self::RELATIONSHIPS_STATE => [
+				self::RELATIONSHIP_DATA => $this->getState($resource),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
@@ -147,15 +153,28 @@ final class Dynamic extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_CHILDREN,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
 				[
 					'count' => count($resource->getChildren()),
 				],
+			);
+		} elseif ($name === self::RELATIONSHIPS_STATE) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_STATE,
+					[
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
+					],
+				),
+				false,
 			);
 		}
 
@@ -172,15 +191,18 @@ final class Dynamic extends Property
 		string $name,
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
-		if ($name === self::RELATIONSHIPS_CHILDREN) {
+		if (
+			$name === self::RELATIONSHIPS_CHILDREN
+			|| $name === self::RELATIONSHIPS_STATE
+		) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getChannel()->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getChannel()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],
@@ -190,6 +212,28 @@ final class Dynamic extends Property
 		}
 
 		return parent::getRelationshipSelfLink($resource, $name);
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	protected function getState(
+		Entities\Channels\Properties\Dynamic $property,
+	): Documents\States\Channels\Properties\Property|null
+	{
+		$configuration = $this->channelsPropertiesConfigurationRepository->find($property->getId());
+		assert($configuration instanceof Documents\Channels\Properties\Dynamic);
+
+		return $this->channelPropertiesStatesManager->readState($configuration);
 	}
 
 }

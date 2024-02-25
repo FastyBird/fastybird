@@ -15,27 +15,28 @@
 
 namespace FastyBird\Connector\Tuya\Clients;
 
-use Evenement;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use Nette\Utils;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Datagram;
 use React\EventLoop;
 use React\Promise;
-use SplObjectStorage;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
@@ -66,17 +67,16 @@ use const OPENSSL_RAW_DATA;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Discovery implements Evenement\EventEmitterInterface
+final class Discovery
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const UDP_BIND_IP = '0.0.0.0';
 
 	private const UDP_PORT = [
-		Types\DeviceProtocolVersion::V31 => 6_666,
-		Types\DeviceProtocolVersion::V32_PLUS => 6_667,
+		Types\DeviceProtocolVersion::V31->value => 6_666,
+		Types\DeviceProtocolVersion::V32_PLUS->value => 6_667,
 	];
 
 	private const UDP_TIMEOUT = 5;
@@ -92,25 +92,22 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	private API\OpenApi|null $cloudApiConnection = null;
 
-	/** @var SplObjectStorage<Entities\Clients\DiscoveredLocalDevice, null> */
-	private SplObjectStorage $discoveredLocalDevices;
-
 	/** @var array<EventLoop\TimerInterface> */
 	private array $handlerTimer = [];
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\OpenApiFactory $openApiFactory,
 		private readonly API\LocalApiFactory $localApiFactory,
 		private readonly Services\DatagramFactory $datagramFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Tuya\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->discoveredLocalDevices = new SplObjectStorage();
 	}
 
 	/**
@@ -124,22 +121,23 @@ final class Discovery implements Evenement\EventEmitterInterface
 	 */
 	public function discover(): void
 	{
-		$this->discoveredLocalDevices = new SplObjectStorage();
-
 		$mode = $this->connectorHelper->getClientMode($this->connector);
 
-		if ($mode->equalsValue(Types\ClientMode::CLOUD)) {
+		if ($mode === Types\ClientMode::CLOUD) {
 			$this->discoverCloudDevices();
 
-		} elseif ($mode->equalsValue(Types\ClientMode::LOCAL)) {
+		} elseif ($mode === Types\ClientMode::LOCAL) {
 			$this->discoverLocalDevices();
 		}
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -166,15 +164,15 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->debug(
 				'Starting local devices discovery',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'protocol' => $protocolVersion,
+					'protocol' => $protocolVersion->value,
 				],
 			);
 
 			$deferred = new Promise\Deferred();
 
-			$server = $this->datagramFactory->create(self::UDP_BIND_IP, self::UDP_PORT[$protocolVersion]);
+			$server = $this->datagramFactory->create(self::UDP_BIND_IP, self::UDP_PORT[$protocolVersion->value]);
 
 			$server
 				->then(function (Datagram\Socket $client) use ($deferred, $protocolVersion): void {
@@ -183,27 +181,27 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}));
 
 					// Searching timeout
-					$this->handlerTimer[$protocolVersion] = $this->eventLoop->addTimer(
+					$this->handlerTimer[$protocolVersion->value] = $this->eventLoop->addTimer(
 						self::UDP_TIMEOUT,
-						function () use ($deferred, $protocolVersion): void {
-							if (array_key_exists($protocolVersion, $this->handlerTimer)) {
-								$this->eventLoop->cancelTimer($this->handlerTimer[$protocolVersion]);
+						async(function () use ($deferred, $protocolVersion): void {
+							if (array_key_exists($protocolVersion->value, $this->handlerTimer)) {
+								$this->eventLoop->cancelTimer($this->handlerTimer[$protocolVersion->value]);
 
-								unset($this->handlerTimer[$protocolVersion]);
+								unset($this->handlerTimer[$protocolVersion->value]);
 							}
 
 							$deferred->resolve(true);
-						},
+						}),
 					);
 				})
 				->catch(function (Throwable $ex) use ($deferred, $protocolVersion): void {
 					$this->logger->error(
 						'Could not create local discovery server',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
-							'protocol' => $protocolVersion,
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'protocol' => $protocolVersion->value,
 						],
 					);
 
@@ -215,24 +213,20 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		Promise\all($promises)
 			->then(async(function (): void {
-				$this->discoveredLocalDevices->rewind();
-
-				$devices = [];
-
-				foreach ($this->discoveredLocalDevices as $device) {
-					$devices[] = $device;
-				}
-
-				$this->discoveredLocalDevices = new SplObjectStorage();
-
-				if ($devices !== []) {
-					$this->handleFoundLocalDevices($devices);
-				}
-
-				$this->emit('finished', [$devices]);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::TUYA,
+						'Devices discovery finished',
+					),
+				);
 			}))
 			->catch(function (): void {
-				$this->emit('finished', [[]]);
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\TerminateConnector(
+						MetadataTypes\Sources\Connector::TUYA,
+						'Devices discovery failed',
+					),
+				);
 			})
 			->finally(function (): void {
 				foreach ($this->handlerTimer as $index => $timer) {
@@ -256,7 +250,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Starting cloud devices discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'discovery-client',
 			],
 		);
@@ -267,9 +261,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -283,27 +277,34 @@ final class Discovery implements Evenement\EventEmitterInterface
 					'source_type' => 'tuyaUser',
 				],
 			)
-			->then(function (Entities\API\GetDevices $response): void {
+			->then(function (API\Messages\Response\GetDevices $response): void {
 				$devices = $response->getResult()->getList();
 
 				$this->getCloudApiConnection()
 					->getDevicesFactoryInfos(
 						array_map(
-							static fn (Entities\API\Device $userDevice): string => $userDevice->getId(),
+							static fn (API\Messages\Response\Device $userDevice): string => $userDevice->getId(),
 							$devices,
 						),
 					)
-					->then(async(function (Entities\API\GetDevicesFactoryInfos $response) use ($devices): void {
-						$devices = $this->handleFoundCloudDevices($devices, $response->getResult());
+					->then(
+						async(function (API\Messages\Response\GetDevicesFactoryInfos $response) use ($devices): void {
+							$this->handleFoundCloudDevices($devices, $response->getResult());
 
-						$this->emit('finished', [$devices]);
-					}))
+							$this->dispatcher?->dispatch(
+								new DevicesEvents\TerminateConnector(
+									MetadataTypes\Sources\Connector::TUYA,
+									'Devices discovery failed',
+								),
+							);
+						}),
+					)
 					->catch(function (Throwable $ex): void {
 						if ($ex instanceof Exceptions\OpenApiError) {
 							$this->logger->warning(
 								'Loading devices factory infos from cloud failed',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
 									'error' => $ex->getMessage(),
 								],
@@ -312,18 +313,18 @@ final class Discovery implements Evenement\EventEmitterInterface
 							$this->logger->error(
 								'Loading devices factory infos from cloud failed',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
 								],
 							);
 						} else {
 							$this->logger->error(
 								'Could not load device factory infos from Tuya cloud',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
 								],
 							);
 						}
@@ -334,7 +335,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->warning(
 						'Loading devices from cloud failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
 							'error' => $ex->getMessage(),
 						],
@@ -343,24 +344,32 @@ final class Discovery implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Loading devices from cloud failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
 				} else {
 					$this->logger->error(
 						'Could not load devices from Tuya cloud',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
 				}
 			});
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function handleDiscoveredLocalDevice(string $packet): void
 	{
 		$decryptedPacket = openssl_decrypt(
@@ -374,7 +383,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Received invalid packet. Received data could not be decrypted',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
 				],
 			);
@@ -389,7 +398,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
 					],
 				);
@@ -409,7 +418,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Decoded discovered local message has invalid format',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
 					],
 				);
@@ -417,37 +426,31 @@ final class Discovery implements Evenement\EventEmitterInterface
 				return;
 			}
 
-			$this->discoveredLocalDevices->attach(
-				$this->entityHelper->create(
-					Entities\Clients\DiscoveredLocalDevice::class,
-					[
-						'id' => strval($deviceInfo->offsetGet('gwId')),
-						'ip_address' => strval($deviceInfo->offsetGet('ip')),
-						'product_key' => strval($deviceInfo->offsetGet('productKey')),
-						'encrypted' => boolval($deviceInfo->offsetGet('encrypt')),
-						'version' => strval($deviceInfo->offsetGet('version')),
-					],
-				),
+			$this->handleFoundLocalDevice(
+				strval($deviceInfo->offsetGet('gwId')),
+				strval($deviceInfo->offsetGet('ip')),
+				boolval($deviceInfo->offsetGet('encrypt')),
+				strval($deviceInfo->offsetGet('version')),
 			);
 
 		} catch (Utils\JsonException $ex) {
 			$this->logger->error(
 				'Received invalid packet. Received data are not valid JSON string',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
 			return;
 		} catch (Exceptions\Runtime $ex) {
 			$this->logger->error(
-				'Received data could not be transformed to entity',
+				'Received data could not be transformed to message',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -456,44 +459,39 @@ final class Discovery implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @param array<Entities\Clients\DiscoveredLocalDevice> $devices
-	 *
-	 * @return array<Entities\Clients\DiscoveredLocalDevice>
-	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws Throwable
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function handleFoundLocalDevices(array $devices): array
+	private function handleFoundLocalDevice(
+		string $id,
+		string $ipAddress,
+		bool $encrypted,
+		string $version,
+	): void
 	{
-		$processedDevices = [];
-
 		try {
 			await($this->getCloudApiConnection()->connect());
-		} catch (Exceptions\OpenApiCall | Exceptions\OpenApiError $ex) {
+		} catch (Throwable $ex) {
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
-			return [];
+			return;
 		}
 
 		$devicesFactoryInfos = [];
 
 		try {
-			$response = await($this->getCloudApiConnection()
-				->getDevicesFactoryInfos(
-					array_map(
-						static fn (Entities\Clients\DiscoveredLocalDevice $userDevice): string => $userDevice->getId(),
-						$devices,
-					),
-				));
+			$response = await($this->getCloudApiConnection()->getDevicesFactoryInfos([$id]));
 
 			$devicesFactoryInfos = $response->getResult();
 
@@ -501,210 +499,203 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Loading device factory infos from cloud failed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 		}
 
-		foreach ($devices as $device) {
-			try {
-				$response = await($this->getCloudApiConnection()->getDeviceDetail($device->getId()));
+		try {
+			$response = await($this->getCloudApiConnection()->getDeviceDetail($id));
 
-				$deviceInformation = $response->getResult();
-			} catch (Throwable $ex) {
-				$this->logger->error(
-					'Could not load device basic information from Tuya cloud',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'device' => [
-							'identifier' => $device->getId(),
-							'ip_address' => $device->getIpAddress(),
-						],
+			$deviceInformation = $response->getResult();
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Could not load device basic information from Tuya cloud',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'discovery-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'device' => [
+						'identifier' => $id,
+						'ip_address' => $ipAddress,
 					],
-				);
-
-				continue;
-			}
-
-			$dataPoints = $this->loadLocalDeviceDataPoints(
-				$deviceInformation->getId(),
-				$deviceInformation->getLocalKey(),
-				$device->getIpAddress(),
-				Types\DeviceProtocolVersion::get($device->getVersion()),
+				],
 			);
 
+			return;
+		}
+
+		$dataPoints = $this->loadLocalDeviceDataPoints(
+			$deviceInformation->getId(),
+			$deviceInformation->getLocalKey(),
+			$ipAddress,
+			Types\DeviceProtocolVersion::from($version),
+		);
+
+		try {
+			/** @var array<API\Messages\Response\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+			$deviceFactoryInfosFiltered = array_values(array_filter(
+				$devicesFactoryInfos,
+				static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $id === $item->getId(),
+			));
+
+			$deviceFactoryInfos = count($deviceFactoryInfosFiltered) > 0 ? $deviceFactoryInfosFiltered[0] : null;
+
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\StoreLocalDevice::class,
+					[
+						'connector' => $this->connector->getId(),
+						'id' => $id,
+						'ip_address' => $ipAddress,
+						'local_key' => $deviceInformation->getLocalKey(),
+						'encrypted' => $encrypted,
+						'version' => $version,
+						'gateway' => $deviceInformation->getGatewayId(),
+						'node_id' => $deviceInformation->getNodeId(),
+						'name' => $deviceInformation->getName(),
+						'model' => $deviceInformation->getModel(),
+						'icon' => $deviceInformation->getIcon(),
+						'category' => $deviceInformation->getCategory(),
+						'latitude' => $deviceInformation->getLat(),
+						'longitude' => $deviceInformation->getLon(),
+						'product_id' => $deviceInformation->getProductId(),
+						'product_name' => $deviceInformation->getProductName(),
+						'sn' => $deviceFactoryInfos?->getSn(),
+						'mac' => $deviceFactoryInfos?->getMac(),
+						'data_points' => $dataPoints,
+					],
+				),
+			);
+
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Could not create device description message',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'discovery-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
+
+			return;
+		}
+
+		if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
 			try {
-				/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
-				$deviceFactoryInfosFiltered = array_values(array_filter(
-					$devicesFactoryInfos,
-					static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
-				));
+				$response = await($this->getCloudApiConnection()->getUserDeviceChildren($id));
 
-				$deviceFactoryInfos = count($deviceFactoryInfosFiltered) > 0 ? $deviceFactoryInfosFiltered[0] : null;
-
-				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreLocalDevice::class,
-						[
-							'connector' => $this->connector->getId(),
-							'id' => $device->getId(),
-							'ip_address' => $device->getIpAddress(),
-							'local_key' => $deviceInformation->getLocalKey(),
-							'encrypted' => $device->isEncrypted(),
-							'version' => $device->getVersion(),
-							'gateway' => $deviceInformation->getGatewayId(),
-							'node_id' => $deviceInformation->getNodeId(),
-							'name' => $deviceInformation->getName(),
-							'model' => $deviceInformation->getModel(),
-							'icon' => $deviceInformation->getIcon(),
-							'category' => $deviceInformation->getCategory(),
-							'latitude' => $deviceInformation->getLat(),
-							'longitude' => $deviceInformation->getLon(),
-							'product_id' => $deviceInformation->getProductId(),
-							'product_name' => $deviceInformation->getProductName(),
-							'sn' => $deviceFactoryInfos?->getSn(),
-							'mac' => $deviceFactoryInfos?->getMac(),
-							'data_points' => $dataPoints,
-						],
-					),
-				);
-
-				$processedDevices[] = $device;
+				$children = $response->getResult();
 			} catch (Throwable $ex) {
 				$this->logger->error(
-					'Could not create device description message',
+					'Could not load device children from Tuya cloud',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'device' => [
+							'identifier' => $id,
+							'ip_address' => $ipAddress,
+						],
 					],
 				);
 
-				continue;
+				return;
 			}
 
-			if (in_array($deviceInformation->getCategory(), self::GATEWAY_CATEGORIES, true)) {
+			foreach ($children as $child) {
 				try {
-					$response = await($this->getCloudApiConnection()->getUserDeviceChildren($device->getId()));
+					$response = await($this->getCloudApiConnection()->getDeviceDetail($child->getId()));
 
-					$children = $response->getResult();
+					$childDeviceInformation = $response->getResult();
 				} catch (Throwable $ex) {
 					$this->logger->error(
-						'Could not load device children from Tuya cloud',
+						'Could not load child device basic information from Tuya cloud',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'device' => [
-								'identifier' => $device->getId(),
-								'ip_address' => $device->getIpAddress(),
+								'identifier' => $child->getId(),
+								'ip_address' => $ipAddress,
 							],
 						],
 					);
 
-					continue;
+					return;
 				}
 
-				foreach ($children as $child) {
-					try {
-						$response = await($this->getCloudApiConnection()->getDeviceDetail($child->getId()));
+				$dataPoints = $this->loadLocalDeviceDataPoints(
+					$child->getId(),
+					$deviceInformation->getLocalKey(),
+					$ipAddress,
+					Types\DeviceProtocolVersion::from($version),
+					$id,
+					$child->getNodeId(),
+				);
 
-						$childDeviceInformation = $response->getResult();
-					} catch (Throwable $ex) {
-						$this->logger->error(
-							'Could not load child device basic information from Tuya cloud',
+				try {
+					/** @var array<API\Messages\Response\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
+					$childDeviceFactoryInfosFiltered = array_values(array_filter(
+						$devicesFactoryInfos,
+						static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $id === $item->getId(),
+					));
+
+					$childDeviceFactoryInfos = count(
+						$childDeviceFactoryInfosFiltered,
+					) > 0
+						? $childDeviceFactoryInfosFiltered[0]
+						: null;
+
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreLocalDevice::class,
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'discovery-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-								'device' => [
-									'identifier' => $child->getId(),
-									'ip_address' => $device->getIpAddress(),
-								],
+								'connector' => $this->connector->getId(),
+								'id' => $child->getId(),
+								'ip_address' => null,
+								'local_key' => $childDeviceInformation->getLocalKey(),
+								'encrypted' => $encrypted,
+								'version' => $version,
+								'gateway' => $id,
+								'node_id' => $child->getNodeId(),
+								'name' => $childDeviceInformation->getName(),
+								'model' => $childDeviceInformation->getModel(),
+								'icon' => $childDeviceInformation->getIcon(),
+								'category' => $childDeviceInformation->getCategory(),
+								'latitude' => $childDeviceInformation->getLat(),
+								'longitude' => $childDeviceInformation->getLon(),
+								'product_id' => $childDeviceInformation->getProductId(),
+								'product_name' => $childDeviceInformation->getProductName(),
+								'sn' => $childDeviceFactoryInfos?->getSn(),
+								'mac' => $childDeviceFactoryInfos?->getMac(),
+								'data_points' => $dataPoints,
 							],
-						);
-
-						continue;
-					}
-
-					$dataPoints = $this->loadLocalDeviceDataPoints(
-						$child->getId(),
-						$deviceInformation->getLocalKey(),
-						$device->getIpAddress(),
-						Types\DeviceProtocolVersion::get($device->getVersion()),
-						$device->getId(),
-						$child->getNodeId(),
+						),
+					);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Could not create child device description message',
+						[
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
+							'type' => 'discovery-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
 					);
 
-					try {
-						/** @var array<Entities\API\DeviceFactoryInfos> $childDeviceFactoryInfosFiltered */
-						$childDeviceFactoryInfosFiltered = array_values(array_filter(
-							$devicesFactoryInfos,
-							static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
-						));
-
-						$childDeviceFactoryInfos = count(
-							$childDeviceFactoryInfosFiltered,
-						) > 0
-							? $childDeviceFactoryInfosFiltered[0]
-							: null;
-
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreLocalDevice::class,
-								[
-									'connector' => $this->connector->getId(),
-									'id' => $child->getId(),
-									'ip_address' => null,
-									'local_key' => $childDeviceInformation->getLocalKey(),
-									'encrypted' => $device->isEncrypted(),
-									'version' => $device->getVersion(),
-									'gateway' => $device->getId(),
-									'node_id' => $child->getNodeId(),
-									'name' => $childDeviceInformation->getName(),
-									'model' => $childDeviceInformation->getModel(),
-									'icon' => $childDeviceInformation->getIcon(),
-									'category' => $childDeviceInformation->getCategory(),
-									'latitude' => $childDeviceInformation->getLat(),
-									'longitude' => $childDeviceInformation->getLon(),
-									'product_id' => $childDeviceInformation->getProductId(),
-									'product_name' => $childDeviceInformation->getProductName(),
-									'sn' => $childDeviceFactoryInfos?->getSn(),
-									'mac' => $childDeviceFactoryInfos?->getMac(),
-									'data_points' => $dataPoints,
-								],
-							),
-						);
-					} catch (Throwable $ex) {
-						$this->logger->error(
-							'Could not create child device description message',
-							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'discovery-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
-							],
-						);
-
-						continue;
-					}
+					return;
 				}
 			}
 		}
 
 		$this->getCloudApiConnection()->disconnect();
-
-		return $processedDevices;
 	}
 
 	/**
-	 * @param array<Entities\API\Device> $devices
-	 * @param array<Entities\API\DeviceFactoryInfos> $devicesFactoryInfos
-	 *
-	 * @return array<Entities\Clients\DiscoveredCloudDevice>
+	 * @param array<API\Messages\Response\Device> $devices
+	 * @param array<API\Messages\Response\DeviceFactoryInfos> $devicesFactoryInfos
 	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -714,30 +705,28 @@ final class Discovery implements Evenement\EventEmitterInterface
 	private function handleFoundCloudDevices(
 		array $devices,
 		array $devicesFactoryInfos,
-	): array
+	): void
 	{
-		$processedDevices = [];
-
 		try {
 			await($this->getCloudApiConnection()->connect());
 		} catch (Exceptions\OpenApiCall | Exceptions\OpenApiError $ex) {
 			$this->logger->error(
 				'Could not connect to cloud api',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
-			return [];
+			return;
 		}
 
 		foreach ($devices as $device) {
-			/** @var array<Entities\API\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
+			/** @var array<API\Messages\Response\DeviceFactoryInfos> $deviceFactoryInfosFiltered */
 			$deviceFactoryInfosFiltered = array_values(array_filter(
 				$devicesFactoryInfos,
-				static fn (Entities\API\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
+				static fn (API\Messages\Response\DeviceFactoryInfos $item): bool => $device->getId() === $item->getId(),
 			));
 
 			$deviceFactoryInfos = count($deviceFactoryInfosFiltered) > 0 ? $deviceFactoryInfosFiltered[0] : null;
@@ -783,7 +772,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					$dataPointCode = null;
-					$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+					$dataPointDataType = MetadataTypes\DataType::UNKNOWN;
 
 					if ($dataPointFunction !== null) {
 						$dataPointCode = $dataPointFunction->getCode();
@@ -797,11 +786,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 					}
 
 					if ($dataPointType === 'boolean') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+						$dataPointDataType = MetadataTypes\DataType::BOOLEAN;
 					} elseif ($dataPointType === 'integer') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
+						$dataPointDataType = MetadataTypes\DataType::INT;
 					} elseif ($dataPointType === 'enum') {
-						$dataPointDataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM);
+						$dataPointDataType = MetadataTypes\DataType::ENUM;
 					}
 
 					try {
@@ -819,7 +808,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 						'code' => $dataPointCode,
 						'name' => $dataPointCode,
-						'data_type' => $dataPointDataType->getValue(),
+						'data_type' => $dataPointDataType->value,
 						'unit' => $dataPointSpecification->offsetExists('unit')
 							? strval($dataPointSpecification->offsetGet('unit'))
 							: null,
@@ -853,7 +842,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->warning(
 					'Device specification could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
 						'error' => $ex->getMessage(),
 						'device' => [
@@ -865,9 +854,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Device specification could not be loaded',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'device' => [
 							'id' => $device->getId(),
 						],
@@ -876,8 +865,8 @@ final class Discovery implements Evenement\EventEmitterInterface
 			}
 
 			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreCloudDevice::class,
+				$this->messageBuilder->create(
+					Queue\Messages\StoreCloudDevice::class,
 					[
 						'connector' => $this->connector->getId(),
 						'id' => $device->getId(),
@@ -897,19 +886,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 					],
 				),
 			);
-
-			$processedDevices[] = $this->entityHelper->create(
-				Entities\Clients\DiscoveredCloudDevice::class,
-				[
-					'id' => $device->getId(),
-					'ip_address' => $device->getIp(),
-				],
-			);
 		}
 
 		$this->getCloudApiConnection()->disconnect();
-
-		return $processedDevices;
 	}
 
 	/**
@@ -941,9 +920,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not establish local connection with device',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $id,
 						'ip_address' => $ipAddress,
@@ -958,23 +937,23 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 		try {
 			if ($localApi->isConnected()) {
-				/** @var array<Entities\API\DeviceDataPointState>|Types\LocalDeviceError $deviceStatuses */
+				/** @var array<API\Messages\Response\DeviceDataPointState>|Types\LocalDeviceError $deviceStatuses */
 				$deviceStatuses = await($localApi->readStates());
 
 				$localApi->disconnect();
 
 				if (is_array($deviceStatuses)) {
 					foreach ($deviceStatuses as $status) {
-						$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+						$dataType = MetadataTypes\DataType::UNKNOWN;
 
 						if (is_bool($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN);
+							$dataType = MetadataTypes\DataType::BOOLEAN;
 						} elseif (is_float($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT);
+							$dataType = MetadataTypes\DataType::FLOAT;
 						} elseif (is_numeric($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT);
+							$dataType = MetadataTypes\DataType::INT;
 						} elseif (is_string($status->getValue())) {
-							$dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING);
+							$dataType = MetadataTypes\DataType::STRING;
 						}
 
 						$dataPoints[] = [
@@ -982,7 +961,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 							'code' => $status->getCode(),
 							'name' => $status->getCode(),
-							'data_type' => $dataType->getValue(),
+							'data_type' => $dataType->value,
 							'unit' => null,
 							'format' => null,
 							'min' => null,
@@ -997,7 +976,7 @@ final class Discovery implements Evenement\EventEmitterInterface
 				$this->logger->error(
 					'Local connection with device failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
 						'device' => [
 							'identifier' => $id,
@@ -1012,9 +991,9 @@ final class Discovery implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not read device data points states',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $id,
 						'ip_address' => $ipAddress,
@@ -1030,8 +1009,11 @@ final class Discovery implements Evenement\EventEmitterInterface
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getCloudApiConnection(): API\OpenApi
 	{

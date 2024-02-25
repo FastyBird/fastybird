@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device protocol version types
  *
@@ -26,27 +23,17 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DeviceProtocolVersion extends Consistence\Enum\Enum
+enum DeviceProtocolVersion: string
 {
 
-	public const V31 = '3.1';
+	case V31 = '3.1';
 
-	public const V32 = '3.2';
+	case V32 = '3.2';
 
-	public const V32_PLUS = '3.2+';
+	case V32_PLUS = '3.2+';
 
-	public const V33 = '3.3';
+	case V33 = '3.3';
 
-	public const V34 = '3.4';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case V34 = '3.4';
 
 }

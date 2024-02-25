@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\NsPanel\Queue;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplQueue;
@@ -34,7 +33,7 @@ final class Queue
 
 	use Nette\SmartObject;
 
-	/** @var SplQueue<Entities\Messages\Entity> */
+	/** @var SplQueue<Messages\Message> */
 	private SplQueue $queue;
 
 	public function __construct(private readonly NsPanel\Logger $logger)
@@ -42,21 +41,21 @@ final class Queue
 		$this->queue = new SplQueue();
 	}
 
-	public function append(Entities\Messages\Entity $entity): void
+	public function append(Messages\Message $message): void
 	{
-		$this->queue->enqueue($entity);
+		$this->queue->enqueue($message);
 
 		$this->logger->debug(
 			'Appended new message into messages queue',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'queue',
-				'message' => $entity->toArray(),
+				'message' => $message->toArray(),
 			],
 		);
 	}
 
-	public function dequeue(): Entities\Messages\Entity|false
+	public function dequeue(): Messages\Message|false
 	{
 		$this->queue->rewind();
 

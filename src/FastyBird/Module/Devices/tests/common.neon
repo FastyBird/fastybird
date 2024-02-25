@@ -15,16 +15,13 @@ php:
 
 extensions:
     contributteTranslation              : Contributte\Translation\DI\TranslationExtension
-    nettrineAnnotations                 : Nettrine\Annotations\DI\AnnotationsExtension
     nettrineCache                       : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                        : Nettrine\DBAL\DI\DbalExtension
     nettrineOrm                         : Nettrine\ORM\DI\OrmExtension
-    nettrineOrmAnnotations              : Nettrine\ORM\DI\OrmAnnotationsExtension
+    nettrineOrmAttributes               : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
-    ipubDoctrineConsistence             : IPub\DoctrineConsistence\DI\DoctrineConsistenceExtension
     ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
-    ipubDoctrineDynamicDiscriminatorMap : IPub\DoctrineDynamicDiscriminatorMap\DI\DoctrineDynamicDiscriminatorMapExtension
     ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     ipubPhone                           : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
@@ -39,10 +36,17 @@ services:
         factory: IPub\SlimRouter\Routing\Router
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
+
     -
         factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorFactory
         tags: [connector_type: dummy]
+
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorSchema}
+    - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyConnectorHydrator}
+    - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyDeviceSchema}
+    - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyDeviceHydrator}
+    - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyChannelSchema}
+    - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyChannelHydrator}
     - {factory: FastyBird\Module\Devices\Tests\Tools\DateTimeProvider}
 
     cache.storage: Nette\Caching\Storages\DevNullStorage
@@ -50,10 +54,13 @@ services:
 decorator:
     Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
         setup:
-            - addDriver(@nettrineOrmAnnotations.annotationDriver, 'FastyBird\Module\Devices\Tests\Fixtures\Dummy')
-    Doctrine\ORM\Mapping\Driver\AnnotationDriver:
+            - addDriver(@nettrineOrmAttributes.attributeDriver, 'FastyBird\Module\Devices\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AttributeDriver:
         setup:
             - addPaths([%appDir%/fixtures/dummy])
+
+fbDevicesModule:
+    exchange: false
 
 contributteTranslation:
     locales:
@@ -88,25 +95,23 @@ nettrineDbal:
         typesMapping:
             uuid_binary: binary
 
-nettrineAnnotations:
-    debug: %debugMode%
-    ignore:
-        - writable
-        - required
-        - module
-        - author
-        - subpackage
-        - package
-        - phpcsSuppress
+    debug:
+        panel: false
 
 nettrineOrm:
     configuration:
         proxyDir: %tempDir%/cache/doctrine.proxies
 
-nettrineOrmAnnotations:
+nettrineOrmAttributes:
     mapping: [
         FastyBird\Module\Devices\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
+
+fbMetadataLibrary:
+    documents:
+        mapping: [
+            FastyBird\Module\Devices\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
+        ]
 
 fbSimpleAuth:
     token:

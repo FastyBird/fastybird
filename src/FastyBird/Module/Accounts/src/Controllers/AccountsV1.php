@@ -18,7 +18,8 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
@@ -27,6 +28,7 @@ use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
+use FastyBird\Module\Accounts\Types;
 use FastyBird\Module\Accounts\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -66,6 +68,7 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function index(
@@ -195,11 +198,14 @@ final class AccountsV1 extends BaseV1
 			);
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'accounts-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'account-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -276,11 +282,14 @@ final class AccountsV1 extends BaseV1
 			);
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'accounts-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'account-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -298,6 +307,7 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
@@ -330,14 +340,14 @@ final class AccountsV1 extends BaseV1
 			$this->getOrmConnection()->beginTransaction();
 
 			$updateData = Utils\ArrayHash::from([
-				'state' => MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_DELETED),
+				'state' => Types\AccountState::DELETED,
 			]);
 
 			$this->accountsManager->update($account, $updateData);
 
 			foreach ($account->getIdentities() as $identity) {
 				$updateIdentity = Utils\ArrayHash::from([
-					'state' => MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_DELETED),
+					'state' => Types\IdentityState::DELETED,
 				]);
 
 				$this->identitiesManager->update($identity, $updateIdentity);
@@ -348,11 +358,14 @@ final class AccountsV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'accounts-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'account-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -398,7 +411,7 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	private function findAccount(

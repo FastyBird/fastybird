@@ -1,20 +1,20 @@
 {
   "name": "fastybird/redisdb-plugin",
   "type": "fastybird-plugin",
-  "description": "FastyBird IoT data storage & exchange plugin for Redis database",
+  "description": "FastyBird IoT application data storage & exchange plugin for Redis database",
   "keywords": [
+    "state",
+    "state-management",
+    "exchange",
+    "pubsub",
+    "redis-client",
     "fastybird",
     "fb",
-    "plugin",
-    "redis",
-    "php",
     "iot",
-    "state-management",
+    "redis",
     "nette",
-    "state",
-    "pubsub",
-    "exchange",
-    "redis-client"
+    "plugin",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -35,16 +35,16 @@
     "source": "https://github.com/FastyBird/redisdb-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "clue/redis-react": "^3@dev",
     "cweagans/composer-patches": "^1.7",
-    "evenement/evenement": "^3.0",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
+    "orisai/object-mapper": "^0.1",
     "predis/predis": "^1.1",
     "psr/event-dispatcher": "^1.0",
     "psr/log": "^3.0",
@@ -81,7 +81,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Plugin\\RedisDb\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Plugin\\RedisDb\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {
@@ -104,12 +105,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

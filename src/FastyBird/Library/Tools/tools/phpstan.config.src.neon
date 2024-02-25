@@ -1,0 +1,12 @@
+parameters:
+    level: max
+
+    paths:
+        - ../src/
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
+    excludePaths:
+        analyseAndScan:
+            - ../src/Helpers/LoopWrapper.php

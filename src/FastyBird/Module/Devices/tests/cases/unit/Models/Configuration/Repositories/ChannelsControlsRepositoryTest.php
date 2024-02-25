@@ -3,22 +3,26 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
 
-final class ChannelsControlsRepositoryTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class ChannelsControlsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -27,9 +31,6 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannelControls();
@@ -65,7 +66,7 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -74,9 +75,6 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannelControls();
@@ -87,7 +85,7 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -96,9 +94,6 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByChannel(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Channels\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindChannels();
@@ -106,7 +101,7 @@ final class ChannelsControlsRepositoryTest extends DbTestCase
 
 		$channel = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
+		self::assertInstanceOf(Documents\Channels\Channel::class, $channel);
 		self::assertSame('channel-one', $channel->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Channels\Controls\Repository::class);

@@ -18,7 +18,7 @@ namespace FastyBird\Plugin\RabbitMq\Publishers;
 use Bunny;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -30,7 +30,6 @@ use Psr\Log;
 use React\Promise;
 use Throwable;
 use function is_bool;
-use function strval;
 
 /**
  * RabbitMQ exchange publisher
@@ -66,10 +65,10 @@ final class Publisher implements ExchangePublisher\Publisher
 	}
 
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void
+	): bool
 	{
 		try {
 			// Compose message
@@ -79,29 +78,29 @@ final class Publisher implements ExchangePublisher\Publisher
 			$this->logger->error(
 				'Data could not be converted to message',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 					'type' => 'messages-publisher',
 					'message' => [
-						'routingKey' => $routingKey->getValue(),
-						'source' => $source->getValue(),
+						'routingKey' => $routingKey,
+						'source' => $source->value,
 						'data' => $entity?->toArray(),
 					],
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
-			return;
+			return false;
 		}
 
 		$result = $this->getChannel()->publish(
 			$body,
 			[
 				'sender_id' => $this->identifier->getIdentifier(),
-				'source' => $source->getValue(),
+				'source' => $source->value,
 				'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
 			],
 			$this->exchangeName,
-			strval($routingKey->getValue()),
+			$routingKey,
 		);
 
 		if (is_bool($result)) {
@@ -109,11 +108,11 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->debug(
 					'Received message was pushed into data exchange',
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+						'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
-							'source' => $source->getValue(),
+							'routingKey' => $routingKey,
+							'source' => $source->value,
 							'data' => $entity?->toArray(),
 							'body' => $body,
 						],
@@ -123,11 +122,11 @@ final class Publisher implements ExchangePublisher\Publisher
 				$this->logger->error(
 					'Received message could not be pushed into data exchange',
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+						'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 						'type' => 'messages-publisher',
 						'message' => [
-							'routingKey' => $routingKey->getValue(),
-							'source' => $source->getValue(),
+							'routingKey' => $routingKey,
+							'source' => $source->value,
 							'data' => $entity?->toArray(),
 							'body' => $body,
 						],
@@ -141,11 +140,11 @@ final class Publisher implements ExchangePublisher\Publisher
 						$this->logger->debug(
 							'Received message was pushed into data exchange',
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+								'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 								'type' => 'messages-publisher',
 								'message' => [
-									'routingKey' => $routingKey->getValue(),
-									'source' => $source->getValue(),
+									'routingKey' => $routingKey,
+									'source' => $source->value,
 									'data' => $entity?->toArray(),
 									'body' => $body,
 								],
@@ -156,20 +155,22 @@ final class Publisher implements ExchangePublisher\Publisher
 						$this->logger->error(
 							'Received message could not be pushed into data exchange',
 							[
-								'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+								'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 								'type' => 'messages-publisher',
 								'message' => [
-									'routingKey' => $routingKey->getValue(),
-									'source' => $source->getValue(),
+									'routingKey' => $routingKey,
+									'source' => $source->value,
 									'data' => $entity?->toArray(),
 									'body' => $body,
 								],
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 							],
 						);
 					},
 				);
 		}
+
+		return true;
 	}
 
 	private function getChannel(): Channels\Channel|Bunny\Channel

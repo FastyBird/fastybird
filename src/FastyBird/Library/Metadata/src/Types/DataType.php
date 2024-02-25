@@ -15,8 +15,7 @@
 
 namespace FastyBird\Library\Metadata\Types;
 
-use Consistence;
-use function strval;
+use function in_array;
 
 /**
  * Device or channel property data types
@@ -26,61 +25,59 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DataType extends Consistence\Enum\Enum
+enum DataType: string
 {
 
-	/**
-	 * Define data types
-	 */
-	public const DATA_TYPE_CHAR = 'char';
+	case CHAR = 'char';
 
-	public const DATA_TYPE_UCHAR = 'uchar';
+	case UCHAR = 'uchar';
 
-	public const DATA_TYPE_SHORT = 'short';
+	case SHORT = 'short';
 
-	public const DATA_TYPE_USHORT = 'ushort';
+	case USHORT = 'ushort';
 
-	public const DATA_TYPE_INT = 'int';
+	case INT = 'int';
 
-	public const DATA_TYPE_UINT = 'uint';
+	case UINT = 'uint';
 
-	public const DATA_TYPE_FLOAT = 'float';
+	case FLOAT = 'float';
 
-	public const DATA_TYPE_BOOLEAN = 'bool';
+	case BOOLEAN = 'bool';
 
-	public const DATA_TYPE_STRING = 'string';
+	case STRING = 'string';
 
-	public const DATA_TYPE_ENUM = 'enum';
+	case ENUM = 'enum';
 
-	public const DATA_TYPE_DATE = 'date';
+	case DATE = 'date';
 
-	public const DATA_TYPE_TIME = 'time';
+	case TIME = 'time';
 
-	public const DATA_TYPE_DATETIME = 'datetime';
+	case DATETIME = 'datetime';
 
-	public const DATA_TYPE_COLOR = 'color';
+	case COLOR = 'color';
 
-	public const DATA_TYPE_BUTTON = 'button';
+	case BUTTON = 'button';
 
-	public const DATA_TYPE_SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const DATA_TYPE_COVER = 'cover';
+	case COVER = 'cover';
 
-	public const DATA_TYPE_UNKNOWN = 'unknown';
+	case UNKNOWN = 'unknown';
 
 	public function isInteger(): bool
 	{
-		return self::equalsValue(self::DATA_TYPE_CHAR)
-			|| self::equalsValue(self::DATA_TYPE_UCHAR)
-			|| self::equalsValue(self::DATA_TYPE_SHORT)
-			|| self::equalsValue(self::DATA_TYPE_USHORT)
-			|| self::equalsValue(self::DATA_TYPE_INT)
-			|| self::equalsValue(self::DATA_TYPE_UINT);
-	}
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
+		return in_array(
+			$this,
+			[
+				self::CHAR,
+				self::UCHAR,
+				self::SHORT,
+				self::USHORT,
+				self::INT,
+				self::UINT,
+			],
+			true,
+		);
 	}
 
 }

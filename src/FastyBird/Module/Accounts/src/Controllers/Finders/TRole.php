@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Accounts\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
@@ -35,7 +35,7 @@ trait TRole
 {
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function findRole(

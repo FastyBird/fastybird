@@ -18,25 +18,29 @@ namespace FastyBird\Connector\Virtual\Devices;
 use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Virtual;
+use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Drivers;
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
+use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Devices service
@@ -57,7 +61,7 @@ class Devices
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
 	/** @var array<string, Drivers\Driver> */
@@ -72,9 +76,9 @@ class Devices
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Drivers\DriversManager $driversManager,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Queue\Queue $queue,
 		private readonly Virtual\Logger $logger,
@@ -93,19 +97,23 @@ class Devices
 	{
 		$this->processedDevices = [];
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\VirtualDevice::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 	}
 
@@ -124,10 +132,15 @@ class Devices
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws Exception
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleDevices(): void
 	{
@@ -151,20 +164,28 @@ class Devices
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
+	private function processDevice(Documents\Devices\Device $device): bool
 	{
 		$service = $this->driversManager->getDriver($device);
 
 		if (!$service->isConnected()) {
 			$deviceState = $this->deviceConnectionManager->getState($device);
 
-			if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+			if (
+				$deviceState === DevicesTypes\ConnectionState::ALERT
+				|| $deviceState === DevicesTypes\ConnectionState::STOPPED
+			) {
 				unset($this->devices[$device->getId()->toString()]);
 
 				return false;
@@ -184,7 +205,7 @@ class Devices
 							$this->logger->debug(
 								'Connected to virtual device',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 									'type' => 'devices-driver',
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
@@ -199,9 +220,9 @@ class Devices
 							$this->logger->error(
 								'Virtual device service could not be created',
 								[
-									'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+									'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 									'type' => 'devices-driver',
-									'exception' => BootstrapHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
 									],
@@ -212,12 +233,13 @@ class Devices
 							);
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreDeviceConnectionState::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
-										'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+										'state' => DevicesTypes\ConnectionState::ALERT->value,
+										'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 									],
 								),
 							);
@@ -225,12 +247,13 @@ class Devices
 
 				} else {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+								'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 							],
 						),
 					);
@@ -260,7 +283,7 @@ class Devices
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -271,25 +294,26 @@ class Devices
 				$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_CONNECTED,
+							'state' => DevicesTypes\ConnectionState::CONNECTED,
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
 				);
 			})
-			->catch(function (Throwable $ex) use ($device): void {
+			->catch(function (Throwable $ex) use ($device, $service): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = false;
 
 				$this->logger->warning(
 					'Could not call local api',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_VIRTUAL,
+						'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
 						'type' => 'devices-driver',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -300,15 +324,18 @@ class Devices
 				);
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
-							'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+							'state' => DevicesTypes\ConnectionState::ALERT,
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 						],
 					),
 				);
+
+				$service->disconnect();
 			});
 
 		return true;
@@ -318,9 +345,9 @@ class Devices
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleDevices();
-			},
+			}),
 		);
 	}
 

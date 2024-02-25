@@ -1,0 +1,20 @@
+{
+  "data": {
+    "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "attributes": {
+      "identifier": "thermostat-living-room-fixed",
+      "comment": null,
+      "enabled": true,
+      "name": "Thermostat - Living Room"
+    },
+    "relationships": {
+      "connector": {
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      }
+    }
+  }
+}

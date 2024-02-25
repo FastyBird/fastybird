@@ -15,19 +15,22 @@
 
 namespace FastyBird\Module\Devices\Entities;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use FastyBird\Module\Devices\Types;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 use function assert;
@@ -59,129 +62,114 @@ abstract class Property implements Entity,
 
 	private const MATCH_MAC_ADDRESS = '/^([0-9a-fA-F][0-9a-fA-F]){1}(:([0-9a-fA-F][0-9a-fA-F])){5,7}$/';
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="property_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'property_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\PropertyCategory
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @Enum(class=MetadataTypes\PropertyCategory::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="property_category", length=100, nullable=true, options={"default": "generic"})
-	 */
-	protected $category;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_category',
+		type: 'string',
+		length: 100,
+		nullable: false,
+		enumType: Types\PropertyCategory::class,
+		options: ['default' => Types\PropertyCategory::GENERIC],
+	)]
+	protected Types\PropertyCategory $category;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="property_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'property_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_name", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_name', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $name = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="property_settable", nullable=false, options={"default": false})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_settable', type: 'boolean', length: 1, nullable: false, options: ['default' => false])]
 	protected bool $settable = false;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="property_queryable", nullable=false, options={"default": false})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_queryable',
+		type: 'boolean',
+		length: 1,
+		nullable: false,
+		options: ['default' => false],
+	)]
 	protected bool $queryable = false;
 
-	/**
-	 * @var MetadataTypes\DataType
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @Enum(class=MetadataTypes\DataType::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="property_data_type", length=100, nullable=true, options={"default": "unknown"})
-	 */
-	protected $dataType;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'property_data_type',
+		type: 'string',
+		length: 100,
+		nullable: false,
+		enumType: MetadataTypes\DataType::class,
+		options: ['default' => MetadataTypes\DataType::UNKNOWN],
+	)]
+	protected MetadataTypes\DataType $dataType;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_unit", length=20, nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_unit', type: 'string', length: 20, nullable: true, options: ['default' => null])]
 	protected string|null $unit = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="property_format", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_format', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $format = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_invalid", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_invalid', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $invalid = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="integer", name="property_scale", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_scale', type: 'integer', nullable: true, options: ['default' => null])]
 	protected int|null $scale = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="float", name="property_step", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_step', type: 'float', nullable: true, options: ['default' => null])]
 	protected float|null $step = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_value", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_value', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $value = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="property_default", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_default', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $default = null;
+
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'property_value_transformer', type: 'string', nullable: true, options: ['default' => null])]
+	protected string|null $valueTransformer = null;
 
 	public function __construct(
 		string $identifier,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
-		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->identifier = $identifier;
 
-		$this->category = MetadataTypes\PropertyCategory::get(MetadataTypes\PropertyCategory::CATEGORY_GENERIC);
-		$this->dataType = MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN);
+		$this->category = Types\PropertyCategory::GENERIC;
+		$this->dataType = MetadataTypes\DataType::UNKNOWN;
 
 		// Static property can not be set or read from device/channel property
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			$this->settable = false;
 			$this->queryable = false;
 		}
 	}
 
-	abstract public function getType(): MetadataTypes\PropertyType;
+	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\PropertyCategory
+	public function getCategory(): Types\PropertyCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\PropertyCategory $category): void
+	public function setCategory(Types\PropertyCategory $category): void
 	{
 		$this->category = $category;
 	}
@@ -243,8 +231,10 @@ abstract class Property implements Entity,
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getFormat(): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
+	public function getFormat(): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -254,6 +244,8 @@ abstract class Property implements Entity,
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setFormat(array|string|null $format): void
 	{
@@ -267,15 +259,19 @@ abstract class Property implements Entity,
 			return;
 		} elseif (is_array($format)) {
 			if (
-				in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_CHAR,
-					MetadataTypes\DataType::DATA_TYPE_UCHAR,
-					MetadataTypes\DataType::DATA_TYPE_SHORT,
-					MetadataTypes\DataType::DATA_TYPE_USHORT,
-					MetadataTypes\DataType::DATA_TYPE_INT,
-					MetadataTypes\DataType::DATA_TYPE_UINT,
-					MetadataTypes\DataType::DATA_TYPE_FLOAT,
-				], true)
+				in_array(
+					$this->dataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+					],
+					true,
+				)
 			) {
 				$plainFormat = implode(':', array_map(static function ($item): string {
 					if (is_array($item) || $item instanceof Utils\ArrayHash) {
@@ -299,12 +295,16 @@ abstract class Property implements Entity,
 
 				throw new Exceptions\InvalidArgument('Provided property format is not valid');
 			} elseif (
-				in_array($this->dataType->getValue(), [
-					MetadataTypes\DataType::DATA_TYPE_ENUM,
-					MetadataTypes\DataType::DATA_TYPE_BUTTON,
-					MetadataTypes\DataType::DATA_TYPE_SWITCH,
-					MetadataTypes\DataType::DATA_TYPE_COVER,
-				], true)
+				in_array(
+					$this->dataType,
+					[
+						MetadataTypes\DataType::ENUM,
+						MetadataTypes\DataType::BUTTON,
+						MetadataTypes\DataType::SWITCH,
+						MetadataTypes\DataType::COVER,
+					],
+					true,
+				)
 			) {
 				$plainFormat = implode(',', array_map(static function ($item): string {
 					if (is_array($item) || $item instanceof Utils\ArrayHash) {
@@ -349,19 +349,19 @@ abstract class Property implements Entity,
 		}
 
 		if (
-			$this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_CHAR)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UCHAR)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_SHORT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_USHORT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_INT)
-			|| $this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_UINT)
+			$this->dataType === MetadataTypes\DataType::CHAR
+			|| $this->dataType === MetadataTypes\DataType::UCHAR
+			|| $this->dataType === MetadataTypes\DataType::SHORT
+			|| $this->dataType === MetadataTypes\DataType::USHORT
+			|| $this->dataType === MetadataTypes\DataType::INT
+			|| $this->dataType === MetadataTypes\DataType::UINT
 		) {
 			if (is_numeric($this->invalid)) {
 				return intval($this->invalid);
 			}
 
 			return null;
-		} elseif ($this->dataType->equalsValue(MetadataTypes\DataType::DATA_TYPE_FLOAT)) {
+		} elseif ($this->dataType === MetadataTypes\DataType::FLOAT) {
 			if (is_numeric($this->invalid)) {
 				return floatval($this->invalid);
 			}
@@ -400,35 +400,62 @@ abstract class Property implements Entity,
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($this->value === null) {
 			return null;
 		}
 
 		try {
-			return MetadataUtilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\Value::transformToScale(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformDataType(
+						$this->value,
+						$this->getDataType(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
 				$this->getDataType(),
-				$this->value,
-				$this->getFormat(),
-				$this->getInvalid(),
+				$this->getScale(),
 			);
-		} catch (Exceptions\InvalidArgument) {
+		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
 			return null;
 		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
-		$value = MetadataUtilities\ValueHelper::flattenValue($value);
+		try {
+			$value = MetadataUtilities\Value::flattenValue(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformFromScale(
+						MetadataUtilities\Value::transformDataType(
+							MetadataUtilities\Value::flattenValue($value),
+							$this->getDataType(),
+						),
+						$this->getDataType(),
+						$this->getScale(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			$value = null;
+		}
 
-		if ($value !== null && $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_IP_ADDRESS) {
+		if ($value !== null && $this->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS->value) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
 					'Provided property value is not valid value for IP address property',
@@ -444,7 +471,7 @@ abstract class Property implements Entity,
 			}
 		} elseif (
 			$value !== null
-			&& $this->getIdentifier() === MetadataTypes\PropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS
+			&& $this->getIdentifier() === Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value
 		) {
 			if (!is_string($value)) {
 				throw new Exceptions\InvalidArgument(
@@ -480,28 +507,61 @@ abstract class Property implements Entity,
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($this->default === null) {
 			return null;
 		}
 
 		try {
-			return MetadataUtilities\ValueHelper::normalizeValue(
+			return MetadataUtilities\Value::transformToScale(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformDataType(
+						$this->default,
+						$this->getDataType(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
 				$this->getDataType(),
-				$this->default,
-				$this->getFormat(),
-				$this->getInvalid(),
+				$this->getScale(),
 			);
-		} catch (Exceptions\InvalidArgument) {
+		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
 			return null;
 		}
 	}
 
-	public function setDefault(string|null $default): void
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function setDefault(
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $default,
+	): void
 	{
-		$default = MetadataUtilities\ValueHelper::flattenValue($default);
+		try {
+			$default = MetadataUtilities\Value::flattenValue(
+				MetadataUtilities\Value::normalizeValue(
+					MetadataUtilities\Value::transformFromScale(
+						MetadataUtilities\Value::transformDataType(
+							MetadataUtilities\Value::flattenValue($default),
+							$this->getDataType(),
+						),
+						$this->getDataType(),
+						$this->getScale(),
+					),
+					$this->getDataType(),
+					$this->getFormat(),
+				),
+			);
+		} catch (MetadataExceptions\InvalidValue) {
+			$default = null;
+		}
 
 		if (is_bool($default)) {
 			$this->default = $default ? '1' : '0';
@@ -515,35 +575,126 @@ abstract class Property implements Entity,
 	}
 
 	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getValueTransformer(): Uuid\UuidInterface|string|null
+	{
+		if ($this->valueTransformer === null) {
+			return null;
+		}
+
+		if (Uuid\Uuid::isValid($this->valueTransformer)) {
+			return Uuid\Uuid::fromString($this->valueTransformer);
+		}
+
+		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $this->valueTransformer) === 1) {
+			if (
+				in_array(
+					$this->dataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+					],
+					true,
+				)
+			) {
+				return $this->valueTransformer;
+			}
+
+			throw new Exceptions\InvalidState('Equation transformer is allowed only for numeric data type');
+		}
+
+		return null;
+	}
+
+	public function setValueTransformer(
+		string|ToolsTransformers\EquationTransformer|Uuid\UuidInterface|null $valueTransformer,
+	): void
+	{
+		if ($valueTransformer instanceof Uuid\UuidInterface) {
+			$this->valueTransformer = $valueTransformer->toString();
+
+		} elseif ($valueTransformer instanceof ToolsTransformers\EquationTransformer) {
+			$this->valueTransformer = in_array(
+				$this->dataType,
+				[
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
+				],
+				true,
+			) ? $valueTransformer->getValue() : null;
+
+		} elseif ($valueTransformer !== null) {
+			if (Uuid\Uuid::isValid($valueTransformer)) {
+				$this->valueTransformer = $valueTransformer;
+
+			} elseif (
+				preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $valueTransformer) === 1
+				&& in_array(
+					$this->dataType,
+					[
+						MetadataTypes\DataType::CHAR,
+						MetadataTypes\DataType::UCHAR,
+						MetadataTypes\DataType::SHORT,
+						MetadataTypes\DataType::USHORT,
+						MetadataTypes\DataType::INT,
+						MetadataTypes\DataType::UINT,
+						MetadataTypes\DataType::FLOAT,
+					],
+					true,
+				)
+			) {
+				$this->valueTransformer = $valueTransformer;
+			}
+		} else {
+			$this->valueTransformer = null;
+		}
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		$data = [
 			'id' => $this->getId()->toString(),
-			'type' => $this->getType()->getValue(),
-			'category' => $this->getCategory()->getValue(),
+			'type' => static::getType(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
-			'data_type' => $this->getDataType()->getValue(),
+			'data_type' => $this->getDataType()->value,
 			'unit' => $this->getUnit(),
 			'format' => $this->getFormat()?->getValue(),
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
+			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
 
-		if ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_VARIABLE)) {
+		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			return array_merge($data, [
-				'default' => MetadataUtilities\ValueHelper::flattenValue($this->getDefault()),
-				'value' => MetadataUtilities\ValueHelper::flattenValue($this->getValue()),
+				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			]);
-		} elseif ($this->getType()->equalsValue(MetadataTypes\PropertyType::TYPE_DYNAMIC)) {
+		} elseif (static::getType() === Types\PropertyType::DYNAMIC->value) {
 			return array_merge($data, [
 				'settable' => $this->isSettable(),
 				'queryable' => $this->isQueryable(),
@@ -555,52 +706,60 @@ abstract class Property implements Entity,
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function buildFormat(
 		string|null $format,
-	): MetadataValueObjects\StringEnumFormat|MetadataValueObjects\NumberRangeFormat|MetadataValueObjects\CombinedEnumFormat|MetadataValueObjects\EquationFormat|null
+	): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
 	{
 		if ($format === null) {
 			return null;
 		}
 
 		if (
-			in_array($this->dataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_CHAR,
-				MetadataTypes\DataType::DATA_TYPE_UCHAR,
-				MetadataTypes\DataType::DATA_TYPE_SHORT,
-				MetadataTypes\DataType::DATA_TYPE_USHORT,
-				MetadataTypes\DataType::DATA_TYPE_INT,
-				MetadataTypes\DataType::DATA_TYPE_UINT,
-				MetadataTypes\DataType::DATA_TYPE_FLOAT,
-			], true)
+			in_array(
+				$this->dataType,
+				[
+					MetadataTypes\DataType::CHAR,
+					MetadataTypes\DataType::UCHAR,
+					MetadataTypes\DataType::SHORT,
+					MetadataTypes\DataType::USHORT,
+					MetadataTypes\DataType::INT,
+					MetadataTypes\DataType::UINT,
+					MetadataTypes\DataType::FLOAT,
+				],
+				true,
+			)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
-				return new MetadataValueObjects\NumberRangeFormat($format);
-			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_EQUATION, $format) === 1) {
-				return new MetadataValueObjects\EquationFormat($format);
+				return new MetadataFormats\NumberRange($format);
 			}
 		} elseif (
-			in_array($this->dataType->getValue(), [
-				MetadataTypes\DataType::DATA_TYPE_ENUM,
-				MetadataTypes\DataType::DATA_TYPE_BUTTON,
-				MetadataTypes\DataType::DATA_TYPE_SWITCH,
-				MetadataTypes\DataType::DATA_TYPE_COVER,
-			], true)
+			in_array(
+				$this->dataType,
+				[
+					MetadataTypes\DataType::ENUM,
+					MetadataTypes\DataType::BUTTON,
+					MetadataTypes\DataType::SWITCH,
+					MetadataTypes\DataType::COVER,
+				],
+				true,
+			)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
-				return new MetadataValueObjects\CombinedEnumFormat($format);
+				return new MetadataFormats\CombinedEnum($format);
 			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new MetadataValueObjects\StringEnumFormat($format);
+				return new MetadataFormats\StringEnum($format);
 			}
 		}
 
 		return null;
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource
+	public function getSource(): MetadataTypes\Sources\Module
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 }

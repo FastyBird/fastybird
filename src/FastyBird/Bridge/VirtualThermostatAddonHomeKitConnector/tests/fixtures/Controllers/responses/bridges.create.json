@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges"
+  },
+  "data": {
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "id": "45716d9e-b194-46a9-8dca-5a66cc12a996",
+    "attributes": {
+      "category": "generic",
+      "identifier": "thermostat-living-room",
+      "name": "Thermostat - Living Room - Corrupted",
+      "comment": null,
+      "owner": null,
+      "created_at": "2024-02-04T22:00:00+01:00",
+      "updated_at": "2024-02-04T22:00:00+01:00"
+    },
+    "relationships": {
+      "properties": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/properties",
+          "related": {
+            "href": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/properties",
+            "meta": {
+              "count": 3
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_1_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_2_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_3_PLACEHOLDER__"
+          }
+        ]
+      },
+      "controls": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/controls",
+          "related": {
+            "href": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/controls",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      },
+      "channels": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/channels",
+          "related": {
+            "href": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/channels",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-bridge",
+            "id": "__CHANNEL_1_PLACEHOLDER__"
+          }
+        ]
+      },
+      "connector": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/connector",
+          "related": "/api/devices-module/v1/connectors/451ab010-f500-4eff-8289-9ed09e56a887"
+        },
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      },
+      "parents": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/parents",
+          "related": {
+            "href": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/parents",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.virtual-thermostat-addon/device/virtual-thermostat-addon",
+            "id": "8eab9ed0-c383-4941-a3d9-7c501fe091b2"
+          }
+        ]
+      },
+      "children": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/relationships/children",
+          "related": {
+            "href": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996/children",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      }
+    },
+    "links": {
+      "self": "/api/devices-module/v1/devices/45716d9e-b194-46a9-8dca-5a66cc12a996"
+    }
+  }
+}

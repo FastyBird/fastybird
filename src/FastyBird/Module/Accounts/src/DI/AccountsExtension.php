@@ -17,10 +17,11 @@ namespace FastyBird\Module\Accounts\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
-use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Hydrators;
 use FastyBird\Module\Accounts\Middleware;
@@ -29,15 +30,14 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
-use FastyBird\Module\Accounts\Utilities;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
+use function array_keys;
+use function array_pop;
 use function assert;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -54,12 +54,12 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 	public const NAME = 'fbAccountsModule';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -114,20 +114,16 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		// Database managers
 		$builder->addDefinition($this->prefix('models.accountsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Accounts\AccountsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Accounts\AccountsManager::class);
 
 		$builder->addDefinition($this->prefix('models.emailsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Emails\EmailsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Emails\EmailsManager::class);
 
 		$builder->addDefinition($this->prefix('models.identitiesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Identities\IdentitiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Identities\IdentitiesManager::class);
 
 		$builder->addDefinition($this->prefix('models.rolesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Roles\RolesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Roles\RolesManager::class);
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);
@@ -211,12 +207,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('hydrators.role'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Roles\Role::class);
 
-		$builder->addDefinition(
-			$this->prefix('utilities.database'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\Database::class);
-
 		$builder->addDefinition($this->prefix('security.hash'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\SecurityHash::class);
 
@@ -240,31 +230,69 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
-		}
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Module\Accounts\Entities',
-			]);
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Module\Accounts\Entities',
+					]);
+				}
+			}
 		}
 
 		/**
-		 * Routes
+		 * APPLICATION DOCUMENTS
+		 */
+
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Module\Accounts\Documents',
+					]);
+				}
+			}
+		}
+
+		/**
+		 * API ROUTES
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
@@ -275,44 +303,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
 		}
-	}
-
-	/**
-	 * @throws DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$accountsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__accountsManager',
-		);
-		$accountsManagerService->setBody(
-			'return new ' . Models\Entities\Accounts\AccountsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Accounts\Account::class . '\'));',
-		);
-
-		$emailsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__emailsManager');
-		$emailsManagerService->setBody(
-			'return new ' . Models\Entities\Emails\EmailsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Emails\Email::class . '\'));',
-		);
-
-		$identitiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__identitiesManager',
-		);
-		$identitiesManagerService->setBody(
-			'return new ' . Models\Entities\Identities\IdentitiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Identities\Identity::class . '\'));',
-		);
-
-		$rolesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__rolesManager');
-		$rolesManagerService->setBody(
-			'return new ' . Models\Entities\Roles\RolesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Roles\Role::class . '\'));',
-		);
 	}
 
 	/**

@@ -16,25 +16,24 @@
 namespace FastyBird\Connector\NsPanel\Schemas\Devices;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 
 /**
  * NS Panel sub-device entity schema
  *
- * @extends Schemas\NsPanelDevice<Entities\Devices\SubDevice>
+ * @extends Device<Entities\Devices\SubDevice>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice extends Schemas\NsPanelDevice
+final class SubDevice extends Device
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL . '/device/' . Entities\Devices\SubDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::NS_PANEL->value . '/device/' . Entities\Devices\SubDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

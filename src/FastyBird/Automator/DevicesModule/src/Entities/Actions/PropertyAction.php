@@ -16,28 +16,26 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class PropertyAction extends TriggersEntities\Actions\Action
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="action_device", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'action_device', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	protected Uuid\UuidInterface $device;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="action_value", length=100, nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'action_value', type: 'string', nullable: true, length: 100)]
 	protected string $value;
 
 	public function __construct(
@@ -53,18 +51,22 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 		$this->value = $value;
 	}
 
-	public function getValue(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function getValue(): string|MetadataTypes\Payloads\Payload
 	{
-		if (MetadataTypes\ButtonPayload::isValidValue($this->value)) {
-			return MetadataTypes\ButtonPayload::get($this->value);
+		if (MetadataTypes\Payloads\Button::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Button::from($this->value);
 		}
 
-		if (MetadataTypes\SwitchPayload::isValidValue($this->value)) {
-			return MetadataTypes\SwitchPayload::get($this->value);
+		if (MetadataTypes\Payloads\Switcher::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Switcher::from($this->value);
 		}
 
-		if (MetadataTypes\CoverPayload::isValidValue($this->value)) {
-			return MetadataTypes\CoverPayload::get($this->value);
+		if (MetadataTypes\Payloads\Cover::tryFrom($this->value) !== null) {
+			return MetadataTypes\Payloads\Cover::from($this->value);
 		}
 
 		return $this->value;
@@ -82,12 +84,16 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'value' => (string) $this->getValue(),
+			'value' => MetadataUtilities\Value::toString($this->getValue()),
 		]);
 	}
 

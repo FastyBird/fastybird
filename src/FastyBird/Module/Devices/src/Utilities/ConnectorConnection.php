@@ -16,16 +16,23 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Types;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function assert;
 
 /**
@@ -45,33 +52,36 @@ final class ConnectorConnection
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsEntitiesRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesEntitiesManager,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
-		private readonly ConnectorPropertiesStates $propertiesStates,
-		private readonly Database $databaseHelper,
+		private readonly Models\States\ConnectorPropertiesManager $propertiesStatesManager,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function setState(
-		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
-		MetadataTypes\ConnectionState $state,
+		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
+		Types\ConnectionState $state,
 	): bool
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
 		if ($property === null) {
@@ -85,15 +95,15 @@ final class ConnectorConnection
 					$property = $this->connectorsPropertiesEntitiesManager->create(Utils\ArrayHash::from([
 						'connector' => $connector,
 						'entity' => Entities\Connectors\Properties\Dynamic::class,
-						'identifier' => MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE,
-						'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
+						'identifier' => Types\ConnectorPropertyIdentifier::STATE->value,
+						'dataType' => MetadataTypes\DataType::ENUM,
 						'unit' => null,
 						'format' => [
-							MetadataTypes\ConnectionState::STATE_RUNNING,
-							MetadataTypes\ConnectionState::STATE_STOPPED,
-							MetadataTypes\ConnectionState::STATE_UNKNOWN,
-							MetadataTypes\ConnectionState::STATE_SLEEPING,
-							MetadataTypes\ConnectionState::STATE_ALERT,
+							Types\ConnectionState::RUNNING->value,
+							Types\ConnectionState::STOPPED->value,
+							Types\ConnectionState::UNKNOWN->value,
+							Types\ConnectionState::SLEEPING->value,
+							Types\ConnectionState::ALERT->value,
 						],
 						'settable' => false,
 						'queryable' => false,
@@ -105,14 +115,16 @@ final class ConnectorConnection
 			);
 		}
 
-		$this->propertiesStates->writeValue(
+		$property = $this->connectorsPropertiesConfigurationRepository->find($property->getId());
+		assert($property instanceof Documents\Connectors\Properties\Dynamic);
+
+		$this->propertiesStatesManager->set(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::ACTUAL_VALUE_FIELD => $state->getValue(),
+				States\Property::ACTUAL_VALUE_FIELD => $state->value,
 				States\Property::EXPECTED_VALUE_FIELD => null,
-				States\Property::PENDING_FIELD => false,
-				States\Property::VALID_FIELD => true,
 			]),
+			MetadataTypes\Sources\Module::DEVICES,
 		);
 
 		return false;
@@ -123,33 +135,82 @@ final class ConnectorConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getState(
-		Entities\Connectors\Connector|MetadataDocuments\DevicesModule\Connector $connector,
-	): MetadataTypes\ConnectionState
+		Entities\Connectors\Connector|Documents\Connectors\Connector $connector,
+	): Types\ConnectionState
 	{
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
-		$findConnectorPropertyQuery->byIdentifier(MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_STATE);
+		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findConnectorPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class,
+			Documents\Connectors\Properties\Dynamic::class,
 		);
 
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			$state = $this->propertiesStates->readValue($property);
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
+			$state = $this->propertiesStatesManager->readState($property);
 
 			if (
-				$state?->getActualValue() !== null
-				&& MetadataTypes\ConnectionState::isValidValue($state->getActualValue())
+				$state?->getRead()->getActualValue() !== null
+				&& Types\ConnectionState::tryFrom(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				) !== null
 			) {
-				return MetadataTypes\ConnectionState::get($state->getActualValue());
+				return Types\ConnectionState::from(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				);
 			}
 		}
 
-		return MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		return Types\ConnectionState::UNKNOWN;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function isRunning(
+		Entities\Devices\Device|Documents\Connectors\Connector $connector,
+	): bool
+	{
+		$findDevicePropertyQuery = new Queries\Configuration\FindConnectorProperties();
+		$findDevicePropertyQuery->byConnectorId($connector->getId());
+		$findDevicePropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);
+
+		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
+			$findDevicePropertyQuery,
+			Documents\Connectors\Properties\Dynamic::class,
+		);
+
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
+			$state = $this->propertiesStatesManager->readState($property);
+
+			if (
+				$state?->getRead()->getActualValue() !== null
+				&& Types\ConnectionState::tryFrom(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				) !== null
+				&& $state->getRead()->getActualValue() === Types\ConnectionState::RUNNING->value
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

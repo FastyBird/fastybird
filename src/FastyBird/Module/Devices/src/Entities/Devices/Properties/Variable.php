@@ -16,22 +16,21 @@
 namespace FastyBird\Module\Devices\Entities\Devices\Properties;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use function array_map;
 use function array_merge;
 use function sprintf;
-use function strval;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Variable extends Property
 {
 
-	public function getType(): MetadataTypes\PropertyType
+	public const TYPE = Types\PropertyType::VARIABLE->value;
+
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_VARIABLE);
+		return self::TYPE;
 	}
 
 	/**
@@ -40,7 +39,7 @@ class Variable extends Property
 	public function getParent(): Property|null
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Parent could not be read for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Parent could not be read for property type: %s', static::getType()),
 		);
 	}
 
@@ -50,7 +49,7 @@ class Variable extends Property
 	public function setParent(Property $property): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Parent could not be assigned for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Parent could not be assigned for property type: %s', static::getType()),
 		);
 	}
 
@@ -60,7 +59,7 @@ class Variable extends Property
 	public function removeParent(): void
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Parent could not be unassigned for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Parent could not be unassigned for property type: %s', static::getType()),
 		);
 	}
 

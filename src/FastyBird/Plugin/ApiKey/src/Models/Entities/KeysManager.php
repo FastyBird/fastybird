@@ -35,17 +35,21 @@ final class KeysManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Key>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Key> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Key> $entityCrudFactory
 	 */
-	public function __construct(private DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Transformer CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Key
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Key);
 
 		return $entity;
@@ -59,7 +63,7 @@ final class KeysManager
 		Utils\ArrayHash $values,
 	): Entities\Key
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Key);
 
 		return $entity;
@@ -71,7 +75,19 @@ final class KeysManager
 	public function delete(Entities\Key $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Key>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Key::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

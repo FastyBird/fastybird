@@ -28,4 +28,14 @@ final class Constants
 
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 
+	public const EVENT_MESSAGE = 'message';
+
+	public const EVENT_ERROR = 'error';
+
+	public const EVENT_DISCONNECTED = 'disconnected';
+
+	public const EVENT_CONNECTED = 'connected';
+
+	public const EVENT_LOST = 'lost';
+
 }

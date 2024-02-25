@@ -36,17 +36,21 @@ final class ConditionsManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Conditions\Condition>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Conditions\Condition> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Conditions\Condition> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Transformer CRUD for handling entities
 	}
 
 	public function create(Utils\ArrayHash $values): Entities\Conditions\Condition
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Conditions\Condition);
 
 		return $entity;
@@ -60,7 +64,7 @@ final class ConditionsManager
 		Utils\ArrayHash $values,
 	): Entities\Conditions\Condition
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Conditions\Condition);
 
 		return $entity;
@@ -72,7 +76,19 @@ final class ConditionsManager
 	public function delete(Entities\Conditions\Condition $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Conditions\Condition>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Conditions\Condition::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

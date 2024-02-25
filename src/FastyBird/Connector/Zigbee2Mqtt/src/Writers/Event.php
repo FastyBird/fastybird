@@ -15,11 +15,12 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Writers;
 
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
+use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -51,44 +52,46 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$state = $event->getState();
+		$state = $event->getGet();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
 		}
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->byId($event->getProperty()->getChannel());
-		$findChannelQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
-		$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $this->channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		if ($channel === null) {
 			return;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+		$findDeviceQuery->forConnector($this->connector);
 		$findDeviceQuery->byId($channel->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\SubDevice::class,
+		);
 
 		if ($device === null) {
 			return;
 		}
 
-		if (!$device->getConnector()->equals($this->connector->getId())) {
-			return;
-		}
-
 		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteSubDeviceState::class,
+			$this->messageBuilder->create(
+				Queue\Messages\WriteSubDeviceChannelPropertyState::class,
 				[
 					'connector' => $this->connector->getId(),
 					'device' => $device->getId(),
-					'channel' => $event->getProperty()->getChannel(),
+					'channel' => $channel->getId(),
 					'property' => $event->getProperty()->getId(),
+					'state' => $event->getGet()->toArray(),
 				],
 			),
 		);

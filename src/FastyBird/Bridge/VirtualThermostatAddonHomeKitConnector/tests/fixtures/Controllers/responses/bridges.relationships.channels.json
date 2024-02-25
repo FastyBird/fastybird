@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/relationships/channels",
+    "related": "/api/devices-module/v1/devices/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2/channels"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-bridge",
+      "id": "af9c9d58-69c5-4d30-9bce-ca6e6ce4ed45"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ namespace FastyBird\Library\Metadata\Documents;
 use DateTimeInterface;
 
 /**
- * Entity updated date trait
+ * Document updated date trait
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Documents

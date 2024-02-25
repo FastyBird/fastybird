@@ -29,12 +29,12 @@ use Symfony\Component\EventDispatcher;
  *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Channel implements EventDispatcher\EventSubscriberInterface
+readonly class Channel implements EventDispatcher\EventSubscriberInterface
 {
 
 	public function __construct(
-		private readonly Publishers\Publisher $publisher,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private Publishers\Publisher $publisher,
+		private Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
@@ -53,7 +53,7 @@ class Channel implements EventDispatcher\EventSubscriberInterface
 		$this->logger->debug(
 			'Rabbit MQ channel from async client was assigned to publisher service',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_RABBITMQ,
+				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'subscriber',
 			],
 		);

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Generation 2 devices component attribute types
  *
@@ -26,19 +23,9 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ComponentEvent extends Consistence\Enum\Enum
+enum ComponentEvent: string
 {
 
-	public const RESULT = 'result';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case RESULT = 'result';
 
 }

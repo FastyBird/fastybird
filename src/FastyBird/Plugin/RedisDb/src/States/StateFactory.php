@@ -19,12 +19,8 @@ use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use Nette\Utils;
 use Orisai\ObjectMapper;
-use function array_map;
 use function class_exists;
-use function explode;
-use function implode;
 use function is_array;
-use function lcfirst;
 
 /**
  * State object factory
@@ -34,11 +30,11 @@ use function lcfirst;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StateFactory
+final readonly class StateFactory
 {
 
 	public function __construct(
-		private readonly ObjectMapper\Processing\Processor $stateMapper,
+		private ObjectMapper\Processing\Processor $stateMapper,
 	)
 	{
 	}
@@ -69,8 +65,6 @@ final class StateFactory
 			throw new Exceptions\InvalidArgument('Provided state content is not valid JSON', $ex->getCode(), $ex);
 		}
 
-		$decoded = $this->convertKeys($decoded);
-
 		try {
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
@@ -83,24 +77,6 @@ final class StateFactory
 
 			throw new Exceptions\InvalidArgument('Could not map data to state: ' . $errorPrinter->printError($ex));
 		}
-	}
-
-	/**
-	 * @param array<mixed> $xs
-	 *
-	 * @return array<mixed>
-	 */
-	private function convertKeys(array $xs): array
-	{
-		$out = [];
-
-		foreach ($xs as $key => $value) {
-			$out[lcfirst(implode('', array_map('ucfirst', explode('_', $key))))] = is_array($value)
-				? self::convertKeys($value)
-				: $value;
-		}
-
-		return $out;
 	}
 
 }

@@ -17,16 +17,16 @@ namespace FastyBird\Module\Accounts\Entities\Tokens;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: 'access_token')]
 class AccessToken extends SimpleAuthEntities\Tokens\Token implements
 	Entities\Entity,
 	Entities\EntityParams,
@@ -41,17 +41,18 @@ class AccessToken extends SimpleAuthEntities\Tokens\Token implements
 
 	public const TOKEN_EXPIRATION = '+6 hours';
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Accounts\Entities\Identities\Identity")
-	 * @ORM\JoinColumn(name="identity_id", referencedColumnName="identity_id", onDelete="cascade", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\ManyToOne(targetEntity: Entities\Identities\Identity::class)]
+	#[ORM\JoinColumn(
+		name: 'identity_id',
+		referencedColumnName: 'identity_id',
+		nullable: true,
+		onDelete: 'CASCADE',
+	)]
 	private Entities\Identities\Identity|null $identity = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"writable"})
-	 * @ORM\Column(name="token_valid_till", type="datetime", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'token_valid_till', type: 'datetime', nullable: false)]
 	private DateTimeInterface|null $validTill = null;
 
 	public function __construct(

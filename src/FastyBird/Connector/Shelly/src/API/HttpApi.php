@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Services;
@@ -73,7 +72,7 @@ abstract class HttpApi
 
 	public function __construct(
 		protected readonly Services\HttpClientFactory $httpClientFactory,
-		protected readonly Helpers\Entity $entityHelper,
+		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Shelly\Logger $logger,
 		protected readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -81,26 +80,26 @@ abstract class HttpApi
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\HttpApiError
 	 */
-	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	protected function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\HttpApiError('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\HttpApiError('Could not map data to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\HttpApiError(
-				'Could not create entity from response',
+				'Could not create message from response',
 				$ex->getCode(),
 				$ex,
 			);
@@ -123,20 +122,23 @@ abstract class HttpApi
 	{
 		$deferred = new Promise\Deferred();
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			strval($request->getUri()),
-		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-			'type' => 'http-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'path' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				strval($request->getUri()),
+			),
+			[
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+				'type' => 'http-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'path' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
 			],
-		]);
+		);
 
 		if ($async) {
 			if ($authorization === self::AUTHORIZATION_BASIC) {
@@ -170,20 +172,23 @@ abstract class HttpApi
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-								'type' => 'http-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+									'type' => 'http-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-							]);
+							);
 
 							$deferred->resolve($response);
 						},
@@ -300,20 +305,23 @@ abstract class HttpApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
-				'type' => 'http-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+					'type' => 'http-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-			]);
+			);
 
 			return $response;
 		} catch (GuzzleHttp\Exception\GuzzleException | InvalidArgumentException $ex) {
@@ -378,19 +386,10 @@ abstract class HttpApi
 			return null;
 		}
 
-		if (array_key_exists('algorithm', $serverBits)) {
-			switch (Utils\Strings::lower($serverBits['algorithm'])) {
-				case 'sha-256':
-				case 'sha256':
-					$algo = 'sha256';
-
-					break;
-				default:
-					$algo = 'md5';
-			}
-		} else {
-			$algo = 'md5';
-		}
+		$algo = array_key_exists('algorithm', $serverBits) ? match (Utils\Strings::lower($serverBits['algorithm'])) {
+				'sha-256', 'sha256' => 'sha256',
+				default => 'md5',
+		} : 'md5';
 
 		$nc = 1;
 

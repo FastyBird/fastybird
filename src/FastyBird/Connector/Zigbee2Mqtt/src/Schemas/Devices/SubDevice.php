@@ -22,19 +22,19 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 /**
  * Zigbee2MQTT sub-device entity schema
  *
- * @extends Schemas\Zigbee2MqttDevice<Entities\Devices\SubDevice>
+ * @extends  Device<Entities\Devices\SubDevice>
  *
  * @package        FastyBird:Zigbee2MqttConnector!
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice extends Schemas\Zigbee2MqttDevice
+final class SubDevice extends Device
 {
 
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT . '/device/' . Entities\Devices\SubDevice::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value . '/device/' . Entities\Devices\SubDevice::TYPE;
 
 	public function getEntityClass(): string
 	{

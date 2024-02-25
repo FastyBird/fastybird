@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Device category types
  *
@@ -26,58 +23,37 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Category extends Consistence\Enum\Enum
+enum Category: string
 {
 
-	public const UNKNOWN = 'unknown';
+	case UNKNOWN = 'unknown';
 
-	public const PLUG = 'plug';
+	case PLUG = 'plug';
 
-	public const SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const LIGHT = 'light';
+	case LIGHT = 'light';
 
-	public const CURTAIN = 'curtain';
+	case CURTAIN = 'curtain';
 
-	public const CONTACT_SENSOR = 'contactSensor';
+	case CONTACT_SENSOR = 'contactSensor';
 
-	public const MOTION_SENSOR = 'motionSensor';
+	case MOTION_SENSOR = 'motionSensor';
 
-	public const TEMPERATURE_SENSOR = 'temperatureSensor';
+	case TEMPERATURE_SENSOR = 'temperatureSensor';
 
-	public const HUMIDITY_SENSOR = 'humiditySensor';
+	case HUMIDITY_SENSOR = 'humiditySensor';
 
-	public const TEMPERATURE_HUMIDITY_SENSOR = 'temperatureAndHumiditySensor';
+	case TEMPERATURE_HUMIDITY_SENSOR = 'temperatureAndHumiditySensor';
 
-	public const WATTER_LEAK_DETECTOR = 'waterLeakDetector';
+	case WATTER_LEAK_DETECTOR = 'waterLeakDetector';
 
-	public const SMOKE_DETECTOR = 'smokeDetector';
+	case SMOKE_DETECTOR = 'smokeDetector';
 
-	public const BUTTON = 'button';
+	case BUTTON = 'button';
 
-	public const CAMERA = 'camera';
+	case CAMERA = 'camera';
 
-	public const SENSOR = 'sensor';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	/**
-	 * @return array<string>
-	 */
-	public static function getValues(): array
-	{
-		/** @var iterable<string> $availableValues */
-		$availableValues = parent::getAvailableValues();
-
-		return (array) $availableValues;
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case SENSOR = 'sensor';
 
 }

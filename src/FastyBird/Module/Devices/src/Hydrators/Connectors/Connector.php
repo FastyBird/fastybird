@@ -44,11 +44,6 @@ abstract class Connector extends JsonApiHydrators\Hydrator
 			'enabled',
 		];
 
-	public function getEntityName(): string
-	{
-		return Entities\Connectors\Connector::class;
-	}
-
 	protected function hydrateNameAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
 	{
 		if (

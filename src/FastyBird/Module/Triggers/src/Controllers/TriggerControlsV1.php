@@ -17,6 +17,7 @@ namespace FastyBird\Module\Triggers\Controllers;
 
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -47,13 +48,14 @@ final class TriggerControlsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		protected readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
 		private readonly Models\Entities\Triggers\Controls\ControlsRepository $controlRepository,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
@@ -65,7 +67,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -95,7 +97,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -136,7 +138,7 @@ final class TriggerControlsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\ManualTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),

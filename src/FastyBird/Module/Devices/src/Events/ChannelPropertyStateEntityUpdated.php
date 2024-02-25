@@ -15,7 +15,8 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\States;
 use Symfony\Contracts\EventDispatcher;
 
@@ -31,26 +32,32 @@ class ChannelPropertyStateEntityUpdated extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-		private readonly States\ChannelProperty $previousState,
-		private readonly States\ChannelProperty $state,
+		private readonly Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
+		private readonly States\ChannelProperty $read,
+		private readonly States\ChannelProperty $get,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ChannelDynamicProperty
+	public function getProperty(): Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped
 	{
 		return $this->property;
 	}
 
-	public function getPreviousState(): States\ChannelProperty
+	public function getRead(): States\ChannelProperty
 	{
-		return $this->previousState;
+		return $this->read;
 	}
 
-	public function getState(): States\ChannelProperty
+	public function getGet(): States\ChannelProperty
 	{
-		return $this->state;
+		return $this->get;
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return $this->source;
 	}
 
 }

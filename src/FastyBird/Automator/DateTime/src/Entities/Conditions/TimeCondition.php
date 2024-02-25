@@ -19,8 +19,9 @@ use DateTimeInterface;
 use DateTimeZone;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Automator\DateTime\Exceptions;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
@@ -30,24 +31,20 @@ use function intval;
 use function is_array;
 use function method_exists;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class TimeCondition extends TriggersEntities\Conditions\Condition
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="time", name="condition_time", nullable=true)
-	 */
+	public const TYPE = 'time';
+
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_time', type: 'time', nullable: true)]
 	private DateTimeInterface|null $time;
 
-	/**
-	 * @var array<int>|null
-	 *
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="simple_array", name="condition_days", nullable=true)
-	 */
+	/** @var array<int>|null */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_days', type: 'simple_array', nullable: true)]
 	private array|null $days;
 
 	/**
@@ -56,7 +53,7 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 	public function __construct(
 		DateTimeInterface $time,
 		Utils\ArrayHash $days,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -66,9 +63,9 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 		$this->setDays($days);
 	}
 
-	public function getType(): string
+	public static function getType(): string
 	{
-		return 'time';
+		return self::TYPE;
 	}
 
 	public function getDays(): Utils\ArrayHash
@@ -123,11 +120,6 @@ class TimeCondition extends TriggersEntities\Conditions\Condition
 		}
 
 		return $date->format('h:i:s') === $this->getTime()->format('h:i:s');
-	}
-
-	public function getDiscriminatorName(): string
-	{
-		return $this->getType();
 	}
 
 	/**

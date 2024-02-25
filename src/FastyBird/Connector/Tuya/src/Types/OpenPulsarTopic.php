@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * OpenPulsar topic types
  *
@@ -26,21 +23,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class OpenPulsarTopic extends Consistence\Enum\Enum
+enum OpenPulsarTopic: string
 {
 
-	public const PROD = 'event';
+	case PROD = 'event';
 
-	public const TEST = 'event-test';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case TEST = 'event-test';
 
 }

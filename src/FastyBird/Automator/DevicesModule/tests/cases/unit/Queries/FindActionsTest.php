@@ -6,8 +6,8 @@ use Error;
 use FastyBird\Automator\DevicesModule\Entities;
 use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Queries;
-use FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Automator\DevicesModule\Tests;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Models as TriggersModels;
 use Nette;
 use Ramsey\Uuid;
@@ -17,11 +17,11 @@ use RuntimeException;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class FindActionsTest extends DbTestCase
+final class FindActionsTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -42,7 +42,7 @@ final class FindActionsTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -63,7 +63,7 @@ final class FindActionsTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -84,7 +84,7 @@ final class FindActionsTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -105,7 +105,7 @@ final class FindActionsTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException

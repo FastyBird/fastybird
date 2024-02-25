@@ -15,14 +15,14 @@ use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Subscribers;
 use FastyBird\Connector\Shelly\Tests;
 use FastyBird\Connector\Shelly\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
@@ -30,7 +30,7 @@ final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Clients\LocalFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\CloudFactory::class, false));
@@ -55,13 +55,13 @@ final class ShellyExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\ShellyConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\ShellyDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\ShellyConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\ShellyDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Device::class, false));
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));

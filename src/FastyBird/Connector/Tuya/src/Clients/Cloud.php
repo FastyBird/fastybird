@@ -19,27 +19,31 @@ use DateTimeInterface;
 use Exception;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_map;
 use function in_array;
+use function React\Async\async;
 
 /**
  * Cloud devices client
@@ -62,7 +66,7 @@ final class Cloud implements Client
 
 	private const CMD_HEARTBEAT = 'heartbeat';
 
-	/** @var array<string, MetadataDocuments\DevicesModule\Device>  */
+	/** @var array<string, Documents\Devices\Device>  */
 	private array $devices = [];
 
 	/** @var array<string> */
@@ -74,10 +78,10 @@ final class Cloud implements Client
 	private EventLoop\TimerInterface|null $handlerTimer = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Device $deviceHelper,
 		private readonly Tuya\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -91,10 +95,13 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
@@ -103,19 +110,23 @@ final class Cloud implements Client
 
 		$this->handlerTimer = null;
 
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\TuyaDevice::TYPE);
 
-		foreach ($this->devicesConfigurationRepository->findAllBy($findDevicesQuery) as $device) {
+		$devices = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Device::class,
+		);
+
+		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
 		}
 
 		$this->eventLoop->addTimer(
 			self::HANDLER_START_DELAY,
-			function (): void {
+			async(function (): void {
 				$this->registerLoopHandler();
-			},
+			}),
 		);
 
 		$this->connectionManager
@@ -125,7 +136,7 @@ final class Cloud implements Client
 				$this->logger->debug(
 					'Connected to Tuya cloud API',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -137,9 +148,9 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Tuya cloud API client could not be created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -148,76 +159,77 @@ final class Cloud implements Client
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+						MetadataTypes\Sources\Connector::TUYA,
 						'Tuya cloud API client could not be created',
 					),
 				);
 			});
 
-		$this->connectionManager
-			->getCloudWsConnection($this->connector)
-			->on(
-				'message',
-				function (Entities\API\ReportDeviceState|Entities\API\ReportDeviceOnline $message): void {
-					if ($message instanceof Entities\API\ReportDeviceOnline) {
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreDeviceConnectionState::class,
-								[
-									'connector' => $this->connector->getId(),
-									'identifier' => $message->getIdentifier(),
-									'state' => $message->isOnline()
-										? MetadataTypes\ConnectionState::STATE_CONNECTED
-										: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
-								],
-							),
-						);
-					} else {
-						$this->queue->append(
-							$this->entityHelper->create(
-								Entities\Messages\StoreChannelPropertyState::class,
-								[
-									'connector' => $this->connector->getId(),
-									'identifier' => $message->getIdentifier(),
-									'data_points' => array_map(
-										static fn (Entities\API\DataPointState $dps): array => [
-											'code' => $dps->getCode(),
-											'value' => $dps->getValue(),
-										],
-										$message->getDataPoints(),
-									),
-								],
-							),
-						);
-					}
-				},
-			)
-			->on('error', function (Throwable $ex): void {
-				$this->logger->error(
-					'An error occurred in Tuya cloud WS client',
-					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-						'type' => 'cloud-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
+		$wsClient = $this->connectionManager
+			->getCloudWsConnection($this->connector);
 
-				$this->dispatcher?->dispatch(
-					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
-						'An error occurred in Tuya cloud WS client',
+		$wsClient->onMessage[] = function (API\Messages\Message $message): void {
+			if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'identifier' => $message->getIdentifier(),
+							'state' => $message->isOnline()
+								? DevicesTypes\ConnectionState::CONNECTED
+								: DevicesTypes\ConnectionState::DISCONNECTED,
+						],
 					),
 				);
-			})
+			} elseif ($message instanceof API\Messages\Response\ReportDeviceState) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreChannelPropertyState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'identifier' => $message->getIdentifier(),
+							'data_points' => array_map(
+								static fn (API\Messages\Response\DataPointState $dps): array => [
+									'code' => $dps->getCode(),
+									'value' => $dps->getValue(),
+								],
+								$message->getDataPoints(),
+							),
+						],
+					),
+				);
+			}
+		};
+
+		$wsClient->onError[] = function (Throwable $ex): void {
+			$this->logger->error(
+				'An error occurred in Tuya cloud WS client',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'cloud-client',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'connector' => [
+						'id' => $this->connector->getId()->toString(),
+					],
+				],
+			);
+
+			$this->dispatcher?->dispatch(
+				new DevicesEvents\TerminateConnector(
+					MetadataTypes\Sources\Connector::TUYA,
+					'An error occurred in Tuya cloud WS client',
+				),
+			);
+		};
+
+		$wsClient
 			->connect()
 			->then(function (): void {
 				$this->logger->debug(
 					'Connected to Tuya cloud WS server',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
@@ -229,9 +241,9 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Tuya cloud WS client could not be created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -240,7 +252,7 @@ final class Cloud implements Client
 
 				$this->dispatcher?->dispatch(
 					new DevicesEvents\TerminateConnector(
-						MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+						MetadataTypes\Sources\Connector::TUYA,
 						'Tuya cloud WS client could not be created',
 					),
 				);
@@ -249,8 +261,11 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
@@ -271,11 +286,15 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws Exception
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleCommunication(): void
 	{
@@ -302,11 +321,15 @@ final class Cloud implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exception
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws Exception
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function processDevice(MetadataDocuments\DevicesModule\Device $device): bool
+	private function processDevice(Documents\Devices\Device $device): bool
 	{
 		if ($this->readDeviceInformation($device)) {
 			return true;
@@ -318,13 +341,18 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function readDeviceInformation(MetadataDocuments\DevicesModule\Device $device): bool
+	private function readDeviceInformation(Documents\Devices\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -348,7 +376,7 @@ final class Cloud implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -357,18 +385,18 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceDetail($device->getIdentifier())
-			->then(function (Entities\API\GetDevice $detail) use ($device): void {
+			->then(function (API\Messages\Response\GetDevice $detail) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreDeviceConnectionState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'state' => $detail->getResult()->isOnline()
-								? MetadataTypes\ConnectionState::STATE_CONNECTED
-								: MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								? DevicesTypes\ConnectionState::CONNECTED
+								: DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
@@ -377,9 +405,9 @@ final class Cloud implements Client
 				$this->logger->error(
 					'Could not call cloud openapi',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -388,30 +416,30 @@ final class Cloud implements Client
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
 				} elseif ($ex instanceof Exceptions\OpenApiCall) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+							MetadataTypes\Sources\Connector::TUYA,
 							'Unhandled error occur',
 						),
 					);
@@ -424,13 +452,18 @@ final class Cloud implements Client
 	/**
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function readDeviceState(MetadataDocuments\DevicesModule\Device $device): bool
+	private function readDeviceState(Documents\Devices\Device $device): bool
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->processedDevicesCommands)) {
 			$this->processedDevicesCommands[$device->getId()->toString()] = [];
@@ -454,7 +487,7 @@ final class Cloud implements Client
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
-		if ($deviceState->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)) {
+		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
@@ -463,17 +496,17 @@ final class Cloud implements Client
 		$this->connectionManager
 			->getCloudApiConnection($this->connector)
 			->getDeviceState($device->getIdentifier())
-			->then(function (Entities\API\GetDeviceState $state) use ($device): void {
+			->then(function (API\Messages\Response\GetDeviceState $state) use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
 
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\StoreChannelPropertyState::class,
+					$this->messageBuilder->create(
+						Queue\Messages\StoreChannelPropertyState::class,
 						[
 							'connector' => $device->getConnector(),
 							'identifier' => $device->getIdentifier(),
 							'data_points' => array_map(
-								static fn (Entities\API\DeviceDataPointState $dps): array => [
+								static fn (API\Messages\Response\DeviceDataPointState $dps): array => [
 									'code' => $dps->getCode(),
 									'value' => $dps->getValue(),
 								],
@@ -487,7 +520,7 @@ final class Cloud implements Client
 				$this->logger->warning(
 					'Calling Tuya cloud failed',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'cloud-client',
 						'error' => $ex->getMessage(),
 						'connector' => [
@@ -498,30 +531,30 @@ final class Cloud implements Client
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_ALERT,
+								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
 					);
 				} elseif ($ex instanceof Exceptions\OpenApiCall) {
 					$this->queue->append(
-						$this->entityHelper->create(
-							Entities\Messages\StoreDeviceConnectionState::class,
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
 								'identifier' => $device->getIdentifier(),
-								'state' => MetadataTypes\ConnectionState::STATE_DISCONNECTED,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 							],
 						),
 					);
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
-							MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA),
+							MetadataTypes\Sources\Connector::TUYA,
 							'Unhandled error occur',
 						),
 					);
@@ -535,9 +568,9 @@ final class Cloud implements Client
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(
 			self::HANDLER_PROCESSING_INTERVAL,
-			function (): void {
+			async(function (): void {
 				$this->handleCommunication();
-			},
+			}),
 		);
 	}
 

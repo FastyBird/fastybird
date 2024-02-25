@@ -15,18 +15,17 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
-use Contributte\Cache;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Types;
 use Flow\JSONPath;
 use Nette\Caching;
-use Orisai\DataSources;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
-use function is_string;
 
 /**
  * Configuration builder
@@ -39,10 +38,6 @@ use function is_string;
 final class Builder
 {
 
-	private JSONPath\JSONPath|null $configuration = null;
-
-	private Caching\Cache $cache;
-
 	public function __construct(
 		private readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorsPropertiesRepository,
@@ -53,112 +48,89 @@ final class Builder
 		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
-		private readonly DataSources\DefaultDataSource $dataSource,
-		private readonly Cache\CacheFactory $cacheFactory,
+		private readonly Caching\Cache $cache,
 	)
 	{
-		$this->cache = $this->cacheFactory->create(
-			MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '_configuration',
-		);
-	}
-
-	public function clean(): void
-	{
-		$this->cache->clean([
-			Caching\Cache::All => true,
-		]);
-
-		$this->configuration = null;
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function load(bool $force = false): JSONPath\JSONPath
+	public function load(Types\ConfigurationType $type, bool $force = false): JSONPath\JSONPath
 	{
-		if ($this->configuration === null || $force) {
-			try {
-				if ($force) {
-					$this->cache->remove(Devices\Constants::CONFIGURATION_KEY);
-				}
-
-				$data = $this->cache->load(
-					Devices\Constants::CONFIGURATION_KEY,
-					fn (): string => $this->build(),
-				);
-				assert(is_string($data));
-
-				$decoded = $this->dataSource->decode($data, 'json');
-			} catch (Throwable $ex) {
-				throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
+		try {
+			if ($force) {
+				$this->cache->remove($type->value);
 			}
 
-			$this->configuration = new JSONPath\JSONPath($decoded);
-		}
+			$data = $this->cache->load(
+				$type->value,
+				fn (): JSONPath\JSONPath => new JSONPath\JSONPath($this->build($type)),
+				[
+					Caching\Cache::Tags => [$type->value],
+				],
+			);
+			assert($data instanceof JSONPath\JSONPath);
 
-		return $this->configuration;
+			return $data;
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Module configuration could not be read', $ex->getCode(), $ex);
+		}
 	}
 
 	/**
+	 * @return array<mixed>
+	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function build(): string
+	private function build(Types\ConfigurationType $type): array
 	{
-		$data = [
-			Devices\Constants::DATA_STORAGE_CONNECTORS_KEY => [],
-			Devices\Constants::DATA_STORAGE_DEVICES_KEY => [],
-			Devices\Constants::DATA_STORAGE_CHANNELS_KEY => [],
-			Devices\Constants::DATA_STORAGE_PROPERTIES_KEY => [],
-			Devices\Constants::DATA_STORAGE_CONTROLS_KEY => [],
-		];
+		$data = [];
 
-		foreach ($this->connectorsRepository->findAll() as $connector) {
-			$data[Devices\Constants::DATA_STORAGE_CONNECTORS_KEY][] = $connector->toArray();
+		if ($type === Types\ConfigurationType::CONNECTORS) {
+			foreach ($this->connectorsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CONNECTORS_PROPERTIES) {
+			foreach ($this->connectorsPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CONNECTORS_CONTROLS) {
+			foreach ($this->connectorsControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES) {
+			foreach ($this->devicesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES_PROPERTIES) {
+			foreach ($this->devicesPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::DEVICES_CONTROLS) {
+			foreach ($this->devicesControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS) {
+			foreach ($this->channelsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS_PROPERTIES) {
+			foreach ($this->channelsPropertiesRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
+		} elseif ($type === Types\ConfigurationType::CHANNELS_CONTROLS) {
+			foreach ($this->channelsControlsRepository->findAll() as $item) {
+				$data[] = $item->toArray();
+			}
 		}
 
-		foreach ($this->connectorsPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
-
-		foreach ($this->connectorsControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-		}
-
-		foreach ($this->devicesRepository->findAll() as $device) {
-			$data[Devices\Constants::DATA_STORAGE_DEVICES_KEY][] = $device->toArray();
-		}
-
-		foreach ($this->devicesPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
-
-		foreach ($this->devicesControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-		}
-
-		foreach ($this->channelsRepository->findAll() as $channel) {
-			$data[Devices\Constants::DATA_STORAGE_CHANNELS_KEY][] = $channel->toArray();
-		}
-
-		foreach ($this->channelsPropertiesRepository->findAll() as $property) {
-			$data[Devices\Constants::DATA_STORAGE_PROPERTIES_KEY][] = $property->toArray();
-		}
-
-		foreach ($this->channelsControlsRepository->findAll() as $control) {
-			$data[Devices\Constants::DATA_STORAGE_CONTROLS_KEY][] = $control->toArray();
-		}
-
-		try {
-			return $this->dataSource->encode($data, 'json');
-		} catch (DataSources\Exception\NotSupportedType | DataSources\Exception\EncodingFailure $ex) {
-			throw new Exceptions\InvalidState(
-				'Module configuration structure could not be create',
-				$ex->getCode(),
-				$ex,
-			);
-		}
+		return $data;
 	}
 
 }

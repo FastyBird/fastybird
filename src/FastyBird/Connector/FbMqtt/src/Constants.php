@@ -39,7 +39,7 @@ final class Constants
 	/**
 	 * MQTT protocol api prefixes
 	 */
-	public const MQTT_API_V1_VERSION_PREFIX = self::MQTT_TOPIC_DELIMITER . Types\ProtocolVersion::VERSION_1;
+	public const MQTT_API_V1_VERSION_PREFIX = self::MQTT_TOPIC_DELIMITER . Types\ProtocolVersion::VERSION_1->value;
 
 	/**
 	 * MQTT message QOS values
@@ -59,5 +59,21 @@ final class Constants
 	public const PAYLOAD_BOOL_FALSE_VALUE = 'false';
 
 	public const VALUE_NOT_SET = 'value_not_set';
+
+	/**
+	 * Server
+	 */
+
+	public const DEFAULT_SERVER_ADDRESS = '127.0.0.1';
+
+	public const DEFAULT_SERVER_PORT = 1_883;
+
+	public const DEFAULT_SERVER_SECURED_PORT = 8_883;
+
+	/**
+	 * Misc
+	 */
+
+	public const WRITE_DEBOUNCE_DELAY = 2_000.0;
 
 }

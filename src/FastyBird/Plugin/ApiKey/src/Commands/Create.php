@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\ApiKey\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\ApiKey\Models;
 use FastyBird\Plugin\ApiKey\Types;
@@ -78,7 +78,7 @@ class Create extends Console\Command\Command
 			$createKey = new Utils\ArrayHash();
 			$createKey->offsetSet('name', $name);
 			$createKey->offsetSet('key', Uuid\Uuid::uuid4());
-			$createKey->offsetSet('state', Types\KeyState::get(Types\KeyState::STATE_ACTIVE));
+			$createKey->offsetSet('state', Types\KeyState::ACTIVE);
 
 			$key = $this->keysManager->create($createKey);
 
@@ -93,9 +93,9 @@ class Create extends Console\Command\Command
 			return self::SUCCESS;
 		} catch (Throwable $ex) {
 			$this->logger->error('Api key could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_API_KEY,
+				'source' => MetadataTypes\Sources\Plugin::API_KEY->value,
 				'type' => 'create-command',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 				'cmd' => $this->getName(),
 			]);
 

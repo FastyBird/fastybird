@@ -1,7 +1,7 @@
 {
   "data": {
     "id": "9f5e5560-72f2-487a-a382-d73d842ba538",
-    "type": "com.fastybird.devices-module/channel/general",
+    "type": "com.fastybird.devices-module/channel/dummy",
     "attributes": {
       "name": "Updated name",
       "comment": "With comment"

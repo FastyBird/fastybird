@@ -3,22 +3,26 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
 
-final class DevicesRepositoryTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class DevicesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -27,19 +31,17 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testFindOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$entity = $repository->find(Uuid\Uuid::fromString('69786d15-fd0c-4d9f-9378-33287c2009fa'));
 
 		self::assertIsObject($entity);
+		self::assertInstanceOf(Tests\Fixtures\Dummy\DummyDeviceDocument::class, $entity);
 		self::assertSame('first-device', $entity->getIdentifier());
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -48,9 +50,6 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -120,7 +119,16 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindDevices();
 		$findQuery->byConnectorId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
-		$findQuery->byType('blank');
+		$findQuery->byType('dummy');
+
+		$entity = $repository->findOneBy($findQuery);
+
+		self::assertIsObject($entity);
+		self::assertSame('first-device', $entity->getIdentifier());
+
+		$findQuery = new Queries\Configuration\FindDevices();
+		$findQuery->byConnectorId(Uuid\Uuid::fromString('17c59dfa-2edd-438e-8c49-faa4e38e5a5e'));
+		$findQuery->byTypes(['dummy', 'unknown']);
 
 		$entity = $repository->findOneBy($findQuery);
 
@@ -129,7 +137,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -138,9 +146,6 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -151,7 +156,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -160,9 +165,6 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByParent(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -170,7 +172,7 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		$parent = $repository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $parent);
+		self::assertInstanceOf(Documents\Devices\Device::class, $parent);
 		self::assertSame('69786d15-fd0c-4d9f-9378-33287c2009fa', $parent->getId()->toString());
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -182,7 +184,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -191,9 +193,6 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByChild(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -201,7 +200,7 @@ final class DevicesRepositoryTest extends DbTestCase
 
 		$child = $repository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $child);
+		self::assertInstanceOf(Documents\Devices\Device::class, $child);
 		self::assertSame('a1036ff8-6ee8-4405-aaed-58bae0814596', $child->getId()->toString());
 
 		$findQuery = new Queries\Configuration\FindDevices();
@@ -213,7 +212,7 @@ final class DevicesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -222,9 +221,6 @@ final class DevicesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllWithChannels(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Devices\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindDevices();

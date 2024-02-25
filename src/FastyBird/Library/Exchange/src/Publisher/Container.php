@@ -43,10 +43,10 @@ class Container implements Publisher
 	}
 
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void
+	): bool
 	{
 		$this->dispatcher?->dispatch(new Events\BeforeMessagePublished($source, $routingKey, $entity));
 
@@ -57,6 +57,8 @@ class Container implements Publisher
 		}
 
 		$this->dispatcher?->dispatch(new Events\AfterMessagePublished($source, $routingKey, $entity));
+
+		return true;
 	}
 
 	public function register(Publisher $publisher): void

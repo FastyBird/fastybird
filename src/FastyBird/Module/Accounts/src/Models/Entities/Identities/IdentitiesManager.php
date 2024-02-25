@@ -36,19 +36,23 @@ class IdentitiesManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Identities\Identity>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Identities\Identity> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Identities\Identity> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Transformer CRUD for handling entities
 	}
 
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Identities\Identity
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Identities\Identity);
 
 		return $entity;
@@ -62,7 +66,7 @@ class IdentitiesManager
 		Utils\ArrayHash $values,
 	): Entities\Identities\Identity
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Identities\Identity);
 
 		return $entity;
@@ -74,7 +78,19 @@ class IdentitiesManager
 	public function delete(Entities\Identities\Identity $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Identities\Identity>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Identities\Identity::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

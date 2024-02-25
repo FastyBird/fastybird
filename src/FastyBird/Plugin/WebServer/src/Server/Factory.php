@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Server;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Middleware;
 use Psr\Log;
@@ -34,15 +34,15 @@ use function str_replace;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Factory
+final readonly class Factory
 {
 
 	public function __construct(
-		private readonly Middleware\Cors $corsMiddleware,
-		private readonly Middleware\StaticFiles $staticFilesMiddleware,
-		private readonly Middleware\Router $routerMiddleware,
-		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
+		private Middleware\Cors $corsMiddleware,
+		private Middleware\StaticFiles $staticFilesMiddleware,
+		private Middleware\Router $routerMiddleware,
+		private EventLoop\LoopInterface $eventLoop,
+		private Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
 	}
@@ -61,9 +61,9 @@ final class Factory
 			$this->logger->error(
 				'An error occurred during handling request. Stopping HTTP server',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 					'type' => 'factory',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -77,7 +77,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tls:', 'https:', $server->getAddress())),
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+						'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 						'type' => 'factory',
 					],
 				);
@@ -86,7 +86,7 @@ final class Factory
 				$this->logger->info(
 					sprintf('Listening on "%s"', str_replace('tcp:', 'http:', $server->getAddress())),
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+						'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 						'type' => 'factory',
 					],
 				);

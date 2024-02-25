@@ -32,9 +32,9 @@
     "source": "https://github.com/FastyBird/ws-server-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "ipub/websockets-wamp": "^1.4",
@@ -95,12 +95,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

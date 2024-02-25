@@ -18,7 +18,7 @@ namespace FastyBird\Library\Metadata\Documents;
 use Ramsey\Uuid;
 
 /**
- * Entity owner trait
+ * Document owner trait
  *
  * @package        FastyBird:MetadataLibrary!
  * @subpackage     Documents

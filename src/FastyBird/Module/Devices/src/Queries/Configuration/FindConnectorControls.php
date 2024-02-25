@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
@@ -25,7 +25,7 @@ use function serialize;
 /**
  * Find connectors controls configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\ConnectorControl
+ * @template T of Documents\Connectors\Controls\Control
  * @extends  QueryObject<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -53,7 +53,7 @@ class FindConnectorControls extends QueryObject
 		$this->filter[] = '.[?(@.name =~ /(?i).*^' . $name . '*$/)]';
 	}
 
-	public function forConnector(MetadataDocuments\DevicesModule\Connector $connector): void
+	public function forConnector(Documents\Connectors\Connector $connector): void
 	{
 		$this->filter[] = '.[?(@.connector =~ /(?i).*^' . $connector->getId()->toString() . '*$/)]';
 	}

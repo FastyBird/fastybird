@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Tuya\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * OpenPulsar message types
  *
@@ -26,49 +23,39 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class OpenPulsarMessageType extends Consistence\Enum\Enum
+enum OpenPulsarMessageType: string
 {
 
-	public const ONLINE = 'online';
+	case ONLINE = 'online';
 
-	public const OFFLINE = 'offline';
+	case OFFLINE = 'offline';
 
-	public const NAME_UPDATE = 'nameUpdate';
+	case NAME_UPDATE = 'nameUpdate';
 
-	public const DP_NAME_UPDATE = 'dpNameUpdate';
+	case DP_NAME_UPDATE = 'dpNameUpdate';
 
-	public const BIND_USER = 'bindUser';
+	case BIND_USER = 'bindUser';
 
-	public const DELETE = 'delete';
+	case DELETE = 'delete';
 
-	public const UPGRADE_STATUS = 'upgradeStatus';
+	case UPGRADE_STATUS = 'upgradeStatus';
 
-	public const OUTDOORS_FENCE_ALARM = 'outdoorsFenceAlarm';
+	case OUTDOORS_FENCE_ALARM = 'outdoorsFenceAlarm';
 
-	public const AUTOMATION_EXTERNAL_ACTION = 'automationExternalAction';
+	case AUTOMATION_EXTERNAL_ACTION = 'automationExternalAction';
 
-	public const SIM_STOP = 'simStop';
+	case SIM_STOP = 'simStop';
 
-	public const SIM_LIMIT_ALARM = 'simLimitAlarm';
+	case SIM_LIMIT_ALARM = 'simLimitAlarm';
 
-	public const TEXT_TO_SPEECH = 'textToSpeech';
+	case TEXT_TO_SPEECH = 'textToSpeech';
 
-	public const RESET = 'reset';
+	case RESET = 'reset';
 
-	public const CUSTOM_QA_CHANGE = 'customQAChange';
+	case CUSTOM_QA_CHANGE = 'customQAChange';
 
-	public const HOTEL_PMS_CUSTOMER_CHECKIN = 'hotelPmsCustomerCheckin';
+	case HOTEL_PMS_CUSTOMER_CHECKIN = 'hotelPmsCustomerCheckin';
 
-	public const HOTEL_PMS_CUSTOMER_CHECKOUT = 'hotelPmsCustomerCheckout';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case HOTEL_PMS_CUSTOMER_CHECKOUT = 'hotelPmsCustomerCheckout';
 
 }

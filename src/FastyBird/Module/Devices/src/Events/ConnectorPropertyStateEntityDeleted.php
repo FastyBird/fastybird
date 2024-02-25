@@ -15,7 +15,8 @@
 
 namespace FastyBird\Module\Devices\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use Ramsey\Uuid;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -30,14 +31,20 @@ class ConnectorPropertyStateEntityDeleted extends EventDispatcher\Event
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\ConnectorDynamicProperty $property,
+		private readonly Uuid\UuidInterface $id,
+		private readonly MetadataTypes\Sources\Source $source,
 	)
 	{
 	}
 
-	public function getProperty(): MetadataDocuments\DevicesModule\ConnectorDynamicProperty
+	public function getProperty(): Uuid\UuidInterface
 	{
-		return $this->property;
+		return $this->id;
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return $this->source;
 	}
 
 }

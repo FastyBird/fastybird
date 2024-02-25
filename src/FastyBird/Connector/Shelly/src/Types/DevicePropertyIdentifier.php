@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use function strval;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 
 /**
  * Device property identifiers
@@ -27,39 +25,29 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	case IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	case STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	case MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	case MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	case FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const DOMAIN = 'domain';
+	case DOMAIN = 'domain';
 
-	public const USERNAME = 'username';
+	case USERNAME = 'username';
 
-	public const PASSWORD = 'password';
+	case PASSWORD = 'password';
 
-	public const AUTH_ENABLED = 'auth_enabled';
+	case AUTH_ENABLED = 'auth_enabled';
 
-	public const GENERATION = 'generation';
+	case GENERATION = 'generation';
 
-	public const STATE_READING_DELAY = 'state_reading_delay';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case STATE_READING_DELAY = 'state_reading_delay';
 
 }

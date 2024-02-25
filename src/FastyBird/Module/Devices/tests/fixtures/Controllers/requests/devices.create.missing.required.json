@@ -1,7 +1,7 @@
 {
   "data": {
     "id": "bbbf5caa-b30e-4558-b83a-699617958cea",
-    "type": "com.fastybird.devices-module/device/blank",
+    "type": "com.fastybird.devices-module/device/dummy",
     "attributes": {
       "comment": null,
       "control": [
@@ -13,7 +13,7 @@
     "relationships": {
       "connector": {
         "data": {
-          "type": "com.fastybird.devices-module/connector/blank",
+          "type": "com.fastybird.devices-module/connector/dummy",
           "id": "17c59dfa-2edd-438e-8c49-faa4e38e5a5e"
         }
       }

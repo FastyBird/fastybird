@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use function sprintf;
 
@@ -49,51 +50,54 @@ final class StoreBridgeEvent implements Queue\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeEvent) {
+		if (!$message instanceof Queue\Messages\StoreBridgeEvent) {
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findDevicePropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($baseTopicProperty === null) {
 			return true;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
+		$findDeviceQuery = new Queries\Configuration\FindBridgeDevices();
+		$findDeviceQuery->byConnectorId($message->getConnector());
 		$findDeviceQuery->byId($baseTopicProperty->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$bridge = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$bridge = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Bridge::class,
+		);
 
 		if ($bridge === null) {
 			return true;
 		}
 
 		$this->logger->info(
-			sprintf('Bridge published event: %s', $entity->getType()),
+			sprintf('Bridge published event: %s', $message->getType()->value),
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
-				'type' => 'bridge-log',
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+				'type' => 'bridge-event',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
-				'device' => [
+				'bridge' => [
 					'id' => $bridge->getId()->toString(),
 				],
 				'data' => [
-					'type' => $entity->getType()->getValue(),
-					'data' => $entity->getData()->toArray(),
+					'type' => $message->getType()->value,
+					'data' => $message->getData()->toArray(),
 				],
 			],
 		);
@@ -101,12 +105,15 @@ final class StoreBridgeEvent implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge event message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-bridge-event-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
+				],
+				'data' => $message->toArray(),
 			],
 		);
 

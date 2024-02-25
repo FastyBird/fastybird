@@ -15,14 +15,17 @@
 
 namespace FastyBird\Connector\NsPanel\Helpers\Devices;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_string;
 
@@ -34,12 +37,12 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice
+final readonly class SubDevice
 {
 
 	public function __construct(
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 	)
 	{
 	}
@@ -48,14 +51,16 @@ final class SubDevice
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getGateway(MetadataDocuments\DevicesModule\Device $device): MetadataDocuments\DevicesModule\Device
+	public function getGateway(Documents\Devices\SubDevice $device): Documents\Devices\Gateway
 	{
 		foreach ($device->getParents() as $parent) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindGatewayDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\Devices\Gateway::TYPE);
 
-			$parent = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$parent = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Gateway::class,
+			);
 
 			if ($parent !== null) {
 				return $parent;
@@ -67,48 +72,54 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getDisplayCategory(MetadataDocuments\DevicesModule\Device $device): Types\Category
+	public function getDisplayCategory(Documents\Devices\SubDevice $device): Types\Category
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::CATEGORY);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Types\Category::get(Types\Category::UNKNOWN);
+			return Types\Category::UNKNOWN;
 		}
 
 		$value = $property->getValue();
 		assert(is_string($value));
 
-		if (!Types\Category::isValidValue($value)) {
-			return Types\Category::get(Types\Category::UNKNOWN);
+		if (Types\Category::tryFrom($value) === null) {
+			return Types\Category::UNKNOWN;
 		}
 
-		return Types\Category::get($property->getValue());
+		return Types\Category::from(MetadataUtilities\Value::toString($property->getValue(), true));
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getManufacturer(MetadataDocuments\DevicesModule\Device $device): string
+	public function getManufacturer(Documents\Devices\SubDevice $device): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -123,18 +134,21 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getModel(MetadataDocuments\DevicesModule\Device $device): string
+	public function getModel(Documents\Devices\SubDevice $device): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

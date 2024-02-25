@@ -4,12 +4,12 @@ namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
 use DateTimeImmutable;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\Tests\Fixtures;
+use FastyBird\Plugin\RedisDb\Tests;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use PHPUnit\Framework\MockObject;
@@ -24,6 +24,7 @@ final class StatesManagerTest extends TestCase
 	 * @param array<Uuid\UuidInterface|array<string, mixed>> $dbData
 	 * @param array<Uuid\UuidInterface|array<string, mixed>> $expected
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
 	 *
@@ -51,7 +52,7 @@ final class StatesManagerTest extends TestCase
 
 		$state = $manager->create($id, Utils\ArrayHash::from($data));
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertSame(Tests\Fixtures\Dummy\DummyState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
@@ -98,8 +99,7 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -112,17 +112,15 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$original = $factory->create(Fixtures\CustomState::class, Utils\Json::encode($originalData));
+		$original = $factory->create(Tests\Fixtures\Dummy\DummyState::class, Utils\Json::encode($originalData));
 
-		$state = $manager->update($original, Utils\ArrayHash::from($data));
+		$state = $manager->update($original->getId(), Utils\ArrayHash::from($data));
 
-		self::assertSame(Fixtures\CustomState::class, $state::class);
+		self::assertIsObject($state);
+		self::assertSame(Tests\Fixtures\Dummy\DummyState::class, $state::class);
 		self::assertEquals($expected, $state->toArray());
 	}
 
-	/**
-	 * @throws Utils\JsonException
-	 */
 	public function testDeleteEntity(): void
 	{
 		$id = Uuid\Uuid::uuid4();
@@ -146,16 +144,11 @@ final class StatesManagerTest extends TestCase
 
 		$manager = $this->createManager($redisClient);
 
-		$original = new Fixtures\CustomState(
-			Uuid\Uuid::fromString($originalData['id']),
-			Utils\Json::encode($originalData),
-		);
-
-		self::assertTrue($manager->delete($original));
+		self::assertTrue($manager->delete(Uuid\Uuid::fromString($originalData['id'])));
 	}
 
 	/**
-	 * @return Models\States\StatesManager<Fixtures\CustomState>
+	 * @return Models\States\StatesManager<Tests\Fixtures\Dummy\DummyState>
 	 */
 	private function createManager(
 		Clients\Client&MockObject\MockObject $redisClient,
@@ -166,8 +159,7 @@ final class StatesManagerTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);
@@ -185,7 +177,12 @@ final class StatesManagerTest extends TestCase
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
-		return new Models\States\StatesManager($redisClient, $factory, $dateTimeFactory, Fixtures\CustomState::class);
+		return new Models\States\StatesManager(
+			$redisClient,
+			$factory,
+			$dateTimeFactory,
+			Tests\Fixtures\Dummy\DummyState::class,
+		);
 	}
 
 	/**
@@ -204,14 +201,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'keyValue',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
@@ -225,14 +222,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => null,
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
 				[
 					'id' => $id->toString(),
 					'value' => null,
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
@@ -253,7 +250,7 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'value',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
@@ -263,14 +260,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
@@ -280,7 +277,7 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'value',
-					'camel_cased' => null,
+					'camelCased' => null,
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => null,
 				],
@@ -291,14 +288,14 @@ final class StatesManagerTest extends TestCase
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
-					'camel_cased' => 'camelCasedValue',
+					'camelCased' => 'camelCasedValue',
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],
 				[
 					'id' => $id->toString(),
 					'value' => 'updated',
-					'camel_cased' => 'camelCasedValue',
+					'camelCased' => 'camelCasedValue',
 					'created_at' => '2020-04-01T12:00:00+00:00',
 					'updated_at' => '2020-04-01T12:00:00+00:00',
 				],

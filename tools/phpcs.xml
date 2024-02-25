@@ -6,7 +6,7 @@
     <arg name="cache" value="./../var/tools/PHP_CodeSniffer/cache.dat"/>
 
     <!-- Import coding-standard -->
-    <rule ref="./vendor/orisai/coding-standard/src/ruleset-8.1.xml">
+    <rule ref="./vendor/orisai/coding-standard/src/ruleset-8.2.xml">
         <exclude name="SlevomatCodingStandard.Commenting.ForbiddenAnnotations.AnnotationForbidden"/>
 
         <exclude name="SlevomatCodingStandard.Commenting.DocCommentSpacing.IncorrectLinesCountBetweenDifferentAnnotationsTypes"/>
@@ -25,13 +25,18 @@
                 <element key="src/FastyBird/Automator/DevicesModule/tests/cases/unit" value="FastyBird\Automator\DevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Automator/DevicesModule/tests/tools" value="FastyBird\Automator\DevicesModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/src" value="FastyBird\Bridge\RedisDbDevicesModule"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbDevicesModule\Tests\Tools"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/src" value="FastyBird\Bridge\RedisDbPluginDevicesModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools"/>
 
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/src" value="FastyBird\Bridge\RedisDbTriggersModule"/>
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Bridge/RedisDbTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbTriggersModule\Tests\Tools"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/src" value="FastyBird\Bridge\RedisDbPluginTriggersModule"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginTriggersModule\Tests\Tools"/>
+
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/src" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/cases/unit" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/fixtures/dummy" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/tools" value="FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/FbMqtt/src" value="FastyBird\Connector\FbMqtt"/>
                 <element key="src/FastyBird/Connector/FbMqtt/tests/cases/unit" value="FastyBird\Connector\FbMqtt\Tests\Cases\Unit"/>
@@ -67,6 +72,7 @@
 
                 <element key="src/FastyBird/Connector/Virtual/src" value="FastyBird\Connector\Virtual"/>
                 <element key="src/FastyBird/Connector/Virtual/tests/cases/unit" value="FastyBird\Connector\Virtual\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Connector/Virtual/tests/fixtures/dummy" value="FastyBird\Connector\Virtual\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Connector/Virtual/tests/tools" value="FastyBird\Connector\Virtual\Tests\Tools"/>
 
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/src" value="FastyBird\Connector\Zigbee2Mqtt"/>
@@ -74,8 +80,8 @@
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/fixtures/dummy" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/tools" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Tools"/>
 
-                <element key="src/FastyBird/Library/Bootstrap/src" value="FastyBird\Library\Bootstrap"/>
-                <element key="src/FastyBird/Library/Bootstrap/tests/cases/unit" value="FastyBird\Library\Bootstrap\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Library/Application/src" value="FastyBird\Library\Application"/>
+                <element key="src/FastyBird/Library/Application/tests/cases/unit" value="FastyBird\Library\Application\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Library\Exchange"/>
                 <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Library\Exchange\Tests\Cases\Unit"/>
@@ -83,6 +89,10 @@
                 <element key="src/FastyBird/Library/Metadata/src" value="FastyBird\Library\Metadata"/>
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
+                <element key="src/FastyBird/Library/Metadata/tests/fixtures/dummy" value="FastyBird\Library\Metadata\Tests\Fixtures\Dummy"/>
+
+                <element key="src/FastyBird/Library/Tools/src" value="FastyBird\Library\Tools"/>
+                <element key="src/FastyBird/Library/Tools/tests/cases/unit" value="FastyBird\Library\Tools\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Module/Accounts/src" value="FastyBird\Module\Accounts"/>
                 <element key="src/FastyBird/Module/Accounts/tests/cases/unit" value="FastyBird\Module\Accounts\Tests\Cases\Unit"/>
@@ -112,10 +122,12 @@
                 <element key="src/FastyBird/Plugin/RabbitMq/src" value="FastyBird\Plugin\RabbitMq"/>
                 <element key="src/FastyBird/Plugin/RabbitMq/tests/cases/unit" value="FastyBird\Plugin\RabbitMq\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/RabbitMq/tests/fixtures" value="FastyBird\Plugin\RabbitMq\Tests\Fixtures"/>
+                <element key="src/FastyBird/Plugin/RabbitMq/tests/fixtures/dummy" value="FastyBird\Plugin\RabbitMq\Tests\Fixtures\Dummy"/>
 
                 <element key="src/FastyBird/Plugin/RedisDb/src" value="FastyBird\Plugin\RedisDb"/>
                 <element key="src/FastyBird/Plugin/RedisDb/tests/cases/unit" value="FastyBird\Plugin\RedisDb\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/RedisDb/tests/fixtures" value="FastyBird\Plugin\RedisDb\Tests\Fixtures"/>
+                <element key="src/FastyBird/Plugin/RedisDb/tests/fixtures/dummy" value="FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy"/>
 
                 <element key="src/FastyBird/Plugin/WebServer/src" value="FastyBird\Plugin\WebServer"/>
                 <element key="src/FastyBird/Plugin/WebServer/tests/cases/unit" value="FastyBird\Plugin\WebServer\Tests\Cases\Unit"/>
@@ -123,10 +135,10 @@
                 <element key="src/FastyBird/Plugin/WsServer/src" value="FastyBird\Plugin\WsServer"/>
                 <element key="src/FastyBird/Plugin/WsServer/tests/cases/unit" value="FastyBird\Plugin\WsServer\Tests\Cases\Unit"/>
 
-                <element key="src/FastyBird/Addon/ThermostatDevice/src" value="FastyBird\Addon\ThermostatDevice"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/cases/unit" value="FastyBird\Addon\ThermostatDevice\Tests\Cases\Unit"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/fixtures/dummy" value="FastyBird\Addon\ThermostatDevice\Tests\Fixtures\Dummy"/>
-                <element key="src/FastyBird/Addon/ThermostatDevice/tests/tools" value="FastyBird\Addon\ThermostatDevice\Tests\Tools"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/src" value="FastyBird\Addon\VirtualThermostat"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/cases/unit" value="FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Addon/VirtualThermostat/tests/tools" value="FastyBird\Addon\VirtualThermostat\Tests\Tools"/>
             </property>
         </properties>
     </rule>
@@ -139,30 +151,8 @@
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
-        <!--Bridges -->
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ChannelPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ConnectorPropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/ConnectorPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/DevicePropertiesManager\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Bridge/RedisDbDevicesModule/src/Models/DevicePropertiesRepository\.php</exclude-pattern>
-
-        <!--Connectors -->
-        <exclude-pattern>src/FastyBird/Connector/HomeKit/src/Controllers/CharacteristicsController\.php</exclude-pattern>
-
         <!--Modules -->
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Channels/Properties/Property\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Devices/Properties/Property\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Entities/Property\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/ChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/DevicePropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IChannelPropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Models/States/IDevicePropertiesRepository\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityCreated\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityUpdated\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Events/StateEntityDeleted\.php</exclude-pattern>
         <exclude-pattern>src/FastyBird/Module/Devices/src/Subscribers/StateEntities\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Utilities/ChannelPropertiesStates\.php</exclude-pattern>
-        <exclude-pattern>src/FastyBird/Module/Devices/src/Utilities/DevicePropertiesStates\.php</exclude-pattern>
     </rule>
 </ruleset>

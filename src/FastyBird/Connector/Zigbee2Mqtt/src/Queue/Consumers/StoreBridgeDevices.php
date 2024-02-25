@@ -23,14 +23,17 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function assert;
 use function implode;
@@ -59,7 +62,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		protected readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		protected readonly DevicesUtilities\Database $databaseHelper,
+		protected readonly ApplicationHelpers\Database $databaseHelper,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
@@ -68,21 +71,23 @@ final class StoreBridgeDevices implements Queue\Consumer
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreBridgeDevices) {
+		if (!$message instanceof Queue\Messages\StoreBridgeDevices) {
 			return false;
 		}
 
-		$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceVariableProperties();
+		$findDevicePropertyQuery = new Queries\Entities\FindDeviceVariableProperties();
 		$findDevicePropertyQuery->byIdentifier(Zigbee2Mqtt\Types\DevicePropertyIdentifier::BASE_TOPIC);
-		$findDevicePropertyQuery->byValue($entity->getBaseTopic());
+		$findDevicePropertyQuery->byValue($message->getBaseTopic());
 
 		$baseTopicProperty = $this->devicesPropertiesRepository->findOneBy(
 			$findDevicePropertyQuery,
@@ -102,13 +107,13 @@ final class StoreBridgeDevices implements Queue\Consumer
 			return true;
 		}
 
-		foreach ($entity->getDevices() as $deviceDescription) {
+		foreach ($message->getDevices() as $deviceDescription) {
 			if ($bridge->getIdentifier() === $deviceDescription->getIeeeAddress()) {
 				$device = $bridge;
 
 			} else {
 				$findDeviceQuery = new Queries\Entities\FindSubDevices();
-				$findDeviceQuery->byConnectorId($entity->getConnector());
+				$findDeviceQuery->byConnectorId($message->getConnector());
 				$findDeviceQuery->forParent($bridge);
 				$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
 
@@ -117,22 +122,22 @@ final class StoreBridgeDevices implements Queue\Consumer
 
 			if ($device === null) {
 				$findDeviceQuery = new Queries\Entities\FindDevices();
-				$findDeviceQuery->byConnectorId($entity->getConnector());
+				$findDeviceQuery->byConnectorId($message->getConnector());
 				$findDeviceQuery->byIdentifier($deviceDescription->getIeeeAddress());
 
 				if (
 					$this->devicesRepository->getResultSet(
 						$findDeviceQuery,
-						Entities\Zigbee2MqttDevice::class,
+						Entities\Devices\Device::class,
 					)->count() !== 0
 				) {
 					$this->logger->error(
 						'There is already registered device with same ieee address',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $message->getConnector()->toString(),
 							],
 							'bridge' => [
 								'id' => $bridge->getId()->toString(),
@@ -148,18 +153,18 @@ final class StoreBridgeDevices implements Queue\Consumer
 				}
 
 				$connector = $this->connectorsRepository->find(
-					$entity->getConnector(),
-					Entities\Zigbee2MqttConnector::class,
+					$message->getConnector(),
+					Entities\Connectors\Connector::class,
 				);
 
 				if ($connector === null) {
 					$this->logger->error(
 						'Connector could not be loaded',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
-								'id' => $entity->getConnector()->toString(),
+								'id' => $message->getConnector()->toString(),
 							],
 							'bridge' => [
 								'id' => $bridge->getId()->toString(),
@@ -193,7 +198,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$this->logger->info(
 					'Sub-device was created',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -212,51 +217,51 @@ final class StoreBridgeDevices implements Queue\Consumer
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getFriendlyName(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::FRIENDLY_NAME,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::FRIENDLY_NAME->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getIeeeAddress(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::IEEE_ADDRESS,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::IEEE_ADDRESS->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isDisabled(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::DISABLED,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::DISABLED->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->isSupported(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
+				MetadataTypes\DataType::BOOLEAN,
 				Types\DevicePropertyIdentifier::SUPPORTED,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SUPPORTED->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
-				$deviceDescription->getType()->getValue(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				$deviceDescription->getType()->value,
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::TYPE,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::TYPE->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getModel(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MODEL,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 			);
 			$this->setDeviceProperty(
 				$device->getId(),
 				$deviceDescription->getDefinition()?->getVendor(),
-				MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+				MetadataTypes\DataType::STRING,
 				Types\DevicePropertyIdentifier::MANUFACTURER,
-				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER),
+				DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MANUFACTURER->value),
 			);
 
 			if ($device instanceof Entities\Devices\SubDevice) {
@@ -267,12 +272,15 @@ final class StoreBridgeDevices implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed bridge devices list message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-bridge-devices-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
+				],
+				'data' => $message->toArray(),
 			],
 		);
 
@@ -280,13 +288,17 @@ final class StoreBridgeDevices implements Queue\Consumer
 	}
 
 	/**
-	 * @param array<Entities\Messages\Exposes\Type> $exposes
+	 * @param array<Queue\Messages\Exposes\Type> $exposes
 	 * @param array<string> $identifiers
 	 *
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function processExposes(
 		Entities\Devices\SubDevice $device,
@@ -295,11 +307,11 @@ final class StoreBridgeDevices implements Queue\Consumer
 	): void
 	{
 		foreach ($exposes as $expose) {
-			if ($expose instanceof Entities\Messages\Exposes\ListType) {
+			if ($expose instanceof Queue\Messages\Exposes\ListType) {
 				$this->logger->warning(
 					'List type expose is not supported',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'store-bridge-devices-message-consumer',
 						'connector' => [
 							'id' => $device->getConnector()->getId()->toString(),
@@ -319,29 +331,29 @@ final class StoreBridgeDevices implements Queue\Consumer
 			}
 
 			if (
-				$expose instanceof Entities\Messages\Exposes\ClimateType
-				|| $expose instanceof Entities\Messages\Exposes\CoverType
-				|| $expose instanceof Entities\Messages\Exposes\FanType
-				|| $expose instanceof Entities\Messages\Exposes\LightType
-				|| $expose instanceof Entities\Messages\Exposes\LockType
-				|| $expose instanceof Entities\Messages\Exposes\SwitchType
+				$expose instanceof Queue\Messages\Exposes\ClimateType
+				|| $expose instanceof Queue\Messages\Exposes\CoverType
+				|| $expose instanceof Queue\Messages\Exposes\FanType
+				|| $expose instanceof Queue\Messages\Exposes\LightType
+				|| $expose instanceof Queue\Messages\Exposes\LockType
+				|| $expose instanceof Queue\Messages\Exposes\SwitchType
 			) {
 				$this->processExposes(
 					$device,
 					$expose->getFeatures(),
-					array_merge($identifiers, [$expose->getType()->getValue()]),
+					array_merge($identifiers, [$expose->getType()->value]),
 				);
 
 			} elseif (
-				$expose instanceof Entities\Messages\Exposes\BinaryType
-				|| $expose instanceof Entities\Messages\Exposes\EnumType
-				|| $expose instanceof Entities\Messages\Exposes\NumericType
-				|| $expose instanceof Entities\Messages\Exposes\TextType
-				|| $expose instanceof Entities\Messages\Exposes\CompositeType
+				$expose instanceof Queue\Messages\Exposes\BinaryType
+				|| $expose instanceof Queue\Messages\Exposes\EnumType
+				|| $expose instanceof Queue\Messages\Exposes\NumericType
+				|| $expose instanceof Queue\Messages\Exposes\TextType
+				|| $expose instanceof Queue\Messages\Exposes\CompositeType
 			) {
 				$channelIdentifier = implode(
 					'_',
-					array_merge($identifiers, [$expose->getType()->getValue(), $expose->getProperty()]),
+					array_merge($identifiers, [$expose->getType()->value, $expose->getProperty()]),
 				);
 
 				if (
@@ -351,7 +363,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->error(
 						'Channel identifier could not be generated',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),
@@ -376,7 +388,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$device,
 				);
 
-				if ($expose instanceof Entities\Messages\Exposes\CompositeType) {
+				if ($expose instanceof Queue\Messages\Exposes\CompositeType) {
 					foreach ($expose->getFeatures() as $feature) {
 						$this->setChannelProperty(
 							DevicesEntities\Channels\Properties\Dynamic::class,
@@ -388,7 +400,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 							$feature->getFormat(),
 							$feature->getUnit(),
 							null,
-							$feature instanceof Entities\Messages\Exposes\NumericType ? $feature->getValueStep() : null,
+							$feature instanceof Queue\Messages\Exposes\NumericType ? $feature->getValueStep() : null,
 							$feature->isSettable(),
 							$feature->isQueryable(),
 						);
@@ -404,7 +416,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 						$expose->getFormat(),
 						$expose->getUnit(),
 						null,
-						$expose instanceof Entities\Messages\Exposes\NumericType ? $expose->getValueStep() : null,
+						$expose instanceof Queue\Messages\Exposes\NumericType ? $expose->getValueStep() : null,
 						$expose->isSettable(),
 						$expose->isQueryable(),
 					);
@@ -414,9 +426,9 @@ final class StoreBridgeDevices implements Queue\Consumer
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 */
 	private function createChannel(
 		string $identifier,
@@ -430,11 +442,11 @@ final class StoreBridgeDevices implements Queue\Consumer
 				$findChannelQuery->byIdentifier($identifier);
 				$findChannelQuery->forDevice($device);
 
-				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Zigbee2MqttChannel::class);
+				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 				if ($channel === null) {
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\Zigbee2MqttChannel::class,
+						'entity' => Entities\Channels\Channel::class,
 						'device' => $device,
 						'identifier' => $identifier,
 						'name' => $name,
@@ -443,7 +455,7 @@ final class StoreBridgeDevices implements Queue\Consumer
 					$this->logger->debug(
 						'Device channel was created',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'store-bridge-devices-message-consumer',
 							'connector' => [
 								'id' => $device->getConnector()->getId()->toString(),

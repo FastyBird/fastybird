@@ -15,13 +15,16 @@
 
 namespace FastyBird\Connector\Shelly\Helpers;
 
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
+use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_string;
 
@@ -33,36 +36,39 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Connector
+final readonly class Connector
 {
 
 	public function __construct(
-		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
+		private DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getClientMode(MetadataDocuments\DevicesModule\Connector $connector): Types\ClientMode
+	public function getClientMode(Documents\Connectors\Connector $connector): Types\ClientMode
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLIENT_MODE);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\ClientMode::isValidValue($value)) {
-			return Types\ClientMode::get($value);
+		if (is_string($value) && Types\ClientMode::tryFrom($value) !== null) {
+			return Types\ClientMode::from($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector mode is not configured');
@@ -70,18 +76,23 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getCloudServerAddress(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getCloudServerAddress(
+		Documents\Connectors\Connector $connector,
+	): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_SERVER);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -96,18 +107,21 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getCloudAuthKey(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getCloudAuthKey(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::CLOUD_AUTH_KEY);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

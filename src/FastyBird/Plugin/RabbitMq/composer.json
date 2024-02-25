@@ -33,16 +33,16 @@
     "source": "https://github.com/FastyBird/rabbitmq-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "bunny/bunny": "dev-promise-v3",
     "cweagans/composer-patches": "^1.7",
-    "evenement/evenement": "^3.0",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
+    "orisai/object-mapper": "^0.1",
     "psr/log": "^3.0"
   },
   "require-dev": {
@@ -70,7 +70,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Plugin\\RabbitMq\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Plugin\\RabbitMq\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {
@@ -93,12 +94,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

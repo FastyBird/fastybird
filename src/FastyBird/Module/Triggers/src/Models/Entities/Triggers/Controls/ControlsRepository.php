@@ -17,10 +17,10 @@ namespace FastyBird\Module\Triggers\Models\Entities\Triggers\Controls;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Triggers\Entities;
-use FastyBird\Module\Triggers\Exceptions;
 use FastyBird\Module\Triggers\Queries;
-use FastyBird\Module\Triggers\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use function is_array;
@@ -42,14 +42,14 @@ final class ControlsRepository
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindTriggerControls $queryObject,
@@ -63,7 +63,7 @@ final class ControlsRepository
 	/**
 	 * @return array<Entities\Triggers\Controls\Control>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findAllBy(Queries\Entities\FindTriggerControls $queryObject): array
 	{
@@ -87,7 +87,7 @@ final class ControlsRepository
 	/**
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Triggers\Controls\Control>
 	 *
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\Entities\FindTriggerControls $queryObject,

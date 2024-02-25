@@ -15,23 +15,23 @@
 
 namespace FastyBird\Module\Devices\Subscribers;
 
+use DateTimeInterface;
 use Exception;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
-use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
-use Nette\Utils;
+use Nette\Caching;
+use React\Promise;
 use Symfony\Component\EventDispatcher;
-use function array_merge;
 
 /**
  * Devices state entities events
@@ -46,14 +46,20 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	use Nette\SmartObject;
 
+	private const ACTION_CREATED = 'created';
+
+	private const ACTION_UPDATED = 'updated';
+
+	private const ACTION_DELETED = 'deleted';
+
+	private bool $useAsync = false;
+
 	public function __construct(
-		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
-		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly Caching\Cache $stateCache,
+		private readonly Caching\Cache $stateStorageCache,
 		private readonly ExchangePublisher\Publisher $publisher,
+		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
 	{
 	}
@@ -63,26 +69,25 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return [
 			Events\ConnectorPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ConnectorPropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\ConnectorPropertyStateEntityDeleted::class => 'stateDeleted',
 			Events\DevicePropertyStateEntityCreated::class => 'stateCreated',
 			Events\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\DevicePropertyStateEntityDeleted::class => 'stateDeleted',
 			Events\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
+
+			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
+			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
+			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -90,19 +95,26 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityCreated|Events\DevicePropertyStateEntityCreated|Events\ChannelPropertyStateEntityCreated $event,
 	): void
 	{
-		$this->processEntity($event->getProperty());
+		$this->cleanCache($event->getProperty());
+
+		$this->publishEntity(
+			$this->useAsync,
+			$event->getSource(),
+			$event->getProperty(),
+			$event->getRead(),
+			$event->getGet(),
+			self::ACTION_CREATED,
+		);
 	}
 
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -110,152 +122,189 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$this->processEntity($event->getProperty());
+		$this->cleanCache($event->getProperty());
+
+		$this->publishEntity(
+			$this->useAsync,
+			$event->getSource(),
+			$event->getProperty(),
+			$event->getRead(),
+			$event->getGet(),
+			self::ACTION_UPDATED,
+		);
 	}
 
-	/**
-	 * @throws Exception
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 */
-	public function stateDeleted(
-		Events\ConnectorPropertyStateEntityDeleted|Events\DevicePropertyStateEntityDeleted|Events\ChannelPropertyStateEntityDeleted $event,
+	public function enableAsync(): void
+	{
+		$this->useAsync = true;
+	}
+
+	public function disableAsync(): void
+	{
+		$this->useAsync = false;
+	}
+
+	private function cleanCache(
+		Documents\Connectors\Properties\Property|Documents\Devices\Properties\Property|Documents\Channels\Properties\Property $document,
 	): void
 	{
-		$this->publishEntity($event->getProperty());
-
-		foreach ($this->findChildren($event->getProperty()) as $child) {
-			$this->publishEntity($child);
-		}
+		$this->stateCache->clean([
+			Caching\Cache::Tags => [$document->getId()->toString()],
+		]);
+		$this->stateStorageCache->clean([
+			Caching\Cache::Tags => [$document->getId()->toString()],
+		]);
 	}
 
 	/**
+	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
+	 *
 	 * @throws Exception
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 */
-	private function processEntity(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-	): void
-	{
-		if (
-			$property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty
-		) {
-			$state = $this->connectorPropertiesStates->readValue($property);
-
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$state = $this->devicePropertiesStates->readValue($property);
-
-		} else {
-			$state = $this->channelPropertiesStates->readValue($property);
-		}
-
-		$this->publishEntity($property, $state);
-
-		foreach ($this->findChildren($property) as $child) {
-			$state = $child instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
-				? $this->devicePropertiesStates->readValue($child)
-				: $this->channelPropertiesStates->readValue($child);
-
-			$this->publishEntity($child, $state);
-		}
-	}
-
-	/**
-	 * @throws Exception
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Logic
 	 * @throws MetadataExceptions\MalformedInput
-	 * @throws Utils\JsonException
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishEntity(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $state = null,
-	): void
+		bool $async,
+		MetadataTypes\Sources\Source $source,
+		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,
+		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
+		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState = null,
+		string $action,
+	): Promise\PromiseInterface|bool
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\ConnectorDynamicProperty) {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
+		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
+
+			$document = $this->documentFactory->create(
+				Documents\States\Connectors\Properties\Property::class,
+				[
+					'id' => $property->getId()->toString(),
+					'connector' => $property->getConnector()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 
 		} elseif (
-			$property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty
-			|| $property instanceof MetadataDocuments\DevicesModule\DeviceMappedProperty
+			$property instanceof Documents\Devices\Properties\Dynamic
+			|| $property instanceof Documents\Devices\Properties\Mapped
 		) {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
+
+			$document = $this->documentFactory->create(
+				Documents\States\Devices\Properties\Property::class,
+				[
+					'id' => $property->getId()->toString(),
+					'device' => $property->getDevice()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 
 		} else {
-			$routingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
+			switch ($action) {
+				case self::ACTION_CREATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_UPDATED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY;
+
+					break;
+				case self::ACTION_DELETED:
+					$routingKey = Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_DELETED_ROUTING_KEY;
+
+					break;
+				default:
+					return $async
+						? Promise\reject(
+							new Exceptions\InvalidArgument('Provided publish action is not supported'),
+						)
+						: false;
+			}
+
+			$document = $this->documentFactory->create(
+				Documents\States\Channels\Properties\Property::class,
+				[
+					'id' => $property->getId()->toString(),
+					'channel' => $property->getChannel()->toString(),
+					'read' => $readState->toArray(),
+					'get' => $getState?->toArray(),
+					'valid' => $readState->isValid(),
+					'pending' => $readState->getPending() instanceof DateTimeInterface
+						? $readState->getPending()->format(DateTimeInterface::ATOM)
+						: $readState->getPending(),
+					'created_at' => $readState->getCreatedAt()?->format(DateTimeInterface::ATOM),
+					'updated_at' => $readState->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+				],
 			);
 		}
 
-		$this->publisher->publish(
-			MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES),
+		return $this->getPublisher($async)->publish(
+			$source,
 			$routingKey,
-			$this->entityFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
-				$routingKey,
-			),
+			$document,
 		);
 	}
 
-	/**
-	 * @return array<MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty>
-	 *
-	 * @throws Exceptions\InvalidState
-	 */
-	private function findChildren(
-		MetadataDocuments\DevicesModule\ConnectorDynamicProperty|MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-	): array
+	private function getPublisher(bool $async): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
 	{
-		if ($property instanceof MetadataDocuments\DevicesModule\DeviceDynamicProperty) {
-			$findDevicePropertiesQuery = new Queries\Configuration\FindDeviceMappedProperties();
-			$findDevicePropertiesQuery->forParent($property);
-
-			return $this->devicePropertiesConfigurationRepository->findAllBy(
-				$findDevicePropertiesQuery,
-				MetadataDocuments\DevicesModule\DeviceMappedProperty::class,
-			);
-		} elseif ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
-			$findDevicePropertiesQuery = new Queries\Configuration\FindChannelMappedProperties();
-			$findDevicePropertiesQuery->forParent($property);
-
-			return $this->channelPropertiesConfigurationRepository->findAllBy(
-				$findDevicePropertiesQuery,
-				MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
-			);
-		}
-
-		return [];
+		return $async ? $this->asyncPublisher : $this->publisher;
 	}
 
 }

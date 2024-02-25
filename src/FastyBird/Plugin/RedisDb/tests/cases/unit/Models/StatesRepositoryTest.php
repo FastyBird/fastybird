@@ -2,7 +2,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\Models;
 
-use FastyBird\Library\Bootstrap\ObjectMapper as BootstrapObjectMapper;
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\Models;
@@ -17,7 +17,6 @@ final class StatesRepositoryTest extends TestCase
 {
 
 	/**
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
 	 */
@@ -34,7 +33,7 @@ final class StatesRepositoryTest extends TestCase
 
 		$repository = $this->createRepository($redisClient);
 
-		$state = $repository->findOne($id);
+		$state = $repository->find($id);
 
 		self::assertIsObject($state, States\State::class);
 	}
@@ -79,8 +78,7 @@ final class StatesRepositoryTest extends TestCase
 		$injectorManager = new ObjectMapper\Processing\DefaultDependencyInjectorManager();
 		$objectCreator = new ObjectMapper\Processing\ObjectCreator($injectorManager);
 		$ruleManager = new ObjectMapper\Rules\DefaultRuleManager();
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\UuidRule());
-		$ruleManager->addRule(new BootstrapObjectMapper\Rules\ConsistenceEnumRule());
+		$ruleManager->addRule(new ApplicationObjectMapper\Rules\UuidRule());
 		$resolverFactory = new ObjectMapper\Meta\MetaResolverFactory($ruleManager, $objectCreator);
 		$cache = new ObjectMapper\Meta\Cache\ArrayMetaCache();
 		$metaLoader = new ObjectMapper\Meta\MetaLoader($cache, $sourceManager, $resolverFactory);

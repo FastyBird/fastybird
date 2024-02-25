@@ -15,10 +15,10 @@
 
 namespace FastyBird\Plugin\CouchDb\Models\States;
 
-use Consistence;
+use BackedEnum;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Events;
@@ -91,12 +91,12 @@ class StatesManager
 
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -124,12 +124,12 @@ class StatesManager
 			return $state;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be updated', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -169,12 +169,12 @@ class StatesManager
 			return null;
 		} catch (Throwable $ex) {
 			$this->logger->error('State could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id,
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('Document could not found.', $ex->getCode(), $ex);
@@ -219,8 +219,8 @@ class StatesManager
 							$value = $value->format(DateTimeInterface::ATOM);
 						} elseif ($value instanceof Utils\ArrayHash) {
 							$value = (array) $value;
-						} elseif ($value instanceof Consistence\Enum\Enum) {
-							$value = $value->getValue();
+						} elseif ($value instanceof BackedEnum) {
+							$value = $value->value;
 						} elseif (is_object($value)) {
 							$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
 						}
@@ -248,12 +248,12 @@ class StatesManager
 			return $doc;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document key could not be created', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be created', $ex->getCode(), $ex);
@@ -292,8 +292,8 @@ class StatesManager
 					} elseif ($value instanceof Utils\ArrayHash) {
 						$value = (array) $value;
 
-					} elseif ($value instanceof Consistence\Enum\Enum) {
-						$value = $value->getValue();
+					} elseif ($value instanceof BackedEnum) {
+						$value = $value->value;
 
 					} elseif (is_object($value)) {
 						$value = method_exists($value, '__toString') ? $value->__toString() : serialize($value);
@@ -337,12 +337,12 @@ class StatesManager
 			}
 
 			$this->logger->error('Document key could not be updated', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -350,12 +350,12 @@ class StatesManager
 			throw $ex;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document key could not be updated', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $state->getId()->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 
 			throw new Exceptions\InvalidState('State could not be updated', $ex->getCode(), $ex);
@@ -377,12 +377,12 @@ class StatesManager
 			return true;
 		} catch (Throwable $ex) {
 			$this->logger->error('Document could not be deleted', [
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_COUCHDB,
+				'source' => MetadataTypes\Sources\Plugin::COUCHDB->value,
 				'type' => 'states-manager',
 				'document' => [
 					'id' => $id->toString(),
 				],
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
+				'exception' => ApplicationHelpers\Logger::buildException($ex),
 			]);
 		}
 

@@ -18,17 +18,18 @@ namespace FastyBird\Connector\FbMqtt\Clients;
 use BinSoul\Net\Mqtt;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\API;
-use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queue;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use InvalidArgumentException;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function explode;
 use function sprintf;
@@ -61,11 +62,11 @@ final class FbMqttV1 implements Client
 	private const NEW_CLIENT_MESSAGE_PAYLOAD = 'New client connected from';
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly API\ConnectionManager $connectionManager,
 		private readonly FbMqtt\Logger $logger,
 		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
@@ -75,36 +76,45 @@ final class FbMqttV1 implements Client
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
 		$client = $this->connectionManager->getConnection($this->connector);
 
-		$client->on('connect', [$this, 'onConnect']);
-		$client->on('message', [$this, 'onMessage']);
+		$client->onConnect[] = function (Mqtt\Connection $connection): void {
+			$this->onConnect($connection);
+		};
+		$client->onMessage[] = function (Mqtt\Message $message): void {
+			$this->onMessage($message);
+		};
 
 		$client->connect();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
 		$client = $this->connectionManager->getConnection($this->connector);
 
 		$client->disconnect();
-
-		$client->removeListener('connect', [$this, 'onConnect']);
-		$client->removeListener('message', [$this, 'onMessage']);
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onConnect(Mqtt\Connection $connection): void
 	{
@@ -119,7 +129,7 @@ final class FbMqttV1 implements Client
 					$this->logger->info(
 						sprintf('Subscribed to: %s', $subscription->getFilter()),
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+							'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 							'type' => 'fb-mqtt-v1-client',
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
@@ -131,9 +141,9 @@ final class FbMqttV1 implements Client
 					$this->logger->error(
 						$ex->getMessage(),
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+							'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 							'type' => 'fb-mqtt-v1-client',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -155,7 +165,7 @@ final class FbMqttV1 implements Client
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -167,9 +177,9 @@ final class FbMqttV1 implements Client
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -208,7 +218,7 @@ final class FbMqttV1 implements Client
 						$this->logger->notice(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -239,8 +249,8 @@ final class FbMqttV1 implements Client
 							// Check for correct data
 							if ($username !== null && $deviceId !== null && $ipAddress !== null) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\DeviceProperty::class,
+									$this->messageBuilder->create(
+										Queue\Messages\DeviceProperty::class,
 										[
 											'connector' => $this->connector->getId(),
 											'device' => $deviceId,
@@ -259,7 +269,7 @@ final class FbMqttV1 implements Client
 						$this->logger->error(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -274,7 +284,7 @@ final class FbMqttV1 implements Client
 						$this->logger->info(
 							$payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -287,7 +297,7 @@ final class FbMqttV1 implements Client
 						$this->logger->debug(
 							$param3 . ': ' . $payload,
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+								'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 								'type' => 'fb-mqtt-v1-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -314,8 +324,8 @@ final class FbMqttV1 implements Client
 
 			try {
 				$this->queue->append(
-					$this->entityHelper->create(
-						Entities\Messages\DeviceProperty::class,
+					$this->messageBuilder->create(
+						Queue\Messages\DeviceProperty::class,
 						API\V1Parser::parse(
 							$this->connector->getId(),
 							$message->getTopic(),
@@ -328,9 +338,9 @@ final class FbMqttV1 implements Client
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+						'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 						'type' => 'fb-mqtt-v1-client',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],

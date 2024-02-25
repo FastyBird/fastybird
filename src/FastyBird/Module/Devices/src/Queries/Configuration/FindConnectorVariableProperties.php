@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
+use FastyBird\Module\Devices\Types;
 
 /**
  * Find connector variable properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\ConnectorVariableProperty
+ * @template T of Documents\Connectors\Properties\Variable
  * @extends  FindConnectorProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -35,7 +35,7 @@ class FindConnectorVariableProperties extends FindConnectorProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::VARIABLE->value . '")]';
 	}
 
 	public function byValue(string $value): void

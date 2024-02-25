@@ -26,9 +26,9 @@ use Ramsey\Uuid;
  *
  * @extends DoctrineOrmQuery\QueryObject<Entities\Notifications\Notification>
  *
- * @package          FastyBird:TriggersModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:TriggersModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindNotifications extends DoctrineOrmQuery\QueryObject
 {

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
@@ -79,9 +79,9 @@ class HttpServer extends Console\Command\Command
 	): int
 	{
 		$this->logger->info(
-			'Launching HTTP Server',
+			'Starting HTTP Server',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+				'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 				'type' => 'server-command',
 			],
 		);
@@ -117,28 +117,14 @@ class HttpServer extends Console\Command\Command
 
 			$this->eventLoop->run();
 
-		} catch (Exceptions\Terminate $ex) {
-			// Log error action reason
-			$this->logger->error(
-				'HTTP server was forced to close',
-				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
-					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-					'cmd' => $this->getName(),
-				],
-			);
-
-			$this->eventLoop->stop();
-
 		} catch (Throwable $ex) {
 			// Log error action reason
 			$this->logger->error(
 				'An unhandled error occurred. Stopping HTTP server',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WEB_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

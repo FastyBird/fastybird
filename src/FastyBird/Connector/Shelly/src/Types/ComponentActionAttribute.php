@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Generation 2 devices component action attribute
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ComponentActionAttribute extends Consistence\Enum\Enum
+enum ComponentActionAttribute: string
 {
 
-	public const ON = 'on';
+	case ON = 'on';
 
-	public const POSITION = 'pos';
+	case POSITION = 'pos';
 
-	public const BRIGHTNESS = 'brightness';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case BRIGHTNESS = 'brightness';
 
 }

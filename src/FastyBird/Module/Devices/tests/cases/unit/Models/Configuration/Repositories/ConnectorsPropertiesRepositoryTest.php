@@ -3,22 +3,26 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
-use FastyBird\Module\Devices\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Devices\Tests;
 use Nette;
 use Ramsey\Uuid;
 use RuntimeException;
 
-final class ConnectorsPropertiesRepositoryTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class ConnectorsPropertiesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -27,9 +31,6 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 	 */
 	public function testReadOne(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
@@ -82,7 +83,7 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -91,9 +92,6 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAll(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
@@ -104,31 +102,25 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, Documents\Connectors\Properties\Dynamic::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorProperties();
 
-		$entities = $repository->findAllBy(
-			$findQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
-		);
+		$entities = $repository->findAllBy($findQuery, Documents\Connectors\Properties\Variable::class);
 
 		self::assertCount(2, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 
-		$entities = $repository->findAllBy($findQuery, MetadataDocuments\DevicesModule\ConnectorDynamicProperty::class);
+		$entities = $repository->findAllBy($findQuery, Documents\Connectors\Properties\Dynamic::class);
 
 		self::assertCount(0, $entities);
 
 		$findQuery = new Queries\Configuration\FindConnectorVariableProperties();
 
-		$entities = $repository->findAllBy(
-			$findQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
-		);
+		$entities = $repository->findAllBy($findQuery, Documents\Connectors\Properties\Variable::class);
 
 		self::assertCount(2, $entities);
 
@@ -148,7 +140,7 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
@@ -157,9 +149,6 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 	 */
 	public function testReadAllByConnector(): void
 	{
-		$builder = $this->getContainer()->getByType(Models\Configuration\Builder::class);
-		$builder->clean();
-
 		$devicesRepository = $this->getContainer()->getByType(Models\Configuration\Connectors\Repository::class);
 
 		$findQuery = new Queries\Configuration\FindConnectors();
@@ -167,8 +156,8 @@ final class ConnectorsPropertiesRepositoryTest extends DbTestCase
 
 		$connector = $devicesRepository->findOneBy($findQuery);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
-		self::assertSame('blank', $connector->getIdentifier());
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
+		self::assertSame('generic', $connector->getIdentifier());
 
 		$repository = $this->getContainer()->getByType(Models\Configuration\Connectors\Properties\Repository::class);
 

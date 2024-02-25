@@ -1,7 +1,7 @@
 {
   "data" : {
     "id" : "f333fc7a-6e23-4b2f-808d-ed35105b8430",
-    "type" : "com.fastybird.triggers-module/condition/time",
+    "type" : "com.fastybird.date-time-automator/condition/time",
     "attributes" : {
       "days" : [
         1,

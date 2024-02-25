@@ -15,15 +15,14 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 
-use Contributte\Cache;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use Nette\Caching;
 use Ramsey\Uuid;
-use stdClass;
 use Throwable;
 use function array_filter;
 use function array_map;
@@ -42,16 +41,16 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
-		Models\Configuration\Builder $builder,
-		Cache\CacheFactory $cacheFactory,
-		private readonly MetadataDocuments\DocumentFactory $entityFactory,
+		private readonly Models\Configuration\Builder $builder,
+		private readonly Caching\Cache $cache,
+		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
-		parent::__construct($builder, $cacheFactory);
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param class-string<T> $type
 	 *
@@ -61,8 +60,8 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+		string $type = Documents\Channels\Properties\Property::class,
+	): Documents\Channels\Properties\Property|null
 	{
 		$queryObject = new Queries\Configuration\FindChannelProperties();
 		$queryObject->byId($id);
@@ -77,7 +76,7 @@ final class Repository extends Models\Configuration\Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -88,27 +87,21 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findOneBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
-	): MetadataDocuments\DevicesModule\ChannelProperty|null
+		string $type = Documents\Channels\Properties\Property::class,
+	): Documents\Channels\Properties\Property|null
 	{
 		try {
+			/** @phpstan-var T|false $document */
 			$document = $this->cache->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): MetadataDocuments\DevicesModule\ChannelProperty|false {
+				function (&$dependencies) use ($queryObject, $type): Documents\Channels\Properties\Property|false {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CHANNELS_PROPERTIES);
 
-					if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
-						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
-						);
-
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type == "' . $metadata->getDiscriminatorValue() . '")]');
 					}
 
 					$result = $queryObject->fetch($space);
@@ -119,14 +112,18 @@ final class Repository extends Models\Configuration\Repository
 
 					foreach (
 						[
-							MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-							MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
-							MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+							Documents\Channels\Properties\Dynamic::class,
+							Documents\Channels\Properties\Variable::class,
+							Documents\Channels\Properties\Mapped::class,
 						] as $class
 					) {
 						try {
-							$document = $this->entityFactory->create($class, $result[0]);
+							$document = $this->documentFactory->create($class, $result[0]);
 							assert($document instanceof $type);
+
+							$dependencies = [
+								Caching\Cache::Tags => [$document->getId()->toString()],
+							];
 
 							return $document;
 						} catch (Throwable) {
@@ -136,6 +133,11 @@ final class Repository extends Models\Configuration\Repository
 
 					return false;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load document', $ex->getCode(), $ex);
@@ -145,15 +147,11 @@ final class Repository extends Models\Configuration\Repository
 			return null;
 		}
 
-		if (!$document instanceof $type) {
-			throw new Exceptions\InvalidState('Could not load document');
-		}
-
 		return $document;
 	}
 
 	/**
-	 * @template T of MetadataDocuments\DevicesModule\ChannelProperty
+	 * @template T of Documents\Channels\Properties\Property
 	 *
 	 * @param Queries\Configuration\FindChannelProperties<T> $queryObject
 	 * @param class-string<T> $type
@@ -164,27 +162,21 @@ final class Repository extends Models\Configuration\Repository
 	 */
 	public function findAllBy(
 		Queries\Configuration\FindChannelProperties $queryObject,
-		string $type = MetadataDocuments\DevicesModule\ChannelProperty::class,
+		string $type = Documents\Channels\Properties\Property::class,
 	): array
 	{
 		try {
+			/** @phpstan-var array<T> $documents */
 			$documents = $this->cache->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
-				function () use ($queryObject, $type): array {
+				function (&$dependencies) use ($queryObject, $type): array {
 					$space = $this->builder
-						->load()
-						->find('.' . Devices\Constants::DATA_STORAGE_PROPERTIES_KEY . '.*');
+						->load(Devices\Types\ConfigurationType::CHANNELS_PROPERTIES);
 
-					if ($type === MetadataDocuments\DevicesModule\ChannelDynamicProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]');
+					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelVariableProperty::class) {
-						$space = $space->find(
-							'.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]',
-						);
-
-					} elseif ($type === MetadataDocuments\DevicesModule\ChannelMappedProperty::class) {
-						$space = $space->find('.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]');
+					if ($metadata->getDiscriminatorValue() !== null) {
+						$space = $space->find('.[?(@.type == "' . $metadata->getDiscriminatorValue() . '")]');
 					}
 
 					$result = $queryObject->fetch($space);
@@ -193,19 +185,18 @@ final class Repository extends Models\Configuration\Repository
 						return [];
 					}
 
-					return array_filter(
+					$documents = array_filter(
 						array_map(
-						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-							function (stdClass $item): MetadataDocuments\DevicesModule\ChannelProperty|null {
+							function (array $item): Documents\Channels\Properties\Property|null {
 								foreach (
 									[
-										MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
-										MetadataDocuments\DevicesModule\ChannelVariableProperty::class,
-										MetadataDocuments\DevicesModule\ChannelMappedProperty::class,
+										Documents\Channels\Properties\Dynamic::class,
+										Documents\Channels\Properties\Variable::class,
+										Documents\Channels\Properties\Mapped::class,
 									] as $class
 								) {
 									try {
-										return $this->entityFactory->create($class, $item);
+										return $this->documentFactory->create($class, $item);
 									} catch (Throwable) {
 										// Just ignore it
 									}
@@ -217,14 +208,24 @@ final class Repository extends Models\Configuration\Repository
 						),
 						static fn ($item): bool => $item instanceof $type,
 					);
+
+					$dependencies = [
+						Caching\Cache::Tags => array_map(
+							static fn (Documents\Channels\Properties\Property $document): string => $document->getId()->toString(),
+							$documents,
+						),
+					];
+
+					return $documents;
 				},
+				[
+					Caching\Cache::Tags => [
+						Devices\Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+					],
+				],
 			);
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState('Could not load documents', $ex->getCode(), $ex);
-		}
-
-		if (!is_array($documents)) {
-			throw new Exceptions\InvalidState('Could not load documents');
 		}
 
 		return $documents;

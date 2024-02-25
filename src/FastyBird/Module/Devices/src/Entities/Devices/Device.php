@@ -15,50 +15,39 @@
 
 namespace FastyBird\Module\Devices\Entities\Devices;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Types;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
-use IPub\DoctrineDynamicDiscriminatorMap\Entities as DoctrineDynamicDiscriminatorMapEntities;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
 use function strval;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_devices_module_devices",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Devices"
- *     },
- *     uniqueConstraints={
- *       @ORM\UniqueConstraint(name="device_identifier_unique", columns={"device_identifier", "connector_id"})
- *     },
- *     indexes={
- *       @ORM\Index(name="device_identifier_idx", columns={"device_identifier"}),
- *       @ORM\Index(name="device_name_idx", columns={"device_name"})
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="device_type", type="string", length=40)
- * @ORM\DiscriminatorMap({
- *    "device" = "FastyBird\Module\Devices\Entities\Devices\Device"
- * })
- * @ORM\MappedSuperclass
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_devices_module_devices',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Devices',
+	],
+)]
+#[ORM\Index(columns: ['device_identifier'], name: 'device_identifier_idx')]
+#[ORM\Index(columns: ['device_name'], name: 'device_name_idx')]
+#[ORM\UniqueConstraint(name: 'device_identifier_unique', columns: ['device_identifier', 'connector_id'])]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'device_type', type: 'string', length: 100)]
+#[ORM\MappedSuperclass]
 abstract class Device implements Entities\Entity,
 	Entities\EntityParams,
 	SimpleAuthEntities\Owner,
-	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated,
-	DoctrineDynamicDiscriminatorMapEntities\IDiscriminatorProvider
+	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
@@ -67,91 +56,107 @@ abstract class Device implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="device_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'device_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\DeviceCategory
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @Enum(class=MetadataTypes\DeviceCategory::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="device_category", length=100, nullable=true, options={"default": "generic"})
-	 */
-	protected $category;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'device_category',
+		type: 'string',
+		length: 100,
+		nullable: false,
+		enumType: Types\DeviceCategory::class,
+		options: ['default' => Types\DeviceCategory::GENERIC],
+	)]
+	protected Types\DeviceCategory $category;
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="string", name="device_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'device_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	/**
-	 * @var Common\Collections\Collection<int, Device>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", inversedBy="children")
-	 * @ORM\JoinTable(
-	 *     name="fb_devices_module_devices_children",
-	 *     joinColumns={@ORM\JoinColumn(name="child_device", referencedColumnName="device_id", onDelete="CASCADE")},
-	 *     inverseJoinColumns={@ORM\JoinColumn(name="parent_device", referencedColumnName="device_id", onDelete="CASCADE")}
-	 * )
-	 */
+	/** @var Common\Collections\Collection<int, Device> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'children')]
+	#[ORM\JoinTable(
+		name: 'fb_devices_module_devices_children',
+		joinColumns: [
+			new ORM\JoinColumn(
+				name: 'child_device',
+				referencedColumnName: 'device_id',
+				onDelete: 'CASCADE',
+			),
+		],
+		inverseJoinColumns: [
+			new ORM\JoinColumn(
+				name: 'parent_device',
+				referencedColumnName: 'device_id',
+				onDelete: 'CASCADE',
+			),
+		],
+	)]
 	protected Common\Collections\Collection $parents;
 
-	/**
-	 * @var Common\Collections\Collection<int, Device>
-	 *
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Device", mappedBy="parents", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Device> */
+	#[ORM\ManyToMany(
+		targetEntity: self::class,
+		mappedBy: 'parents',
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $children;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="device_name", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'device_name', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $name = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="device_comment", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'device_comment', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $comment = null;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Channels\Channel>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Channels\Channel", mappedBy="device", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Channels\Channel> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'device',
+		targetEntity: Entities\Channels\Channel::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $channels;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Devices\Controls\Control>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Controls\Control", mappedBy="device", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Devices\Controls\Control> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'device',
+		targetEntity: Entities\Devices\Controls\Control::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $controls;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Devices\Properties\Property>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Devices\Entities\Devices\Properties\Property", mappedBy="device", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Devices\Properties\Property> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'device',
+		targetEntity: Entities\Devices\Properties\Property::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $properties;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToOne(targetEntity="FastyBird\Module\Devices\Entities\Connectors\Connector", inversedBy="devices", cascade={"persist"})
-	 * @ORM\JoinColumn(name="connector_id", referencedColumnName="connector_id", onDelete="CASCADE", nullable=false)
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToOne(
+		targetEntity: Entities\Connectors\Connector::class,
+		cascade: ['persist'],
+		inversedBy: 'devices',
+	)]
+	#[ORM\JoinColumn(
+		name: 'connector_id',
+		referencedColumnName: 'connector_id',
+		nullable: false,
+		onDelete: 'CASCADE',
+	)]
 	protected Entities\Connectors\Connector $connector;
 
 	public function __construct(
@@ -161,13 +166,12 @@ abstract class Device implements Entities\Entity,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
-		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->category = MetadataTypes\DeviceCategory::get(MetadataTypes\DeviceCategory::CATEGORY_GENERIC);
+		$this->category = Types\DeviceCategory::GENERIC;
 
 		$this->connector = $connector;
 
@@ -178,14 +182,14 @@ abstract class Device implements Entities\Entity,
 		$this->properties = new Common\Collections\ArrayCollection();
 	}
 
-	abstract public function getType(): string;
+	abstract public static function getType(): string;
 
-	public function getCategory(): MetadataTypes\DeviceCategory
+	public function getCategory(): Types\DeviceCategory
 	{
 		return $this->category;
 	}
 
-	public function setCategory(MetadataTypes\DeviceCategory $category): void
+	public function setCategory(Types\DeviceCategory $category): void
 	{
 		$this->category = $category;
 	}
@@ -239,9 +243,9 @@ abstract class Device implements Entities\Entity,
 	}
 
 	/**
-	 * @param array<Device> $parents
+	 * @param array<Device>|Utils\ArrayHash<Device> $parents
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		$this->parents = new Common\Collections\ArrayCollection();
 
@@ -399,8 +403,8 @@ abstract class Device implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'type' => $this->getType(),
-			'category' => $this->getCategory()->getValue(),
+			'type' => static::getType(),
+			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
@@ -435,9 +439,9 @@ abstract class Device implements Entities\Entity,
 		];
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES);
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 	/**

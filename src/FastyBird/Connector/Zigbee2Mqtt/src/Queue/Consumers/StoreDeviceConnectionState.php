@@ -17,18 +17,25 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Zigbee2Mqtt;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
+use TypeError;
+use ValueError;
+use function React\Async\await;
 
 /**
  * Store device connection state message consumer
@@ -52,34 +59,42 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\DevicePropertiesStates $devicePropertiesStatesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreDeviceConnectionState) {
+		if (!$message instanceof Queue\Messages\StoreDeviceConnectionState) {
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
-		$findDeviceQuery->byType(Entities\Devices\SubDevice::TYPE);
+		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\SubDevice::class,
+		);
 
 		if ($device === null) {
 			return true;
@@ -87,49 +102,53 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		$bridge = $this->subDeviceHelper->getBridge($device);
 
-		if ($this->bridgeHelper->getBaseTopic($bridge) !== $entity->getBaseTopic()) {
+		if ($this->bridgeHelper->getBaseTopic($bridge) !== $message->getBaseTopic()) {
 			return true;
 		}
 
-		$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN);
+		$state = DevicesTypes\ConnectionState::UNKNOWN;
 
-		if ($entity->getState()->equalsValue(Types\ConnectionState::ONLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_CONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::OFFLINE)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_DISCONNECTED);
-		} elseif ($entity->getState()->equalsValue(Types\ConnectionState::ALERT)) {
-			$state = MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_ALERT);
+		if ($message->getState() === Types\ConnectionState::ONLINE) {
+			$state = DevicesTypes\ConnectionState::CONNECTED;
+		} elseif ($message->getState() === Types\ConnectionState::OFFLINE) {
+			$state = DevicesTypes\ConnectionState::DISCONNECTED;
+		} elseif ($message->getState() === Types\ConnectionState::ALERT) {
+			$state = DevicesTypes\ConnectionState::ALERT;
 		}
 
 		// Check device state...
-		if (
-			!$this->deviceConnectionManager->getState($device)->equals($state)
-		) {
+		if ($this->deviceConnectionManager->getState($device) !== $state) {
 			// ... and if it is not ready, set it to ready
 			$this->deviceConnectionManager->setState($device, $state);
 
 			if (
-				$state->equalsValue(MetadataTypes\ConnectionState::STATE_DISCONNECTED)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_ALERT)
-				|| $state->equalsValue(MetadataTypes\ConnectionState::STATE_UNKNOWN)
+				$state === DevicesTypes\ConnectionState::DISCONNECTED
+				|| $state === DevicesTypes\ConnectionState::ALERT
+				|| $state === DevicesTypes\ConnectionState::UNKNOWN
 			) {
 				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
 				$findDevicePropertiesQuery->forDevice($device);
 
 				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
 					$findDevicePropertiesQuery,
-					MetadataDocuments\DevicesModule\DeviceDynamicProperty::class,
+					DevicesDocuments\Devices\Properties\Dynamic::class,
 				);
 
 				foreach ($properties as $property) {
-					$this->devicePropertiesStatesManager->setValidState($property, false);
+					await($this->devicePropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					));
 				}
 
-				$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+				$findChannelsQuery = new Queries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
-				$findChannelsQuery->byType(Entities\Zigbee2MqttChannel::TYPE);
 
-				$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+				$channels = $this->channelsConfigurationRepository->findAllBy(
+					$findChannelsQuery,
+					Documents\Channels\Channel::class,
+				);
 
 				foreach ($channels as $channel) {
 					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -137,11 +156,15 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
 						$findChannelPropertiesQuery,
-						MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValidState($property, false);
+						await($this->channelPropertiesStatesManager->setValidState(
+							$property,
+							false,
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						));
 					}
 				}
 			}
@@ -150,15 +173,18 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		$this->logger->debug(
 			'Consumed device connection state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+				'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 				'type' => 'store-device-connection-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
+				],
+				'bridge' => [
+					'id' => $bridge->getId()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getDevice(),
+					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 

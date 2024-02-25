@@ -31,18 +31,19 @@
     "source": "https://github.com/FastyBird/virtual-connector"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "contributte/console": "^0.9",
     "contributte/monolog": "^0.5",
     "contributte/translation": "^2.0",
     "cweagans/composer-patches": "^1.7",
     "doctrine/orm": "2.15.*",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/devices-module": "dev-main",
     "fastybird/metadata-library": "dev-main",
-    "ipub/doctrine-crud": "^3.0",
+    "ipub/doctrine-crud": "^4.0",
     "nette/di": "^3.0",
+    "orisai/nette-object-mapper": "^0.1",
     "psr/log": "^3.0",
     "ramsey/uuid": "^4.5",
     "react/async": "^4.0",
@@ -76,7 +77,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Connector\\Virtual\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "tests/tools"
+      "FastyBird\\Connector\\Virtual\\Tests\\Tools\\": "tests/tools",
+      "FastyBird\\Connector\\Virtual\\Tests\\Fixtures\\": "tests/fixtures"
     }
   },
   "config": {
@@ -105,12 +107,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

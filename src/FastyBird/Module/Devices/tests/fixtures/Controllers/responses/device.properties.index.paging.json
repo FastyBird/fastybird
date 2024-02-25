@@ -28,6 +28,7 @@
         "invalid": null,
         "scale": null,
         "step": null,
+        "value_transformer": null,
         "value": "sonoff_basic",
         "default": null,
         "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
@@ -40,7 +41,7 @@
             "related": "/api/devices-module/v1/devices/69786d15-fd0c-4d9f-9378-33287c2009fa"
           },
           "data": {
-            "type": "com.fastybird.devices-module/device/blank",
+            "type": "com.fastybird.devices-module/device/dummy",
             "id": "69786d15-fd0c-4d9f-9378-33287c2009fa"
           }
         },

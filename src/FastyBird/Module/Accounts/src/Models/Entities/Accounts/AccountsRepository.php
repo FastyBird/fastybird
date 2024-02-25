@@ -17,10 +17,11 @@ namespace FastyBird\Module\Accounts\Models\Entities\Accounts;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Utilities;
 use IPub\DoctrineOrmQuery;
 use Nette;
 use Throwable;
@@ -43,14 +44,14 @@ final class AccountsRepository
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
-		private readonly Utilities\Database $database,
+		private readonly ApplicationHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindAccounts $queryObject,
@@ -81,6 +82,7 @@ final class AccountsRepository
 	/**
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Accounts\Account>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(

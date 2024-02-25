@@ -30,7 +30,7 @@ final class Constants
 {
 
 	/**
-	 * Module routing
+	 * MODULE API ROUTING
 	 */
 
 	public const ROUTE_NAME_ME = 'me';
@@ -80,7 +80,7 @@ final class Constants
 	public const ROUTE_NAME_ROLE_CHILDREN = 'role.children';
 
 	/**
-	 * Accounts default roles
+	 * ACCOUNTS DEFAULT ROLES
 	 */
 
 	public const USER_ACCOUNT_DEFAULT_ROLES = [
@@ -92,7 +92,7 @@ final class Constants
 	];
 
 	/**
-	 * Account identities
+	 * ACCOUNTS IDENTITIES
 	 */
 
 	public const IDENTITY_UID_MAXIMAL_LENGTH = 50;
@@ -100,24 +100,66 @@ final class Constants
 	public const IDENTITY_PASSWORD_MINIMAL_LENGTH = 8;
 
 	/**
-	 * Message bus routing keys mapping
+	 * MODULE MESSAGE BUS
 	 */
+
+	public const ROUTING_PREFIX = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.module.document';
+
+	// Accounts
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.account';
+
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY = self::ROUTING_PREFIX . '.created.account';
+
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY = self::ROUTING_PREFIX . '.updated.account';
+
+	public const MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.account';
+
+	// Emails
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.email';
+
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_CREATED_ROUTING_KEY = self::ROUTING_PREFIX . '.created.email';
+
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY = self::ROUTING_PREFIX . '.updated.email';
+
+	public const MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.email';
+
+	// Identities
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.identity';
+
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_CREATED_ROUTING_KEY = self::ROUTING_PREFIX . '.created.identity';
+
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY = self::ROUTING_PREFIX . '.updated.identity';
+
+	public const MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.identity';
+
+	// Roles
+	public const MESSAGE_BUS_ROLE_DOCUMENT_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.role';
+
+	public const MESSAGE_BUS_ROLE_DOCUMENT_CREATED_ROUTING_KEY = self::ROUTING_PREFIX . '.created.role';
+
+	public const MESSAGE_BUS_ROLE_DOCUMENT_UPDATED_ROUTING_KEY = self::ROUTING_PREFIX . '.updated.role';
+
+	public const MESSAGE_BUS_ROLE_DOCUMENT_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.role';
+
 	public const MESSAGE_BUS_CREATED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		Entities\Accounts\Account::class => Metadata\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY,
-		Entities\Emails\Email::class => Metadata\Constants::MESSAGE_BUS_EMAIL_DOCUMENT_CREATED_ROUTING_KEY,
-		Entities\Identities\Identity::class => Metadata\Constants::MESSAGE_BUS_IDENTITY_DOCUMENT_CREATED_ROUTING_KEY,
+		Entities\Accounts\Account::class => self::MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY,
+		Entities\Emails\Email::class => self::MESSAGE_BUS_EMAIL_DOCUMENT_CREATED_ROUTING_KEY,
+		Entities\Identities\Identity::class => self::MESSAGE_BUS_IDENTITY_DOCUMENT_CREATED_ROUTING_KEY,
+		Entities\Roles\Role::class => self::MESSAGE_BUS_ROLE_DOCUMENT_CREATED_ROUTING_KEY,
 	];
 
 	public const MESSAGE_BUS_UPDATED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		Entities\Accounts\Account::class => Metadata\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY,
-		Entities\Emails\Email::class => Metadata\Constants::MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY,
-		Entities\Identities\Identity::class => Metadata\Constants::MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY,
+		Entities\Accounts\Account::class => self::MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY,
+		Entities\Emails\Email::class => self::MESSAGE_BUS_EMAIL_DOCUMENT_UPDATED_ROUTING_KEY,
+		Entities\Identities\Identity::class => self::MESSAGE_BUS_IDENTITY_DOCUMENT_UPDATED_ROUTING_KEY,
+		Entities\Roles\Role::class => self::MESSAGE_BUS_ROLE_DOCUMENT_UPDATED_ROUTING_KEY,
 	];
 
 	public const MESSAGE_BUS_DELETED_ENTITIES_ROUTING_KEYS_MAPPING = [
-		Entities\Accounts\Account::class => Metadata\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY,
-		Entities\Emails\Email::class => Metadata\Constants::MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY,
-		Entities\Identities\Identity::class => Metadata\Constants::MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY,
+		Entities\Accounts\Account::class => self::MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY,
+		Entities\Emails\Email::class => self::MESSAGE_BUS_EMAIL_DOCUMENT_DELETED_ROUTING_KEY,
+		Entities\Identities\Identity::class => self::MESSAGE_BUS_IDENTITY_DOCUMENT_DELETED_ROUTING_KEY,
+		Entities\Roles\Role::class => self::MESSAGE_BUS_ROLE_DOCUMENT_DELETED_ROUTING_KEY,
 	];
 
 }

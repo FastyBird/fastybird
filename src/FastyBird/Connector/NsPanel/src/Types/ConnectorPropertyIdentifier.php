@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use function strval;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 
 /**
  * Connector property identifier types
@@ -27,21 +25,11 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
+enum ConnectorPropertyIdentifier: string
 {
 
-	public const PORT = MetadataTypes\ConnectorPropertyIdentifier::IDENTIFIER_PORT;
+	case PORT = DevicesTypes\ConnectorPropertyIdentifier::PORT->value;
 
-	public const CLIENT_MODE = 'mode';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CLIENT_MODE = 'mode';
 
 }

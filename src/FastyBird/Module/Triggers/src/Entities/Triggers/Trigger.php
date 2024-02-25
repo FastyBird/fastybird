@@ -17,32 +17,25 @@ namespace FastyBird\Module\Triggers\Entities\Triggers;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_triggers_module_triggers",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Actions triggers"
- *     }
- * )
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="trigger_type", type="string", length=40)
- * @ORM\DiscriminatorMap({
- *    "automatic"  = "FastyBird\Module\Triggers\Entities\Triggers\AutomaticTrigger",
- *    "manual"     = "FastyBird\Module\Triggers\Entities\Triggers\ManualTrigger"
- * })
- * @ORM\MappedSuperclass
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_triggers_module_triggers',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Actions triggers',
+	],
+)]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'trigger_type', type: 'string', length: 100)]
+#[ORM\MappedSuperclass]
 abstract class Trigger implements Entities\Entity,
 	Entities\EntityParams,
 	SimpleAuthEntities\Owner,
@@ -55,53 +48,51 @@ abstract class Trigger implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="trigger_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'trigger_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="trigger_name", length=100, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'trigger_name', type: 'string', length: 100, nullable: false)]
 	protected string $name;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="text", name="trigger_comment", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'trigger_comment', type: 'text', nullable: true, options: ['default' => null])]
 	protected string|null $comment = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="boolean", name="trigger_enabled", length=1, nullable=false, options={"default": true})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'trigger_enabled', type: 'boolean', length: 1, nullable: false, options: ['default' => true])]
 	protected bool $enabled = true;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Actions\Action>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Actions\Action", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Actions\Action> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'trigger',
+		targetEntity: Entities\Actions\Action::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $actions;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Notifications\Notification>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Notifications\Notification", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Notifications\Notification> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'trigger',
+		targetEntity: Entities\Notifications\Notification::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $notifications;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Triggers\Controls\Control>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Triggers\Entities\Triggers\Controls\Control", mappedBy="trigger", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Triggers\Controls\Control> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'trigger',
+		targetEntity: Entities\Triggers\Controls\Control::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	private Common\Collections\Collection $controls;
 
 	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
@@ -267,7 +258,7 @@ abstract class Trigger implements Entities\Entity,
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	abstract public function getType(): MetadataTypes\TriggerType;
+	abstract public static function getType(): string;
 
 	public function getName(): string
 	{
@@ -306,7 +297,7 @@ abstract class Trigger implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getPlainId(),
-			'type' => $this->getType()->getValue(),
+			'type' => static::getType(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'enabled' => $this->isEnabled(),

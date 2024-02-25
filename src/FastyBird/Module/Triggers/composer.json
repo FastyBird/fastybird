@@ -36,16 +36,16 @@
     "source": "https://github.com/FastyBird/triggers-module"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "contributte/console": "^0.9",
     "contributte/monolog": "^0.5",
     "contributte/translation": "^2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/exchange-library": "dev-main",
-    "fastybird/json-api": "^0.13",
+    "fastybird/json-api": "^0.17",
     "fastybird/metadata-library": "dev-main",
-    "fastybird/simple-auth": "^0.6",
+    "fastybird/simple-auth": "^0.10",
     "ipub/doctrine-phone": "^1.6",
     "ipub/doctrine-timestampable": "^2.0",
     "ipub/slim-router": "^0.2",
@@ -109,7 +109,8 @@
       },
       "doctrine/orm": {
         "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
-        "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch"
+        "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch",
+        "Feature: Dynamic discriminator map": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-mapping-classmetadatafactory-php.patch"
       },
       "ramsey/uuid-doctrine": {
         "Bug: Ramsey uuid conversion fallback": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/ramsey-uuid-doctrine-src-uuidbinarytype-php.patch"
@@ -122,12 +123,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

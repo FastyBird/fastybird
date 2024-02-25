@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
+use FastyBird\Module\Devices\Types;
 
 /**
  * Find connector dynamic properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\ConnectorDynamicProperty
+ * @template T of Documents\Connectors\Properties\Dynamic
  * @extends  FindConnectorProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -35,7 +35,7 @@ class FindConnectorDynamicProperties extends FindConnectorProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_DYNAMIC . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::DYNAMIC->value . '")]';
 	}
 
 }

@@ -15,14 +15,17 @@
 
 namespace FastyBird\Connector\FbMqtt\Helpers;
 
-use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt;
+use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
+use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_int;
 use function is_string;
@@ -35,36 +38,41 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Connector
+final readonly class Connector
 {
 
 	public function __construct(
-		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
+		private DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getProtocolVersion(MetadataDocuments\DevicesModule\Connector $connector): Types\ProtocolVersion
+	public function getProtocolVersion(
+		Documents\Connectors\Connector $connector,
+	): Types\ProtocolVersion
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PROTOCOL_VERSION);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\ProtocolVersion::isValidValue($value)) {
-			return Types\ProtocolVersion::get($value);
+		if (is_string($value) && Types\ProtocolVersion::tryFrom($value) !== null) {
+			return Types\ProtocolVersion::from($value);
 		}
 
 		throw new Exceptions\InvalidState('Connector protocol version is not configured');
@@ -72,22 +80,25 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getServerAddress(MetadataDocuments\DevicesModule\Connector $connector): string
+	public function getServerAddress(Documents\Connectors\Connector $connector): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_ADDRESS;
+			return FbMqtt\Constants::DEFAULT_SERVER_ADDRESS;
 		}
 
 		$value = $property->getValue();
@@ -98,22 +109,25 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getServerPort(MetadataDocuments\DevicesModule\Connector $connector): int
+	public function getServerPort(Documents\Connectors\Connector $connector): int
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SECURED_PORT);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_PORT;
+			return FbMqtt\Constants::DEFAULT_SERVER_PORT;
 		}
 
 		$value = $property->getValue();
@@ -124,22 +138,25 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getServerSecuredPort(MetadataDocuments\DevicesModule\Connector $connector): int
+	public function getServerSecuredPort(Documents\Connectors\Connector $connector): int
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::SERVER);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\FbMqttConnector::DEFAULT_SERVER_PORT;
+			return FbMqtt\Constants::DEFAULT_SERVER_PORT;
 		}
 
 		$value = $property->getValue();
@@ -150,18 +167,21 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getUsername(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getUsername(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::USERNAME);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property === null) {
@@ -176,18 +196,21 @@ final class Connector
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getPassword(MetadataDocuments\DevicesModule\Connector $connector): string|null
+	public function getPassword(Documents\Connectors\Connector $connector): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindConnectorVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindConnectorVariableProperties();
 		$findPropertyQuery->forConnector($connector);
 		$findPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::PASSWORD);
 
 		$property = $this->connectorsPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\ConnectorVariableProperty::class,
+			DevicesDocuments\Connectors\Properties\Variable::class,
 		);
 
 		if ($property === null) {

@@ -21,10 +21,14 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\Types;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function array_merge;
 use function count;
 
@@ -44,7 +48,7 @@ final class Variable extends Property
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/property/device/' . MetadataTypes\PropertyType::TYPE_VARIABLE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::DEVICES->value . '/property/device/' . Types\PropertyType::VARIABLE->value;
 
 	public function getEntityClass(): string
 	{
@@ -61,8 +65,11 @@ final class Variable extends Property
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -72,8 +79,7 @@ final class Variable extends Property
 	): iterable
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => MetadataUtilities\ValueHelper::flattenValue($resource->getValue()),
-			'default' => MetadataUtilities\ValueHelper::flattenValue($resource->getDefault()),
+			'value' => MetadataUtilities\Value::flattenValue($resource->getValue()),
 		]);
 	}
 
@@ -117,8 +123,8 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_CHILDREN,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_PROPERTY_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -147,8 +153,8 @@ final class Variable extends Property
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

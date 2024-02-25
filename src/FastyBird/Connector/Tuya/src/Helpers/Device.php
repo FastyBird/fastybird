@@ -15,14 +15,17 @@
 
 namespace FastyBird\Connector\Tuya\Helpers;
 
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function explode;
 use function floatval;
@@ -38,37 +41,42 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Device
+final readonly class Device
 {
 
 	public function __construct(
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
 	{
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getProtocolVersion(MetadataDocuments\DevicesModule\Device $device): Types\DeviceProtocolVersion
+	public function getProtocolVersion(
+		Documents\Devices\Device $device,
+	): Types\DeviceProtocolVersion
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::PROTOCOL_VERSION);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		$value = $property?->getValue();
 
-		if (is_string($value) && Types\DeviceProtocolVersion::isValidValue($value)) {
-			return Types\DeviceProtocolVersion::get($value);
+		if (is_string($value) && Types\DeviceProtocolVersion::tryFrom($value) !== null) {
+			return Types\DeviceProtocolVersion::from($value);
 		}
 
 		throw new Exceptions\InvalidState('Device protocol version is not configured');
@@ -78,15 +86,17 @@ final class Device
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	public function getGateway(
-		MetadataDocuments\DevicesModule\Device $device,
-	): MetadataDocuments\DevicesModule\Device|null
+		Documents\Devices\Device $device,
+	): Documents\Devices\Device|null
 	{
 		foreach ($device->getParents() as $parent) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
-			return $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			return $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 		}
 
 		return null;
@@ -94,18 +104,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getNodeId(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getNodeId(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::NODE_ID);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -120,18 +133,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getGatewayId(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getGatewayId(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::GATEWAY_ID);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -146,18 +162,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getIpAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getIpAddress(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IP_ADDRESS);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -172,18 +191,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getLocalKey(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getLocalKey(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::LOCAL_KEY);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -198,18 +220,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function isEncrypted(MetadataDocuments\DevicesModule\Device $device): bool
+	public function isEncrypted(Documents\Devices\Device $device): bool
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::ENCRYPTED);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -226,18 +251,21 @@ final class Device
 	 * @return array<string>
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getExcludedDps(MetadataDocuments\DevicesModule\Device $device): array
+	public function getExcludedDps(Documents\Devices\Device $device): array
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::READ_STATE_EXCLUDE_DPS);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -252,18 +280,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getModel(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getModel(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -278,18 +309,21 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getMacAddress(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getMacAddress(Documents\Devices\Device $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MAC_ADDRESS);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -304,22 +338,25 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getStateReadingDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getStateReadingDelay(Documents\Devices\Device $device): float
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE_READING_DELAY);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\TuyaDevice::STATE_READING_DELAY;
+			return Entities\Devices\Device::STATE_READING_DELAY;
 		}
 
 		$value = $property->getValue();
@@ -330,22 +367,25 @@ final class Device
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getHeartbeatDelay(MetadataDocuments\DevicesModule\Device $device): float
+	public function getHeartbeatDelay(Documents\Devices\Device $device): float
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::HEARTBEAT_DELAY);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
-			return Entities\TuyaDevice::HEARTBEAT_DELAY;
+			return Entities\Devices\Device::HEARTBEAT_DELAY;
 		}
 
 		$value = $property->getValue();

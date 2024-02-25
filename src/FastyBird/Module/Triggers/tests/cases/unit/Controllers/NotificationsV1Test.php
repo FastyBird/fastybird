@@ -3,10 +3,9 @@
 namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
-use FastyBird\Module\Triggers\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Triggers\Tests\Tools;
+use FastyBird\Module\Triggers\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -22,11 +21,11 @@ use function file_get_contents;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class NotificationsV1Test extends DbTestCase
+final class NotificationsV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -55,7 +54,7 @@ final class NotificationsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -210,7 +209,7 @@ final class NotificationsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -240,7 +239,7 @@ final class NotificationsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -353,7 +352,7 @@ final class NotificationsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -383,7 +382,7 @@ final class NotificationsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -488,7 +487,7 @@ final class NotificationsV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -517,7 +516,7 @@ final class NotificationsV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

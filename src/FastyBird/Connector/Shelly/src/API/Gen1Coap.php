@@ -16,9 +16,8 @@
 namespace FastyBird\Connector\Shelly\API;
 
 use BadMethodCallException;
-use Evenement;
+use Closure;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Services;
@@ -51,19 +50,23 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gen1Coap implements Evenement\EventEmitterInterface
+final class Gen1Coap
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
-
-	private const COAP_ADDRESS = '224.0.1.187';
-
-	private const COAP_PORT = 5_683;
 
 	private const STATE_MESSAGE_CODE = 30;
 
 	private const STATE_MESSAGE_SCHEMA_FILENAME = 'gen1_coap_state.json';
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(): void> */
+	public array $onClosed = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
@@ -72,7 +75,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 
 	public function __construct(
 		private readonly Services\MulticastFactory $multicastFactory,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Shelly\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
@@ -85,26 +88,29 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 	 */
 	public function connect(): void
 	{
-		$this->server = $this->multicastFactory->create(self::COAP_ADDRESS, self::COAP_PORT);
+		$this->server = $this->multicastFactory->create(
+			Shelly\Constants::COAP_ADDRESS,
+			Shelly\Constants::COAP_PORT,
+		);
 
 		$this->server->on('message', function ($message, $remote): void {
 			$this->handlePacket($message, $remote);
 		});
 
 		$this->server->on('error', function (Throwable $ex): void {
-			$this->emit('error', [$ex]);
+			Utils\Arrays::invoke($this->onError, $ex);
 		});
 
 		$this->server->on('close', function (): void {
 			$this->logger->debug(
 				'CoAP connection was successfully closed',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen1-coap-api',
 				],
 			);
 
-			$this->emit('closed');
+			Utils\Arrays::invoke($this->onClosed);
 		});
 	}
 
@@ -202,7 +208,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 					str_replace(' ', '', $message),
 				),
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen1-coap-api',
 				],
 			);
@@ -215,7 +221,7 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 				try {
 					$this->handleStatusMessage($deviceIdentifier, $message, $remote);
 				} catch (Exceptions\CoapError | Exceptions\InvalidState $ex) {
-					$this->emit('error', [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 				}
 			}
 		}
@@ -267,18 +273,19 @@ final class Gen1Coap implements Evenement\EventEmitterInterface
 		}
 
 		try {
-			$this->emit('message', [
-				$this->entityHelper->create(
-					Entities\API\Gen1\ReportDeviceState::class,
+			Utils\Arrays::invoke(
+				$this->onMessage,
+				$this->messageBuilder->create(
+					Messages\Response\Gen1\ReportDeviceState::class,
 					[
 						'identifier' => $deviceIdentifier,
 						'ip_address' => preg_replace('/(:[0-9]+)+$/', '', $remote),
 						'states' => $statuses,
 					],
 				),
-			]);
+			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\InvalidState('Could not map payload to entity', $ex->getCode(), $ex);
+			throw new Exceptions\InvalidState('Could not map payload to message', $ex->getCode(), $ex);
 		}
 	}
 

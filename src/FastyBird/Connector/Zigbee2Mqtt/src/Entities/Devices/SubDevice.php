@@ -19,18 +19,22 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
+use Nette\Utils;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function assert;
 use function count;
 use function is_bool;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
-class SubDevice extends Entities\Zigbee2MqttDevice
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class SubDevice extends Device
 {
 
 	public const TYPE = 'zigbee2mqtt-connector-sub-device';
@@ -41,7 +45,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	public function __construct(
 		string $identifier,
 		Bridge $parent,
-		DevicesEntities\Connectors\Connector $connector,
+		Entities\Connectors\Connector $connector,
 		string|null $name = null,
 		Uuid\UuidInterface|null $id = null,
 	)
@@ -51,12 +55,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 		$this->setParents([$parent]);
 	}
 
-	public function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
@@ -78,7 +77,7 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setParents(array $parents): void
+	public function setParents(array|Utils\ArrayHash $parents): void
 	{
 		if (count($parents) !== 1 || !$parents[0] instanceof Bridge) {
 			throw new Exceptions\InvalidState('Sub-device could have only one parent and it have to be gateway');
@@ -90,13 +89,15 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getIeeeAddress(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS->value
 			)
 			->first();
 
@@ -113,22 +114,24 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHardwareType(): Types\DeviceType
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::TYPE
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::TYPE->value
 			)
 			->first();
 
 		if (
 			$property instanceof DevicesEntities\Devices\Properties\Variable
 			&& is_string($property->getValue())
-			&& Types\DeviceType::isValidValue($property->getValue())
+			&& Types\DeviceType::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true)) !== null
 		) {
-			return Types\DeviceType::get($property->getValue());
+			return Types\DeviceType::tryFrom(MetadataUtilities\Value::toString($property->getValue(), true));
 		}
 
 		throw new MetadataExceptions\InvalidState('Device hardware type is not configured');
@@ -137,13 +140,15 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHardwareModel(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MODEL->value
 			)
 			->first();
 
@@ -160,13 +165,15 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getHardwareManufacturer(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MANUFACTURER->value
 			)
 			->first();
 
@@ -183,13 +190,15 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isSupported(): bool
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::SUPPORTED
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::SUPPORTED->value
 			)
 			->first();
 
@@ -206,13 +215,15 @@ class SubDevice extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function isDisabled(): bool
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DISABLED
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DISABLED->value
 			)
 			->first();
 

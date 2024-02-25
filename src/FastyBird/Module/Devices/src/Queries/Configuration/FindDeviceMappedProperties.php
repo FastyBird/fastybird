@@ -15,13 +15,13 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
+use FastyBird\Module\Devices\Types;
 
 /**
  * Find device mapped properties entities query
  *
- * @template T of MetadataDocuments\DevicesModule\DeviceMappedProperty
+ * @template T of Documents\Devices\Properties\Mapped
  * @extends  FindDeviceProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -35,7 +35,7 @@ class FindDeviceMappedProperties extends FindDeviceProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_MAPPED . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::MAPPED->value . '")]';
 	}
 
 }

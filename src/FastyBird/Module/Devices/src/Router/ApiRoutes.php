@@ -52,13 +52,16 @@ class ApiRoutes
 		private readonly Controllers\DeviceChildrenV1 $deviceChildrenV1Controller,
 		private readonly Controllers\DevicePropertiesV1 $devicePropertiesV1Controller,
 		private readonly Controllers\DevicePropertyChildrenV1 $devicePropertyChildrenV1Controller,
+		private readonly Controllers\DevicePropertyStateV1 $devicePropertyStateV1Controller,
 		private readonly Controllers\DeviceControlsV1 $deviceControlsV1Controller,
 		private readonly Controllers\ChannelsV1 $channelsV1Controller,
 		private readonly Controllers\ChannelPropertiesV1 $channelPropertiesV1Controller,
 		private readonly Controllers\ChannelPropertyChildrenV1 $channelPropertyChildrenV1Controller,
+		private readonly Controllers\ChannelPropertyStateV1 $channelPropertyStateV1Controller,
 		private readonly Controllers\ChannelControlsV1 $channelControlsV1Controller,
 		private readonly Controllers\ConnectorsV1 $connectorsV1Controller,
 		private readonly Controllers\ConnectorPropertiesV1 $connectorPropertiesV1Controller,
+		private readonly Controllers\ConnectorPropertyStateV1 $connectorPropertyStateV1Controller,
 		private readonly Controllers\ConnectorControlsV1 $connectorControlsV1Controller,
 		private readonly Middleware\Access $devicesAccessControlMiddleware,
 		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
@@ -163,6 +166,12 @@ class ApiRoutes
 								 */
 								$route = $group->get('/children', [$this->devicePropertyChildrenV1Controller, 'index']);
 								$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_CHILDREN);
+
+								/**
+								 * STATE
+								 */
+								$route = $group->get('/state', [$this->devicePropertyStateV1Controller, 'index']);
+								$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY_STATE);
 							},
 						);
 					});
@@ -263,6 +272,15 @@ class ApiRoutes
 											'index',
 										]);
 										$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_CHILDREN);
+
+										/**
+										 * STATE
+										 */
+										$route = $group->get(
+											'/state',
+											[$this->channelPropertyStateV1Controller, 'index'],
+										);
+										$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_STATE);
 									});
 								});
 
@@ -346,6 +364,16 @@ class ApiRoutes
 							],
 						);
 						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY_RELATIONSHIP);
+
+						$group->group('/{' . self::URL_PROPERTY_ID . '}', function (
+							Routing\RouteCollector $group,
+						): void {
+							/**
+							 * STATE
+							 */
+							$route = $group->get('/state', [$this->connectorPropertyStateV1Controller, 'index']);
+							$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY_STATE);
+						});
 					});
 
 					/**

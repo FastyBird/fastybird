@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "device": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Device unique uuid v4 identifier"
+    },
+    "read": {
+      "type": "object",
+      "properties": {
+        "actual_value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "expected_value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        }
+      },
+      "required": [
+        "actual_value",
+        "expected_value"
+      ]
+    },
+    "get": {
+      "type": "object",
+      "properties": {
+        "actual_value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        },
+        "expected_value": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "format": "date-time"
+            }
+          ]
+        }
+      },
+      "required": [
+        "actual_value",
+        "expected_value"
+      ]
+    },
+    "pending": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "valid": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "device",
+    "read",
+    "pending",
+    "valid"
+  ]
+}

@@ -18,7 +18,9 @@ namespace FastyBird\Module\Triggers\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -57,7 +59,7 @@ final class ConditionsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		protected readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
 		private readonly Models\Entities\Conditions\ConditionsRepository $conditionsRepository,
 		private readonly Models\Entities\Conditions\ConditionsManager $conditionsManager,
 	)
@@ -65,6 +67,7 @@ final class ConditionsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
@@ -76,7 +79,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -106,7 +109,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -139,7 +142,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if ($trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if ($trigger instanceof Entities\Triggers\Automatic) {
 			$document = $this->createDocument($request);
 
 			$hydrator = $this->hydratorsContainer->findHydrator($document);
@@ -209,11 +212,14 @@ final class ConditionsV1 extends BaseV1
 					);
 				} catch (Throwable $ex) {
 					// Log caught exception
-					$this->logger->error('An unhandled error occurred', [
-						'source' => 'triggers-module-conditions-controller',
-						'type' => 'create',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
-					]);
+					$this->logger->error(
+						'An unhandled error occurred',
+						[
+							'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+							'type' => 'conditions-controller',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
 
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -268,7 +274,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -299,11 +305,14 @@ final class ConditionsV1 extends BaseV1
 				throw $ex;
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-conditions-controller',
-					'type' => 'update',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+						'type' => 'conditions-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -349,7 +358,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -371,11 +380,14 @@ final class ConditionsV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => 'triggers-module-conditions-controller',
-				'type' => 'delete',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+					'type' => 'conditions-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -405,7 +417,7 @@ final class ConditionsV1 extends BaseV1
 		// At first, try to load trigger
 		$trigger = $this->findTrigger(strval($request->getAttribute(Router\ApiRoutes::URL_TRIGGER_ID)));
 
-		if (!$trigger instanceof Entities\Triggers\AutomaticTrigger) {
+		if (!$trigger instanceof Entities\Triggers\Automatic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
@@ -426,7 +438,7 @@ final class ConditionsV1 extends BaseV1
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function findCondition(

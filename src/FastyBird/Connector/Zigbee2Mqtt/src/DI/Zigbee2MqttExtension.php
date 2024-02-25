@@ -25,17 +25,20 @@ use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
 use FastyBird\Connector\Zigbee2Mqtt\Subscribers;
 use FastyBird\Connector\Zigbee2Mqtt\Writers;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
-use Nette\Schema;
-use stdClass;
-use function assert;
+use Nettrine\ORM as NettrineORM;
+use function array_keys;
+use function array_pop;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -52,35 +55,21 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 	public const NAME = 'fbZigbee2MqttConnector';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
 		};
 	}
 
-	public function getConfigSchema(): Schema\Schema
-	{
-		return Schema\Expect::structure([
-			'writer' => Schema\Expect::anyOf(
-				Writers\Event::NAME,
-				Writers\Exchange::NAME,
-			)->default(
-				Writers\Exchange::NAME,
-			),
-		]);
-	}
-
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$configuration = $this->getConfig();
-		assert($configuration instanceof stdClass);
 
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(Zigbee2Mqtt\Logger::class)
@@ -90,18 +79,16 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		 * WRITERS
 		 */
 
-		if ($configuration->writer === Writers\Event::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.event'))
-				->setImplement(Writers\EventFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Event::class);
-		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
-				->setImplement(Writers\ExchangeFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Exchange::class)
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		}
+		$builder->addFactoryDefinition($this->prefix('writers.event'))
+			->setImplement(Writers\EventFactory::class)
+			->getResultDefinition()
+			->setType(Writers\Event::class);
+
+		$builder->addFactoryDefinition($this->prefix('writers.exchange'))
+			->setImplement(Writers\ExchangeFactory::class)
+			->getResultDefinition()
+			->setType(Writers\Exchange::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		/**
 		 * CLIENTS
@@ -231,10 +218,10 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.write.subDeviceState'),
+			$this->prefix('queue.consumers.write.subDeviceChannelPropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\WriteSubDeviceState::class)
+			->setType(Queue\Consumers\WriteSubDeviceChannelPropertyState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -272,61 +259,74 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		 * JSON-API SCHEMAS
 		 */
 
-		$builder->addDefinition($this->prefix('schemas.connector.zigbee2mqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Zigbee2MqttConnector::class);
+		$builder->addDefinition(
+			$this->prefix('schemas.connector'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.zigbee2mqtt.bridge'),
+			$this->prefix('schemas.device.bridge'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\Bridge::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.device.zigbee2mqtt.subDevice'),
+			$this->prefix('schemas.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Devices\SubDevice::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel.zigbee2mqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Zigbee2MqttChannel::class);
+		$builder->addDefinition(
+			$this->prefix('schemas.channel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.connector.zigbee2mqtt'),
+			$this->prefix('hydrators.connector'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Zigbee2MqttConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.zigbee2mqtt.bridge'),
+			$this->prefix('hydrators.device.bridge'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\Bridge::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.device.zigbee2mqtt.subDevice'),
+			$this->prefix('hydrators.device.subDevice'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Devices\SubDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.channel.zigbee2mqtt'),
+			$this->prefix('hydrators.channel'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Zigbee2MqttChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
+
+		/**
+		 * MODELS
+		 */
+
+		$builder->addDefinition($this->prefix('models.stateRepository'), new DI\Definitions\ServiceDefinition())
+			->setType(Models\StateRepository::class);
 
 		/**
 		 * HELPERS
 		 */
 
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
+		$builder->addDefinition($this->prefix('helpers.messageBuilder'), new DI\Definitions\ServiceDefinition())
+			->setType(Helpers\MessageBuilder::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Connector::class);
+			->setType(Helpers\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('helpers.devices.bridge'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Devices\Bridge::class);
@@ -358,12 +358,13 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\Zigbee2MqttConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'logger' => $logger,
 			]);
 	}
@@ -378,27 +379,65 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Connector\Zigbee2Mqtt\Entities',
+					]);
+				}
+			}
 		}
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+		/**
+		 * APPLICATION DOCUMENTS
+		 */
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Connector\Zigbee2Mqtt\Entities',
-			]);
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Connector\Zigbee2Mqtt\Documents',
+					]);
+				}
+			}
 		}
 	}
 

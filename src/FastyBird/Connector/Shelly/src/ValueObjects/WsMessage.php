@@ -15,38 +15,38 @@
 
 namespace FastyBird\Connector\Shelly\ValueObjects;
 
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\API;
 use Orisai\ObjectMapper;
 use React\EventLoop;
 use React\Promise;
 
 /**
- * Websocket message entity
+ * Websocket message
  *
  * @package        FastyBird:ShellyConnector!
  * @subpackage     ValueObjects
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WsMessage implements ObjectMapper\MappedObject
+final readonly class WsMessage implements ObjectMapper\MappedObject
 {
 
 	/**
-	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 * @param Promise\Deferred<API\Messages\Response\Gen2\GetDeviceState|bool>|null $deferred
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\InstanceOfValue(WsFrame::class)]
-		private readonly WsFrame $frame,
+		private WsFrame $frame,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(Promise\Deferred::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly Promise\Deferred|null $deferred = null,
+		private Promise\Deferred|null $deferred = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\InstanceOfValue(EventLoop\TimerInterface::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private readonly EventLoop\TimerInterface|null $timer = null,
+		private EventLoop\TimerInterface|null $timer = null,
 	)
 	{
 	}
@@ -57,7 +57,7 @@ final class WsMessage implements ObjectMapper\MappedObject
 	}
 
 	/**
-	 * @return Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null
+	 * @return Promise\Deferred<API\Messages\Response\Gen2\GetDeviceState|bool>|null
 	 */
 	public function getDeferred(): Promise\Deferred|null
 	{

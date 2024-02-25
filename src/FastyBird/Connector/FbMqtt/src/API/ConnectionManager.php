@@ -15,12 +15,14 @@
 
 namespace FastyBird\Connector\FbMqtt\API;
 
-use FastyBird\Connector\FbMqtt\API;
+use FastyBird\Connector\FbMqtt\Documents;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use TypeError;
+use ValueError;
 
 /**
  * Client connections manager
@@ -46,10 +48,13 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getConnection(MetadataDocuments\DevicesModule\Connector $connector): Client
+	public function getConnection(Documents\Connectors\Connector $connector): Client
 	{
 		if ($this->clientConnection === null) {
 			$this->clientConnection = $this->clientFactory->create(

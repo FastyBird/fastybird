@@ -15,16 +15,15 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Shelly;
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Connector\Shelly\ValueObjects;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -65,11 +64,10 @@ use const DIRECTORY_SEPARATOR;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Gen2WsApi implements Evenement\EventEmitterInterface
+final class Gen2WsApi
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const REQUEST_SRC = 'fb_ws_client';
 
@@ -103,6 +101,21 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
+
 	private bool $connecting = false;
 
 	private bool $connected = false;
@@ -131,7 +144,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		private readonly string|null $domain,
 		private readonly string|null $username,
 		private readonly string|null $password,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Shelly\Logger $logger,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -195,7 +208,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$this->logger->debug(
 						'Connected to device sockets server',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen2-ws-api',
 							'device' => [
 								'id' => $this->id->toString(),
@@ -205,24 +218,24 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 					$connection->on(
 						'message',
-						function (RFC6455\Messaging\MessageInterface $message): void {
+						function (RFC6455\Messaging\MessageInterface $socketMessage): void {
 							try {
-								$payload = Utils\Json::decode($message->getPayload());
+								$payload = Utils\Json::decode($socketMessage->getPayload());
 
 							} catch (Utils\JsonException $ex) {
 								$this->logger->debug(
 									'Received message from device could not be decoded',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'gen2-ws-api',
-										'exception' => BootstrapHelpers\Logger::buildException($ex),
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'device' => [
 											'id' => $this->id->toString(),
 										],
 									],
 								);
 
-								$this->emit('error', [$ex]);
+								Utils\Arrays::invoke($this->onError, $ex);
 
 								return;
 							}
@@ -240,18 +253,18 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 									|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
 								) {
 									try {
-										$entity = $this->parseDeviceStatusResponse(
+										$message = $this->parseDeviceStatusResponse(
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit('message', [$entity]);
+										Utils\Arrays::invoke($this->onMessage, $message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received device status message',
 											[
-												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -262,22 +275,22 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit('error', [$ex]);
+										Utils\Arrays::invoke($this->onError, $ex);
 									}
 								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
 									try {
-										$entity = $this->parseDeviceEventsResponse(
+										$message = $this->parseDeviceEventsResponse(
 											Utils\Json::encode($payload->params),
 										);
 
-										$this->emit('message', [$entity]);
+										Utils\Arrays::invoke($this->onMessage, $message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received event message',
 											[
-												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -288,20 +301,20 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 											],
 										);
 
-										$this->emit('error', [$ex]);
+										Utils\Arrays::invoke($this->onError, $ex);
 									}
 								} else {
 									$this->logger->warning(
 										'Device respond with unsupported method',
 										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+											'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 											'type' => 'gen2-ws-api',
 											'device' => [
 												'id' => $this->id->toString(),
 											],
 											'response' => [
 												'method' => $payload->method,
-												'payload' => $message->getPayload(),
+												'payload' => $socketMessage->getPayload(),
 											],
 										],
 									);
@@ -318,18 +331,18 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 							if (property_exists($payload, 'result')) {
 								if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
 									try {
-										$entity = $this->parseDeviceStatusResponse(
+										$message = $this->parseDeviceStatusResponse(
 											Utils\Json::encode($payload->result),
 										);
 
-										$this->messages[$payload->id]->getDeferred()?->resolve($entity);
+										$this->messages[$payload->id]->getDeferred()?->resolve($message);
 									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
 										$this->logger->error(
 											'Could not handle received response device status message',
 											[
-												'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 												'type' => 'gen2-ws-api',
-												'exception' => BootstrapHelpers\Logger::buildException($ex),
+												'exception' => ApplicationHelpers\Logger::buildException($ex),
 												'device' => [
 													'id' => $this->id->toString(),
 												],
@@ -465,7 +478,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								$this->logger->warning(
 									'Device respond with error',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'gen2-ws-api',
 										'device' => [
 											'id' => $this->id->toString(),
@@ -500,9 +513,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 						$this->logger->error(
 							'An error occurred on device connection',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 								'type' => 'gen2-ws-api',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'device' => [
 									'id' => $this->id->toString(),
 								],
@@ -511,14 +524,14 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->lost();
 
-						$this->emit('error', [$ex]);
+						Utils\Arrays::invoke($this->onError, $ex);
 					});
 
 					$connection->on('close', function ($code = null, $reason = null): void {
 						$this->logger->debug(
 							'Connection with device was closed',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 								'type' => 'gen2-ws-api',
 								'connection' => [
 									'code' => $code,
@@ -532,10 +545,10 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 
 						$this->disconnect();
 
-						$this->emit('disconnected');
+						Utils\Arrays::invoke($this->onDisconnected);
 					});
 
-					$this->emit('connected');
+					Utils\Arrays::invoke($this->onConnected);
 
 					$deferred->resolve(true);
 				})
@@ -543,9 +556,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$this->logger->error(
 						'Connection to device failed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen2-ws-api',
-							'exception' => BootstrapHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $this->id->toString(),
 							],
@@ -557,7 +570,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					$this->connecting = false;
 					$this->connected = false;
 
-					$this->emit('error', [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 
 					$deferred->reject($ex);
 				});
@@ -570,16 +583,16 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			$this->logger->error(
 				'Could not create device client',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'gen2-ws-api',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'device' => [
 						'id' => $this->id->toString(),
 					],
 				],
 			);
 
-			$this->emit('error', [$ex]);
+			Utils\Arrays::invoke($this->onError, $ex);
 
 			$deferred->reject($ex);
 		}
@@ -636,7 +649,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 * @return Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceState>
 	 */
 	public function readStates(): Promise\PromiseInterface
 	{
@@ -673,7 +686,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<Entities\API\Gen2\GetDeviceState>
+	 * @return Promise\PromiseInterface<Messages\Response\Gen2\GetDeviceState>
 	 */
 	public function writeState(
 		string $component,
@@ -719,7 +732,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 					'method' => $componentMethod,
 					'params' => [
 						'id' => intval($propertyMatches['identifier']),
-						$componentAttribute => $value,
+						$componentAttribute->value => $value,
 					],
 					'auth' => $this->session?->toArray(),
 				],
@@ -759,13 +772,13 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit('lost');
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->disconnect();
 	}
 
 	/**
-	 * @param Promise\Deferred<Entities\API\Gen2\GetDeviceState|bool>|null $deferred
+	 * @param Promise\Deferred<Messages\Response\Gen2\GetDeviceState|bool>|null $deferred
 	 *
 	 * @throws Exceptions\WsError
 	 */
@@ -812,7 +825,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function parseDeviceStatusResponse(
 		string $payload,
-	): Entities\API\Gen2\GetDeviceState
+	): Messages\Response\Gen2\GetDeviceState
 	{
 		$data = $this->validatePayload(
 			$payload,
@@ -827,9 +840,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 				$state instanceof Utils\ArrayHash
 				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
 				&& array_key_exists('component', $componentMatches)
-				&& Types\ComponentType::isValidValue($componentMatches['component'])
+				&& Types\ComponentType::tryFrom($componentMatches['component']) !== null
 			) {
-				if ($componentMatches['component'] === Types\ComponentType::SWITCH) {
+				if ($componentMatches['component'] === Types\ComponentType::SWITCH->value) {
 					$switches[] = array_merge(
 						(array) $state,
 						[
@@ -844,7 +857,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::COVER) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::COVER->value) {
 					$covers[] = array_merge(
 						(array) $state,
 						[
@@ -859,9 +872,9 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::LIGHT->value) {
 					$lights[] = (array) $state;
-				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::INPUT->value) {
 					$inputs[] = array_merge(
 						(array) $state,
 						[
@@ -870,7 +883,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::TEMPERATURE->value) {
 					$temperature[] = array_merge(
 						(array) $state,
 						[
@@ -879,7 +892,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::HUMIDITY->value) {
 					$humidity[] = array_merge(
 						(array) $state,
 						[
@@ -888,7 +901,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::DEVICE_POWER->value) {
 					$devicePower[] = array_merge(
 						(array) $state,
 						[
@@ -903,7 +916,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::SCRIPT->value) {
 					$scripts[] = array_merge(
 						(array) $state,
 						[
@@ -912,7 +925,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::SMOKE->value) {
 					$smoke[] = array_merge(
 						(array) $state,
 						[
@@ -921,7 +934,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::VOLTMETER->value) {
 					$voltmeters[] = array_merge(
 						(array) $state,
 						[
@@ -930,27 +943,27 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 								: [],
 						],
 					);
-				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::ETHERNET->value) {
 					$ethernet = (array) $state;
-				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI) {
+				} elseif ($componentMatches['component'] === Types\ComponentType::WIFI->value) {
 					$wifi = (array) $state;
 				}
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
-			Types\ComponentType::SWITCH => $switches,
-			Types\ComponentType::COVER => $covers,
-			Types\ComponentType::INPUT => $inputs,
-			Types\ComponentType::LIGHT => $lights,
-			Types\ComponentType::TEMPERATURE => $temperature,
-			Types\ComponentType::HUMIDITY => $humidity,
-			Types\ComponentType::DEVICE_POWER => $devicePower,
-			Types\ComponentType::SCRIPT => $scripts,
-			Types\ComponentType::SMOKE => $smoke,
-			Types\ComponentType::VOLTMETER => $voltmeters,
-			Types\ComponentType::ETHERNET => $ethernet,
-			Types\ComponentType::WIFI => $wifi,
+		return $this->createMessage(Messages\Response\Gen2\GetDeviceState::class, Utils\ArrayHash::from([
+			Types\ComponentType::SWITCH->value => $switches,
+			Types\ComponentType::COVER->value => $covers,
+			Types\ComponentType::INPUT->value => $inputs,
+			Types\ComponentType::LIGHT->value => $lights,
+			Types\ComponentType::TEMPERATURE->value => $temperature,
+			Types\ComponentType::HUMIDITY->value => $humidity,
+			Types\ComponentType::DEVICE_POWER->value => $devicePower,
+			Types\ComponentType::SCRIPT->value => $scripts,
+			Types\ComponentType::SMOKE->value => $smoke,
+			Types\ComponentType::VOLTMETER->value => $voltmeters,
+			Types\ComponentType::ETHERNET->value => $ethernet,
+			Types\ComponentType::WIFI->value => $wifi,
 		]));
 	}
 
@@ -960,7 +973,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	 */
 	private function parseDeviceEventsResponse(
 		string $payload,
-	): Entities\API\Gen2\DeviceEvent
+	): Messages\Response\Gen2\DeviceEvent
 	{
 		$data = $this->validatePayload($payload, self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME);
 
@@ -984,8 +997,8 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 			}
 		}
 
-		return $this->createEntity(
-			Entities\API\Gen2\DeviceEvent::class,
+		return $this->createMessage(
+			Messages\Response\Gen2\DeviceEvent::class,
 			Utils\ArrayHash::from([
 				'events' => $events,
 			]),
@@ -993,25 +1006,25 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\WsError
 	 */
-	protected function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	protected function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\WsError('Could not map payload to entity', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not map payload to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
-			throw new Exceptions\WsError('Could not create entity from payload', $ex->getCode(), $ex);
+			throw new Exceptions\WsError('Could not create message from payload', $ex->getCode(), $ex);
 		}
 	}
 
@@ -1081,40 +1094,40 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+			$componentMatches['component'] === Types\ComponentType::SWITCH->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT->value
 		) {
 			return self::SWITCH_SET_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
+			$componentMatches['component'] === Types\ComponentType::COVER->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION->value
 		) {
 			return self::COVER_GO_TO_POSITION_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::LIGHT
+			$componentMatches['component'] === Types\ComponentType::LIGHT->value
 			&& (
-				$componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
-				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
+				$componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT->value
+				|| $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS->value
 			)
 		) {
 			return self::LIGHT_SET_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
+			$componentMatches['component'] === Types\ComponentType::SCRIPT->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING->value
 			&& is_bool($value)
 		) {
 			return $value ? self::SCRIPT_SET_ENABLED_METHOD : self::SCRIPT_SET_DISABLED_METHOD;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
+			$componentMatches['component'] === Types\ComponentType::SMOKE->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE->value
 		) {
 			return self::SMOKE_SET_METHOD;
 		}
@@ -1125,7 +1138,7 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	private function buildComponentAttribute(string $component): string|null
+	private function buildComponentAttribute(string $component): Types\ComponentActionAttribute|null
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
@@ -1137,43 +1150,43 @@ final class Gen2WsApi implements Evenement\EventEmitterInterface
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SWITCH
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+			$componentMatches['component'] === Types\ComponentType::SWITCH->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT->value
 		) {
 			return Types\ComponentActionAttribute::ON;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::COVER
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION
+			$componentMatches['component'] === Types\ComponentType::COVER->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::TARGET_POSITION->value
 		) {
 			return Types\ComponentActionAttribute::POSITION;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT
+			$componentMatches['component'] === Types\ComponentType::LIGHT->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::OUTPUT->value
 		) {
 			return Types\ComponentActionAttribute::ON;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::LIGHT
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS
+			$componentMatches['component'] === Types\ComponentType::LIGHT->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::BRIGHTNESS->value
 		) {
 			return Types\ComponentActionAttribute::BRIGHTNESS;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SCRIPT
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING
+			$componentMatches['component'] === Types\ComponentType::SCRIPT->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::RUNNING->value
 		) {
 			return null;
 		}
 
 		if (
-			$componentMatches['component'] === Types\ComponentType::SMOKE
-			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE
+			$componentMatches['component'] === Types\ComponentType::SMOKE->value
+			&& $componentMatches['attribute'] === Types\ComponentAttributeType::MUTE->value
 		) {
 			return null;
 		}

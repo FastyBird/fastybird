@@ -6,20 +6,19 @@ use DateTimeImmutable;
 use Error;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
@@ -33,11 +32,15 @@ use function openssl_encrypt;
 use function strval;
 use const OPENSSL_RAW_DATA;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws RuntimeException
@@ -59,7 +62,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -170,26 +173,24 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-cloud');
-		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundDevices): void {
-			self::assertCount(1, $foundDevices);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(6, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 
@@ -207,16 +208,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 		self::assertSame('WiFi Smart Timer', $device->getName());
 		self::assertSame('ATMS1601', $deviceHelper->getModel($device));
 		self::assertSame('80.78.136.56', $deviceHelper->getIpAddress($device));
@@ -227,19 +230,21 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Channels\Repository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::CLOUD);
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
-		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
+		self::assertInstanceOf(Documents\Channels\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -285,11 +290,11 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 						->willReturnCallback(
 							static function (callable $callback) use ($promise): Promise\PromiseInterface {
 								$entities = [
-									new Entities\API\DeviceDataPointState(
+									new API\Messages\Response\DeviceDataPointState(
 										'1',
 										false,
 									),
-									new Entities\API\DeviceDataPointState(
+									new API\Messages\Response\DeviceDataPointState(
 										'2',
 										1_000,
 									),
@@ -463,26 +468,24 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('tuya-local');
-		$findConnectorQuery->byType(Entities\TuyaConnector::TYPE);
 
-		$connector = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connector);
+		$connector = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
 
 		$clientFactory = $this->getContainer()->getByType(Clients\DiscoveryFactory::class);
 
 		$client = $clientFactory->create($connector);
 
-		$client->on('finished', static function (array $foundDevices): void {
-			self::assertCount(1, $foundDevices);
-		});
-
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
 
-		$eventLoop->addTimer(10, static function () use ($eventLoop): void {
+		$eventLoop->addTimer(1, static function () use ($eventLoop): void {
 			$eventLoop->stop();
 		});
 
@@ -500,16 +503,18 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Devices\Repository::class,
 		);
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->forConnector($connector);
 		$findDeviceQuery->byIdentifier('402675772462ab280dae');
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
-		$device = $devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		$deviceHelper = $this->getContainer()->getByType(Helpers\Device::class);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Device::class, $device);
+		self::assertInstanceOf(Documents\Devices\Device::class, $device);
 		self::assertSame('WiFi Smart Timer', $device->getName());
 		self::assertSame('ATMS1601', $deviceHelper->getModel($device));
 		self::assertSame('10.10.0.10', $deviceHelper->getIpAddress($device));
@@ -520,14 +525,16 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 			DevicesModels\Configuration\Channels\Repository::class,
 		);
 
-		$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelQuery = new Queries\Configuration\FindChannels();
 		$findChannelQuery->forDevice($device);
 		$findChannelQuery->byIdentifier(Types\DataPoint::LOCAL);
-		$findChannelQuery->byType(Entities\TuyaChannel::TYPE);
 
-		$channel = $channelsConfigurationRepository->findOneBy($findChannelQuery);
+		$channel = $channelsConfigurationRepository->findOneBy(
+			$findChannelQuery,
+			Documents\Channels\Channel::class,
+		);
 
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Channel::class, $channel);
+		self::assertInstanceOf(Documents\Channels\Channel::class, $channel);
 		self::assertCount(2, $channel->getProperties());
 	}
 

@@ -16,13 +16,14 @@
 namespace FastyBird\Connector\NsPanel\Servers;
 
 use FastyBird\Connector\NsPanel;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Middleware;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop;
@@ -52,25 +53,23 @@ final class Http implements Server
 	private Socket\ServerInterface|null $socket = null;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Documents\Connectors\Connector $connector,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly NsPanel\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function connect(): void
 	{
 		try {
 			$this->logger->debug(
 				'Creating connector web server',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
@@ -91,20 +90,22 @@ final class Http implements Server
 			$this->logger->error(
 				'Connector web server could not be created',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::NS_PANEL,
 				'Socket server could not be created',
-				$ex->getCode(),
 				$ex,
-			);
+			));
+
+			return;
 		}
 
 		$server = new ReactHttp\HttpServer(
@@ -125,20 +126,20 @@ final class Http implements Server
 			$this->logger->error(
 				'An error occurred during server handling',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'http-server',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
 				],
 			);
 
-			throw new DevicesExceptions\Terminate(
+			$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+				MetadataTypes\Sources\Connector::NS_PANEL,
 				'HTTP server was terminated',
-				$ex->getCode(),
 				$ex,
-			);
+			));
 		});
 	}
 
@@ -147,7 +148,7 @@ final class Http implements Server
 		$this->logger->debug(
 			'Closing connector web server',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_NS_PANEL,
+				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'http-server',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

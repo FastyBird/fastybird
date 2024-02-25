@@ -6,11 +6,11 @@ use FastyBird\Plugin\RabbitMq\Channels;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Handlers;
 use FastyBird\Plugin\RabbitMq\Subscribers;
-use FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\BaseTestCase;
+use FastyBird\Plugin\RabbitMq\Tests;
 use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
 
-final class RabbitMqExtensionTest extends BaseTestCase
+final class RabbitMqExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**

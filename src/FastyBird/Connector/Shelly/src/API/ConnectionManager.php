@@ -15,12 +15,15 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 
 /**
@@ -84,11 +87,14 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getGen2WsApiConnection(
-		Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device,
+		Entities\Devices\Device|Documents\Devices\Device $device,
 	): Gen2WsApi
 	{
 		if (!array_key_exists($device->getId()->toString(), $this->gen2WsApiConnection)) {
@@ -106,12 +112,17 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function getIpAddress(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getIpAddress(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getIpAddress();
 		}
 
@@ -120,12 +131,17 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function getDomain(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getDomain(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getDomain();
 		}
 
@@ -134,12 +150,17 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function getUsername(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getUsername(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getUsername();
 		}
 
@@ -148,12 +169,17 @@ final class ConnectionManager
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	private function getPassword(Entities\ShellyDevice|MetadataDocuments\DevicesModule\Device $device): string|null
+	private function getPassword(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): string|null
 	{
-		if ($device instanceof Entities\ShellyDevice) {
+		if ($device instanceof Entities\Devices\Device) {
 			return $device->getPassword();
 		}
 

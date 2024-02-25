@@ -18,17 +18,20 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Clients\Subscribers;
 use BinSoul\Net\Mqtt as NetMqtt;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function array_merge;
+use function strval;
 
 /**
  * Zigbee2MQTT MQTT bridge messages subscriber
@@ -38,30 +41,29 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Bridge
+readonly class Bridge
 {
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector|Entities\Zigbee2MqttConnector $connector,
-		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Queue\Queue $queue,
-		private readonly Helpers\Entity $entityHelper,
+		private Documents\Connectors\Connector|Entities\Connectors\Connector $connector,
+		private Zigbee2Mqtt\Logger $logger,
+		private Queue\Queue $queue,
+		private Helpers\MessageBuilder $messageBuilder,
 	)
 	{
 	}
 
 	public function subscribe(API\Client $client): void
 	{
-		$client->on('message', [$this, 'onMessage']);
-	}
-
-	public function unsubscribe(API\Client $client): void
-	{
-		$client->removeListener('message', [$this, 'onMessage']);
+		$client->onMessage[] = function (NetMqtt\Message $message): void {
+			$this->onMessage($message);
+		};
 	}
 
 	/**
 	 * @throws Exceptions\Runtime
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onMessage(NetMqtt\Message $message): void
 	{
@@ -80,23 +82,28 @@ class Bridge
 					);
 
 					if (array_key_exists('type', $data)) {
-						if (!Types\BridgeMessageType::isValidValue($data['type'])) {
+						if (Types\BridgeMessageType::tryFrom(strval($data['type'])) === null) {
 							throw new Exceptions\ParseMessage('Received unsupported bridge message type');
 						}
 
-						$type = Types\BridgeMessageType::get($data['type']);
+						$type = Types\BridgeMessageType::from(strval($data['type']));
 
-						if ($type->equalsValue(Types\BridgeMessageType::INFO)) {
+						if ($type === Types\BridgeMessageType::INFO) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge info message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -105,20 +112,20 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeInfo::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeInfo::class,
 									array_merge($data, $payload),
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::STATE)) {
+						} elseif ($type === Types\BridgeMessageType::STATE) {
 							if (
-								$message->getPayload() === ''
-								&& Types\ConnectionState::isValidValue($message->getPayload())
+								$message->getPayload() !== ''
+								&& Types\ConnectionState::tryFrom($message->getPayload()) !== null
 							) {
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreBridgeConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreBridgeConnectionState::class,
 										array_merge($data, ['state' => $message->getPayload()]),
 									),
 								);
@@ -130,10 +137,15 @@ class Bridge
 									$this->logger->warning(
 										'Received message payload is not valid for bridge state message',
 										[
-											'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+											'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 											'type' => 'bridge-messages-subscriber',
 											'connector' => [
 												'id' => $this->connector->getId()->toString(),
+											],
+											'message' => [
+												'topic' => $message->getTopic(),
+												'payload' => $message->getPayload(),
+												'qos' => $message->getQosLevel(),
 											],
 										],
 									);
@@ -142,23 +154,28 @@ class Bridge
 								}
 
 								$this->queue->append(
-									$this->entityHelper->create(
-										Entities\Messages\StoreBridgeConnectionState::class,
+									$this->messageBuilder->create(
+										Queue\Messages\StoreBridgeConnectionState::class,
 										array_merge($data, $payload),
 									),
 								);
 							}
-						} elseif ($type->equalsValue(Types\BridgeMessageType::LOGGING)) {
+						} elseif ($type === Types\BridgeMessageType::LOGGING) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge log',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -167,23 +184,28 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeLog::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeLog::class,
 									array_merge($data, $payload),
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::DEVICES)) {
+						} elseif ($type === Types\BridgeMessageType::DEVICES) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge devices message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -192,23 +214,28 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeDevices::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeDevices::class,
 									array_merge($data, ['devices' => $payload]),
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::GROUPS)) {
+						} elseif ($type === Types\BridgeMessageType::GROUPS) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge groups message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -217,23 +244,28 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeGroups::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeGroups::class,
 									array_merge($data, ['groups' => $payload]),
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EVENT)) {
+						} elseif ($type === Types\BridgeMessageType::EVENT) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge event message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -242,23 +274,28 @@ class Bridge
 							}
 
 							$this->queue->append(
-								$this->entityHelper->create(
-									Entities\Messages\StoreBridgeEvent::class,
+								$this->messageBuilder->create(
+									Queue\Messages\StoreBridgeEvent::class,
 									array_merge($data, $payload),
 								),
 							);
 
-						} elseif ($type->equalsValue(Types\BridgeMessageType::EXTENSIONS)) {
+						} elseif ($type === Types\BridgeMessageType::EXTENSIONS) {
 							$payload = $this->parsePayload($message);
 
 							if ($payload === null) {
 								$this->logger->warning(
 									'Received message payload is not valid for bridge extensions message',
 									[
-										'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 										'type' => 'bridge-messages-subscriber',
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
 										],
 									],
 								);
@@ -278,11 +315,16 @@ class Bridge
 				$this->logger->debug(
 					'Received message could not be successfully parsed to entity',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'bridge-messages-subscriber',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
+						],
+						'message' => [
+							'topic' => $message->getTopic(),
+							'payload' => $message->getPayload(),
+							'qos' => $message->getQosLevel(),
 						],
 					],
 				);
@@ -303,11 +345,16 @@ class Bridge
 			$this->logger->error(
 				'Received bridge message payload is not valid JSON message',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'bridge-messages-subscriber',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
+					],
+					'message' => [
+						'topic' => $message->getTopic(),
+						'payload' => $message->getPayload(),
+						'qos' => $message->getQosLevel(),
 					],
 				],
 			);

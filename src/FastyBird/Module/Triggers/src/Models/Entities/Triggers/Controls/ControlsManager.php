@@ -36,19 +36,23 @@ final class ControlsManager
 
 	use Nette\SmartObject;
 
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Triggers\Controls\Control>|null */
+	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
+
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrud<Entities\Triggers\Controls\Control> $entityCrud
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Triggers\Controls\Control> $entityCrudFactory
 	 */
-	public function __construct(private readonly DoctrineCrudCrud\IEntityCrud $entityCrud)
+	public function __construct(
+		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
+	)
 	{
-		// Transformer CRUD for handling entities
 	}
 
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Triggers\Controls\Control
 	{
-		$entity = $this->entityCrud->getEntityCreator()->create($values);
+		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
 		assert($entity instanceof Entities\Triggers\Controls\Control);
 
 		return $entity;
@@ -62,7 +66,7 @@ final class ControlsManager
 		Utils\ArrayHash $values,
 	): Entities\Triggers\Controls\Control
 	{
-		$entity = $this->entityCrud->getEntityUpdater()->update($values, $entity);
+		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
 		assert($entity instanceof Entities\Triggers\Controls\Control);
 
 		return $entity;
@@ -74,7 +78,19 @@ final class ControlsManager
 	public function delete(Entities\Triggers\Controls\Control $entity): bool
 	{
 		// Delete entity from database
-		return $this->entityCrud->getEntityDeleter()->delete($entity);
+		return $this->getEntityCrud()->getEntityDeleter()->delete($entity);
+	}
+
+	/**
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Triggers\Controls\Control>
+	 */
+	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
+	{
+		if ($this->entityCrud === null) {
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Triggers\Controls\Control::class);
+		}
+
+		return $this->entityCrud;
 	}
 
 }

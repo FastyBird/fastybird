@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WsServer\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WsServer\Events;
@@ -81,7 +81,7 @@ final class WsServer extends Console\Command\Command
 		$this->logger->info(
 			'Starting WS server',
 			[
-				'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+				'source' => MetadataTypes\Sources\Plugin::WS_SERVER->value,
 				'type' => 'server-command',
 			],
 		);
@@ -101,9 +101,9 @@ final class WsServer extends Console\Command\Command
 				$this->logger->error(
 					'An error occurred during handling requests. Stopping WS server',
 					[
-						'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+						'source' => MetadataTypes\Sources\Plugin::WS_SERVER->value,
 						'type' => 'server-command',
-						'exception' => BootstrapHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
 				);
 			});
@@ -121,9 +121,9 @@ final class WsServer extends Console\Command\Command
 			$this->logger->error(
 				'WS server was forced to close',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WS_SERVER->value,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);
@@ -135,9 +135,9 @@ final class WsServer extends Console\Command\Command
 			$this->logger->error(
 				'An unhandled error occurred. Stopping WS server',
 				[
-					'source' => MetadataTypes\PluginSource::SOURCE_PLUGIN_WS_SERVER,
+					'source' => MetadataTypes\Sources\Plugin::WS_SERVER->value,
 					'type' => 'server-command',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'cmd' => $this->getName(),
 				],
 			);

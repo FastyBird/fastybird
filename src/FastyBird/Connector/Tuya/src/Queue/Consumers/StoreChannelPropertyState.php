@@ -17,25 +17,29 @@ namespace FastyBird\Connector\Tuya\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\Entities;
+use FastyBird\Connector\Tuya\Documents;
+use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Metadata\ValueObjects as MetadataValueObjects;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
+use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function assert;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -61,80 +65,80 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
+		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws Throwable
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\StoreChannelPropertyState) {
+		if (!$message instanceof Queue\Messages\StoreChannelPropertyState) {
 			return false;
 		}
 
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getIdentifier());
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getIdentifier());
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			$this->logger->error(
 				'Device could not be loaded',
 				[
-					'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'store-channel-property-state-message-consumer',
 					'connector' => [
-						'id' => $entity->getConnector()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $entity->getIdentifier(),
+						'identifier' => $message->getIdentifier(),
 					],
-					'data' => $entity->toArray(),
+					'data' => $message->toArray(),
 				],
 			);
 
 			return true;
 		}
 
-		foreach ($entity->getDataPoints() as $dataPoint) {
+		foreach ($message->getDataPoints() as $dataPoint) {
 			$property = $this->findProperty(
-				$entity->getConnector(),
-				$entity->getIdentifier(),
+				$message->getConnector(),
+				$message->getIdentifier(),
 				$dataPoint->getCode(),
 			);
 
 			if ($property !== null) {
 				try {
-					$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-						$property->getDataType(),
-						$dataPoint->getValue(),
-						$property->getFormat(),
-						$property->getInvalid(),
-					);
-
-					$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-						DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
-						DevicesStates\Property::VALID_FIELD => true,
-					]));
+					await($this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
+						]),
+						MetadataTypes\Sources\Connector::TUYA,
+					));
 				} catch (MetadataExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
 
 					if (
-						$property->getDataType()->equalsValue(MetadataTypes\DataType::DATA_TYPE_ENUM)
+						$property->getDataType() === MetadataTypes\DataType::ENUM
 						&& $dataPoint->getValue() !== null
-						&& $format instanceof MetadataValueObjects\StringEnumFormat
+						&& $format instanceof MetadataFormats\StringEnum
 					) {
 						$property = $this->databaseHelper->transaction(
 							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {
@@ -156,37 +160,36 @@ final class StoreChannelPropertyState implements Queue\Consumer
 							},
 						);
 
-						$valueToStore = MetadataUtilities\ValueHelper::normalizeValue(
-							$property->getDataType(),
-							$dataPoint->getValue(),
-							$property->getFormat(),
-							$property->getInvalid(),
-						);
+						$property = $this->channelsPropertiesConfigurationRepository->find($property->getId());
+						assert($property instanceof DevicesDocuments\Channels\Properties\Dynamic);
 
 					} else {
 						throw $ex;
 					}
-				}
 
-				$this->channelPropertiesStatesManager->setValue($property, Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $valueToStore,
-					DevicesStates\Property::VALID_FIELD => true,
-				]));
+					await($this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $dataPoint->getValue(),
+						]),
+						MetadataTypes\Sources\Connector::TUYA,
+					));
+				}
 			}
 		}
 
 		$this->logger->debug(
 			'Consumed store device state message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'store-channel-property-state-message-consumer',
 				'connector' => [
-					'id' => $entity->getConnector()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
-					'identifier' => $entity->getIdentifier(),
+					'id' => $device->getId()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'data' => $message->toArray(),
 			],
 		);
 
@@ -200,7 +203,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		Uuid\UuidInterface $connector,
 		string $deviceIdentifier,
 		string $dataPointIdentifier,
-	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
+	): DevicesDocuments\Channels\Properties\Dynamic|null
 	{
 		$key = $deviceIdentifier . '-' . $dataPointIdentifier;
 
@@ -210,10 +213,10 @@ final class StoreChannelPropertyState implements Queue\Consumer
 
 			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
 				$findPropertyQuery,
-				MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+				DevicesDocuments\Channels\Properties\Dynamic::class,
 			);
 
-			if ($property instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty) {
+			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 				return $property;
 			}
 		}
@@ -234,24 +237,28 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		Uuid\UuidInterface $connectorId,
 		string $deviceIdentifier,
 		string $dataPointIdentifier,
-	): MetadataDocuments\DevicesModule\ChannelDynamicProperty|null
+	): DevicesDocuments\Channels\Properties\Dynamic|null
 	{
-		$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($connectorId);
 		$findDeviceQuery->byIdentifier($deviceIdentifier);
-		$findDeviceQuery->byType(Entities\TuyaDevice::TYPE);
 
-		$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+		$device = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Device::class,
+		);
 
 		if ($device === null) {
 			return null;
 		}
 
-		$findChannelsQuery = new DevicesQueries\Configuration\FindChannels();
+		$findChannelsQuery = new Queries\Configuration\FindChannels();
 		$findChannelsQuery->forDevice($device);
-		$findChannelsQuery->byType(Entities\TuyaChannel::TYPE);
 
-		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
+		$channels = $this->channelsConfigurationRepository->findAllBy(
+			$findChannelsQuery,
+			Documents\Channels\Channel::class,
+		);
 
 		foreach ($channels as $channel) {
 			$findPropertyQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
@@ -260,7 +267,7 @@ final class StoreChannelPropertyState implements Queue\Consumer
 			foreach (
 				$this->channelsPropertiesConfigurationRepository->findAllBy(
 					$findPropertyQuery,
-					MetadataDocuments\DevicesModule\ChannelDynamicProperty::class,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
 				) as $property
 			) {
 				if ($property->getIdentifier() === $dataPointIdentifier) {

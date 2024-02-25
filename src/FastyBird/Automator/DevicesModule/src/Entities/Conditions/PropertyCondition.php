@@ -15,48 +15,45 @@
 
 namespace FastyBird\Automator\DevicesModule\Entities\Conditions;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use FastyBird\Module\Triggers\Types as TriggersTypes;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_merge;
 
-/**
- * @ORM\MappedSuperclass
- */
+#[ORM\MappedSuperclass]
 abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 {
 
-	/**
-	 * @IPubDoctrine\Crud(is="required")
-	 * @ORM\Column(type="uuid_binary", name="condition_device", nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true)]
+	#[ORM\Column(name: 'condition_device', type: Uuid\Doctrine\UuidBinaryType::NAME, nullable: true)]
 	protected Uuid\UuidInterface $device;
 
-	/**
-	 * @var MetadataTypes\TriggerConditionOperator
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @Enum(class=MetadataTypes\TriggerConditionOperator::class)
-	 * @ORM\Column(type="string_enum", name="condition_operator", length=15, nullable=true)
-	 */
-	protected $operator;
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(
+		name: 'condition_operator',
+		type: 'string',
+		length: 15,
+		nullable: true,
+		enumType: TriggersTypes\ConditionOperator::class,
+	)]
+	protected TriggersTypes\ConditionOperator $operator;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="condition_operand", length=20, nullable=true)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'condition_operand', type: 'string', nullable: true, length: 20)]
 	protected string $operand;
 
 	public function __construct(
 		Uuid\UuidInterface $device,
-		MetadataTypes\TriggerConditionOperator $operator,
+		TriggersTypes\ConditionOperator $operator,
 		string $operand,
-		TriggersEntities\Triggers\AutomaticTrigger $trigger,
+		TriggersEntities\Triggers\Automatic $trigger,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -72,28 +69,32 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 		return $this->device;
 	}
 
-	public function getOperator(): MetadataTypes\TriggerConditionOperator
+	public function getOperator(): TriggersTypes\ConditionOperator
 	{
 		return $this->operator;
 	}
 
-	public function setOperator(MetadataTypes\TriggerConditionOperator $operator): void
+	public function setOperator(TriggersTypes\ConditionOperator $operator): void
 	{
 		$this->operator = $operator;
 	}
 
-	public function getOperand(): string|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function getOperand(): string|MetadataTypes\Payloads\Payload
 	{
-		if (MetadataTypes\ButtonPayload::isValidValue($this->operand)) {
-			return MetadataTypes\ButtonPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Button::tryFrom($this->operand) !== null) {
+			return MetadataTypes\Payloads\Button::from($this->operand);
 		}
 
-		if (MetadataTypes\SwitchPayload::isValidValue($this->operand)) {
-			return MetadataTypes\SwitchPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Switcher::tryFrom($this->operand) !== null) {
+			return MetadataTypes\Payloads\Switcher::from($this->operand);
 		}
 
-		if (MetadataTypes\CoverPayload::isValidValue($this->operand)) {
-			return MetadataTypes\CoverPayload::get($this->operand);
+		if (MetadataTypes\Payloads\Cover::tryFrom($this->operand) !== null) {
+			return MetadataTypes\Payloads\Cover::from($this->operand);
 		}
 
 		return $this->operand;
@@ -106,30 +107,30 @@ abstract class PropertyCondition extends TriggersEntities\Conditions\Condition
 
 	public function validate(string $value): bool
 	{
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_EQUAL)) {
+		if ($this->operator === TriggersTypes\ConditionOperator::EQUAL) {
 			return $this->operand === $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_ABOVE)) {
+		if ($this->operator === TriggersTypes\ConditionOperator::ABOVE) {
 			return (float) ($this->operand) < (float) $value;
 		}
 
-		if ($this->operator->equalsValue(MetadataTypes\TriggerConditionOperator::OPERATOR_VALUE_BELOW)) {
-			return (float) ($this->operand) > (float) $value;
-		}
-
-		return false;
+		return (float) ($this->operand) > (float) $value;
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'operator' => $this->getOperator()->getValue(),
-			'operand' => (string) $this->getOperand(),
+			'operator' => $this->getOperator()->value,
+			'operand' => MetadataUtilities\Value::toString($this->getOperand()),
 		]);
 	}
 

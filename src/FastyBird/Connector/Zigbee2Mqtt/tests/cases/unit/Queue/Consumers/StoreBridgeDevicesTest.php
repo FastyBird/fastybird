@@ -10,8 +10,8 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
-use FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Tests;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -23,12 +23,16 @@ use Ramsey\Uuid;
 use RuntimeException;
 use function assert;
 
-final class StoreBridgeDevicesTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class StoreBridgeDevicesTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
 	 * @throws DBAL\Exception
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
@@ -40,7 +44,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 	 * @throws Error
 	 * @throws Exception
 	 */
-	public function testConsumeEntity(): void
+	public function testConsumeMessage(): void
 	{
 		$publisher = $this->createMock(ExchangePublisher\Container::class);
 		$publisher
@@ -48,16 +52,15 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			->method('publish')
 			->with(
 				self::callback(
-					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-					static function (MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source): bool {
-						self::assertTrue($source->equalsValue(MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES));
+					static function (MetadataTypes\Sources\Source $source): bool {
+						self::assertTrue($source === MetadataTypes\Sources\Module::DEVICES);
 
 						return true;
 					},
 				),
-				self::callback(static fn (MetadataTypes\RoutingKey $routingKey): bool => true),
-				self::callback(static function (MetadataDocuments\Document|null $entity): bool {
-					self::assertTrue($entity !== null);
+				self::callback(static fn (string $routingKey): bool => true),
+				self::callback(static function (MetadataDocuments\Document|null $document): bool {
+					self::assertTrue($document !== null);
 
 					return true;
 				}),
@@ -72,12 +75,12 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			Queue\Consumers\StoreBridgeDevices::class,
 		);
 
-		$entityFactory = $this->getContainer()->getByType(
-			Helpers\Entity::class,
+		$messageBuilder = $this->getContainer()->getByType(
+			Helpers\MessageBuilder::class,
 		);
 
-		$entity = $entityFactory->create(
-			Entities\Messages\StoreBridgeDevices::class,
+		$message = $messageBuilder->create(
+			Queue\Messages\StoreBridgeDevices::class,
 			[
 				'connector' => Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
 				'base_topic' => 'zigbee2mqtt',
@@ -225,7 +228,7 @@ final class StoreBridgeDevicesTest extends DbTestCase
 			],
 		);
 
-		$consumer->consume($entity);
+		$consumer->consume($message);
 
 		$connectorsRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Connectors\ConnectorsRepository::class,
@@ -233,9 +236,9 @@ final class StoreBridgeDevicesTest extends DbTestCase
 
 		$connector = $connectorsRepository->find(
 			Uuid\Uuid::fromString('f15d2072-fb60-421a-a85f-2566e4dc13fe'),
-			Entities\Zigbee2MqttConnector::class,
+			Entities\Connectors\Connector::class,
 		);
-		assert($connector instanceof Entities\Zigbee2MqttConnector);
+		assert($connector instanceof Entities\Connectors\Connector);
 
 		$devicesRepository = $this->getContainer()->getByType(
 			DevicesModels\Entities\Devices\DevicesRepository::class,

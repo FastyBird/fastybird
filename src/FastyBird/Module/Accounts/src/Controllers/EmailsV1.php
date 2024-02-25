@@ -18,7 +18,8 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Exceptions;
@@ -70,6 +71,7 @@ final class EmailsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
@@ -218,11 +220,14 @@ final class EmailsV1 extends BaseV1
 			);
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'emails-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'emails-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -301,11 +306,14 @@ final class EmailsV1 extends BaseV1
 			);
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'emails-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'emails-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -357,11 +365,14 @@ final class EmailsV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS,
-				'type' => 'emails-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
+					'type' => 'emails-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,

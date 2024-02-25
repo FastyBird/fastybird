@@ -16,8 +16,8 @@
 namespace FastyBird\Connector\Virtual\Drivers;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use React\Promise;
 
 /**
@@ -56,17 +56,16 @@ interface Driver
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function writeState(
-		MetadataDocuments\DevicesModule\DeviceDynamicProperty|MetadataDocuments\DevicesModule\ChannelDynamicProperty $property,
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $expectedValue,
+		DevicesDocuments\Devices\Properties\Dynamic|DevicesDocuments\Channels\Properties\Dynamic $property,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue,
 	): Promise\PromiseInterface;
 
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 */
 	public function notifyState(
-		MetadataDocuments\DevicesModule\DeviceMappedProperty|MetadataDocuments\DevicesModule\ChannelMappedProperty $property,
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $actualValue,
+		DevicesDocuments\Devices\Properties\Mapped|DevicesDocuments\Channels\Properties\Mapped $property,
+		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue,
 	): Promise\PromiseInterface;
 
 }

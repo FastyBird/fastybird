@@ -31,23 +31,23 @@ use Ramsey\Uuid;
 interface Property extends ObjectMapper\MappedObject
 {
 
-	public const ACTUAL_VALUE_FIELD = 'actualValue';
+	public const ACTUAL_VALUE_FIELD = 'actual_value';
 
-	public const EXPECTED_VALUE_FIELD = 'expectedValue';
+	public const EXPECTED_VALUE_FIELD = 'expected_value';
 
 	public const PENDING_FIELD = 'pending';
 
 	public const VALID_FIELD = 'valid';
 
-	public const CREATED_AT = 'createdAt';
+	public const CREATED_AT = 'created_at';
 
-	public const UPDATED_AT = 'updatedAt';
+	public const UPDATED_AT = 'updated_at';
 
 	public function getId(): Uuid\UuidInterface;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null;
+
+	public function getActualValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null;
+
+	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null;
 
 	public function getPending(): bool|DateTimeInterface;
 

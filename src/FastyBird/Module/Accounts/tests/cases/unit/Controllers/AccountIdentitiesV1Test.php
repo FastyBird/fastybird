@@ -3,12 +3,11 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Schemas;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
-use FastyBird\Module\Accounts\Tests\Tools;
+use FastyBird\Module\Accounts\Tests;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -24,7 +23,7 @@ use function file_get_contents;
  * @runTestsInSeparateProcesses
  * @preserveGlobalState disabled
  */
-final class AccountIdentitiesV1Test extends DbTestCase
+final class AccountIdentitiesV1Test extends Tests\Cases\Unit\DbTestCase
 {
 
 	private const ADMINISTRATOR_IDENTITY_ID = '77331268-efbf-bd34-49ef-bfbdefbfbd04';
@@ -34,7 +33,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 	private const UNKNOWN_ID = '83985c13-238c-46bd-aacb-2359d5c921a7';
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
@@ -64,7 +63,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);
@@ -219,7 +218,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
@@ -250,7 +249,7 @@ final class AccountIdentitiesV1Test extends DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
-		Tools\JsonAssert::assertFixtureMatch(
+		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
 			(string) $response->getBody(),
 		);

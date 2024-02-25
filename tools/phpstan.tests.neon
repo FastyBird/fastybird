@@ -4,8 +4,9 @@ includes:
     - ../src/FastyBird/Automator/DateTime/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Automator/DevicesModule/tools/phpstan.config.tests.neon
 
-    - ../src/FastyBird/Bridge/RedisDbDevicesModule/tools/phpstan.config.tests.neon
-    - ../src/FastyBird/Bridge/RedisDbTriggersModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/HomeKit/tools/phpstan.config.tests.neon
@@ -18,9 +19,10 @@ includes:
     - ../src/FastyBird/Connector/Virtual/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Connector/Zigbee2Mqtt/tools/phpstan.config.tests.neon
 
-    - ../src/FastyBird/Library/Bootstrap/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Library/Application/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Library/Exchange/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Library/Metadata/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Library/Tools/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Module/Accounts/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.tests.neon
@@ -33,7 +35,7 @@ includes:
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.tests.neon
 
-    - ../src/FastyBird/Addon/ThermostatDevice/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Addon/VirtualThermostat/tools/phpstan.config.tests.neon
 
 parameters:
     level: max

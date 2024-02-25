@@ -9,8 +9,7 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Tests;
-use FastyBird\Connector\NsPanel\Tests\Tools;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -23,11 +22,15 @@ use function is_array;
 use function str_replace;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -90,8 +93,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -112,7 +115,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -178,8 +181,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -201,7 +204,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -268,8 +271,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -287,7 +290,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -339,7 +342,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/synchronise_devices.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -383,8 +386,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -437,7 +440,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -491,7 +494,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -535,8 +538,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -562,7 +565,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -616,7 +619,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/report_device_online.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -660,8 +663,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -683,7 +686,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -749,8 +752,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
@@ -776,7 +779,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
@@ -830,7 +833,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 					$request->getBody()->rewind();
 
-					Tools\JsonAssert::assertFixtureMatch(
+					Tests\Tools\JsonAssert::assertFixtureMatch(
 						__DIR__ . '/../../../fixtures/API/request/set_sub_device_state.json',
 						$request->getBody()->getContents(),
 						static function (string $expectation) use ($actual): string {
@@ -874,8 +877,8 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('ns-panel');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\NsPanelConnector::class);
-		self::assertInstanceOf(Entities\NsPanelConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 

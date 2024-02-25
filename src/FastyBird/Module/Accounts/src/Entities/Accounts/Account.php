@@ -15,13 +15,12 @@
 
 namespace FastyBird\Module\Accounts\Entities\Accounts;
 
-use Consistence\Doctrine\Enum\EnumAnnotation as Enum;
 use DateTimeInterface;
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use FastyBird\Module\Accounts\Types;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -29,17 +28,15 @@ use function array_map;
 use function assert;
 use function in_array;
 
-/**
- * @ORM\Entity
- * @ORM\Table(
- *     name="fb_accounts_module_accounts",
- *     options={
- *       "collate"="utf8mb4_general_ci",
- *       "charset"="utf8mb4",
- *       "comment"="Application accounts"
- *     }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(
+	name: 'fb_accounts_module_accounts',
+	options: [
+		'collate' => 'utf8mb4_general_ci',
+		'charset' => 'utf8mb4',
+		'comment' => 'Application accounts',
+	],
+)]
 class Account implements Entities\Entity,
 	Entities\EntityParams,
 	DoctrineTimestampable\Entities\IEntityCreated,
@@ -51,72 +48,75 @@ class Account implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	/**
-	 * @ORM\Id
-	 * @ORM\Column(type="uuid_binary", name="account_id")
-	 * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidGenerator")
-	 */
+	#[ORM\Id]
+	#[ORM\Column(name: 'account_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
+	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	/**
-	 * @var MetadataTypes\AccountState
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
-	 *
-	 * @Enum(class=MetadataTypes\AccountState::class)
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string_enum", name="account_state", nullable=false, options={"default": "notActivated"})
-	 */
-	protected $state;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(
+		name: 'account_state',
+		type: 'string',
+		nullable: false,
+		enumType: Types\AccountState::class,
+		options: ['default' => Types\AccountState::NOT_ACTIVATED],
+	)]
+	protected Types\AccountState $state;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="string", name="account_request_hash", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'account_request_hash', type: 'string', nullable: true, options: ['default' => null])]
 	protected string|null $requestHash = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="datetime", name="account_last_visit", nullable=true, options={"default": null})
-	 */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'account_last_visit', type: 'datetime', nullable: true, options: ['default' => null])]
 	protected DateTimeInterface|null $lastVisit = null;
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\OneToOne(targetEntity="FastyBird\Module\Accounts\Entities\Details\Details", mappedBy="account", cascade={"persist", "remove"})
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\OneToOne(
+		mappedBy: 'account',
+		targetEntity: Entities\Details\Details::class,
+		cascade: ['persist', 'remove'],
+	)]
 	protected Entities\Details\Details|null $details;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Identities\Identity>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Accounts\Entities\Identities\Identity", mappedBy="account")
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Identities\Identity> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'account',
+		targetEntity: Entities\Identities\Identity::class,
+	)]
 	protected Common\Collections\Collection $identities;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Emails\Email>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\OneToMany(targetEntity="FastyBird\Module\Accounts\Entities\Emails\Email", mappedBy="account", cascade={"persist", "remove"}, orphanRemoval=true)
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Emails\Email> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\OneToMany(
+		mappedBy: 'account',
+		targetEntity: Entities\Emails\Email::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
 	protected Common\Collections\Collection $emails;
 
-	/**
-	 * @var Common\Collections\Collection<int, Entities\Roles\Role>
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\ManyToMany(targetEntity="FastyBird\Module\Accounts\Entities\Roles\Role")
-	 * @ORM\JoinTable(name="fb_accounts_module_accounts_roles",
-	 *    joinColumns={
-	 *       @ORM\JoinColumn(name="account_id", referencedColumnName="account_id", onDelete="cascade")
-	 *    },
-	 *    inverseJoinColumns={
-	 *       @ORM\JoinColumn(name="role_id", referencedColumnName="role_id", onDelete="cascade")
-	 *    }
-	 * )
-	 */
+	/** @var Common\Collections\Collection<int, Entities\Roles\Role> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToMany(targetEntity: Entities\Roles\Role::class)]
+	#[ORM\JoinTable(
+		name: 'fb_accounts_module_accounts_roles',
+		joinColumns: [
+			new ORM\JoinColumn(
+				name: 'account_id',
+				referencedColumnName: 'account_id',
+				onDelete: 'CASCADE',
+			),
+		],
+		inverseJoinColumns: [
+			new ORM\JoinColumn(
+				name: 'role_id',
+				referencedColumnName: 'role_id',
+				onDelete: 'CASCADE',
+			),
+		],
+	)]
 	protected Common\Collections\Collection $roles;
 
 	public function __construct(Uuid\UuidInterface|null $id = null)
@@ -124,7 +124,7 @@ class Account implements Entities\Entity,
 		// @phpstan-ignore-next-line
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
-		$this->state = MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_NOT_ACTIVATED);
+		$this->state = Types\AccountState::NOT_ACTIVATED;
 
 		$this->emails = new Common\Collections\ArrayCollection();
 		$this->identities = new Common\Collections\ArrayCollection();
@@ -133,27 +133,27 @@ class Account implements Entities\Entity,
 
 	public function isActivated(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_ACTIVE);
+		return $this->state === Types\AccountState::ACTIVE;
 	}
 
 	public function isBlocked(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_BLOCKED);
+		return $this->state === Types\AccountState::BLOCKED;
 	}
 
 	public function isDeleted(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_DELETED);
+		return $this->state === Types\AccountState::DELETED;
 	}
 
 	public function isNotActivated(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_NOT_ACTIVATED);
+		return $this->state === Types\AccountState::NOT_ACTIVATED;
 	}
 
 	public function isApprovalRequired(): bool
 	{
-		return $this->state->equalsValue(MetadataTypes\AccountState::STATE_APPROVAL_WAITING);
+		return $this->state === Types\AccountState::APPROVAL_WAITING;
 	}
 
 	public function getRequestHash(): string|null
@@ -180,12 +180,12 @@ class Account implements Entities\Entity,
 		return $this->details;
 	}
 
-	public function getState(): MetadataTypes\AccountState
+	public function getState(): Types\AccountState
 	{
 		return $this->state;
 	}
 
-	public function setState(MetadataTypes\AccountState $state): void
+	public function setState(Types\AccountState $state): void
 	{
 		$this->state = $state;
 	}
@@ -328,7 +328,7 @@ class Account implements Entities\Entity,
 			'last_name' => $this->getDetails()->getLastName(),
 			'middle_name' => $this->getDetails()->getMiddleName(),
 			'email' => $this->getEmail()?->getAddress(),
-			'state' => $this->getState()->getValue(),
+			'state' => $this->getState()->value,
 			'registered' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),
 			'roles' => array_map(static fn (Entities\Roles\Role $role): string => $role->getName(), $this->getRoles()),

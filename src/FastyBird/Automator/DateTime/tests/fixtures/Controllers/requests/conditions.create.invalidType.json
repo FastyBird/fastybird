@@ -1,7 +1,7 @@
 {
   "data" : {
     "id" : "f333fc7a-6e23-4b2f-808d-ed35105b8430",
-    "type" : "com.fastybird.triggers-module/invalid",
+    "type" : "com.fastybird.date-time-automator/invalid",
     "attributes" : {
       "device" : "2d1aca1f-2151-4928-b823-8c14f124ab76",
       "channel" : "59606c85-8ce4-42c2-be5c-0df82f100db9",

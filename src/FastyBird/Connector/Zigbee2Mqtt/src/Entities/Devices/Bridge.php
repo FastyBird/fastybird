@@ -16,36 +16,30 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Entities\Devices;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
+use TypeError;
+use ValueError;
 use function is_string;
 
-/**
- * @ORM\Entity
- */
-class Bridge extends Entities\Zigbee2MqttDevice
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class Bridge extends Device
 {
 
 	public const TYPE = 'zigbee2mqtt-connector-bridge';
 
 	public const BASE_TOPIC = 'zigbee2mqtt';
 
-	/**
-	 * @IPubDoctrine\Crud(is={"required", "writable"})
-	 * @ORM\Column(type="string", name="device_identifier", length=50, nullable=false)
-	 */
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'device_identifier', type: 'string', length: 50, nullable: false)]
 	protected string $identifier;
 
-	public function getType(): string
-	{
-		return self::TYPE;
-	}
-
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return self::TYPE;
 	}
@@ -53,13 +47,15 @@ class Bridge extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getBaseTopic(): string
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::BASE_TOPIC
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::BASE_TOPIC->value
 			)
 			->first();
 
@@ -76,13 +72,15 @@ class Bridge extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFirmwareVersion(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::VERSION
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::VERSION->value
 			)
 			->first();
 
@@ -99,13 +97,15 @@ class Bridge extends Entities\Zigbee2MqttDevice
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getFirmwareCommit(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::COMMIT
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::COMMIT->value
 			)
 			->first();
 
@@ -123,13 +123,15 @@ class Bridge extends Entities\Zigbee2MqttDevice
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function getIeeeAddress(): string|null
 	{
 		$property = $this->properties
 			->filter(
-			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS
+				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IEEE_ADDRESS->value
 			)
 			->first();
 

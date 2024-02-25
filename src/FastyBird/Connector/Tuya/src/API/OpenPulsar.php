@@ -15,10 +15,9 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
+use Closure;
 use DateTimeInterface;
-use Evenement;
 use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
@@ -55,11 +54,10 @@ use const OPENSSL_RAW_DATA;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class OpenPulsar implements Evenement\EventEmitterInterface
+final class OpenPulsar
 {
 
 	use Nette\SmartObject;
-	use Evenement\EventEmitterTrait;
 
 	private const PING_INTERVAL = 30;
 
@@ -68,6 +66,21 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	public const WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME = 'openpulsar_payload.json';
 
 	public const WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME = 'openpulsar_data.json';
+
+	/** @var array<Closure(): void> */
+	public array $onConnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onDisconnected = [];
+
+	/** @var array<Closure(): void> */
+	public array $onLost = [];
+
+	/** @var array<Closure(Messages\Message $message): void> */
+	public array $onMessage = [];
+
+	/** @var array<Closure(Throwable $error): void> */
+	public array $onError = [];
 
 	private bool $connecting = false;
 
@@ -90,7 +103,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		private readonly string $identifier,
 		private readonly string $accessId,
 		private readonly string $accessSecret,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Types\OpenPulsarTopic $topic,
 		private readonly Types\OpenPulsarEndpoint $endpoint,
 		private readonly Tuya\Logger $logger,
@@ -139,7 +152,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 				$this->logger->debug(
 					'Connected to Tuya sockets server',
 					[
-						'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'openpulsar-api',
 						'connector' => [
 							'identifier' => $this->identifier,
@@ -151,21 +164,21 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					try {
 						$this->handleWsMessage($message->getPayload());
 					} catch (Exceptions\OpenPulsarError $ex) {
-						$this->emit('error', [$ex]);
+						Utils\Arrays::invoke($this->onError, $ex);
 					}
 				});
 
 				$connection->on('error', function (Throwable $ex): void {
 					$this->lost();
 
-					$this->emit('error', [$ex]);
+					Utils\Arrays::invoke($this->onError, $ex);
 				});
 
 				$connection->on('close', function ($code = null, $reason = null): void {
 					$this->logger->debug(
 						'Connection to Tuya WS server was closed',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'openpulsar-api',
 							'connection' => [
 								'code' => $code,
@@ -179,7 +192,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 
 					$this->disconnect();
 
-					$this->emit('disconnected');
+					Utils\Arrays::invoke($this->onDisconnected);
 				});
 
 				$this->pingTimer = $this->eventLoop->addPeriodicTimer(
@@ -193,7 +206,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 					}),
 				);
 
-				$this->emit('connected');
+				Utils\Arrays::invoke($this->onConnected);
 
 				$deferred->resolve(true);
 			})
@@ -257,7 +270,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 	{
 		$this->lost = $this->dateTimeFactory->getNow();
 
-		$this->emit('lost');
+		Utils\Arrays::invoke($this->onLost);
 
 		$this->disconnect();
 	}
@@ -303,7 +316,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Received message origin payload',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'openpulsar-api',
 				'data' => [
 					'payload' => $payload,
@@ -354,7 +367,7 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		$this->logger->debug(
 			'Received message decrypted',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
 				'type' => 'openpulsar-api',
 				'data' => $decryptedData,
 				'connector' => [
@@ -411,21 +424,19 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 			}
 
 			try {
-				$this->emit(
-					'message',
-					[
-						$this->entityHelper->create(
-							Entities\API\ReportDeviceState::class,
-							[
-								'identifier' => $decryptedData->devId,
-								'data_points' => $dataPointsStatuses,
-							],
-						),
-					],
+				Utils\Arrays::invoke(
+					$this->onMessage,
+					$this->messageBuilder->create(
+						Messages\Response\ReportDeviceState::class,
+						[
+							'identifier' => $decryptedData->devId,
+							'data_points' => $dataPointsStatuses,
+						],
+					),
 				);
 			} catch (Exceptions\Runtime $ex) {
 				throw new Exceptions\OpenPulsarError(
-					'An error occurred, received device data points status could not be converted to entity',
+					'An error occurred, received device data points status could not be converted to message',
 					$ex->getCode(),
 					$ex,
 				);
@@ -437,28 +448,26 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 		if (
 			$decryptedData->offsetExists('bizCode')
 			&& (
-				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE
-				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::OFFLINE
+				$decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::ONLINE->value
+				|| $decryptedData->offsetGet('bizCode') === Types\OpenPulsarMessageType::OFFLINE->value
 			)
 		) {
 			try {
-				$this->emit(
-					'message',
-					[
-						$this->entityHelper->create(
-							Entities\API\ReportDeviceOnline::class,
-							[
-								'identifier' => $decryptedData->devId,
-								'online' => $decryptedData->offsetGet(
-									'bizCode',
-								) === Types\OpenPulsarMessageType::ONLINE,
-							],
-						),
-					],
+				Utils\Arrays::invoke(
+					$this->onMessage,
+					$this->messageBuilder->create(
+						Messages\Response\ReportDeviceOnline::class,
+						[
+							'identifier' => $decryptedData->devId,
+							'online' => $decryptedData->offsetGet(
+								'bizCode',
+							) === Types\OpenPulsarMessageType::ONLINE->value,
+						],
+					),
 				);
 			} catch (Exceptions\Runtime $ex) {
 				throw new Exceptions\OpenPulsarError(
-					'An error occurred, received device online status could not be converted to entity',
+					'An error occurred, received device online status could not be converted to message',
 					$ex->getCode(),
 					$ex,
 				);
@@ -468,8 +477,8 @@ final class OpenPulsar implements Evenement\EventEmitterInterface
 
 	private function buildWsTopicUrl(): string
 	{
-		return $this->endpoint->getValue() . 'ws/v2/consumer/persistent/'
-			. $this->accessId . '/out/' . $this->topic->getValue() . '/'
+		return $this->endpoint->value . 'ws/v2/consumer/persistent/'
+			. $this->accessId . '/out/' . $this->topic->value . '/'
 			. $this->accessId . '-sub?ackTimeoutMillis=3000&subscriptionType=Failover';
 	}
 

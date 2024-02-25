@@ -25,12 +25,12 @@ use IPub\WebSockets;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ClientConnected
+readonly class ClientConnected
 {
 
 	public function __construct(
-		private readonly WebSockets\Entities\Clients\IClient $client,
-		private readonly WebSockets\Http\IRequest $httpRequest,
+		private WebSockets\Entities\Clients\IClient $client,
+		private WebSockets\Http\IRequest $httpRequest,
 	)
 	{
 	}

@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Transformer.php
+ * Entity.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -39,6 +39,6 @@ interface Entity extends DoctrineCrud\Entities\IEntity
 	 */
 	public function toArray(): array;
 
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource;
+	public function getSource(): MetadataTypes\Sources\Source;
 
 }

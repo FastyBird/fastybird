@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Commands;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Localization;
 use Psr\Log;
@@ -99,11 +99,14 @@ class Install extends Console\Command\Command
 			return Console\Command\Command::SUCCESS;
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS,
-				'type' => 'initialize-cmd',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+					'type' => 'initialize-cmd',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			if ($input->getOption('quiet') === false) {
 				$io->error($this->translator->translate('//triggers-module.cmd.install.messages.error'));

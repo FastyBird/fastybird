@@ -19,69 +19,39 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use function sprintf;
-use function strval;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class Dynamic extends Property
 {
 
-	public function getType(): MetadataTypes\PropertyType
+	public const TYPE = Types\PropertyType::DYNAMIC->value;
+
+	public static function getType(): string
 	{
-		return MetadataTypes\PropertyType::get(MetadataTypes\PropertyType::TYPE_DYNAMIC);
+		return self::TYPE;
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
+	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		throw new Exceptions\InvalidState(
-			sprintf('Reading value is not allowed for property type: %s', strval($this->getType()->getValue())),
+			sprintf('Reading value is not allowed for property type: %s', static::getType()),
 		);
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
-	public function setValue(
-		bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null $value,
-	): void
+	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		throw new Exceptions\InvalidState(
 			sprintf(
 				'Writing value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
-			),
-		);
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\ButtonPayload|MetadataTypes\SwitchPayload|MetadataTypes\CoverPayload|null
-	{
-		throw new Exceptions\InvalidState(
-			sprintf(
-				'Reading default  value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
-			),
-		);
-	}
-
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setDefault(string|null $default): void
-	{
-		throw new Exceptions\InvalidState(
-			sprintf(
-				'Writing default value is not allowed for property type: %s',
-				strval($this->getType()->getValue()),
+				static::getType(),
 			),
 		);
 	}

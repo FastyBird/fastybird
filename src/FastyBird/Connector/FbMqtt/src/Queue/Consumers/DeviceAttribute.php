@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  * @since          1.0.0
  *
  * @date           05.02.22
@@ -18,19 +18,27 @@ namespace FastyBird\Connector\FbMqtt\Queue\Consumers;
 use Doctrine\DBAL;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Types;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
+use TypeError;
+use ValueError;
+use function assert;
 use function in_array;
 use function is_array;
 
@@ -38,7 +46,7 @@ use function is_array;
  * Device attributes MQTT message consumer
  *
  * @package        FastyBird:FbMqttConnector!
- * @subpackage     Consumers
+ * @subpackage     Queue
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -58,58 +66,63 @@ final class DeviceAttribute implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\Controls\ControlsManager $deviceControlsManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesUtilities\Database $databaseHelper,
+		private readonly ApplicationHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function consume(Entities\Messages\Entity $entity): bool
+	public function consume(Queue\Messages\Message $message): bool
 	{
-		if (!$entity instanceof Entities\Messages\DeviceAttribute) {
+		if (!$message instanceof Queue\Messages\DeviceAttribute) {
 			return false;
 		}
 
 		$findDeviceQuery = new Queries\Entities\FindDevices();
-		$findDeviceQuery->byConnectorId($entity->getConnector());
-		$findDeviceQuery->byIdentifier($entity->getDevice());
+		$findDeviceQuery->byConnectorId($message->getConnector());
+		$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\FbMqttDevice::class);
+		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class);
 
-		if ($entity->getAttribute() === Entities\Messages\Attribute::STATE) {
-			if (MetadataTypes\ConnectionState::isValidValue($entity->getValue())) {
+		if ($message->getAttribute() === Queue\Messages\Attribute::STATE) {
+			assert(!is_array($message->getValue()));
+
+			if (DevicesTypes\ConnectionState::tryFrom($message->getValue()) !== null) {
 				if ($device === null) {
 					$device = $this->devicesManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\FbMqttDevice::class,
-						'identifier' => $entity->getDevice(),
+						'entity' => Entities\Devices\Device::class,
+						'identifier' => $message->getDevice(),
 					]));
 				}
 
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get($entity->getValue()),
+					DevicesTypes\ConnectionState::from($message->getValue()),
 				);
 			}
 		} else {
-			$this->databaseHelper->transaction(function () use ($entity, $device): void {
+			$this->databaseHelper->transaction(function () use ($message, $device): void {
 				$toUpdate = [
-					'entity' => Entities\FbMqttDevice::class,
+					'entity' => Entities\Devices\Device::class,
 				];
 
-				if ($entity->getAttribute() === Entities\Messages\Attribute::NAME) {
-					$toUpdate['name'] = $entity->getValue();
+				if ($message->getAttribute() === Queue\Messages\Attribute::NAME) {
+					$toUpdate['name'] = $message->getValue();
 				}
 
 				if ($device === null) {
-					$toUpdate['identifier'] = $entity->getDevice();
+					$toUpdate['identifier'] = $message->getDevice();
 
 					$device = $this->devicesManager->create(Utils\ArrayHash::from($toUpdate));
 
@@ -118,44 +131,47 @@ final class DeviceAttribute implements Queue\Consumer
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::PROPERTIES
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::PROPERTIES
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceProperties($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceProperties($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::EXTENSIONS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::EXTENSIONS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceExtensions($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceExtensions($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::CHANNELS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::CHANNELS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceChannels($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceChannels($device, Utils\ArrayHash::from($message->getValue()));
 				}
 
 				if (
-					$entity->getAttribute() === Entities\Messages\Attribute::CONTROLS
-					&& is_array($entity->getValue())
+					$message->getAttribute() === Queue\Messages\Attribute::CONTROLS
+					&& is_array($message->getValue())
 				) {
-					$this->setDeviceControls($device, Utils\ArrayHash::from($entity->getValue()));
+					$this->setDeviceControls($device, Utils\ArrayHash::from($message->getValue()));
 				}
 			});
 		}
 
 		$this->logger->debug(
-			'Consumed device message',
+			'Consumed device attribute message',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_FB_MQTT,
+				'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
 				'type' => 'device-attribute-message-consumer',
-				'device' => [
-					'identifier' => $entity->getDevice(),
+				'connector' => [
+					'id' => $message->getConnector()->toString(),
 				],
-				'data' => $entity->toArray(),
+				'device' => [
+					'identifier' => $message->getDevice(),
+				],
+				'data' => $message->toArray(),
 			],
 		);
 
@@ -165,14 +181,18 @@ final class DeviceAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $properties
 	 *
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Runtime
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function setDeviceProperties(
 		DevicesEntities\Devices\Device $device,
@@ -180,20 +200,20 @@ final class DeviceAttribute implements Queue\Consumer
 	): void
 	{
 		foreach ($properties as $propertyName) {
-			if ($propertyName === Types\DevicePropertyIdentifier::STATE) {
+			if ($propertyName === Types\DevicePropertyIdentifier::STATE->value) {
 				$this->deviceConnectionManager->setState(
 					$device,
-					MetadataTypes\ConnectionState::get(MetadataTypes\ConnectionState::STATE_UNKNOWN),
+					DevicesTypes\ConnectionState::UNKNOWN,
 				);
 			} else {
-				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery = new Queries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
-				$findDevicePropertyQuery->byIdentifier($propertyName);
+				$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::from($propertyName));
 
 				if ($this->devicePropertiesRepository->findOneBy($findDevicePropertyQuery) === null) {
 					if (in_array($propertyName, [
-						Types\DevicePropertyIdentifier::IP_ADDRESS,
-						Types\DevicePropertyIdentifier::STATUS_LED,
+						Types\DevicePropertyIdentifier::IP_ADDRESS->value,
+						Types\DevicePropertyIdentifier::STATUS_LED->value,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
@@ -202,15 +222,15 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 
 					} elseif (in_array($propertyName, [
-						Types\DevicePropertyIdentifier::UPTIME,
-						Types\DevicePropertyIdentifier::FREE_HEAP,
-						Types\DevicePropertyIdentifier::CPU_LOAD,
-						Types\DevicePropertyIdentifier::VCC,
-						Types\DevicePropertyIdentifier::RSSI,
+						Types\DevicePropertyIdentifier::UPTIME->value,
+						Types\DevicePropertyIdentifier::FREE_HEAP->value,
+						Types\DevicePropertyIdentifier::CPU_LOAD->value,
+						Types\DevicePropertyIdentifier::VCC->value,
+						Types\DevicePropertyIdentifier::RSSI->value,
 					], true)) {
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Dynamic::class,
@@ -219,7 +239,7 @@ final class DeviceAttribute implements Queue\Consumer
 							'name' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
+							'dataType' => MetadataTypes\DataType::UINT,
 						]));
 
 					} else {
@@ -229,14 +249,14 @@ final class DeviceAttribute implements Queue\Consumer
 							'identifier' => $propertyName,
 							'settable' => false,
 							'queryable' => false,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
+							'dataType' => MetadataTypes\DataType::UNKNOWN,
 						]));
 					}
 				}
 			}
 		}
 
-		$findDevicePropertiesQuery = new DevicesQueries\Entities\FindDeviceProperties();
+		$findDevicePropertiesQuery = new Queries\Entities\FindDeviceProperties();
 		$findDevicePropertiesQuery->forDevice($device);
 
 		// Cleanup for unused properties
@@ -250,7 +270,8 @@ final class DeviceAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $extensions
 	 *
-	 * @throws DevicesExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function setDeviceExtensions(
 		DevicesEntities\Devices\Device $device,
@@ -258,14 +279,14 @@ final class DeviceAttribute implements Queue\Consumer
 	): void
 	{
 		foreach ($extensions as $extensionName) {
-			if ($extensionName === Types\ExtensionType::FASTYBIRD_HARDWARE) {
+			if ($extensionName === Types\ExtensionType::FASTYBIRD_HARDWARE->value) {
 				foreach ([
 					Types\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS,
 					Types\DevicePropertyIdentifier::HARDWARE_MANUFACTURER,
 					Types\DevicePropertyIdentifier::HARDWARE_MODEL,
 					Types\DevicePropertyIdentifier::HARDWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+					$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -273,18 +294,18 @@ final class DeviceAttribute implements Queue\Consumer
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'identifier' => $propertyName->value,
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}
 				}
-			} elseif ($extensionName === Types\ExtensionType::FASTYBIRD_FIRMWARE) {
+			} elseif ($extensionName === Types\ExtensionType::FASTYBIRD_FIRMWARE->value) {
 				foreach ([
 					Types\DevicePropertyIdentifier::FIRMWARE_MANUFACTURER,
 					Types\DevicePropertyIdentifier::FIRMWARE_NAME,
 					Types\DevicePropertyIdentifier::FIRMWARE_VERSION,
 				] as $propertyName) {
-					$findPropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+					$findPropertyQuery = new Queries\Entities\FindDeviceProperties();
 					$findPropertyQuery->forDevice($device);
 					$findPropertyQuery->byIdentifier($propertyName);
 
@@ -292,8 +313,8 @@ final class DeviceAttribute implements Queue\Consumer
 						$this->devicePropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'device' => $device,
-							'identifier' => $propertyName,
-							'dataType' => MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_STRING),
+							'identifier' => $propertyName->value,
+							'dataType' => MetadataTypes\DataType::STRING,
 						]));
 					}
 				}
@@ -304,6 +325,7 @@ final class DeviceAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $controls
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
@@ -341,6 +363,7 @@ final class DeviceAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $channels
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 */
@@ -354,11 +377,11 @@ final class DeviceAttribute implements Queue\Consumer
 			$findChannelQuery->forDevice($device);
 			$findChannelQuery->byIdentifier($channelName);
 
-			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\FbMqttChannel::class);
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 			if ($channel === null) {
 				$this->channelsManager->create(Utils\ArrayHash::from([
-					'entity' => Entities\FbMqttChannel::class,
+					'entity' => Entities\Channels\Channel::class,
 					'device' => $device,
 					'identifier' => $channelName,
 				]));
@@ -369,7 +392,10 @@ final class DeviceAttribute implements Queue\Consumer
 		$findChannelsQuery->forDevice($device);
 
 		// Cleanup for unused channels
-		foreach ($this->channelsRepository->findAllBy($findChannelsQuery, Entities\FbMqttChannel::class) as $channel) {
+		foreach ($this->channelsRepository->findAllBy(
+			$findChannelsQuery,
+			Entities\Channels\Channel::class,
+		) as $channel) {
 			if (!in_array($channel->getIdentifier(), (array) $channels, true)) {
 				$this->channelsManager->delete($channel);
 			}

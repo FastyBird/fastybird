@@ -17,21 +17,23 @@ namespace FastyBird\Connector\Shelly\Connector;
 
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Clients;
-use FastyBird\Connector\Shelly\Entities;
+use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Writers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
-use FastyBird\Module\Devices\Events as DevicesEvents;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use React\EventLoop;
+use React\Promise;
 use ReflectionClass;
+use TypeError;
+use ValueError;
 use function array_key_exists;
 use function assert;
 use function React\Async\async;
@@ -59,37 +61,43 @@ final class Connector implements DevicesConnectors\Connector
 
 	/**
 	 * @param array<Clients\ClientFactory> $clientsFactories
+	 * @param array<Writers\WriterFactory> $writersFactories
 	 */
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly DevicesDocuments\Connectors\Connector $connector,
 		private readonly array $clientsFactories,
 		private readonly Clients\DiscoveryFactory $discoveryClientFactory,
 		private readonly Helpers\Connector $connectorHelper,
-		private readonly Writers\WriterFactory $writerFactory,
+		private readonly array $writersFactories,
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly Shelly\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
+		assert($this->connector instanceof Documents\Connectors\Connector);
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\Terminate
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function execute(): void
+	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Shelly connector service',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -106,34 +114,36 @@ final class Connector implements DevicesConnectors\Connector
 
 			if (
 				array_key_exists(Clients\ClientFactory::MODE_CONSTANT_NAME, $constants)
-				&& $mode->equalsValue($constants[Clients\ClientFactory::MODE_CONSTANT_NAME])
+				&& $mode === $constants[Clients\ClientFactory::MODE_CONSTANT_NAME]
 			) {
 				$this->client = $clientFactory->create($this->connector);
 			}
 		}
 
 		if (
-			$this->client === null
-			|| (
-				!$this->client instanceof Clients\Local
-				&& !$this->client instanceof Clients\Cloud
-				&& !$this->client instanceof Clients\Mqtt
-			)
+			!$this->client instanceof Clients\Local
+			&& !$this->client instanceof Clients\Cloud
+			&& !$this->client instanceof Clients\Mqtt
 		) {
-			$this->dispatcher?->dispatch(
-				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
-					'Connector client is not configured',
-				),
-			);
-
-			return;
+			return Promise\reject(new Exceptions\InvalidState('Connector client is not configured'));
 		}
 
 		$this->client->connect();
 
-		$this->writer = $this->writerFactory->create($this->connector);
-		$this->writer->connect();
+		foreach ($this->writersFactories as $writerFactory) {
+			if (
+				(
+					$standalone
+					&& $writerFactory instanceof Writers\ExchangeFactory
+				) || (
+					!$standalone
+					&& $writerFactory instanceof Writers\EventFactory
+				)
+			) {
+				$this->writer = $writerFactory->create($this->connector);
+				$this->writer->connect();
+			}
+		}
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
@@ -145,29 +155,36 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector service has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
 				],
 			],
 		);
+
+		return Promise\resolve(true);
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<bool>
+	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function discover(): void
+	public function discover(): Promise\PromiseInterface
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->logger->info(
 			'Starting Shelly connector discovery',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -176,15 +193,6 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		$this->client = $this->discoveryClientFactory->create($this->connector);
-
-		$this->client->on('finished', function (): void {
-			$this->dispatcher?->dispatch(
-				new DevicesEvents\TerminateConnector(
-					MetadataTypes\ConnectorSource::get(MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY),
-					'Devices discovery finished',
-				),
-			);
-		});
 
 		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
 			self::QUEUE_PROCESSING_INTERVAL,
@@ -196,7 +204,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector discovery has been started',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),
@@ -205,11 +213,13 @@ final class Connector implements DevicesConnectors\Connector
 		);
 
 		$this->client->discover();
+
+		return Promise\resolve(true);
 	}
 
 	public function terminate(): void
 	{
-		assert($this->connector->getType() === Entities\ShellyConnector::TYPE);
+		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		$this->client?->disconnect();
 
@@ -222,7 +232,7 @@ final class Connector implements DevicesConnectors\Connector
 		$this->logger->info(
 			'Shelly connector has been terminated',
 			[
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 				'type' => 'connector',
 				'connector' => [
 					'id' => $this->connector->getId()->toString(),

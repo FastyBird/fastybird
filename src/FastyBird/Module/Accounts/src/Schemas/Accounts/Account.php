@@ -43,7 +43,7 @@ final class Account extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS . '/account';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS->value . '/account';
 
 	/**
 	 * Define relationships names
@@ -98,7 +98,7 @@ final class Account extends JsonApis\JsonApi
 				'time_format' => strval($resource->getParam('datetime.format.time', 'HH:mm')),
 			],
 
-			'state' => strval($resource->getState()->getValue()),
+			'state' => $resource->getState()->value,
 
 			'last_visit' => $resource->getLastVisit()?->format(DateTimeInterface::ATOM),
 			'registered' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),

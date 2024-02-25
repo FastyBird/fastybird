@@ -18,12 +18,16 @@ namespace FastyBird\Module\Devices\Schemas\Connectors\Properties;
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
+use TypeError;
+use ValueError;
 use function strval;
 
 /**
@@ -44,7 +48,9 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_CONNECTOR = 'connector';
 
-	public function __construct(private readonly Routing\IRouter $router)
+	public const RELATIONSHIPS_STATE = 'state';
+
+	public function __construct(protected readonly Routing\IRouter $router)
 	{
 	}
 
@@ -53,8 +59,11 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -64,15 +73,19 @@ abstract class Property extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			'category' => strval($resource->getCategory()->getValue()),
+			'category' => $resource->getCategory()->value,
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
-			'data_type' => strval($resource->getDataType()->getValue()),
+			'data_type' => $resource->getDataType()->value,
 			'unit' => $resource->getUnit(),
 			'format' => $resource->getFormat()?->getValue(),
 			'invalid' => $resource->getInvalid(),
 			'scale' => $resource->getScale(),
 			'step' => $resource->getStep(),
+			'default' => MetadataUtilities\Value::flattenValue($resource->getDefault()),
+			'value_transformer' => $resource->getValueTransformer() !== null
+				? strval($resource->getValueTransformer())
+				: null,
 			'owner' => $resource->getConnector()->getOwnerId(),
 			'created_at' => $resource->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $resource->getUpdatedAt()?->format(DateTimeInterface::ATOM),
@@ -93,8 +106,8 @@ abstract class Property extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY,
 				[
-					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getConnector()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -138,7 +151,7 @@ abstract class Property extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CONNECTOR,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getConnector()->getId()->toString(),
 					],
 				),
 				false,

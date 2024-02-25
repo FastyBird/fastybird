@@ -17,16 +17,18 @@ namespace FastyBird\Module\Devices\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Controllers;
-use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Hydrators;
 use FastyBird\Module\Devices\Middleware;
 use FastyBird\Module\Devices\Models;
@@ -34,22 +36,22 @@ use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
+use Nette\Caching;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
-use Orisai\DataSources;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
+use function array_keys;
+use function array_pop;
 use function assert;
 use function class_exists;
 use function is_string;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
- * Devices module extension container
+ * Devices module
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     DI
@@ -64,12 +66,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	public const CONNECTOR_TYPE_TAG = 'connector_type';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -80,6 +82,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	{
 		return Schema\Expect::structure([
 			'apiPrefix' => Schema\Expect::bool(true),
+			'exchange' => Schema\Expect::bool(true),
 		]);
 	}
 
@@ -92,6 +95,54 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(Devices\Logger::class)
 			->setAutowired(false);
+
+		/**
+		 * MODULE CACHING
+		 */
+
+		$configurationRepositoryCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.repository'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_repository',
+			])
+			->setAutowired(false);
+
+		$configurationBuilderCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_builder',
+			])
+			->setAutowired(false);
+
+		$stateCache = $builder->addDefinition(
+			$this->prefix('caching.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
+			])
+			->setAutowired(false);
+
+		$stateStorageCache = $builder->addDefinition(
+			$this->prefix('caching.stateStorage'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state_storage',
+			])
+			->setAutowired(false);
+
+		/**
+		 * ROUTE MIDDLEWARES & ROUTING
+		 */
 
 		$builder->addDefinition($this->prefix('middlewares.access'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Access::class);
@@ -109,235 +160,416 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('router.validator'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\Validator::class);
 
-		$builder->addDefinition($this->prefix('models.devicesRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Devices\DevicesRepository::class);
+		/**
+		 * MODELS - DOCTRINE
+		 */
 
+		// CONNECTORS
 		$builder->addDefinition(
-			$this->prefix('models.devicePropertiesRepository'),
+			$this->prefix('models.entities.repositories.connectors'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Devices\Properties\PropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('models.deviceControlsRepository'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Entities\Devices\Controls\ControlsRepository::class);
-
-		$builder->addDefinition($this->prefix('models.channelsRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Channels\ChannelsRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('models.channelPropertiesRepository'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Entities\Channels\Properties\PropertiesRepository::class);
-
-		$builder->addDefinition(
-			$this->prefix('models.channelControlsRepository'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Entities\Channels\Controls\ControlsRepository::class);
-
-		$builder->addDefinition($this->prefix('models.connectorsRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Entities\Connectors\ConnectorsRepository::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.connectorPropertiesRepository'),
+			$this->prefix('models.entities.managers.connectors'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Connectors\ConnectorsManager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\Entities\Connectors\Properties\PropertiesRepository::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.connectorControlsRepository'),
+			$this->prefix('models.entities.managers.connectorsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Connectors\Properties\PropertiesManager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\Entities\Connectors\Controls\ControlsRepository::class);
 
-		$builder->addDefinition($this->prefix('models.devicesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Devices\DevicesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.connectorsControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Connectors\Controls\ControlsManager::class);
+
+		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.devices'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Devices\DevicesRepository::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.devicesPropertiesManager'),
+			$this->prefix('models.entities.managers.devices'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Devices\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
-
-		$builder->addDefinition($this->prefix('models.devicesControlsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Devices\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
-
-		$builder->addDefinition($this->prefix('models.channelsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Channels\ChannelsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\DevicesManager::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.channelsPropertiesManager'),
+			$this->prefix('models.entities.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Channels\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
-
-		$builder->addDefinition($this->prefix('models.channelsControlsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Channels\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
-
-		$builder->addDefinition($this->prefix('models.connectorsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Connectors\ConnectorsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\Properties\PropertiesRepository::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.connectorsPropertiesManager'),
+			$this->prefix('models.entities.managers.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Connectors\Properties\PropertiesManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\Properties\PropertiesManager::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.connectorsControlsManager'),
+			$this->prefix('models.entities.repositories.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Entities\Connectors\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Devices\Controls\ControlsRepository::class);
 
-		$manager = new DataSources\DefaultFormatEncoderManager();
-		$manager->addEncoder(new DataSources\JsonFormatEncoder());
-
-		$dataSource = $builder->addDefinition(
-			$this->prefix('models.configuration.builder.datasource'),
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(DataSources\DefaultDataSource::class)
-			->setArguments([
-				'encoderManager' => $manager,
-			])
-			->setAutowired(false);
+			->setType(Models\Entities\Devices\Controls\ControlsManager::class);
 
-		$builder->addDefinition($this->prefix('models.configuration.builder'), new DI\Definitions\ServiceDefinition())
+		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.channels'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\ChannelsRepository::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.channels'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\ChannelsManager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.channelsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\Properties\PropertiesRepository::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.channelsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\Properties\PropertiesManager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.channelsControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\Controls\ControlsRepository::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.channelsControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Channels\Controls\ControlsManager::class);
+
+		/**
+		 * MODELS - CONFIGURATION
+		 */
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Models\Configuration\Builder::class)
 			->setArguments([
-				'dataSource' => $dataSource,
+				'cache' => $configurationBuilderCache,
+			]);
+
+		// CONNECTORS
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.connectors'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Connectors\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.connectorsRepository'),
+			$this->prefix('models.configuration.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Repository::class);
+			->setType(Models\Configuration\Connectors\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.connectorsPropertiesRepository'),
+			$this->prefix('models.configuration.repositories.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Properties\Repository::class);
+			->setType(Models\Configuration\Connectors\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.devices'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Devices\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.connectorsControlsRepository'),
+			$this->prefix('models.configuration.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Controls\Repository::class);
+			->setType(Models\Configuration\Devices\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.devicesRepository'),
+			$this->prefix('models.configuration.repositories.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Repository::class);
+			->setType(Models\Configuration\Devices\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.channels'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Channels\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.devicesPropertiesRepository'),
+			$this->prefix('models.configuration.repositories.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Properties\Repository::class);
+			->setType(Models\Configuration\Channels\Properties\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.devicesControlsRepository'),
+			$this->prefix('models.configuration.repositories.channelsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Controls\Repository::class);
+			->setType(Models\Configuration\Channels\Controls\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		/**
+		 * MODELS - STATES
+		 */
+
+		// CONNECTORS
+		$builder->addDefinition(
+			$this->prefix('models.states.repositories.connectorsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Connectors\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.channelsRepository'),
+			$this->prefix('models.states.managers.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Repository::class);
+			->setType(Models\States\Connectors\Manager::class);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.channelsPropertiesRepository'),
+			$this->prefix('models.states.repositories.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Properties\Repository::class);
+			->setType(Models\States\Connectors\Async\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
 
 		$builder->addDefinition(
-			$this->prefix('models.configuration.channelsControlsRepository'),
+			$this->prefix('models.states.managers.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Controls\Repository::class);
+			->setType(Models\States\Connectors\Async\Manager::class);
+
+		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('models.states.repositories.devicesProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Devices\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.managers.devicesProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Devices\Manager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.repositories.devicesProperties.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Devices\Async\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.managers.devicesProperties.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Devices\Async\Manager::class);
+
+		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('models.states.repositories.channelsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Channels\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.managers.channelsProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Channels\Manager::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.repositories.channelsProperties.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Channels\Async\Repository::class)
+			->setArguments([
+				'cache' => $stateStorageCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.managers.channelsProperties.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Channels\Async\Manager::class);
+
+		// MANAGERS - CONNECTORS
+		$builder->addDefinition(
+			$this->prefix('models.states.connectors.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\ConnectorPropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.connectors.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ConnectorPropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		// MANAGERS - DEVICES
+		$builder->addDefinition(
+			$this->prefix('models.states.devices.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\DevicePropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.devices.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\DevicePropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		// MANAGERS - CHANNELS
+		$builder->addDefinition(
+			$this->prefix('models.states.channels.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\ChannelPropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.states.channels.states.async'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\States\Async\ChannelPropertiesManager::class)
+			->setArguments([
+				'useExchange' => $configuration->exchange,
+				'cache' => $stateCache,
+				'logger' => $logger,
+			]);
+
+		/**
+		 * SUBSCRIBERS
+		 */
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ModuleEntities::class);
+			->setType(Subscribers\ModuleEntities::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+				'stateCache' => $stateCache,
+				'stateStorageCache' => $stateStorageCache,
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\StateEntities::class);
+			->setType(Subscribers\StateEntities::class)
+			->setArguments([
+				'stateCache' => $stateCache,
+				'stateStorageCache' => $stateStorageCache,
+			]);
 
-		$builder->addDefinition($this->prefix('controllers.devices'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DevicesV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
+		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Connector::class);
 
-		$builder->addDefinition($this->prefix('controllers.deviceChildren'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DeviceChildrenV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
+		/**
+		 * API CONTROLLERS
+		 */
 
-		$builder->addDefinition($this->prefix('controllers.deviceParents'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DeviceParentsV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.deviceProperties'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DevicePropertiesV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
+		// CONNECTORS
 		$builder->addDefinition(
-			$this->prefix('controllers.devicePropertyChildren'),
+			$this->prefix('controllers.connectors'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Controllers\DevicePropertyChildrenV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.deviceControls'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\DeviceControlsV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.channels'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\ChannelsV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.channelProperties'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\ChannelPropertiesV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition(
-			$this->prefix('controllers.channelPropertyChildren'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Controllers\ChannelPropertyChildrenV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.channelControls'), new DI\Definitions\ServiceDefinition())
-			->setType(Controllers\ChannelControlsV1::class)
-			->addSetup('setLogger', [$logger])
-			->addTag('nette.inject');
-
-		$builder->addDefinition($this->prefix('controllers.connectors'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\ConnectorsV1::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
@@ -350,10 +582,123 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
-		$builder->addDefinition($this->prefix('controllers.connectorsControls'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('controllers.connectorPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ConnectorPropertyStateV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.connectorsControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Controllers\ConnectorControlsV1::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
+
+		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('controllers.devices'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DevicesV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.deviceChildren'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DeviceChildrenV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.deviceParents'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DeviceParentsV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.deviceProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DevicePropertiesV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.devicePropertyChildren'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DevicePropertyChildrenV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.devicePropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DevicePropertyStateV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.deviceControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\DeviceControlsV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('controllers.channels'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelsV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.channelProperties'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelPropertiesV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.channelPropertyChildren'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelPropertyChildrenV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.channelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelPropertyStateV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition(
+			$this->prefix('controllers.channelControls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Controllers\ChannelControlsV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		/**
+		 * WEBSOCKETS CONTROLLERS
+		 */
 
 		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
 			$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
@@ -364,9 +709,36 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				->addTag('nette.inject');
 		}
 
-		$builder->addDefinition($this->prefix('schemas.device.blank'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Devices\Blank::class);
+		/**
+		 * JSON-API SCHEMAS
+		 */
 
+		// CONNECTORS
+		$builder->addDefinition(
+			$this->prefix('schemas.connector.property.dynamic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Properties\Dynamic::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.connector.property.variable'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Properties\Variable::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.connector.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Properties\States\State::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.connector.controls'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Controls\Control::class);
+
+		// DEVICES
 		$builder->addDefinition(
 			$this->prefix('schemas.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -379,15 +751,25 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		)
 			->setType(Schemas\Devices\Properties\Variable::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.property.mapped'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('schemas.device.property.mapped'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Schemas\Devices\Properties\Mapped::class);
 
-		$builder->addDefinition($this->prefix('schemas.device.control'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('schemas.device.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Devices\Properties\States\State::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.device.control'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Schemas\Devices\Controls\Control::class);
 
-		$builder->addDefinition($this->prefix('schemas.channel'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Channels\Channel::class);
-
+		// CHANNELS
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -401,195 +783,91 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Channels\Properties\Variable::class);
 
 		$builder->addDefinition(
+			$this->prefix('schemas.channel.property.state'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Properties\States\State::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.channel.property.mapped'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Schemas\Channels\Properties\Mapped::class);
 
-		$builder->addDefinition($this->prefix('schemas.control'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition(
+			$this->prefix('schemas.control'),
+			new DI\Definitions\ServiceDefinition(),
+		)
 			->setType(Schemas\Channels\Controls\Control::class);
 
-		$builder->addDefinition($this->prefix('schemas.connector.blank'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Connectors\Blank::class);
+		/**
+		 * JSON-API HYDRATORS
+		 */
 
-		$builder->addDefinition(
-			$this->prefix('schemas.connector.property.dynamic'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Connectors\Properties\Dynamic::class);
-
-		$builder->addDefinition(
-			$this->prefix('schemas.connector.property.variable'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Connectors\Properties\Variable::class);
-
-		$builder->addDefinition($this->prefix('schemas.connector.controls'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Connectors\Controls\Control::class);
-
-		$builder->addDefinition($this->prefix('hydrators.device.blank'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Devices\Blank::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.device.property.dynamic'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\DeviceDynamic::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.device.property.variable'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\DeviceVariable::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.device.property.mapped'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\DeviceMapped::class);
-
-		$builder->addDefinition($this->prefix('hydrators.channel'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Channels\Channel::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.property.dynamic'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\ChannelDynamic::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.property.variable'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\ChannelVariable::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.property.mapped'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Properties\ChannelMapped::class);
-
-		$builder->addDefinition($this->prefix('hydrators.connectors.blank'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Connectors\Blank::class);
-
+		// CONNECTORS
 		$builder->addDefinition(
 			$this->prefix('hydrators.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ConnectorDynamic::class);
+			->setType(Hydrators\Connectors\Properties\Dynamic::class);
 
 		$builder->addDefinition(
 			$this->prefix('hydrators.connector.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Properties\ConnectorVariable::class);
+			->setType(Hydrators\Connectors\Properties\Variable::class);
 
+		// DEVICES
 		$builder->addDefinition(
-			$this->prefix('states.repositories.connectors.properties'),
+			$this->prefix('hydrators.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ConnectorPropertiesRepository::class);
+			->setType(Hydrators\Devices\Properties\Dynamic::class);
 
 		$builder->addDefinition(
-			$this->prefix('states.repositories.devices.properties'),
+			$this->prefix('hydrators.device.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\DevicePropertiesRepository::class);
+			->setType(Hydrators\Devices\Properties\Variable::class);
 
 		$builder->addDefinition(
-			$this->prefix('states.repositories.channels.properties'),
+			$this->prefix('hydrators.device.property.mapped'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ChannelPropertiesRepository::class);
+			->setType(Hydrators\Devices\Properties\Mapped::class);
+
+		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.property.dynamic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Properties\Dynamic::class);
 
 		$builder->addDefinition(
-			$this->prefix('states.managers.connectors.properties'),
+			$this->prefix('hydrators.channel.property.variable'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\ConnectorPropertiesManager::class);
+			->setType(Hydrators\Channels\Properties\Variable::class);
 
 		$builder->addDefinition(
-			$this->prefix('states.managers.devices.properties'),
+			$this->prefix('hydrators.channel.property.mapped'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\DevicePropertiesManager::class);
+			->setType(Hydrators\Channels\Properties\Mapped::class);
 
-		$builder->addDefinition(
-			$this->prefix('states.managers.channels.properties'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\States\ChannelPropertiesManager::class);
+		/**
+		 * HELPERS
+		 */
 
-		$builder->addDefinition(
-			$this->prefix('utilities.database'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\Database::class);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.connectors.states'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\ConnectorPropertiesStates::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.devices.states'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\DevicePropertiesStates::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.channels.states'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\ChannelPropertiesStates::class)
-			->setArguments([
-				'logger' => $logger,
-			]);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.devices.connection'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('utilities.devices.connection'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\DeviceConnection::class);
 
-		$builder->addDefinition(
-			$this->prefix('utilities.connector.connection'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('utilities.connector.connection'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\ConnectorConnection::class);
 
-		$builder->addDefinition($this->prefix('exchange.consumer.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Consumers\State::class)
-			->setArguments([
-				'logger' => $logger,
-			])
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-
-		$builder->addDefinition(
-			$this->prefix('exchange.consumer.configuration'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\Configuration::class)
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-
-		if (
-			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
-			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
-		) {
-			$builder->addDefinition($this->prefix('exchange.consumer.sockets'), new DI\Definitions\ServiceDefinition())
-				->setType(Consumers\Sockets::class)
-				->setArguments([
-					'logger' => $logger,
-				])
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		}
+		/**
+		 * COMMANDS
+		 */
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class)
@@ -610,6 +888,67 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'logger' => $logger,
 				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
+
+		/**
+		 * COMMUNICATION EXCHANGE
+		 */
+
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.states'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\State::class)
+			->setArguments([
+				'logger' => $logger,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.moduleEntities'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\ModuleEntities::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+				'stateCache' => $stateCache,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.stateEntities'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\StateEntities::class)
+			->setArguments([
+				'stateCache' => $stateCache,
+				'stateStorageCache' => $stateStorageCache,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
+		if (
+			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
+			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
+		) {
+			$builder->addDefinition(
+				$this->prefix('exchange.consumer.sockets'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(Consumers\Sockets::class)
+				->setArguments([
+					'logger' => $logger,
+				])
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+		}
+
+		/**
+		 * CONNECTOR
+		 */
+
+		$builder->addFactoryDefinition($this->prefix('connector'))
+			->setImplement(Connectors\ContainerFactory::class)
+			->getResultDefinition()
+			->setType(Connectors\Container::class);
 	}
 
 	/**
@@ -622,31 +961,69 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
-		}
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Module\Devices\Entities',
-			]);
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Module\Devices\Entities',
+					]);
+				}
+			}
 		}
 
 		/**
-		 * ApiRoutes
+		 * APPLICATION DOCUMENTS
+		 */
+
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Module\Devices\Documents',
+					]);
+				}
+			}
+		}
+
+		/**
+		 * API ROUTES
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
@@ -659,27 +1036,33 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * Connectors
+		 * CONNECTORS
 		 */
 
-		$connectorCommand = $builder->getDefinitionByType(Commands\Connector::class);
+		$connectorProxyServiceFactoryName = $builder->getByType(Connectors\ContainerFactory::class);
 
-		if ($connectorCommand instanceof DI\Definitions\ServiceDefinition) {
-			$connectorsExecutorsFactoriesServices = $builder->findByType(Connectors\ConnectorFactory::class);
+		if ($connectorProxyServiceFactoryName !== null) {
+			$connectorProxyServiceFactory = $builder->getDefinition($connectorProxyServiceFactoryName);
+			assert($connectorProxyServiceFactory instanceof DI\Definitions\FactoryDefinition);
 
-			foreach ($connectorsExecutorsFactoriesServices as $connectorExecutorFactoryService) {
-				if (is_string($connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG))) {
-					$connectorCommand->addSetup('?->attach(?, ?)', [
-						$connectorCommand,
-						$connectorExecutorFactoryService,
-						$connectorExecutorFactoryService->getTag(self::CONNECTOR_TYPE_TAG),
-					]);
+			$connectorsServicesFactories = $builder->findByType(Connectors\ConnectorFactory::class);
+
+			$factories = [];
+
+			foreach ($connectorsServicesFactories as $connectorServiceFactory) {
+				if (
+					$connectorServiceFactory->getType() !== Connectors\ConnectorFactory::class
+					&& is_string($connectorServiceFactory->getTag(self::CONNECTOR_TYPE_TAG))
+				) {
+					$factories[$connectorServiceFactory->getTag(self::CONNECTOR_TYPE_TAG)] = $connectorServiceFactory;
 				}
 			}
+
+			$connectorProxyServiceFactory->getResultDefinition()->setArgument('factories', $factories);
 		}
 
 		/**
-		 * WebSockets
+		 * WEBSOCKETS
 		 */
 
 		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
@@ -717,86 +1100,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				// Extension is not registered
 			}
 		}
-	}
-
-	/**
-	 * @throws Nette\DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$devicesManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__devicesManager');
-		$devicesManagerService->setBody(
-			'return new ' . Models\Entities\Devices\DevicesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Device::class . '\'));',
-		);
-
-		$devicesPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__devicesPropertiesManager',
-		);
-		$devicesPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Devices\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Properties\Property::class . '\'));',
-		);
-
-		$devicesControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__devicesControlsManager',
-		);
-		$devicesControlsManagerService->setBody(
-			'return new ' . Models\Entities\Devices\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Devices\Controls\Control::class . '\'));',
-		);
-
-		$channelsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__channelsManager',
-		);
-		$channelsManagerService->setBody(
-			'return new ' . Models\Entities\Channels\ChannelsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Channel::class . '\'));',
-		);
-
-		$channelsPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__channelsPropertiesManager',
-		);
-		$channelsPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Channels\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Properties\Property::class . '\'));',
-		);
-
-		$channelsControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__channelsControlsManager',
-		);
-		$channelsControlsManagerService->setBody(
-			'return new ' . Models\Entities\Channels\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Channels\Controls\Control::class . '\'));',
-		);
-
-		$connectorsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__connectorsManager',
-		);
-		$connectorsManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\ConnectorsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Connector::class . '\'));',
-		);
-
-		$connectorsPropertiesManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__connectorsPropertiesManager',
-		);
-		$connectorsPropertiesManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\Properties\PropertiesManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Properties\Property::class . '\'));',
-		);
-
-		$connectorsControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__connectorsControlsManager',
-		);
-		$connectorsControlsManagerService->setBody(
-			'return new ' . Models\Entities\Connectors\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Connectors\Controls\Control::class . '\'));',
-		);
 	}
 
 	/**

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Generation 2 devices component attribute types
  *
@@ -26,71 +23,61 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ComponentAttributeType extends Consistence\Enum\Enum
+enum ComponentAttributeType: string
 {
 
-	public const OUTPUT = 'output';
+	case OUTPUT = 'output';
 
-	public const HUMIDITY = 'humidity';
+	case HUMIDITY = 'humidity';
 
-	public const ACTIVE_POWER = 'active_power';
+	case ACTIVE_POWER = 'active_power';
 
-	public const POWER_FACTOR = 'power_factor';
+	case POWER_FACTOR = 'power_factor';
 
-	public const ACTIVE_ENERGY_TOTAL = 'active_energy_total';
+	case ACTIVE_ENERGY_TOTAL = 'active_energy_total';
 
-	public const CURRENT = 'current';
+	case CURRENT = 'current';
 
-	public const VOLTAGE = 'voltage';
+	case VOLTAGE = 'voltage';
 
-	public const TEMPERATURE_CELSIUS = 'temperature_celsius';
+	case TEMPERATURE_CELSIUS = 'temperature_celsius';
 
-	public const TEMPERATURE_FAHRENHEIT = 'temperature_fahrenheit';
+	case TEMPERATURE_FAHRENHEIT = 'temperature_fahrenheit';
 
-	public const STATE = 'state';
+	case STATE = 'state';
 
-	public const CURRENT_POSITION = 'current_position';
+	case CURRENT_POSITION = 'current_position';
 
-	public const TARGET_POSITION = 'target_position';
+	case TARGET_POSITION = 'target_position';
 
-	public const BRIGHTNESS = 'brightness';
+	case BRIGHTNESS = 'brightness';
 
-	public const SWITCH = 'switch';
+	case SWITCH = 'switch';
 
-	public const BUTTON = 'button';
+	case BUTTON = 'button';
 
-	public const ANALOG = 'analog';
+	case ANALOG = 'analog';
 
-	public const CELSIUS = 'celsius';
+	case CELSIUS = 'celsius';
 
-	public const FAHRENHEIT = 'fahrenheit';
+	case FAHRENHEIT = 'fahrenheit';
 
-	public const RELATIVE_HUMIDITY = 'relative_humidity';
+	case RELATIVE_HUMIDITY = 'relative_humidity';
 
-	public const X_VOLTAGE = 'xvoltage';
+	case X_VOLTAGE = 'xvoltage';
 
-	public const RUNNING = 'running';
+	case RUNNING = 'running';
 
-	public const BATTERY_VOLTAGE = 'battery_voltage';
+	case BATTERY_VOLTAGE = 'battery_voltage';
 
-	public const BATTER_PERCENT = 'battery_percent';
+	case BATTER_PERCENT = 'battery_percent';
 
-	public const EXTERNAL_PRESENT = 'external_present';
+	case EXTERNAL_PRESENT = 'external_present';
 
-	public const ALARM = 'alarm';
+	case ALARM = 'alarm';
 
-	public const MUTE = 'mute';
+	case MUTE = 'mute';
 
-	public const RESULT = 'result';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case RESULT = 'result';
 
 }

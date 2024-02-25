@@ -15,9 +15,11 @@
 
 namespace FastyBird\Connector\Shelly\Clients;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Connector\Shelly\Documents;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Events as DevicesEvents;
 use Nette;
+use Psr\EventDispatcher as PsrEventDispatcher;
 use function sprintf;
 
 /**
@@ -34,29 +36,26 @@ final class Cloud implements Client
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function connect(): void
 	{
-		throw new DevicesExceptions\Terminate(
+		$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+			MetadataTypes\Sources\Connector::SHELLY,
 			sprintf('Cloud client is not implemented for connector %s', $this->connector->getIdentifier()),
-		);
+		));
 	}
 
-	/**
-	 * @throws DevicesExceptions\Terminate
-	 */
 	public function disconnect(): void
 	{
-		throw new DevicesExceptions\Terminate(
+		$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
+			MetadataTypes\Sources\Connector::SHELLY,
 			sprintf('Cloud client is not implemented for connector %s', $this->connector->getIdentifier()),
-		);
+		));
 	}
 
 }

@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Capability protocol types
  *
@@ -26,57 +23,47 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Protocol extends Consistence\Enum\Enum
+enum Protocol: string
 {
 
-	public const POWER_STATE = 'powerState';
+	case POWER_STATE = 'powerState';
 
-	public const TOGGLE_STATE = 'toggleState';
+	case TOGGLE_STATE = 'toggleState';
 
-	public const BRIGHTNESS = 'brightness';
+	case BRIGHTNESS = 'brightness';
 
-	public const COLOR_TEMPERATURE = 'colorTemperature';
+	case COLOR_TEMPERATURE = 'colorTemperature';
 
-	public const COLOR_RED = 'red';
+	case COLOR_RED = 'red';
 
-	public const COLOR_GREEN = 'green';
+	case COLOR_GREEN = 'green';
 
-	public const COLOR_BLUE = 'blue';
+	case COLOR_BLUE = 'blue';
 
-	public const PERCENTAGE = 'percentage';
+	case PERCENTAGE = 'percentage';
 
-	public const MOTOR_CONTROL = 'motorControl';
+	case MOTOR_CONTROL = 'motorControl';
 
-	public const MOTOR_REVERSE = 'motorReverse';
+	case MOTOR_REVERSE = 'motorReverse';
 
-	public const MOTOR_CALIBRATION = 'motorClb';
+	case MOTOR_CALIBRATION = 'motorClb';
 
-	public const STARTUP = 'startup';
+	case STARTUP = 'startup';
 
-	public const STREAM_URL = 'streamUrl';
+	case STREAM_URL = 'streamUrl';
 
-	public const DETECT = 'detect';
+	case DETECT = 'detect';
 
-	public const HUMIDITY = 'humidity';
+	case HUMIDITY = 'humidity';
 
-	public const TEMPERATURE = 'temperature';
+	case TEMPERATURE = 'temperature';
 
-	public const BATTERY = 'battery';
+	case BATTERY = 'battery';
 
-	public const PRESS = 'press';
+	case PRESS = 'press';
 
-	public const RSSI = 'rssi';
+	case RSSI = 'rssi';
 
-	public const CONFIGURATION = 'configuration';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CONFIGURATION = 'configuration';
 
 }

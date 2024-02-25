@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Tuya\API;
 
 use FastyBird\Connector\Tuya;
-use FastyBird\Connector\Tuya\Entities;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
@@ -135,7 +134,7 @@ final class OpenApi
 
 	private Uuid\UuidInterface $nonce;
 
-	private Entities\API\AccessToken|null $tokenInfo = null;
+	private Messages\Response\AccessToken|null $tokenInfo = null;
 
 	/** @var Promise\Deferred<bool>|null */
 	private Promise\Deferred|null $refreshTokenPromise = null;
@@ -145,7 +144,7 @@ final class OpenApi
 		private readonly string $accessId,
 		private readonly string $accessSecret,
 		private readonly string $lang,
-		private readonly Helpers\Entity $entityHelper,
+		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Types\OpenApiEndpoint $endpoint,
 		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Tuya\Logger $logger,
@@ -228,7 +227,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDevices> : Entities\API\GetUserDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDevices> : Messages\Response\GetUserDevices)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -236,7 +235,7 @@ final class OpenApi
 	public function getUserDevices(
 		string $userId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDevices
+	): Promise\PromiseInterface|Messages\Response\GetUserDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -273,7 +272,7 @@ final class OpenApi
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceFactoryInfos> : Entities\API\GetUserDeviceFactoryInfos)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDeviceFactoryInfos> : Messages\Response\GetUserDeviceFactoryInfos)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -281,7 +280,7 @@ final class OpenApi
 	public function getUserDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDeviceFactoryInfos
+	): Promise\PromiseInterface|Messages\Response\GetUserDeviceFactoryInfos
 	{
 		$deferred = new Promise\Deferred();
 
@@ -319,7 +318,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceDetail> : Entities\API\GetUserDeviceDetail)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDeviceDetail> : Messages\Response\GetUserDeviceDetail)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -327,7 +326,7 @@ final class OpenApi
 	public function getUserDeviceDetail(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDeviceDetail
+	): Promise\PromiseInterface|Messages\Response\GetUserDeviceDetail
 	{
 		$deferred = new Promise\Deferred();
 
@@ -362,7 +361,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceSpecifications> : Entities\API\GetUserDeviceSpecifications)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDeviceSpecifications> : Messages\Response\GetUserDeviceSpecifications)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -370,7 +369,7 @@ final class OpenApi
 	public function getUserDeviceSpecifications(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDeviceSpecifications
+	): Promise\PromiseInterface|Messages\Response\GetUserDeviceSpecifications
 	{
 		$deferred = new Promise\Deferred();
 
@@ -405,7 +404,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceState> : Entities\API\GetUserDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDeviceState> : Messages\Response\GetUserDeviceState)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -413,7 +412,7 @@ final class OpenApi
 	public function getUserDeviceState(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDeviceState
+	): Promise\PromiseInterface|Messages\Response\GetUserDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -448,7 +447,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetUserDeviceChildren> : Entities\API\GetUserDeviceChildren)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetUserDeviceChildren> : Messages\Response\GetUserDeviceChildren)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -456,7 +455,7 @@ final class OpenApi
 	public function getUserDeviceChildren(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetUserDeviceChildren
+	): Promise\PromiseInterface|Messages\Response\GetUserDeviceChildren
 	{
 		$deferred = new Promise\Deferred();
 
@@ -493,7 +492,7 @@ final class OpenApi
 	/**
 	 * @param array<string, mixed> $params
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevices> : Entities\API\GetDevices)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetDevices> : Messages\Response\GetDevices)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -501,7 +500,7 @@ final class OpenApi
 	public function getDevices(
 		array $params = [],
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetDevices
+	): Promise\PromiseInterface|Messages\Response\GetDevices
 	{
 		$deferred = new Promise\Deferred();
 
@@ -539,7 +538,7 @@ final class OpenApi
 	/**
 	 * @param array<string> $deviceIds
 	 *
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevicesFactoryInfos> : Entities\API\GetDevicesFactoryInfos)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetDevicesFactoryInfos> : Messages\Response\GetDevicesFactoryInfos)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -547,7 +546,7 @@ final class OpenApi
 	public function getDevicesFactoryInfos(
 		array $deviceIds,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetDevicesFactoryInfos
+	): Promise\PromiseInterface|Messages\Response\GetDevicesFactoryInfos
 	{
 		$deferred = new Promise\Deferred();
 
@@ -585,7 +584,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDevice> : Entities\API\GetDevice)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetDevice> : Messages\Response\GetDevice)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -593,7 +592,7 @@ final class OpenApi
 	public function getDeviceDetail(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetDevice
+	): Promise\PromiseInterface|Messages\Response\GetDevice
 	{
 		$deferred = new Promise\Deferred();
 
@@ -628,7 +627,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDeviceSpecification> : Entities\API\GetDeviceSpecification)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetDeviceSpecification> : Messages\Response\GetDeviceSpecification)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -636,7 +635,7 @@ final class OpenApi
 	public function getDeviceSpecification(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetDeviceSpecification
+	): Promise\PromiseInterface|Messages\Response\GetDeviceSpecification
 	{
 		$deferred = new Promise\Deferred();
 
@@ -671,7 +670,7 @@ final class OpenApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\GetDeviceState> : Entities\API\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\GetDeviceState> : Messages\Response\GetDeviceState)
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
@@ -679,7 +678,7 @@ final class OpenApi
 	public function getDeviceState(
 		string $deviceId,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\GetDeviceState
+	): Promise\PromiseInterface|Messages\Response\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -786,7 +785,7 @@ final class OpenApi
 	private function parseGetAccessToken(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetAccessToken
+	): Messages\Response\GetAccessToken
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME);
 
@@ -807,7 +806,7 @@ final class OpenApi
 
 		$body->offsetSet('result', $result);
 
-		return $this->createEntity(Entities\API\GetAccessToken::class, $body);
+		return $this->createMessage(Messages\Response\GetAccessToken::class, $body);
 	}
 
 	/**
@@ -817,7 +816,7 @@ final class OpenApi
 	private function parseRefreshAccessToken(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\RefreshAccessToken
+	): Messages\Response\RefreshAccessToken
 	{
 		$body = $this->validateResponseBody($request, $response, self::REFRESH_ACCESS_TOKEN_MESSAGE_SCHEMA_FILENAME);
 
@@ -838,7 +837,7 @@ final class OpenApi
 
 		$body->offsetSet('result', $result);
 
-		return $this->createEntity(Entities\API\RefreshAccessToken::class, $body);
+		return $this->createMessage(Messages\Response\RefreshAccessToken::class, $body);
 	}
 
 	/**
@@ -848,11 +847,11 @@ final class OpenApi
 	private function parseGetUserDevices(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDevices
+	): Messages\Response\GetUserDevices
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_USER_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetUserDevices::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDevices::class, $body);
 	}
 
 	/**
@@ -862,7 +861,7 @@ final class OpenApi
 	private function parseGetUserDevicesFactoryInfos(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDeviceFactoryInfos
+	): Messages\Response\GetUserDeviceFactoryInfos
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -870,7 +869,7 @@ final class OpenApi
 			self::GET_USER_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\GetUserDeviceFactoryInfos::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDeviceFactoryInfos::class, $body);
 	}
 
 	/**
@@ -880,11 +879,11 @@ final class OpenApi
 	private function parseGetUserDeviceDetail(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDeviceDetail
+	): Messages\Response\GetUserDeviceDetail
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_USER_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetUserDeviceDetail::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDeviceDetail::class, $body);
 	}
 
 	/**
@@ -894,7 +893,7 @@ final class OpenApi
 	private function parseGetUserDeviceSpecifications(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDeviceSpecifications
+	): Messages\Response\GetUserDeviceSpecifications
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -902,7 +901,7 @@ final class OpenApi
 			self::GET_USER_DEVICE_SPECIFICATIONS_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\GetUserDeviceSpecifications::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDeviceSpecifications::class, $body);
 	}
 
 	/**
@@ -912,11 +911,11 @@ final class OpenApi
 	private function parseGetUserDeviceState(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDeviceState
+	): Messages\Response\GetUserDeviceState
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_USER_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetUserDeviceState::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDeviceState::class, $body);
 	}
 
 	/**
@@ -926,7 +925,7 @@ final class OpenApi
 	private function parseGetUserDeviceChildren(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetUserDeviceChildren
+	): Messages\Response\GetUserDeviceChildren
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -934,7 +933,7 @@ final class OpenApi
 			self::GET_USER_DEVICE_CHILDREN_DEVICES_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\GetUserDeviceChildren::class, $body);
+		return $this->createMessage(Messages\Response\GetUserDeviceChildren::class, $body);
 	}
 
 	/**
@@ -944,11 +943,11 @@ final class OpenApi
 	private function parseGetDevices(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDevices
+	): Messages\Response\GetDevices
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_DEVICES_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetDevices::class, $body);
+		return $this->createMessage(Messages\Response\GetDevices::class, $body);
 	}
 
 	/**
@@ -958,7 +957,7 @@ final class OpenApi
 	private function parseGetDevicesFactoryInfos(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDevicesFactoryInfos
+	): Messages\Response\GetDevicesFactoryInfos
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -966,7 +965,7 @@ final class OpenApi
 			self::GET_DEVICES_FACTORY_INFOS_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\GetDevicesFactoryInfos::class, $body);
+		return $this->createMessage(Messages\Response\GetDevicesFactoryInfos::class, $body);
 	}
 
 	/**
@@ -976,11 +975,11 @@ final class OpenApi
 	private function parseGetDeviceDetail(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDevice
+	): Messages\Response\GetDevice
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_DETAIL_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetDevice::class, $body);
+		return $this->createMessage(Messages\Response\GetDevice::class, $body);
 	}
 
 	/**
@@ -990,7 +989,7 @@ final class OpenApi
 	private function parseGetDeviceSpecification(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDeviceSpecification
+	): Messages\Response\GetDeviceSpecification
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -998,7 +997,7 @@ final class OpenApi
 			self::GET_DEVICE_SPECIFICATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\GetDeviceSpecification::class, $body);
+		return $this->createMessage(Messages\Response\GetDeviceSpecification::class, $body);
 	}
 
 	/**
@@ -1008,11 +1007,11 @@ final class OpenApi
 	private function parseGetDeviceState(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\GetDeviceState
+	): Messages\Response\GetDeviceState
 	{
 		$body = $this->validateResponseBody($request, $response, self::GET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME);
 
-		return $this->createEntity(Entities\API\GetDeviceState::class, $body);
+		return $this->createMessage(Messages\Response\GetDeviceState::class, $body);
 	}
 
 	/**
@@ -1030,26 +1029,26 @@ final class OpenApi
 	}
 
 	/**
-	 * @template T of Entities\API\Entity
+	 * @template T of Messages\Message
 	 *
-	 * @param class-string<T> $entity
+	 * @param class-string<T> $message
 	 *
 	 * @return T
 	 *
 	 * @throws Exceptions\OpenApiError
 	 */
-	private function createEntity(string $entity, Utils\ArrayHash $data): Entities\API\Entity
+	private function createMessage(string $message, Utils\ArrayHash $data): Messages\Message
 	{
 		try {
-			return $this->entityHelper->create(
-				$entity,
+			return $this->messageBuilder->create(
+				$message,
 				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
 			);
 		} catch (Exceptions\Runtime $ex) {
-			throw new Exceptions\OpenApiError('Could not map data to entity', $ex->getCode(), $ex);
+			throw new Exceptions\OpenApiError('Could not map data to message', $ex->getCode(), $ex);
 		} catch (Utils\JsonException $ex) {
 			throw new Exceptions\OpenApiError(
-				'Could not create entity from response',
+				'Could not create message from response',
 				$ex->getCode(),
 				$ex,
 			);
@@ -1087,23 +1086,26 @@ final class OpenApi
 			}
 		}
 
-		$this->logger->debug(sprintf(
-			'Request: method = %s url = %s',
-			$request->getMethod(),
-			strval($request->getUri()),
-		), [
-			'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-			'type' => 'openapi-api',
-			'request' => [
-				'method' => $request->getMethod(),
-				'path' => strval($request->getUri()),
-				'headers' => $request->getHeaders(),
-				'body' => $request->getContent(),
+		$this->logger->debug(
+			sprintf(
+				'Request: method = %s url = %s',
+				$request->getMethod(),
+				strval($request->getUri()),
+			),
+			[
+				'source' => MetadataTypes\Sources\Connector::TUYA->value,
+				'type' => 'openapi-api',
+				'request' => [
+					'method' => $request->getMethod(),
+					'path' => strval($request->getUri()),
+					'headers' => $request->getHeaders(),
+					'body' => $request->getContent(),
+				],
+				'connector' => [
+					'identifier' => $this->identifier,
+				],
 			],
-			'connector' => [
-				'identifier' => $this->identifier,
-			],
-		]);
+		);
 
 		if ($async) {
 			try {
@@ -1130,23 +1132,26 @@ final class OpenApi
 								return;
 							}
 
-							$this->logger->debug('Received response', [
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-								'type' => 'openapi-api',
-								'request' => [
-									'method' => $request->getMethod(),
-									'url' => strval($request->getUri()),
-									'headers' => $request->getHeaders(),
-									'body' => $request->getContent(),
+							$this->logger->debug(
+								'Received response',
+								[
+									'source' => MetadataTypes\Sources\Connector::TUYA->value,
+									'type' => 'openapi-api',
+									'request' => [
+										'method' => $request->getMethod(),
+										'url' => strval($request->getUri()),
+										'headers' => $request->getHeaders(),
+										'body' => $request->getContent(),
+									],
+									'response' => [
+										'code' => $response->getStatusCode(),
+										'body' => $responseBody,
+									],
+									'connector' => [
+										'identifier' => $this->identifier,
+									],
 								],
-								'response' => [
-									'code' => $response->getStatusCode(),
-									'body' => $responseBody,
-								],
-								'connector' => [
-									'identifier' => $this->identifier,
-								],
-							]);
+							);
 
 							$this->checkResponse($request, $response);
 
@@ -1190,23 +1195,26 @@ final class OpenApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'url' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
-					'body' => $request->getContent(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'url' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+						'body' => $request->getContent(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			$this->checkResponse($request, $response);
 
@@ -1234,7 +1242,7 @@ final class OpenApi
 		string|null $body = null,
 	): Request
 	{
-		$url = $this->endpoint->getValue() . $path;
+		$url = $this->endpoint->value . $path;
 
 		if (count($params) > 0) {
 			$url .= '?';
@@ -1409,22 +1417,25 @@ final class OpenApi
 		);
 
 		try {
-			$this->logger->debug(sprintf(
-				'Request: method = %s url = %s',
-				$request->getMethod(),
-				strval($request->getUri()),
-			), [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'path' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
+			$this->logger->debug(
+				sprintf(
+					'Request: method = %s url = %s',
+					$request->getMethod(),
+					strval($request->getUri()),
+				),
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'path' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			$response = $this->httpClientFactory->create(false)->send($request);
 
@@ -1440,22 +1451,25 @@ final class OpenApi
 				);
 			}
 
-			$this->logger->debug('Received response', [
-				'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_TUYA,
-				'type' => 'openapi-api',
-				'request' => [
-					'method' => $request->getMethod(),
-					'path' => strval($request->getUri()),
-					'headers' => $request->getHeaders(),
+			$this->logger->debug(
+				'Received response',
+				[
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'openapi-api',
+					'request' => [
+						'method' => $request->getMethod(),
+						'path' => strval($request->getUri()),
+						'headers' => $request->getHeaders(),
+					],
+					'response' => [
+						'code' => $response->getStatusCode(),
+						'body' => $responseBody,
+					],
+					'connector' => [
+						'identifier' => $this->identifier,
+					],
 				],
-				'response' => [
-					'code' => $response->getStatusCode(),
-					'body' => $responseBody,
-				],
-				'connector' => [
-					'identifier' => $this->identifier,
-				],
-			]);
+			);
 
 			try {
 				$decodedResponse = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);

@@ -38,4 +38,6 @@ final class Constants
 
 	public const PROPERTY_TAG_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
 
+	public const EVENT_FINISHED = 'finished';
+
 }

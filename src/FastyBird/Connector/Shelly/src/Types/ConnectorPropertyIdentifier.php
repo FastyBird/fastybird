@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Connector property identifiers
  *
@@ -26,23 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class ConnectorPropertyIdentifier extends Consistence\Enum\Enum
+enum ConnectorPropertyIdentifier: string
 {
 
-	public const CLIENT_MODE = 'mode';
+	case CLIENT_MODE = 'mode';
 
-	public const CLOUD_AUTH_KEY = 'cloud_auth_key';
+	case CLOUD_AUTH_KEY = 'cloud_auth_key';
 
-	public const CLOUD_SERVER = 'cloud_server';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case CLOUD_SERVER = 'cloud_server';
 
 }

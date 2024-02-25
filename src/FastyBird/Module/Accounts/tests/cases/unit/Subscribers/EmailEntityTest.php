@@ -3,22 +3,26 @@
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Subscribers;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
-use FastyBird\Module\Accounts\Tests\Cases\Unit\DbTestCase;
+use FastyBird\Module\Accounts\Tests;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use Nette\Utils;
 use RuntimeException;
 
-final class EmailEntityTest extends DbTestCase
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
+final class EmailEntityTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException

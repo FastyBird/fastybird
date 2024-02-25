@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Requests & Responses header name types
  *
@@ -26,31 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Header extends Consistence\Enum\Enum
+enum Header: string
 {
 
-	public const RESPONSE = 'Response';
+	case RESPONSE = 'Response';
 
-	public const ERROR_RESPONSE = 'ErrorResponse';
+	case ERROR_RESPONSE = 'ErrorResponse';
 
-	public const UPDATE_DEVICE_STATES_RESPONSE = 'UpdateDeviceStatesResponse';
+	case UPDATE_DEVICE_STATES_RESPONSE = 'UpdateDeviceStatesResponse';
 
-	public const DISCOVERY_REQUEST = 'DiscoveryRequest';
+	case DISCOVERY_REQUEST = 'DiscoveryRequest';
 
-	public const DEVICE_STATES_CHANGE_REPORT = 'DeviceStatesChangeReport';
+	case DEVICE_STATES_CHANGE_REPORT = 'DeviceStatesChangeReport';
 
-	public const DEVICE_ONLINE_CHANGE_REPORT = 'DeviceOnlineChangeReport';
+	case DEVICE_ONLINE_CHANGE_REPORT = 'DeviceOnlineChangeReport';
 
-	public const UPDATE_DEVICE_STATES = 'UpdateDeviceStates';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case UPDATE_DEVICE_STATES = 'UpdateDeviceStates';
 
 }

@@ -18,11 +18,12 @@ namespace FastyBird\Module\Accounts\Commands\Accounts;
 use Doctrine;
 use Doctrine\DBAL\Connection;
 use Doctrine\Persistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\Module\Accounts\Types;
 use FastyBird\SimpleAuth;
 use Nette\Localization;
 use Nette\Utils;
@@ -100,9 +101,9 @@ class Create extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Doctrine\DBAL\Exception
-	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
@@ -236,7 +237,7 @@ class Create extends Console\Command\Command
 
 			$create = new Utils\ArrayHash();
 			$create->offsetSet('entity', Entities\Accounts\Account::class);
-			$create->offsetSet('state', MetadataTypes\AccountState::get(MetadataTypes\AccountState::STATE_ACTIVE));
+			$create->offsetSet('state', Types\AccountState::ACTIVE);
 			$create->offsetSet('roles', [$role]);
 
 			$details = new Utils\ArrayHash();
@@ -305,7 +306,7 @@ class Create extends Console\Command\Command
 			$create->offsetSet('account', $account);
 			$create->offsetSet('uid', $email->getAddress());
 			$create->offsetSet('password', $password);
-			$create->offsetSet('state', MetadataTypes\IdentityState::get(MetadataTypes\IdentityState::STATE_ACTIVE));
+			$create->offsetSet('state', Types\IdentityState::ACTIVE);
 
 			$this->identitiesManager->create($create);
 

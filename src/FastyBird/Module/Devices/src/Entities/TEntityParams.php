@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Devices\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use IPub\DoctrineCrud\Mapping\Annotation as IPubDoctrine;
+use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Nette\Utils;
 use function array_key_exists;
 use function array_merge;
@@ -28,7 +28,7 @@ use function is_string;
 use function trim;
 
 /**
- * Transformer params field trait
+ * Entity params field trait
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Entities
@@ -38,12 +38,9 @@ use function trim;
 trait TEntityParams
 {
 
-	/**
-	 * @var array<string, mixed>|null
-	 *
-	 * @IPubDoctrine\Crud(is="writable")
-	 * @ORM\Column(type="json", name="params", nullable=true)
-	 */
+	/** @var array<string, mixed>|null */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'params', type: 'json', nullable: true)]
 	protected array|null $params = null;
 
 	public function getParams(): Utils\ArrayHash

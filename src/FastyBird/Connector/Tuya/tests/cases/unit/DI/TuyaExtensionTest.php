@@ -15,14 +15,14 @@ use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Subscribers;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
@@ -30,7 +30,7 @@ final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Clients\LocalFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\CloudFactory::class, false));
@@ -57,13 +57,13 @@ final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\TuyaConnector::class, false));
-		self::assertNotNull($container->getByType(Schemas\TuyaDevice::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\TuyaConnector::class, false));
-		self::assertNotNull($container->getByType(Hydrators\TuyaDevice::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 
 		self::assertNotNull($container->getByType(Commands\Execute::class, false));
 		self::assertNotNull($container->getByType(Commands\Discover::class, false));

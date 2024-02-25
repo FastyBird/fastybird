@@ -5,17 +5,18 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
+use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Triggers;
+use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Entities;
-use FastyBird\Module\Triggers\Exceptions;
-use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Subscribers;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use function is_string;
 
 final class ModuleEntitiesTest extends TestCase
 {
@@ -24,29 +25,29 @@ final class ModuleEntitiesTest extends TestCase
 	{
 		$publisher = $this->createMock(ExchangePublisher\Publisher::class);
 
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
+
 		$entityManager = $this->createMock(ORM\EntityManagerInterface::class);
 
-		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
-		$actionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
-		$conditionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
-			$actionStateRepository,
-			$conditionStateRepository,
-			$entityFactory,
 			$entityManager,
+			$documentFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
-		self::assertSame(['onFlush', 'prePersist', 'postPersist', 'postUpdate'], $subscriber->getSubscribedEvents());
+		self::assertSame([
+			0 => ORM\Events::prePersist,
+			1 => ORM\Events::postPersist,
+			2 => ORM\Events::postUpdate,
+			3 => ORM\Events::postRemove,
+
+			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
+			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
+			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+		], $subscriber->getSubscribedEvents());
 	}
 
 	/**
@@ -60,16 +61,15 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
-					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
-						$key->getValue(),
+						Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -92,20 +92,12 @@ final class ModuleEntitiesTest extends TestCase
 				}),
 			);
 
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
+
 		$entityManager = $this->getEntityManager();
 
-		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
-		$actionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
-		$conditionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
-		$entityItem
+		$document = $this->createMock(Documents\Triggers\Manual::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'name' => 'Trigger name',
@@ -116,20 +108,19 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$subscriber = new Subscribers\ModuleEntities(
-			$actionStateRepository,
-			$conditionStateRepository,
-			$entityFactory,
 			$entityManager,
+			$documentFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
-		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
+		$entity = new Entities\Triggers\Manual('Trigger name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
 		$eventArgs
@@ -151,16 +142,15 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
-					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
-						$key->getValue(),
+						Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -183,20 +173,12 @@ final class ModuleEntitiesTest extends TestCase
 				}),
 			);
 
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
+
 		$entityManager = $this->getEntityManager(true);
 
-		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
-		$actionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
-		$conditionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
-		$entityItem
+		$document = $this->createMock(Documents\Triggers\Manual::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'name' => 'Trigger name',
@@ -207,20 +189,19 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$subscriber = new Subscribers\ModuleEntities(
-			$actionStateRepository,
-			$conditionStateRepository,
-			$entityFactory,
 			$entityManager,
+			$documentFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
-		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
+		$entity = new Entities\Triggers\Manual('Trigger name');
 
 		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
 		$eventArgs
@@ -242,16 +223,15 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\ModuleSource);
-					self::assertSame(Metadata\Constants::MODULE_TRIGGERS_SOURCE, $source->getValue());
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),
 				self::callback(static function ($key): bool {
-					self::assertTrue($key instanceof Metadata\Types\RoutingKey);
+					self::assertTrue(is_string($key));
 					self::assertSame(
-						Metadata\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
-						$key->getValue(),
+						Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
+						$key,
 					);
 
 					return true;
@@ -274,38 +254,14 @@ final class ModuleEntitiesTest extends TestCase
 				}),
 			);
 
-		$entity = new Entities\Triggers\ManualTrigger('Trigger name');
+		$asyncPublisher = $this->createMock(ExchangePublisher\Async\Publisher::class);
 
-		$uow = $this->createMock(ORM\UnitOfWork::class);
-		$uow
-			->expects(self::once())
-			->method('getScheduledEntityDeletions')
-			->willReturn([$entity]);
-		$uow
-			->expects(self::once())
-			->method('getEntityIdentifier')
-			->willReturn([
-				123,
-			]);
+		$entity = new Entities\Triggers\Manual('Trigger name');
 
 		$entityManager = $this->getEntityManager();
-		$entityManager
-			->expects(self::once())
-			->method('getUnitOfWork')
-			->willReturn($uow);
 
-		$actionStateRepository = $this->createMock(Models\States\ActionsRepository::class);
-		$actionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$conditionStateRepository = $this->createMock(Models\States\ConditionsRepository::class);
-		$conditionStateRepository
-			->method('findOne')
-			->willThrowException(new Exceptions\NotImplemented());
-
-		$entityItem = $this->createMock(MetadataDocuments\TriggersModule\ManualTrigger::class);
-		$entityItem
+		$document = $this->createMock(Documents\Triggers\Manual::class);
+		$document
 			->method('toArray')
 			->willReturn([
 				'name' => 'Trigger name',
@@ -316,20 +272,25 @@ final class ModuleEntitiesTest extends TestCase
 				'is_triggered' => false,
 			]);
 
-		$entityFactory = $this->createMock(ExchangeEntities\DocumentFactory::class);
-		$entityFactory
+		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
+		$documentFactory
 			->method('create')
-			->willReturn($entityItem);
+			->willReturn($document);
 
 		$subscriber = new Subscribers\ModuleEntities(
-			$actionStateRepository,
-			$conditionStateRepository,
-			$entityFactory,
 			$entityManager,
+			$documentFactory,
 			$publisher,
+			$asyncPublisher,
 		);
 
-		$subscriber->onFlush();
+		$eventArgs = $this->createMock(Persistence\Event\LifecycleEventArgs::class);
+		$eventArgs
+			->expects(self::once())
+			->method('getObject')
+			->willReturn($entity);
+
+		$subscriber->postRemove($eventArgs);
 	}
 
 	private function getEntityManager(bool $withUow = false): ORM\EntityManagerInterface&MockObject

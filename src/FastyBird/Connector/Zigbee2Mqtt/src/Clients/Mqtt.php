@@ -19,18 +19,23 @@ use BinSoul\Net\Mqtt as NetMqtt;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
 use Throwable;
+use TypeError;
+use ValueError;
 use function assert;
 use function sprintf;
 
@@ -52,14 +57,20 @@ final class Mqtt implements Client
 	private Clients\Subscribers\Device $deviceSubscriber;
 
 	public function __construct(
-		private readonly MetadataDocuments\DevicesModule\Connector $connector,
+		private readonly Documents\Connectors\Connector $connector,
 		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly Clients\Subscribers\DeviceFactory $deviceSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly Zigbee2Mqtt\Logger $logger,
-		private readonly Helpers\Connector $connectorHelper,
+		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
@@ -71,46 +82,122 @@ final class Mqtt implements Client
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function connect(): void
 	{
 		$client = $this->getClient();
-		$client->on('connect', [$this, 'onConnect']);
+		$client->onConnect[] = function (): void {
+			$this->onConnect();
+		};
 
 		$this->bridgeSubscriber->subscribe($client);
 		$this->deviceSubscriber->subscribe($client);
+
+		$findDevicesQuery = new Queries\Configuration\FindBridgeDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		$bridges = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Bridge::class,
+		);
+
+		foreach ($bridges as $bridge) {
+			$findDevicesQuery = new Queries\Configuration\FindSubDevices();
+			$findDevicesQuery->forParent($bridge);
+
+			$subDevices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\SubDevice::class,
+			);
+
+			foreach ($subDevices as $subDevice) {
+				$findDeviceProperties = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
+				$findDeviceProperties->forDevice($subDevice);
+
+				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
+					$findDeviceProperties,
+					DevicesDocuments\Devices\Properties\Dynamic::class,
+				);
+
+				foreach ($properties as $property) {
+					$state = $this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					);
+
+					if ($state instanceof DevicesDocuments\States\Devices\Properties\Property) {
+						$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+					}
+				}
+
+				$findChannels = new Queries\Configuration\FindChannels();
+				$findChannels->forDevice($subDevice);
+
+				$channels = $this->channelsConfigurationRepository->findAllBy(
+					$findChannels,
+					Documents\Channels\Channel::class,
+				);
+
+				foreach ($channels as $channel) {
+					$findChannelProperties = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findChannelProperties->forChannel($channel);
+
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findChannelProperties,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
+					);
+
+					foreach ($properties as $property) {
+						$state = $this->channelPropertiesStatesManager->read(
+							$property,
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						);
+
+						if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
+							$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+						}
+					}
+				}
+			}
+		}
 
 		$client->connect();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function disconnect(): void
 	{
 		$client = $this->getClient();
-		$client->removeListener('connect', [$this, 'onConnect']);
-
-		$this->bridgeSubscriber->unsubscribe($client);
-		$this->deviceSubscriber->unsubscribe($client);
 
 		$client->disconnect();
 	}
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function onConnect(): void
 	{
-		$findDevicesQuery = new DevicesQueries\Configuration\FindDevices();
+		$findDevicesQuery = new Queries\Configuration\FindBridgeDevices();
 		$findDevicesQuery->forConnector($this->connector);
-		$findDevicesQuery->byType(Entities\Devices\Bridge::TYPE);
 
-		$bridges = $this->devicesConfigurationRepository->findAllBy($findDevicesQuery);
+		$bridges = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Bridge::class,
+		);
 
 		foreach ($bridges as $bridge) {
 			$topic = sprintf(Zigbee2Mqtt\Constants::BRIDGE_TOPIC, $this->bridgeHelper->getBaseTopic($bridge));
@@ -125,7 +212,7 @@ final class Mqtt implements Client
 						$this->logger->info(
 							sprintf('Subscribed to: %s', $subscription->getFilter()),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'mqtt-client',
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
@@ -137,9 +224,9 @@ final class Mqtt implements Client
 						$this->logger->error(
 							$ex->getMessage(),
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_ZIGBEE2MQTT,
+								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 								'type' => 'mqtt-client',
-								'exception' => BootstrapHelpers\Logger::buildException($ex),
+								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
 									'id' => $this->connector->getId()->toString(),
 								],
@@ -152,8 +239,11 @@ final class Mqtt implements Client
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function getClient(): API\Client
 	{

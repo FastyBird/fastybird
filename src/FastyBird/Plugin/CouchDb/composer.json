@@ -33,14 +33,15 @@
     "source": "https://github.com/FastyBird/couchdb-plugin"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/metadata-library": "dev-main",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
+    "orisai/object-mapper": "^0.1",
     "php-on-couch/php-on-couch": "^4.0",
     "phpdocumentor/reflection": "^5.3",
     "phpdocumentor/reflection-common": "^2.2",
@@ -95,12 +96,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

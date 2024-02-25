@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\API;
 
-use FastyBird\Connector\Shelly\Entities;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -89,21 +88,21 @@ final class Gen1HttpApi extends HttpApi
 	];
 
 	private const WRITABLE_SENSORS = [
-		Types\SensorDescription::MODE,
-		Types\SensorDescription::OUTPUT,
-		Types\SensorDescription::ROLLER,
-		Types\SensorDescription::RED,
-		Types\SensorDescription::GREEN,
-		Types\SensorDescription::BLUE,
-		Types\SensorDescription::WHITE,
-		Types\SensorDescription::WHITE_LEVEL,
-		Types\SensorDescription::GAIN,
-		Types\SensorDescription::BRIGHTNESS,
-		Types\SensorDescription::COLOR_TEMP,
+		Types\SensorDescription::MODE->value,
+		Types\SensorDescription::OUTPUT->value,
+		Types\SensorDescription::ROLLER->value,
+		Types\SensorDescription::RED->value,
+		Types\SensorDescription::GREEN->value,
+		Types\SensorDescription::BLUE->value,
+		Types\SensorDescription::WHITE->value,
+		Types\SensorDescription::WHITE_LEVEL->value,
+		Types\SensorDescription::GAIN->value,
+		Types\SensorDescription::BRIGHTNESS->value,
+		Types\SensorDescription::COLOR_TEMP->value,
 	];
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceInformation> : Entities\API\Gen1\GetDeviceInformation)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceInformation> : Messages\Response\Gen1\GetDeviceInformation)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -112,7 +111,7 @@ final class Gen1HttpApi extends HttpApi
 	public function getDeviceInformation(
 		string $address,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceInformation
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceInformation
 	{
 		$deferred = new Promise\Deferred();
 
@@ -143,7 +142,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceDescription> : Entities\API\Gen1\GetDeviceDescription)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceDescription> : Messages\Response\Gen1\GetDeviceDescription)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -154,7 +153,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceDescription
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceDescription
 	{
 		$deferred = new Promise\Deferred();
 
@@ -185,7 +184,7 @@ final class Gen1HttpApi extends HttpApi
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<Entities\API\Gen1\GetDeviceState> : Entities\API\Gen1\GetDeviceState)
+	 * @return ($async is true ? Promise\PromiseInterface<Messages\Response\Gen1\GetDeviceState> : Messages\Response\Gen1\GetDeviceState)
 	 *
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\HttpApiCall
@@ -196,7 +195,7 @@ final class Gen1HttpApi extends HttpApi
 		string|null $username,
 		string|null $password,
 		bool $async = true,
-	): Promise\PromiseInterface|Entities\API\Gen1\GetDeviceState
+	): Promise\PromiseInterface|Messages\Response\Gen1\GetDeviceState
 	{
 		$deferred = new Promise\Deferred();
 
@@ -305,7 +304,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceInformation(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceInformation
+	): Messages\Response\Gen1\GetDeviceInformation
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -313,7 +312,7 @@ final class Gen1HttpApi extends HttpApi
 			self::GET_DEVICE_INFORMATION_MESSAGE_SCHEMA_FILENAME,
 		);
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceInformation::class, $body);
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceInformation::class, $body);
 	}
 
 	/**
@@ -323,7 +322,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceDescription(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceDescription
+	): Messages\Response\Gen1\GetDeviceDescription
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -356,7 +355,7 @@ final class Gen1HttpApi extends HttpApi
 					$this->logger->debug(
 						'Received device block description is not in valid format',
 						[
-							'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen1-http-api',
 							'description' => (array) $block,
 						],
@@ -382,7 +381,7 @@ final class Gen1HttpApi extends HttpApi
 						$this->logger->debug(
 							'Received block sensor description is not in valid format',
 							[
-								'source' => MetadataTypes\ConnectorSource::SOURCE_CONNECTOR_SHELLY,
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 								'type' => 'gen1-http-api',
 								'description' => (array) $sensor,
 							],
@@ -432,7 +431,7 @@ final class Gen1HttpApi extends HttpApi
 							'identifier' => intval($sensor->offsetGet('I')),
 							'type' => $sensor->offsetGet('T'),
 							'description' => strval($sensor->offsetGet('D')),
-							'data_type' => $sensorRange->getDataType()->getValue(),
+							'data_type' => $sensorRange->getDataType()->value,
 							'unit' => array_key_exists(strval($sensor->offsetExists('U')), self::SENSORS_UNIT)
 								? self::SENSORS_UNIT[strval($sensor->offsetExists('U'))]
 								: null,
@@ -448,7 +447,7 @@ final class Gen1HttpApi extends HttpApi
 			}
 		}
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceDescription::class, Utils\ArrayHash::from($data));
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceDescription::class, Utils\ArrayHash::from($data));
 	}
 
 	/**
@@ -458,7 +457,7 @@ final class Gen1HttpApi extends HttpApi
 	private function parseGetDeviceStatus(
 		Message\RequestInterface $request,
 		Message\ResponseInterface $response,
-	): Entities\API\Gen1\GetDeviceState
+	): Messages\Response\Gen1\GetDeviceState
 	{
 		$body = $this->validateResponseBody(
 			$request,
@@ -571,7 +570,7 @@ final class Gen1HttpApi extends HttpApi
 			$wifi = (array) $body->offsetGet('wifi_sta');
 		}
 
-		return $this->createEntity(Entities\API\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
+		return $this->createMessage(Messages\Response\Gen1\GetDeviceState::class, Utils\ArrayHash::from([
 			'relays' => $relays,
 			'rollers' => $rollers,
 			'inputs' => $inputs,
@@ -591,7 +590,7 @@ final class Gen1HttpApi extends HttpApi
 		string $block,
 		string $description,
 		string|array|null $rawRange,
-	): Entities\API\Gen1\SensorRange
+	): Messages\Response\Gen1\SensorRange
 	{
 		$invalidValue = null;
 
@@ -607,14 +606,14 @@ final class Gen1HttpApi extends HttpApi
 			$normalValue = $rawRange;
 
 		} else {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
-					)->getValue(),
+						MetadataTypes\DataType::UNKNOWN,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => null,
 				],
@@ -622,14 +621,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === '0/1' || $normalValue === '1/0') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_BOOLEAN),
-					)->getValue(),
+						MetadataTypes\DataType::BOOLEAN,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -637,14 +636,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U8') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UCHAR),
-					)->getValue(),
+						MetadataTypes\DataType::UCHAR,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -652,14 +651,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U16') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_USHORT),
-					)->getValue(),
+						MetadataTypes\DataType::USHORT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -667,14 +666,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'U32') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UINT),
-					)->getValue(),
+						MetadataTypes\DataType::UINT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -682,14 +681,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I8') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_CHAR),
-					)->getValue(),
+						MetadataTypes\DataType::CHAR,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -697,14 +696,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I16') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SHORT),
-					)->getValue(),
+						MetadataTypes\DataType::SHORT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -712,14 +711,14 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if ($normalValue === 'I32') {
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-					)->getValue(),
+						MetadataTypes\DataType::INT,
+					)->value,
 					'format' => $this->adjustSensorFormat($block, $description, null),
 					'invalid' => $invalidValue,
 				],
@@ -734,14 +733,14 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (int) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (int) $normalValueParts[1]
 			) {
-				return $this->entityHelper->create(
-					Entities\API\Gen1\SensorRange::class,
+				return $this->messageBuilder->create(
+					Messages\Response\Gen1\SensorRange::class,
 					[
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_INT),
-						)->getValue(),
+							MetadataTypes\DataType::INT,
+						)->value,
 						'format' => $this->adjustSensorFormat(
 							$block,
 							$description,
@@ -757,14 +756,14 @@ final class Gen1HttpApi extends HttpApi
 				&& $normalValueParts[0] === (string) (float) $normalValueParts[0]
 				&& $normalValueParts[1] === (string) (float) $normalValueParts[1]
 			) {
-				return $this->entityHelper->create(
-					Entities\API\Gen1\SensorRange::class,
+				return $this->messageBuilder->create(
+					Messages\Response\Gen1\SensorRange::class,
 					[
 						'data_type' => $this->adjustSensorDataType(
 							$block,
 							$description,
-							MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_FLOAT),
-						)->getValue(),
+							MetadataTypes\DataType::FLOAT,
+						)->value,
 						'format' => $this->adjustSensorFormat(
 							$block,
 							$description,
@@ -775,14 +774,14 @@ final class Gen1HttpApi extends HttpApi
 				);
 			}
 
-			return $this->entityHelper->create(
-				Entities\API\Gen1\SensorRange::class,
+			return $this->messageBuilder->create(
+				Messages\Response\Gen1\SensorRange::class,
 				[
 					'data_type' => $this->adjustSensorDataType(
 						$block,
 						$description,
-						MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_ENUM),
-					)->getValue(),
+						MetadataTypes\DataType::ENUM,
+					)->value,
 					'format' => $this->adjustSensorFormat(
 						$block,
 						$description,
@@ -793,14 +792,14 @@ final class Gen1HttpApi extends HttpApi
 			);
 		}
 
-		return $this->entityHelper->create(
-			Entities\API\Gen1\SensorRange::class,
+		return $this->messageBuilder->create(
+			Messages\Response\Gen1\SensorRange::class,
 			[
 				'data_type' => $this->adjustSensorDataType(
 					$block,
 					$description,
-					MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_UNKNOWN),
-				)->getValue(),
+					MetadataTypes\DataType::UNKNOWN,
+				)->value,
 				'format' => $this->adjustSensorFormat($block, $description, null),
 				'invalid' => null,
 			],
@@ -814,17 +813,17 @@ final class Gen1HttpApi extends HttpApi
 	): MetadataTypes\DataType
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
+			return MetadataTypes\DataType::SWITCH;
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
-			return MetadataTypes\DataType::get(MetadataTypes\DataType::DATA_TYPE_SWITCH);
+			return MetadataTypes\DataType::SWITCH;
 		}
 
 		return $dataType;
@@ -842,80 +841,80 @@ final class Gen1HttpApi extends HttpApi
 	): array|null
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::ON->value],
+					[MetadataTypes\DataTypeShort::BOOLEAN->value, true],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::ON->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::OFF->value],
+					[MetadataTypes\DataTypeShort::BOOLEAN->value, false],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::OFF->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::TOGGLE->value],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RelayPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RelayPayload::TOGGLE->value],
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER
+			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER->value
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPEN],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::OPEN->value],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::OPEN->value],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_OPENED],
+					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::OPENED->value],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::OPEN],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::OPEN->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSE],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::CLOSE->value],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::CLOSE->value],
 					null,
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_CLOSED],
+					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::CLOSED->value],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::CLOSE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::CLOSE->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_COVER, MetadataTypes\CoverPayload::PAYLOAD_STOP],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\RollerPayload::STOP],
+					[MetadataTypes\DataTypeShort::COVER->value, MetadataTypes\Payloads\Cover::STOP->value],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\RollerPayload::STOP->value],
 					null,
 				],
 			];
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT)
-			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT
+			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_ON],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, true],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::ON],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::ON->value],
+					[MetadataTypes\DataTypeShort::BOOLEAN->value, true],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::ON->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_OFF],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_BOOLEAN, false],
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::OFF],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::OFF->value],
+					[MetadataTypes\DataTypeShort::BOOLEAN->value, false],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::OFF->value],
 				],
 				[
-					[MetadataTypes\DataTypeShort::DATA_TYPE_SWITCH, MetadataTypes\SwitchPayload::PAYLOAD_TOGGLE],
+					[MetadataTypes\DataTypeShort::SWITCH->value, MetadataTypes\Payloads\Switcher::TOGGLE->value],
 					null,
-					[MetadataTypes\DataTypeShort::DATA_TYPE_STRING, Types\LightSwitchPayload::TOGGLE],
+					[MetadataTypes\DataTypeShort::STRING->value, Types\Payloads\LightSwitchPayload::TOGGLE->value],
 				],
 			];
 		}
@@ -940,19 +939,19 @@ final class Gen1HttpApi extends HttpApi
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::OUTPUT) {
+		if ($propertyMatches['description'] === Types\SensorDescription::OUTPUT->value) {
 			return 'turn';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::ROLLER) {
+		if ($propertyMatches['description'] === Types\SensorDescription::ROLLER->value) {
 			return 'go';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::COLOR_TEMP) {
+		if ($propertyMatches['description'] === Types\SensorDescription::COLOR_TEMP->value) {
 			return 'temp';
 		}
 
-		if ($propertyMatches['description'] === Types\SensorDescription::WHITE_LEVEL) {
+		if ($propertyMatches['description'] === Types\SensorDescription::WHITE_LEVEL->value) {
 			return 'white';
 		}
 

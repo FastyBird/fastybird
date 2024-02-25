@@ -19,22 +19,26 @@
 ## What is Redis DB plugin?
 
 Redis DB plugin is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is implementing [Redis](https://redis.io) PubSub exchange and states manager for reading
-and setting application state.
+which is implementing [Redis](https://redis.io) Publish & Subscribe data exchange used by other modules of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things)
+ecosystem and also a states manager for reading and storing application states.
 
 ### Features
 
-- Built-in server command for running standalone exchange client
-- Application state management for reading and storing states in Redis database
-- Implemented sync and async Redis client
-- Redis DB pub/sub exchange client
+- Synchronous and asynchronous application state management for reading and storing states in Redis database
+- Synchronous and asynchronous exchange for data communication
+- Redis clients with basic CRUD operations
 
 Redis DB plugin is an [Apache2 licensed](http://www.apache.org/licenses/LICENSE-2.0) distributed extension, developed
 in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org) and [Symfony framework](https://symfony.com).
 
+## Requirements
+
+Application library is tested against PHP 8.2.
+
 ## Installation
 
-The best way to install **fastybird/redisdb-plugin** is using [Composer](http://getcomposer.org/):
+This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem and is installed by default.
+In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
 composer require fastybird/redisdb-plugin
@@ -42,8 +46,7 @@ composer require fastybird/redisdb-plugin
 
 ## Documentation
 
-Learn how to read & write states and consume & publish messages
-in [documentation](https://github.com/FastyBird/redisdb-plugin/blob/main/docs/index.md).
+:book: Learn how to read & write states and consume & publish messages in [documentation](https://github.com/FastyBird/redisdb-plugin/wiki).
 
 # FastyBird
 
@@ -55,17 +58,17 @@ FastyBird is an Open Source IOT solution built from decoupled components with po
 
 ## Documentation
 
-Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+:book: Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 
-The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
+The sources of this package are contained in the [FastyBird monorepo](https://github.com/FastyBird/fastybird). We welcome
+contributions for this package on [FastyBird/fastybird](https://github.com/FastyBird/).
 
 ## Feedback
 
-Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs
-or [mail](mailto:code@fastybird.com) or [Tweet](https://twitter.com/fastybird) us for any idea that can improve the
-project.
+Use the [issue tracker](https://github.com/FastyBird/fastybird/issues) for bugs reporting or send an [mail](mailto:code@fastybird.com)
+to us or you could reach us on [X newtwork](https://x.com/fastybird) for any idea that can improve the project.
 
 Thank you for testing, reporting and contributing.
 

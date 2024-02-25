@@ -31,11 +31,9 @@
     "source": "https://github.com/FastyBird/metadata-library"
   },
   "require": {
-    "php": ">=8.1.0",
-    "fastybird/bootstrap-library": "dev-main",
-    "ipub/doctrine-consistence": "^0.4",
+    "php": ">=8.2.0",
+    "fastybird/application-library": "dev-main",
     "ipub/phone": "^2.3",
-    "mathsolver/mathsolver": "@dev",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
@@ -69,7 +67,8 @@
   "autoload-dev": {
     "psr-4": {
       "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures"
+      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures",
+      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
     }
   },
   "config": {
@@ -92,12 +91,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

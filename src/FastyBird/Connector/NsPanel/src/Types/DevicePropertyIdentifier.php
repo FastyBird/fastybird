@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use function strval;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 
 /**
  * Device property identifier types
@@ -27,39 +25,29 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	case STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const IP_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_IP_ADDRESS;
+	case IP_ADDRESS = DevicesTypes\DevicePropertyIdentifier::IP_ADDRESS->value;
 
-	public const DOMAIN = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_DOMAIN;
+	case DOMAIN = DevicesTypes\DevicePropertyIdentifier::DOMAIN->value;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	case MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	case MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	case MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const FIRMWARE_VERSION = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_FIRMWARE_VERSION;
+	case FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
-	public const ACCESS_TOKEN = 'access_token';
+	case ACCESS_TOKEN = 'access_token';
 
-	public const CATEGORY = 'category';
+	case CATEGORY = 'category';
 
-	public const GATEWAY_IDENTIFIER = 'gateway_identifier';
+	case GATEWAY_IDENTIFIER = 'gateway_identifier';
 
-	public const STATE_READING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_READING_DELAY;
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case STATE_READING_DELAY = DevicesTypes\DevicePropertyIdentifier::STATE_READING_DELAY->value;
 
 }

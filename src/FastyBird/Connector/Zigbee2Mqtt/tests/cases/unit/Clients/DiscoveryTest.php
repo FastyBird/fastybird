@@ -7,17 +7,16 @@ use Error;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette\DI;
 use Nette\Utils;
@@ -25,14 +24,17 @@ use React;
 use React\EventLoop;
 use RuntimeException;
 use function array_diff;
-use function in_array;
 use function sprintf;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Error
@@ -41,6 +43,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 */
 	public function testDiscover(): void
@@ -74,41 +77,6 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 
 		$apiClient = $this->createMock(API\Client::class);
 		$apiClient
-			->expects(self::exactly(2))
-			->method('on')
-			->with(
-				self::callback(static function (string $event): bool {
-					self::assertTrue(in_array($event, ['connect', 'message'], true));
-
-					return true;
-				}),
-				self::callback(static function ($callback): bool {
-					if ($callback[1] === 'onConnect') {
-						$callback();
-					} elseif ($callback[1] === 'onMessage') {
-						$message = new NetMqtt\DefaultMessage(
-							'zigbee2mqtt/bridge/devices',
-							Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Messages/bridge_devices.json'),
-						);
-
-						$callback($message);
-					}
-
-					return true;
-				}),
-			);
-		$apiClient
-			->expects(self::exactly(2))
-			->method('removeListener')
-			->with(
-				self::callback(static function (string $event): bool {
-					self::assertTrue(in_array($event, ['connect', 'message'], true));
-
-					return true;
-				}),
-				self::callback(static fn (): bool => true),
-			);
-		$apiClient
 			->method('subscribe')
 			->willReturn($subscribePromise);
 		$apiClient
@@ -132,19 +100,21 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findConnectorQuery = new Queries\Entities\FindConnectors();
 		$findConnectorQuery->byIdentifier('zigbee2mqtt');
 
-		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Zigbee2MqttConnector::class);
-		self::assertInstanceOf(Entities\Zigbee2MqttConnector::class, $connector);
+		$connector = $connectorsRepository->findOneBy($findConnectorQuery, Entities\Connectors\Connector::class);
+		self::assertInstanceOf(Entities\Connectors\Connector::class, $connector);
 
 		$connectorsConfigurationRepository = $this->getContainer()->getByType(
 			DevicesModels\Configuration\Connectors\Repository::class,
 		);
 
-		$findConnectorQuery = new DevicesQueries\Configuration\FindConnectors();
+		$findConnectorQuery = new Queries\Configuration\FindConnectors();
 		$findConnectorQuery->byIdentifier('zigbee2mqtt');
-		$findConnectorQuery->byType(Entities\Zigbee2MqttConnector::TYPE);
 
-		$connectorDocument = $connectorsConfigurationRepository->findOneBy($findConnectorQuery);
-		self::assertInstanceOf(MetadataDocuments\DevicesModule\Connector::class, $connectorDocument);
+		$connectorDocument = $connectorsConfigurationRepository->findOneBy(
+			$findConnectorQuery,
+			Documents\Connectors\Connector::class,
+		);
+		self::assertInstanceOf(Documents\Connectors\Connector::class, $connectorDocument);
 
 		self::assertEquals($connector->getId(), $connectorDocument->getId());
 
@@ -155,6 +125,20 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$client->discover();
 
 		$eventLoop = $this->getContainer()->getByType(EventLoop\LoopInterface::class);
+
+		$eventLoop->addTimer(0.1, static function () use ($apiClient): void {
+			self::assertCount(1, $apiClient->onConnect);
+			self::assertCount(1, $apiClient->onMessage);
+
+			Utils\Arrays::invoke($apiClient->onConnect);
+			Utils\Arrays::invoke(
+				$apiClient->onMessage,
+				new NetMqtt\DefaultMessage(
+					'zigbee2mqtt/bridge/devices',
+					Utils\FileSystem::read(__DIR__ . '/../../../fixtures/Clients/Messages/bridge_devices.json'),
+				),
+			);
+		});
 
 		$eventLoop->addTimer(1, static function () use ($eventLoop, $client): void {
 			$client->disconnect();
@@ -191,7 +175,7 @@ final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 		$findChannelsQuery = new Queries\Entities\FindChannels();
 		$findChannelsQuery->forDevice($device);
 
-		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\Zigbee2MqttChannel::class);
+		$channels = $channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class);
 
 		self::assertCount(6, $channels);
 

@@ -5,8 +5,8 @@ namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit;
 use DateTimeImmutable;
 use Error;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Plugin\CouchDb;
 use Nette;
 use Nette\DI;
@@ -16,7 +16,6 @@ use function defined;
 use function file_exists;
 use function getmypid;
 use function md5;
-use function strval;
 use function time;
 
 abstract class BaseTestCase extends TestCase
@@ -25,7 +24,7 @@ abstract class BaseTestCase extends TestCase
 	protected DI\Container $container;
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function setUp(): void
@@ -46,7 +45,7 @@ abstract class BaseTestCase extends TestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container
@@ -54,12 +53,12 @@ abstract class BaseTestCase extends TestCase
 		$rootDir = __DIR__ . '/../..';
 		$vendorDir = defined('FB_VENDOR_DIR') ? constant('FB_VENDOR_DIR') : $rootDir . '/../vendor';
 
-		$config = BootstrapBoot\Bootstrap::boot();
+		$config = ApplicationBoot\Bootstrap::boot();
 		$config->setForceReloadContainer();
 		$config->setTempDirectory(FB_TEMP_DIR);
 
 		$config->addStaticParameters(
-			['container' => ['class' => 'SystemContainer_' . strval(getmypid()) . md5((string) time())]],
+			['container' => ['class' => 'SystemContainer_' . getmypid() . md5((string) time())]],
 		);
 		$config->addStaticParameters(['appDir' => $rootDir, 'wwwDir' => $rootDir, 'vendorDir' => $vendorDir]);
 

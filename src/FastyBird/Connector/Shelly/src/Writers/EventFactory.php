@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Writers;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Connector\Shelly\Documents;
 
 /**
  * System event device state periodic writer factory
@@ -28,6 +28,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 interface EventFactory extends WriterFactory
 {
 
-	public function create(MetadataDocuments\DevicesModule\Connector $connector): Event;
+	public function create(Documents\Connectors\Connector $connector): Event;
 
 }

@@ -17,9 +17,8 @@ namespace FastyBird\Module\Accounts\Queries\Entities;
 
 use Closure;
 use Doctrine\ORM;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\Module\Accounts\Exceptions;
+use FastyBird\Module\Accounts\Types;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 
@@ -28,9 +27,9 @@ use Ramsey\Uuid;
  *
  * @extends  DoctrineOrmQuery\QueryObject<Entities\Identities\Identity>
  *
- * @package          FastyBird:AccountsModule!
- * @subpackage       Queries
- * @author           Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:AccountsModule!
+ * @subpackage     Queries
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 class FindIdentities extends DoctrineOrmQuery\QueryObject
 {
@@ -69,18 +68,11 @@ class FindIdentities extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
-	public function inState(string $state): void
+	public function inState(Types\IdentityState $state): void
 	{
-		if (!MetadataTypes\IdentityState::isValidValue($state)) {
-			throw new Exceptions\InvalidArgument('Invalid identity state given');
-		}
-
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($state): void {
 			$qb->andWhere('i.state = :state')
-				->setParameter('state', $state);
+				->setParameter('state', $state->value);
 		};
 	}
 

@@ -30,9 +30,9 @@ interface Publisher
 {
 
 	public function publish(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
 		MetadataDocuments\Document|null $entity,
-	): void;
+	): bool;
 
 }

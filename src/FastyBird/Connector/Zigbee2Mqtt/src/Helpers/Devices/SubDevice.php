@@ -15,14 +15,16 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Helpers\Devices;
 
-use FastyBird\Connector\Zigbee2Mqtt\Entities;
+use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
+use TypeError;
+use ValueError;
 use function assert;
 use function is_string;
 
@@ -34,12 +36,12 @@ use function is_string;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class SubDevice
+final readonly class SubDevice
 {
 
 	public function __construct(
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 	)
 	{
 	}
@@ -48,14 +50,16 @@ final class SubDevice
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
-	public function getBridge(MetadataDocuments\DevicesModule\Device $device): MetadataDocuments\DevicesModule\Device
+	public function getBridge(Documents\Devices\SubDevice $device): Documents\Devices\Bridge
 	{
 		foreach ($device->getParents() as $parent) {
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindBridgeDevices();
 			$findDeviceQuery->byId($parent);
-			$findDeviceQuery->byType(Entities\Devices\Bridge::TYPE);
 
-			$parent = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$parent = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Bridge::class,
+			);
 
 			if ($parent !== null) {
 				return $parent;
@@ -67,18 +71,21 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getFriendlyName(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getFriendlyName(Documents\Devices\SubDevice $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FRIENDLY_NAME);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -93,19 +100,22 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getIeeeAddress(MetadataDocuments\DevicesModule\Device $device): string
+	public function getIeeeAddress(Documents\Devices\SubDevice $device): string
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::IEEE_ADDRESS);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -120,18 +130,21 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getHardwareModel(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getHardwareModel(Documents\Devices\SubDevice $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MODEL);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {
@@ -146,18 +159,21 @@ final class SubDevice
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
-	public function getHardwareManufacturer(MetadataDocuments\DevicesModule\Device $device): string|null
+	public function getHardwareManufacturer(Documents\Devices\SubDevice $device): string|null
 	{
-		$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 		$findPropertyQuery->forDevice($device);
 		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::MANUFACTURER);
 
 		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
 			$findPropertyQuery,
-			MetadataDocuments\DevicesModule\DeviceVariableProperty::class,
+			DevicesDocuments\Devices\Properties\Variable::class,
 		);
 
 		if ($property?->getValue() === null) {

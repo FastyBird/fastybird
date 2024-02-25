@@ -22,7 +22,6 @@ use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Router;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use function strval;
 
 /**
  * Identity entity schema
@@ -40,7 +39,7 @@ final class Identity extends JsonApis\JsonApi
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_ACCOUNTS . '/identity';
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::ACCOUNTS->value . '/identity';
 
 	/**
 	 * Define relationships names
@@ -75,7 +74,7 @@ final class Identity extends JsonApis\JsonApi
 	{
 		return [
 			'uid' => $resource->getUid(),
-			'state' => strval($resource->getState()->getValue()),
+			'state' => $resource->getState()->value,
 		];
 	}
 

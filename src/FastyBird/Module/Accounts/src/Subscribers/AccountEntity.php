@@ -18,6 +18,7 @@ namespace FastyBird\Module\Accounts\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
@@ -76,6 +77,7 @@ final class AccountEntity implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
@@ -96,6 +98,7 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\AccountRoleInvalid
 	 * @throws Exceptions\InvalidState
 	 */
@@ -150,6 +153,7 @@ final class AccountEntity implements Common\EventSubscriber
 	 *
 	 * @return array<Entities\Roles\Role>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	private function getDefaultRoles(array $roleNames): array
@@ -173,6 +177,7 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 */
 	private function getAdministrator(): Entities\Accounts\Account|null

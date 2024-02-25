@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:TriggersModule!
- * @subpackage     Events
+ * @subpackage     Subscribers
  * @since          1.0.0
  *
  * @date           05.04.20
@@ -26,7 +26,7 @@ use function array_merge;
  * Trigger notification entity listener
  *
  * @package        FastyBird:TriggersModule!
- * @subpackage     Events
+ * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
@@ -58,26 +58,26 @@ final class NotificationEntity implements Common\EventSubscriber
 
 		// Check all scheduled updates
 		foreach (array_merge($uow->getScheduledEntityInsertions(), $uow->getScheduledEntityUpdates()) as $object) {
-			if ($object instanceof Entities\Notifications\SmsNotification) {
+			if ($object instanceof Entities\Notifications\Sms) {
 				$trigger = $object->getTrigger();
 
 				foreach ($trigger->getNotifications() as $notification) {
 					if (
 						!$notification->getId()->equals($object->getId())
-						&& $notification instanceof Entities\Notifications\SmsNotification
+						&& $notification instanceof Entities\Notifications\Sms
 						&& $notification->getPhone()->getInternationalNumber() === $object->getPhone()
 							->getInternationalNumber()
 					) {
 						throw new Exceptions\UniqueNotificationNumberConstraint('Not same phone number in trigger');
 					}
 				}
-			} elseif ($object instanceof Entities\Notifications\EmailNotification) {
+			} elseif ($object instanceof Entities\Notifications\Email) {
 				$trigger = $object->getTrigger();
 
 				foreach ($trigger->getNotifications() as $notification) {
 					if (
 						!$notification->getId()->equals($object->getId())
-						&& $notification instanceof Entities\Notifications\EmailNotification
+						&& $notification instanceof Entities\Notifications\Email
 						&& $notification->getEmail() === $object->getEmail()
 					) {
 						throw new Exceptions\UniqueNotificationEmailConstraint('Not same email address in trigger');

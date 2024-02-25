@@ -16,8 +16,8 @@
 namespace FastyBird\Module\Accounts\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
@@ -37,7 +37,7 @@ trait TAccount
 {
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
 	 */
 	protected function findAccount(

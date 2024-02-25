@@ -15,15 +15,15 @@
 
 namespace FastyBird\Module\Devices\Queries\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
+use FastyBird\Module\Devices\Types;
 use Ramsey\Uuid;
 
 /**
- * Find channel variable properties entities query
+ * Find channel variable properties configuration query
  *
- * @template T of MetadataDocuments\DevicesModule\ChannelVariableProperty
+ * @template T of Documents\Channels\Properties\Variable
  * @extends  FindChannelProperties<T>
  *
  * @package        FastyBird:DevicesModule!
@@ -37,14 +37,14 @@ class FindChannelVariableProperties extends FindChannelProperties
 	{
 		parent::__construct();
 
-		$this->filter[] = '.[?(@.type == "' . MetadataTypes\PropertyType::TYPE_VARIABLE . '")]';
+		$this->filter[] = '.[?(@.type == "' . Types\PropertyType::VARIABLE->value . '")]';
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
 	 */
 	public function forParent(
-		MetadataDocuments\DevicesModule\ChannelDynamicProperty|MetadataDocuments\DevicesModule\ChannelVariableProperty $parent,
+		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Variable $parent,
 	): void
 	{
 		throw new Exceptions\InvalidState('Searching by parent is not allowed for this type of property');

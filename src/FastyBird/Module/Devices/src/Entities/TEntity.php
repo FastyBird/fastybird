@@ -18,14 +18,14 @@ namespace FastyBird\Module\Devices\Entities;
 use Ramsey\Uuid;
 
 /**
- * Transformer base trait
+ * Entity base trait
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Entities
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @property-read Uuid\UuidInterface $id
+ * @property Uuid\UuidInterface $id
  */
 trait TEntity
 {
@@ -33,11 +33,6 @@ trait TEntity
 	public function getId(): Uuid\UuidInterface
 	{
 		return $this->id;
-	}
-
-	public function getPlainId(): string
-	{
-		return $this->id->toString();
 	}
 
 }

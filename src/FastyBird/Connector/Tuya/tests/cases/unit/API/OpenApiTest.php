@@ -8,7 +8,7 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use GuzzleHttp;
 use Nette\DI;
 use Nette\Utils;
@@ -16,6 +16,10 @@ use Psr\Http;
 use RuntimeException;
 use function strval;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 {
 
@@ -26,7 +30,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	private const UID = 'Bjhq01pE7q4ijNMN';
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -89,7 +93,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDevices = $openApi->getUserDevices('userid123', false);
@@ -234,7 +238,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -297,7 +301,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDevicesInfos = $openApi->getUserDevicesFactoryInfos(
@@ -325,7 +329,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -388,7 +392,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceDetail = $openApi->getUserDeviceDetail('bf3e9d85a52b163f940wgx', false);
@@ -430,7 +434,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -493,7 +497,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceSpecifications = $openApi->getUserDeviceSpecifications('bf3e9d85a52b163f940wgx', false);
@@ -530,7 +534,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -593,7 +597,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceSpecifications = $openApi->getUserDeviceState('bf3e9d85a52b163f940wgx', false);
@@ -615,7 +619,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -678,7 +682,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$userDeviceChildren = $openApi->getUserDeviceChildren('bfa1a65b1d7f75a9aenvkc', false);
@@ -706,7 +710,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -769,7 +773,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$devices = $openApi->getDevices([
@@ -891,7 +895,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -954,7 +958,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$devicesInfos = $openApi->getDevicesFactoryInfos(
@@ -982,7 +986,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1045,7 +1049,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$device = $openApi->getDeviceDetail('bf3e9d85a52b163f940wgx', false);
@@ -1080,7 +1084,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1143,7 +1147,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$deviceSpecification = $openApi->getDeviceSpecification(
@@ -1184,7 +1188,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1247,7 +1251,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$deviceState = $openApi->getDeviceState('bf3e9d85a52b163f940wgx', false);
@@ -1269,7 +1273,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1332,7 +1336,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$result = $openApi->setDeviceState('bf3e9d85a52b163f940wgx', 'switch_1', false, false);
@@ -1341,7 +1345,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
@@ -1404,7 +1408,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 			'testing-connector',
 			self::ACCESS_ID,
 			self::ACCESS_SECRET,
-			Types\OpenApiEndpoint::get(Types\OpenApiEndpoint::EUROPE),
+			Types\OpenApiEndpoint::EUROPE,
 		);
 
 		$openApi->connect(false);

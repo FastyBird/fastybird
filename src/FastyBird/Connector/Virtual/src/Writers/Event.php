@@ -15,8 +15,9 @@
 
 namespace FastyBird\Connector\Virtual\Writers;
 
-use FastyBird\Connector\Virtual\Entities;
 use FastyBird\Connector\Virtual\Exceptions;
+use FastyBird\Connector\Virtual\Queue;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
@@ -54,7 +55,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		DevicesEvents\DevicePropertyStateEntityCreated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		$state = $event->getState();
+		$state = $event->getGet();
 
 		if ($state->getExpectedValue() === null || $state->getPending() !== true) {
 			return;
@@ -65,12 +66,39 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
 		) {
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($event->getProperty()->getDevice());
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
 
 			if ($device === null) {
 				return;
+			}
+
+			if ($event->getProperty() instanceof DevicesDocuments\Devices\Properties\Mapped) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getRead()->toArray(),
+						],
+					),
+				);
+			} elseif ($event->getProperty() instanceof DevicesDocuments\Devices\Properties\Dynamic) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getGet()->toArray(),
+						],
+					),
+				);
 			}
 		} else {
 			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
@@ -83,6 +111,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			}
 
 			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 
 			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
@@ -90,39 +119,34 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			if ($device === null) {
 				return;
 			}
-		}
 
-		if (!$device->getConnector()->equals($this->connector->getId())) {
-			return;
-		}
-
-		if (
-			$event instanceof DevicesEvents\DevicePropertyStateEntityCreated
-			|| $event instanceof DevicesEvents\DevicePropertyStateEntityUpdated
-		) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'property' => $event->getProperty()->getId(),
-					],
-				),
-			);
-
-		} else {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\WriteChannelPropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'channel' => $event->getProperty()->getChannel(),
-						'property' => $event->getProperty()->getId(),
-					],
-				),
-			);
+			if ($event->getProperty() instanceof DevicesDocuments\Channels\Properties\Mapped) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getRead()->toArray(),
+						],
+					),
+				);
+			} elseif ($event->getProperty() instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $event->getProperty()->getId(),
+							'state' => $event->getGet()->toArray(),
+						],
+					),
+				);
+			}
 		}
 	}
 

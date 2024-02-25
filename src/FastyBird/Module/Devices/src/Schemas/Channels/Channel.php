@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Schemas\Channels;
 
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Router;
@@ -25,7 +24,6 @@ use FastyBird\Module\Devices\Schemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function count;
-use function strval;
 
 /**
  * Channel entity schema
@@ -37,13 +35,8 @@ use function strval;
  * @subpackage     Schemas
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Channel extends JsonApiSchemas\JsonApi
+abstract class Channel extends JsonApiSchemas\JsonApi
 {
-
-	/**
-	 * Define entity schema type string
-	 */
-	public const SCHEMA_TYPE = MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES . '/channel/' . Entities\Channels\Channel::TYPE;
 
 	/**
 	 * Define relationships names
@@ -56,16 +49,6 @@ class Channel extends JsonApiSchemas\JsonApi
 
 	public function __construct(private readonly Routing\IRouter $router)
 	{
-	}
-
-	public function getEntityClass(): string
-	{
-		return Entities\Channels\Channel::class;
-	}
-
-	public function getType(): string
-	{
-		return self::SCHEMA_TYPE;
 	}
 
 	/**
@@ -81,7 +64,7 @@ class Channel extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			'category' => strval($resource->getCategory()->getValue()),
+			'category' => $resource->getCategory()->value,
 			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),
@@ -103,8 +86,8 @@ class Channel extends JsonApiSchemas\JsonApi
 			$this->router->urlFor(
 				Devices\Constants::ROUTE_NAME_CHANNEL,
 				[
-					Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -158,8 +141,8 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTIES,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -173,8 +156,8 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_CONTROLS,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_CHANNEL_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -188,7 +171,7 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_DEVICE,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getDevice()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getDevice()->getId()->toString(),
 					],
 				),
 				false,
@@ -217,8 +200,8 @@ class Channel extends JsonApiSchemas\JsonApi
 				$this->router->urlFor(
 					Devices\Constants::ROUTE_NAME_CHANNEL_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_DEVICE_ID => $resource->getDevice()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),

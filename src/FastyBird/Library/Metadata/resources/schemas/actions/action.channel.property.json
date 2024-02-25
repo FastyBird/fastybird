@@ -44,26 +44,142 @@
     },
     "then": {
       "properties": {
-        "expected_value": {
+        "set": {
+          "type": "object",
+          "properties": {
+            "actual_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ],
+              "description": "Property actual value to be set into property"
+            },
+            "expected_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ],
+              "description": "Property expected value to be set into property"
+            }
+          },
           "oneOf": [
             {
-              "type": "string"
+              "required": [
+                "actual_value"
+              ]
             },
             {
-              "type": "number"
+              "required": [
+                "expected_value"
+              ]
             },
             {
-              "type": "boolean"
+              "required": [
+                "actual_value",
+                "expected_value"
+              ]
             }
-          ],
-          "description": "Property value to be written into property"
+          ]
+        },
+        "write": {
+          "type": "object",
+          "properties": {
+            "actual_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ],
+              "description": "Property actual value to be written into property"
+            },
+            "expected_value": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ],
+              "description": "Property expected value to be written into property"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "actual_value"
+              ]
+            },
+            {
+              "required": [
+                "expected_value"
+              ]
+            },
+            {
+              "required": [
+                "actual_value",
+                "expected_value"
+              ]
+            }
+          ]
         }
       },
-      "required": [
-        "action",
-        "channel",
-        "property",
-        "expected_value"
+      "oneOf": [
+        {
+          "required": [
+            "action",
+            "channel",
+            "property",
+            "set"
+          ]
+        },
+        {
+          "required": [
+            "action",
+            "channel",
+            "property",
+            "write"
+          ]
+        }
       ]
     }
   }

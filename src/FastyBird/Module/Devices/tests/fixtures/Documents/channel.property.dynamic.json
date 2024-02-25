@@ -1,0 +1,26 @@
+{
+  "id": "176984ad-7cf7-465d-9e53-71668a74a688",
+  "type": "dynamic",
+  "category": "generic",
+  "identifier": "property-identifier",
+  "name": null,
+  "settable": true,
+  "queryable": false,
+  "data_type": "int",
+  "unit": "%",
+  "format": [
+    [
+      "u8",
+      10.5
+    ],
+    50
+  ],
+  "invalid": 99,
+  "scale": 0,
+  "step": null,
+  "default": null,
+  "value_transformer": null,
+  "channel": "247fd6b5-8466-4323-81de-cec3e315015a",
+  "created_at" : null,
+  "updated_at" : null
+}

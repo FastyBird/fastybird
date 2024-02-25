@@ -11,6 +11,7 @@ use FastyBird\Connector\NsPanel\Controllers;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
+use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
@@ -18,14 +19,14 @@ use FastyBird\Connector\NsPanel\Services;
 use FastyBird\Connector\NsPanel\Subscribers;
 use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Writers;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */
@@ -33,7 +34,7 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	{
 		$container = $this->createContainer();
 
-		self::assertNotNull($container->getByType(Writers\WriterFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
 		self::assertNotNull($container->getByType(Clients\GatewayFactory::class, false));
 		self::assertNotNull($container->getByType(Clients\DeviceFactory::class, false));
@@ -56,25 +57,27 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
 		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\NsPanelConnector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\SubDevice::class, false));
 		self::assertNotNull($container->getByType(Schemas\Devices\ThirdPartyDevice::class, false));
-		self::assertNotNull($container->getByType(Schemas\NsPanelChannel::class, false));
+		self::assertNotNull($container->getByType(Schemas\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\NsPanelConnector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\SubDevice::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Devices\ThirdPartyDevice::class, false));
-		self::assertNotNull($container->getByType(Hydrators\NsPanelChannel::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
+
+		self::assertNotNull($container->getByType(Models\StateRepository::class, false));
 
 		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
-		self::assertNotNull($container->getByType(Helpers\Entity::class, false));
-		self::assertNotNull($container->getByType(Helpers\Connector::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\Gateway::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\ThirdPartyDevice::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
-		self::assertNotNull($container->getByType(Helpers\Channel::class, false));
+		self::assertNotNull($container->getByType(Helpers\Channels\Channel::class, false));
 
 		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 

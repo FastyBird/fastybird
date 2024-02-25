@@ -16,8 +16,8 @@
 namespace FastyBird\Plugin\WebServer\Subscribers;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
 use Symfony\Component\EventDispatcher;
@@ -30,10 +30,10 @@ use Symfony\Component\EventDispatcher;
  *
  * @author          Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Server implements EventDispatcher\EventSubscriberInterface
+readonly class Server implements EventDispatcher\EventSubscriberInterface
 {
 
-	public function __construct(private readonly BootstrapHelpers\Database $database)
+	public function __construct(private ApplicationHelpers\Database $database)
 	{
 	}
 
@@ -47,7 +47,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 */
@@ -66,7 +66,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 */
 	public function request(): void
@@ -78,7 +78,7 @@ class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function response(): void
 	{

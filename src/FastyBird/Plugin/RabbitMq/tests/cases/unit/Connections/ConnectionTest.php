@@ -3,7 +3,7 @@
 namespace FastyBird\Plugin\RabbitMq\Tests\Cases\Unit\Connections;
 
 use Error;
-use FastyBird\Library\Bootstrap\Exceptions as BootstrapExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Plugin\RabbitMq\Connections;
 use FastyBird\Plugin\RabbitMq\Tests;
 use Nette;
@@ -22,7 +22,7 @@ final class ConnectionTest extends Tests\Cases\Unit\BaseTestCase
 	}
 
 	/**
-	 * @throws BootstrapExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

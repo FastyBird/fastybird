@@ -15,9 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Writers;
 
-use FastyBird\Connector\NsPanel\Entities;
+use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
@@ -25,11 +26,14 @@ use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
-use FastyBird\Module\Devices\Utilities as DevicesUtilities;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 use React\EventLoop;
+use TypeError;
+use ValueError;
+use function array_merge;
 
 /**
  * Exchange based properties writer
@@ -44,18 +48,15 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 	public const NAME = 'exchange';
 
-	/**
-	 * @throws ExchangeExceptions\InvalidArgument
-	 */
 	public function __construct(
-		MetadataDocuments\DevicesModule\Connector $connector,
-		Helpers\Entity $entityHelper,
+		Documents\Connectors\Connector $connector,
+		Helpers\MessageBuilder $messageBuilder,
 		Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		Queue\Queue $queue,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		DevicesUtilities\ChannelPropertiesStates $channelPropertiesStatesManager,
+		DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		DateTimeFactory\Factory $dateTimeFactory,
 		EventLoop\LoopInterface $eventLoop,
 		private readonly ExchangeConsumers\Container $consumer,
@@ -63,7 +64,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		parent::__construct(
 			$connector,
-			$entityHelper,
+			$messageBuilder,
 			$thirdPartyDeviceHelper,
 			$queue,
 			$devicesConfigurationRepository,
@@ -100,131 +101,177 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(
-		MetadataTypes\ModuleSource|MetadataTypes\PluginSource|MetadataTypes\ConnectorSource|MetadataTypes\AutomatorSource $source,
-		MetadataTypes\RoutingKey $routingKey,
-		MetadataDocuments\Document|null $entity,
+		MetadataTypes\Sources\Source $source,
+		string $routingKey,
+		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if (
-			$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-			|| $entity instanceof MetadataDocuments\DevicesModule\ChannelVariableProperty
-		) {
-			$findChannelQuery = new DevicesQueries\Configuration\FindChannels();
-			$findChannelQuery->byId($entity->getChannel());
+		if ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
+			$findChannelQuery = new Queries\Configuration\FindChannels();
+			$findChannelQuery->byId($document->getChannel());
 
-			$channel = $this->channelsConfigurationRepository->findOneBy($findChannelQuery);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
 			if ($channel === null) {
 				return;
 			}
 
-			$findDeviceQuery = new DevicesQueries\Configuration\FindDevices();
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
 			$findDeviceQuery->byId($channel->getDevice());
 
-			$device = $this->devicesConfigurationRepository->findOneBy($findDeviceQuery);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
 			if ($device === null) {
 				return;
 			}
 
-			if (!$device->getConnector()->equals($this->connector->getId())) {
+			if ($device instanceof Documents\Devices\SubDevice) {
+				if (
+					$document->getGet()->getExpectedValue() === null
+					|| $document->getPending() !== true
+				) {
+					return;
+				}
+
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $document->getId(),
+							'state' => array_merge(
+								$document->getGet()->toArray(),
+								[
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
+								],
+							),
+						],
+					),
+				);
+
+			} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
+				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'state' => DevicesTypes\ConnectionState::ALERT,
+							],
+						),
+					);
+
+					return;
+				}
+
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $document->getId(),
+							'state' => array_merge(
+								$document->getRead()->toArray(),
+								[
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
+								],
+							),
+						],
+					),
+				);
+			}
+		} elseif ($document instanceof DevicesDocuments\Channels\Properties\Variable) {
+			$findChannelQuery = new Queries\Configuration\FindChannels();
+			$findChannelQuery->byId($document->getChannel());
+
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
+
+			if ($channel === null) {
 				return;
 			}
 
-			if ($device->getType() === Entities\Devices\SubDevice::TYPE) {
-				if (
-					(
-						$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					)
-					&& (
-						$entity->getExpectedValue() === null
-						|| $entity->getPending() !== true
-					)
-				) {
-					return;
-				}
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
+			$findDeviceQuery->byId($channel->getDevice());
 
-				$this->writeSubDeviceChannel($device, $channel);
-
-			} elseif ($device->getType() === Entities\Devices\ThirdPartyDevice::TYPE) {
-				if (
-					(
-						$entity instanceof MetadataDocuments\DevicesModule\ChannelDynamicProperty
-						|| $entity instanceof MetadataDocuments\DevicesModule\ChannelMappedProperty
-					)
-					&& $entity->isValid() !== true
-				) {
-					return;
-				}
-
-				$this->writeThirdPartyDeviceChannel($device, $channel);
-			}
-		}
-	}
-
-	/**
-	 * @throws Exceptions\Runtime
-	 */
-	public function writeSubDeviceChannel(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\Channel $channel,
-	): void
-	{
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteSubDeviceState::class,
-				[
-					'connector' => $device->getConnector(),
-					'device' => $device->getId(),
-					'channel' => $channel->getId(),
-				],
-			),
-		);
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 */
-	public function writeThirdPartyDeviceChannel(
-		MetadataDocuments\DevicesModule\Device $device,
-		MetadataDocuments\DevicesModule\Channel $channel,
-	): void
-	{
-		if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
-			$this->queue->append(
-				$this->entityHelper->create(
-					Entities\Messages\StoreDeviceConnectionState::class,
-					[
-						'connector' => $device->getConnector(),
-						'identifier' => $device->getIdentifier(),
-						'state' => MetadataTypes\ConnectionState::STATE_ALERT,
-					],
-				),
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
 			);
 
-			return;
-		}
+			if ($device === null) {
+				return;
+			}
 
-		$this->queue->append(
-			$this->entityHelper->create(
-				Entities\Messages\WriteThirdPartyDeviceState::class,
-				[
-					'connector' => $device->getConnector(),
-					'device' => $device->getId(),
-					'channel' => $channel->getId(),
-				],
-			),
-		);
+			if ($device instanceof Documents\Devices\SubDevice) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $document->getId(),
+						],
+					),
+				);
+
+			} elseif ($device instanceof Documents\Devices\ThirdPartyDevice) {
+				if ($this->thirdPartyDeviceHelper->getGatewayIdentifier($device) === null) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $device->getConnector(),
+								'identifier' => $device->getIdentifier(),
+								'state' => DevicesTypes\ConnectionState::ALERT,
+							],
+						),
+					);
+
+					return;
+				}
+
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $document->getId(),
+						],
+					),
+				);
+			}
+		}
 	}
 
 }

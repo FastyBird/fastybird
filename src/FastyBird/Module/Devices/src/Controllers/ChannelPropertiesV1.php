@@ -18,7 +18,8 @@ namespace FastyBird\Module\Devices\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
@@ -197,11 +198,14 @@ final class ChannelPropertiesV1 extends BaseV1
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'channel-properties-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'channel-properties-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -274,11 +278,14 @@ final class ChannelPropertiesV1 extends BaseV1
 				throw $ex;
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'type' => 'channel-properties-controller',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'channel-properties-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -306,6 +313,7 @@ final class ChannelPropertiesV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
@@ -342,11 +350,14 @@ final class ChannelPropertiesV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'channel-properties-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'channel-properties-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,

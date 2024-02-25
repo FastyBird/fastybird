@@ -29,13 +29,15 @@ use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Schemas;
 use FastyBird\Connector\FbMqtt\Subscribers;
 use FastyBird\Connector\FbMqtt\Writers;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices\DI as DevicesDI;
 use Nette\DI;
-use Nette\Schema;
-use stdClass;
-use function assert;
+use Nettrine\ORM as NettrineORM;
+use function array_keys;
+use function array_pop;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -52,35 +54,21 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 	public const NAME = 'fbFbMqttConnector';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
 		};
 	}
 
-	public function getConfigSchema(): Schema\Schema
-	{
-		return Schema\Expect::structure([
-			'writer' => Schema\Expect::anyOf(
-				Writers\Event::NAME,
-				Writers\Exchange::NAME,
-			)->default(
-				Writers\Exchange::NAME,
-			),
-		]);
-	}
-
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
-		$configuration = $this->getConfig();
-		assert($configuration instanceof stdClass);
 
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(FbMqtt\Logger::class)
@@ -90,18 +78,16 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 * WRITERS
 		 */
 
-		if ($configuration->writer === Writers\Event::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.event'))
-				->setImplement(Writers\EventFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Event::class);
-		} elseif ($configuration->writer === Writers\Exchange::NAME) {
-			$builder->addFactoryDefinition($this->prefix('writers.exchange'))
-				->setImplement(Writers\ExchangeFactory::class)
-				->getResultDefinition()
-				->setType(Writers\Exchange::class)
-				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-		}
+		$builder->addFactoryDefinition($this->prefix('writers.event'))
+			->setImplement(Writers\EventFactory::class)
+			->getResultDefinition()
+			->setType(Writers\Event::class);
+
+		$builder->addFactoryDefinition($this->prefix('writers.exchange'))
+			->setImplement(Writers\ExchangeFactory::class)
+			->getResultDefinition()
+			->setType(Writers\Exchange::class)
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		/**
 		 * CLIENTS
@@ -180,10 +166,19 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('queue.consumers.store.writeV1PropertyState'),
+			$this->prefix('queue.consumers.store.writeV1DevicePropertyState'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Queue\Consumers\WriteV1PropertyState::class)
+			->setType(Queue\Consumers\WriteV1DevicePropertyState::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('queue.consumers.store.writeV1ChannelPropertyState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Queue\Consumers\WriteV1ChannelPropertyState::class)
 			->setArguments([
 				'logger' => $logger,
 			]);
@@ -207,6 +202,12 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 				'logger' => $logger,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('queue.messageBuilder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Helpers\MessageBuilder::class);
+
 		/**
 		 * SUBSCRIBERS
 		 */
@@ -219,33 +220,30 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		 */
 
 		$builder->addDefinition($this->prefix('schemas.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttConnector::class);
+			->setType(Schemas\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('schemas.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttDevice::class);
+			->setType(Schemas\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\FbMqttChannel::class);
+			->setType(Schemas\Channels\Channel::class);
 
 		/**
 		 * JSON-API HYDRATORS
 		 */
 
 		$builder->addDefinition($this->prefix('hydrators.connector.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttConnector::class);
+			->setType(Hydrators\Connectors\Connector::class);
 
 		$builder->addDefinition($this->prefix('hydrators.device.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttDevice::class);
+			->setType(Hydrators\Devices\Device::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.fbMqtt'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\FbMqttChannel::class);
+			->setType(Hydrators\Channels\Channel::class);
 
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.entity'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Entity::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connector::class);
@@ -271,12 +269,13 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 			->setImplement(Connector\ConnectorFactory::class)
 			->addTag(
 				DevicesDI\DevicesExtension::CONNECTOR_TYPE_TAG,
-				Entities\FbMqttConnector::TYPE,
+				Entities\Connectors\Connector::TYPE,
 			)
 			->getResultDefinition()
 			->setType(Connector\Connector::class)
 			->setArguments([
 				'clientsFactories' => $builder->findByType(Clients\ClientFactory::class),
+				'writersFactories' => $builder->findByType(Writers\WriterFactory::class),
 				'logger' => $logger,
 			]);
 	}
@@ -291,27 +290,65 @@ class FbMqttExtension extends DI\CompilerExtension implements Translation\DI\Tra
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Connector\FbMqtt\Entities',
+					]);
+				}
+			}
 		}
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+		/**
+		 * APPLICATION DOCUMENTS
+		 */
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Connector\FbMqtt\Entities',
-			]);
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Connector\FbMqtt\Documents',
+					]);
+				}
+			}
 		}
 	}
 

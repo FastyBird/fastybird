@@ -15,9 +15,6 @@
 
 namespace FastyBird\Plugin\ApiKey\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * API access key state
  *
@@ -26,21 +23,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class KeyState extends Consistence\Enum\Enum
+enum KeyState: string
 {
 
-	/**
-	 * Define states
-	 */
-	public const STATE_ACTIVE = 'active';
+	case ACTIVE = 'active';
 
-	public const STATE_SUSPENDED = 'suspended';
+	case SUSPENDED = 'suspended';
 
-	public const STATE_DELETED = 'deleted';
-
-	public function __toString(): string
-	{
-		return strval(self::getValue());
-	}
+	case DELETED = 'deleted';
 
 }

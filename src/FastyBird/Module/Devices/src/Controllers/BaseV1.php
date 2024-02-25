@@ -21,6 +21,7 @@ use Exception;
 use FastyBird\JsonApi\Builder as JsonApiBuilder;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Router;
@@ -199,18 +200,18 @@ abstract class BaseV1
 			return $connection;
 		}
 
-		throw new Exceptions\Runtime('Transformer manager could not be loaded');
+		throw new Exceptions\Runtime('Entity manager could not be loaded');
 	}
 
 	/**
-	 * @param DoctrineCrud\Entities\IEntity|ResultSet<DoctrineCrud\Entities\IEntity>|array<DoctrineCrud\Entities\IEntity> $data
+	 * @param DoctrineCrud\Entities\IEntity|MetadataDocuments\Document|ResultSet<DoctrineCrud\Entities\IEntity>|array<DoctrineCrud\Entities\IEntity> $data
 	 *
 	 * @throws Exception
 	 */
 	protected function buildResponse(
 		Message\ServerRequestInterface $request,
 		ResponseInterface $response,
-		ResultSet|DoctrineCrud\Entities\IEntity|array $data,
+		ResultSet|DoctrineCrud\Entities\IEntity|MetadataDocuments\Document|array $data,
 	): ResponseInterface
 	{
 		$totalCount = null;

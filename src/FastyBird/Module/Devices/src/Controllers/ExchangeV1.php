@@ -15,28 +15,26 @@
 
 namespace FastyBird\Module\Devices\Controllers;
 
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
-use FastyBird\Library\Exchange\Documents as ExchangeEntities;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Loaders as MetadataLoaders;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
-use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
+use FastyBird\Module\Devices\Types;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_key_exists;
-use function array_merge;
 use function is_array;
 
 /**
@@ -51,16 +49,14 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 {
 
 	public function __construct(
-		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $connectorPropertiesRepository,
-		private readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
-		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository,
-		private readonly Utilities\ConnectorPropertiesStates $connectorPropertiesStates,
-		private readonly Utilities\DevicePropertiesStates $devicePropertiesStates,
-		private readonly Utilities\ChannelPropertiesStates $channelPropertiesStates,
+		private readonly Models\Configuration\Connectors\Properties\Repository $connectorPropertiesConfigurationRepository,
+		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
+		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
+		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
+		private readonly Models\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Devices\Logger $logger,
-		private readonly MetadataLoaders\SchemaLoader $schemaLoader,
-		private readonly MetadataSchemas\Validator $jsonValidator,
-		private readonly ExchangeEntities\DocumentFactory $entityFactory,
+		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
 		parent::__construct();
@@ -77,7 +73,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Client subscribed to topic',
 			[
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -85,104 +81,92 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		);
 
 		try {
-			$findDevicesProperties = new Queries\Entities\FindDeviceProperties();
+			$findDevicesProperties = new Queries\Configuration\FindDeviceProperties();
 
-			$devicesProperties = $this->devicePropertiesRepository->getResultSet($findDevicesProperties);
+			$devicesProperties = $this->devicePropertiesConfigurationRepository->findAllBy(
+				$findDevicesProperties,
+			);
 
 			foreach ($devicesProperties as $deviceProperty) {
-				$dynamicData = [];
-
 				if (
-					$deviceProperty instanceof Entities\Devices\Properties\Dynamic
-					|| $deviceProperty instanceof Entities\Devices\Properties\Mapped
+					$deviceProperty instanceof Documents\Devices\Properties\Dynamic
+					|| $deviceProperty instanceof Documents\Devices\Properties\Mapped
 				) {
-					$state = $this->devicePropertiesStates->readValue($deviceProperty);
+					$state = $this->devicePropertiesStatesManager->readState($deviceProperty);
 
-					if ($state instanceof States\DeviceProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+								'source' => MetadataTypes\Sources\Module::DEVICES->value,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-						'data' => array_merge(
-							$deviceProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 
-			$findChannelsProperties = new Queries\Entities\FindChannelProperties();
+			$findChannelsProperties = new Queries\Configuration\FindChannelProperties();
 
-			$channelsProperties = $this->channelPropertiesRepository->getResultSet($findChannelsProperties);
+			$channelsProperties = $this->channelPropertiesConfigurationRepository->findAllBy(
+				$findChannelsProperties,
+			);
 
 			foreach ($channelsProperties as $channelProperty) {
-				$dynamicData = [];
-
 				if (
-					$channelProperty instanceof Entities\Channels\Properties\Dynamic
-					|| $channelProperty instanceof Entities\Channels\Properties\Mapped
+					$channelProperty instanceof Documents\Channels\Properties\Dynamic
+					|| $channelProperty instanceof Documents\Channels\Properties\Mapped
 				) {
-					$state = $this->channelPropertiesStates->readValue($channelProperty);
+					$state = $this->channelPropertiesStatesManager->readState($channelProperty);
 
-					if ($state instanceof States\ChannelProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+								'source' => MetadataTypes\Sources\Module::DEVICES->value,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-						'data' => array_merge(
-							$channelProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 
-			$findConnectorsProperties = new Queries\Entities\FindConnectorProperties();
+			$findConnectorsProperties = new Queries\Configuration\FindConnectorProperties();
 
-			$connectorsProperties = $this->connectorPropertiesRepository->getResultSet($findConnectorsProperties);
+			$connectorsProperties = $this->connectorPropertiesConfigurationRepository->findAllBy(
+				$findConnectorsProperties,
+			);
 
 			foreach ($connectorsProperties as $connectorProperty) {
-				$dynamicData = [];
+				if ($connectorProperty instanceof Documents\Connectors\Properties\Dynamic) {
+					$state = $this->connectorPropertiesStatesManager->readState($connectorProperty);
 
-				if ($connectorProperty instanceof Entities\Connectors\Properties\Dynamic) {
-					$state = $this->connectorPropertiesStates->readValue($connectorProperty);
-
-					if ($state instanceof States\ConnectorProperty) {
-						$dynamicData = $state->toArray();
+					if ($state !== null) {
+						$client->send(Utils\Json::encode([
+							WebSocketsWAMP\Application\Application::MSG_EVENT,
+							$topic->getId(),
+							Utils\Json::encode([
+								'routing_key' => Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+								'source' => MetadataTypes\Sources\Module::DEVICES->value,
+								'data' => $state->toArray(),
+							]),
+						]));
 					}
 				}
-
-				$client->send(Utils\Json::encode([
-					WebSocketsWAMP\Application\Application::MSG_EVENT,
-					$topic->getId(),
-					Utils\Json::encode([
-						'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-						'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-						'data' => array_merge(
-							$connectorProperty->toArray(),
-							$dynamicData,
-						),
-					]),
-				]));
 			}
 		} catch (Throwable $ex) {
-			$this->logger->error('State could not be sent to subscriber', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'subscriber',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'State could not be sent to subscriber',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'exchange-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		}
 	}
 
@@ -192,13 +176,14 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\FileNotFound
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function actionCall(
 		array $args,
@@ -209,7 +194,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		$this->logger->debug(
 			'Received RPC call from client',
 			[
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
 				'type' => 'exchange-controller',
 				'client' => $client->getId(),
 				'topic' => $topic->getId(),
@@ -222,31 +207,38 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		}
 
 		switch ($args['routing_key']) {
-			case Metadata\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY:
-			case Metadata\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY:
-			case Metadata\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY:
-			case Metadata\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY:
-			case Metadata\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY:
-			case Metadata\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY:
-				$schema = $this->schemaLoader->loadByRoutingKey(
-					MetadataTypes\RoutingKey::get($args['routing_key']),
-				);
-
+			case Devices\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY:
 				/** @var array<string, mixed>|null $data */
 				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
-				$data = $data !== null ? $this->parseData($data, $schema) : null;
 
-				$entity = $this->entityFactory->create(
-					Utils\Json::encode($data),
-					MetadataTypes\RoutingKey::get($args['routing_key']),
-				);
+				if ($data !== null) {
+					if ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY) {
+						$document = $this->documentFactory->create(
+							Documents\States\Connectors\Properties\Actions\Action::class,
+							$data,
+						);
 
-				if ($entity instanceof MetadataDocuments\Actions\ActionConnectorProperty) {
-					$this->handleConnectorAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataDocuments\Actions\ActionDeviceProperty) {
-					$this->handleDeviceAction($client, $topic, $entity);
-				} elseif ($entity instanceof MetadataDocuments\Actions\ActionChannelProperty) {
-					$this->handleChannelAction($client, $topic, $entity);
+						$this->handleConnectorAction($client, $topic, $document);
+					} elseif ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY) {
+						$document = $this->documentFactory->create(
+							Documents\States\Devices\Properties\Actions\Action::class,
+							$data,
+						);
+
+						$this->handleDeviceAction($client, $topic, $document);
+					} elseif ($args['routing_key'] === Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY) {
+						$document = $this->documentFactory->create(
+							Documents\States\Channels\Properties\Actions\Action::class,
+							$data,
+						);
+
+						$this->handleChannelAction($client, $topic, $document);
+					}
 				}
 
 				break;
@@ -260,103 +252,89 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	}
 
 	/**
-	 * @param array<string, mixed> $data
-	 *
-	 * @throws Exceptions\InvalidArgument
-	 */
-	private function parseData(array $data, string $schema): Utils\ArrayHash
-	{
-		try {
-			return $this->jsonValidator->validate(Utils\Json::encode($data), $schema);
-		} catch (Utils\JsonException $ex) {
-			$this->logger->error('Received message could not be validated', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
-
-			throw new Exceptions\InvalidArgument('Provided data are not valid json format', 0, $ex);
-		} catch (MetadataExceptions\InvalidData $ex) {
-			$this->logger->debug('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
-
-			throw new Exceptions\InvalidArgument('Provided data are not in valid structure', 0, $ex);
-		} catch (Throwable $ex) {
-			$this->logger->error('Received message is not valid', [
-				'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-				'type' => 'exchange-controller',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
-
-			throw new Exceptions\InvalidArgument('Provided data could not be validated', 0, $ex);
-		}
-	}
-
-	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleConnectorAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataDocuments\Actions\ActionConnectorProperty $entity,
+		Documents\States\Connectors\Properties\Actions\Action $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
+		if ($entity->getAction() === Types\PropertyAction::SET) {
+			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
-			if (!$property instanceof Entities\Connectors\Properties\Dynamic) {
+			if (!$property instanceof Documents\Connectors\Properties\Dynamic) {
 				return;
 			}
 
-			$this->connectorPropertiesStates->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
-				]),
-			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$property = $this->connectorPropertiesRepository->find($entity->getProperty());
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->connectorPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->connectorPropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			}
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
+			$property = $this->connectorPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Connectors\Properties\Dynamic
-				? $this->connectorPropertiesStates->readValue($property)
+			$state = $property instanceof Documents\Connectors\Properties\Dynamic
+				? $this->connectorPropertiesStatesManager->readState($property)
 				: null;
 
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->entityFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
-				$publishRoutingKey,
-			);
+			if ($state === null) {
+				return;
+			}
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'data' => $responseEntity->toArray(),
+					'routing_key' => Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'data' => $state->toArray(),
 				]),
 			]));
 		}
@@ -365,68 +343,90 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleDeviceAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataDocuments\Actions\ActionDeviceProperty $entity,
+		Documents\States\Devices\Properties\Actions\Action $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$property = $this->devicePropertiesRepository->find($entity->getProperty());
+		if ($entity->getAction() === Types\PropertyAction::SET) {
+			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
-				!$property instanceof Entities\Devices\Properties\Dynamic
-				&& !$property instanceof Entities\Devices\Properties\Mapped
+				!$property instanceof Documents\Devices\Properties\Dynamic
+				&& !$property instanceof Documents\Devices\Properties\Mapped
 			) {
 				return;
 			}
 
-			$this->devicePropertiesStates->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
-				]),
-			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$property = $this->devicePropertiesRepository->find($entity->getProperty());
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->devicePropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->devicePropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			}
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
+			$property = $this->devicePropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Devices\Properties\Dynamic
-			|| $property instanceof Entities\Devices\Properties\Mapped
-				? $this->devicePropertiesStates->readValue($property) : null;
+			$state = $property instanceof Documents\Devices\Properties\Dynamic
+			|| $property instanceof Documents\Devices\Properties\Mapped
+				? $this->devicePropertiesStatesManager->readState($property) : null;
 
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::DEVICE_PROPERTY_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->entityFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
-				$publishRoutingKey,
-			);
+			if ($state === null) {
+				return;
+			}
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'data' => $responseEntity->toArray(),
+					'routing_key' => Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'data' => $state->toArray(),
 				]),
 			]));
 		}
@@ -435,68 +435,90 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Utils\JsonException
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handleChannelAction(
 		WebSocketsWAMP\Entities\Clients\IClient $client,
 		WebSocketsWAMP\Entities\Topics\ITopic $topic,
-		MetadataDocuments\Actions\ActionChannelProperty $entity,
+		Documents\States\Channels\Properties\Actions\Action $entity,
 	): void
 	{
-		if ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_SET)) {
-			$property = $this->channelPropertiesRepository->find($entity->getProperty());
+		if ($entity->getAction() === Types\PropertyAction::SET) {
+			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if (
-				!$property instanceof Entities\Channels\Properties\Dynamic
-				&& !$property instanceof Entities\Channels\Properties\Mapped
+				!$property instanceof Documents\Channels\Properties\Dynamic
+				&& !$property instanceof Documents\Channels\Properties\Mapped
 			) {
 				return;
 			}
 
-			$this->channelPropertiesStates->writeValue(
-				$property,
-				Utils\ArrayHash::from([
-					States\Property::EXPECTED_VALUE_FIELD => $entity->getExpectedValue(),
-					States\Property::PENDING_FIELD => true,
-				]),
-			);
-		} elseif ($entity->getAction()->equalsValue(MetadataTypes\PropertyAction::ACTION_GET)) {
-			$property = $this->channelPropertiesRepository->find($entity->getProperty());
+			if ($entity->getSet() !== null) {
+				$data = [];
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
+				}
+
+				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->channelPropertiesStatesManager->set(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			} elseif ($entity->getWrite() !== null) {
+				$data = [];
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
+				}
+
+				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
+				}
+
+				if ($data !== []) {
+					$this->channelPropertiesStatesManager->write(
+						$property,
+						Utils\ArrayHash::from($data),
+						MetadataTypes\Sources\Module::DEVICES,
+					);
+				}
+			}
+		} elseif ($entity->getAction() === Types\PropertyAction::GET) {
+			$property = $this->channelPropertiesConfigurationRepository->find($entity->getProperty());
 
 			if ($property === null) {
 				return;
 			}
 
-			$state = $property instanceof Entities\Channels\Properties\Dynamic
-			|| $property instanceof Entities\Channels\Properties\Mapped
-				? $this->channelPropertiesStates->readValue($property) : null;
+			$state = $property instanceof Documents\Channels\Properties\Dynamic
+			|| $property instanceof Documents\Channels\Properties\Mapped
+				? $this->channelPropertiesStatesManager->readState($property) : null;
 
-			$publishRoutingKey = MetadataTypes\RoutingKey::get(
-				MetadataTypes\RoutingKey::CHANNEL_PROPERTY_DOCUMENT_REPORTED,
-			);
-
-			$responseEntity = $this->entityFactory->create(
-				Utils\Json::encode(
-					array_merge(
-						$property->toArray(),
-						$state?->toArray() ?? [],
-					),
-				),
-				$publishRoutingKey,
-			);
+			if ($state === null) {
+				return;
+			}
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,
 				$topic->getId(),
 				Utils\Json::encode([
-					'routing_key' => MetadataTypes\RoutingKey::CONNECTOR_PROPERTY_DOCUMENT_REPORTED,
-					'source' => MetadataTypes\ModuleSource::SOURCE_MODULE_DEVICES,
-					'data' => $responseEntity->toArray(),
+					'routing_key' => Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'data' => $state->toArray(),
 				]),
 			]));
 		}

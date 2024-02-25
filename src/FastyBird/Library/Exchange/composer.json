@@ -3,14 +3,14 @@
   "type": "fastybird-library",
   "description": "FastyBird IoT application exchange services",
   "keywords": [
-    "php",
-    "iot",
-    "events",
-    "interface",
-    "nette",
-    "fb",
     "exchange",
-    "fastybird"
+    "events",
+    "fastybird",
+    "fb",
+    "iot",
+    "nette",
+    "library",
+    "php"
   ],
   "homepage": "https://www.fastybird.com",
   "license": "Apache-2.0",
@@ -31,11 +31,10 @@
     "source": "https://github.com/FastyBird/exchange-library"
   },
   "require": {
-    "php": ">=8.1.0",
+    "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/bootstrap-library": "dev-main",
+    "fastybird/application-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
-    "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^3.2",
     "psr/event-dispatcher": "^1.0",
@@ -89,12 +88,6 @@
       }
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/mathsolver/mathsolver.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true
 }

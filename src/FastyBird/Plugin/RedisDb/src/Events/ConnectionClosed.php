@@ -15,7 +15,6 @@
 
 namespace FastyBird\Plugin\RedisDb\Events;
 
-use Clue\React\Redis;
 use Symfony\Contracts\EventDispatcher;
 
 /**
@@ -28,14 +27,5 @@ use Symfony\Contracts\EventDispatcher;
  */
 class ConnectionClosed extends EventDispatcher\Event
 {
-
-	public function __construct(private readonly Redis\RedisClient $client)
-	{
-	}
-
-	public function getClient(): Redis\RedisClient
-	{
-		return $this->client;
-	}
 
 }

@@ -18,7 +18,9 @@ namespace FastyBird\Module\Triggers\Controllers;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Bootstrap\Helpers as BootstrapHelpers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Triggers\Controllers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Exceptions;
@@ -57,7 +59,7 @@ final class NotificationsV1 extends BaseV1
 	use Controllers\Finders\TTrigger;
 
 	public function __construct(
-		private readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
+		protected readonly Models\Entities\Triggers\TriggersRepository $triggersRepository,
 		private readonly Models\Entities\Notifications\NotificationsRepository $notificationsRepository,
 		private readonly Models\Entities\Notifications\NotificationsManager $notificationsManager,
 	)
@@ -65,6 +67,7 @@ final class NotificationsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
@@ -213,11 +216,14 @@ final class NotificationsV1 extends BaseV1
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-notifications-controller',
-					'type' => 'create',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+						'type' => 'notifications-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -294,11 +300,14 @@ final class NotificationsV1 extends BaseV1
 				throw $ex;
 			} catch (Throwable $ex) {
 				// Log caught exception
-				$this->logger->error('An unhandled error occurred', [
-					'source' => 'triggers-module-notifications-controller',
-					'type' => 'update',
-					'exception' => BootstrapHelpers\Logger::buildException($ex),
-				]);
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+						'type' => 'notifications-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -361,11 +370,14 @@ final class NotificationsV1 extends BaseV1
 
 		} catch (Throwable $ex) {
 			// Log caught exception
-			$this->logger->error('An unhandled error occurred', [
-				'source' => 'triggers-module-notifications-controller',
-				'type' => 'delete',
-				'exception' => BootstrapHelpers\Logger::buildException($ex),
-			]);
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::TRIGGERS->value,
+					'type' => 'notifications-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -411,7 +423,7 @@ final class NotificationsV1 extends BaseV1
 	}
 
 	/**
-	 * @throws Exceptions\InvalidState
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function findNotification(

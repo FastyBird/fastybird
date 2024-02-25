@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1", "8.2" ]
-        node-version: [ "18" ]
+        php-version: [ "8.2" ]
+        node-version: [ "20" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -101,8 +101,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1", "8.2" ]
-        node-version: [ "18" ]
+        php-version: [ "8.2" ]
+        node-version: [ "20" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -176,7 +176,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ "8.1", "8.2" ]
+        php-version: [ "8.2" ]
         operating-system: [ "ubuntu-latest" ]
 
     steps:
@@ -366,8 +366,8 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [ "8.1", "8.2" ]
-        node-version: [ "18" ]
+        php-version: [ "8.2" ]
+        node-version: [ "20" ]
         operating-system: [ "ubuntu-latest" ]
       fail-fast: false
 
@@ -442,7 +442,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        node-version: [ "18" ]
+        node-version: [ "20" ]
 
     steps:
       - name: "Checkout"
@@ -474,7 +474,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        node-version: [ "18" ]
+        node-version: [ "20" ]
 
     steps:
       - name: "Checkout"
@@ -540,7 +540,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        node-version: [ "18" ]
+        node-version: [ "20" ]
 
     steps:
       - name: "Checkout"

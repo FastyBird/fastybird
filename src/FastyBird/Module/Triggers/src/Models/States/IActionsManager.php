@@ -32,8 +32,8 @@ interface IActionsManager
 
 	public function create(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action;
 
-	public function update(States\Action $state, Utils\ArrayHash $values): States\Action;
+	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\Action|false;
 
-	public function delete(States\Action $state): bool;
+	public function delete(Uuid\UuidInterface $id): bool;
 
 }

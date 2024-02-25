@@ -19,7 +19,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
 /**
- * Transformer base trait
+ * Entity base trait
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Entities
@@ -41,9 +41,9 @@ trait TEntity
 		return $this->id->toString();
 	}
 
-	public function getSource(): MetadataTypes\ModuleSource|MetadataTypes\ConnectorSource|MetadataTypes\PluginSource
+	public function getSource(): MetadataTypes\Sources\Source
 	{
-		return MetadataTypes\ModuleSource::get(MetadataTypes\ModuleSource::SOURCE_MODULE_TRIGGERS);
+		return MetadataTypes\Sources\Module::TRIGGERS;
 	}
 
 }

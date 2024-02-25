@@ -17,26 +17,26 @@ namespace FastyBird\Module\Triggers\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Bootstrap\Boot as BootstrapBoot;
+use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Triggers\Commands;
 use FastyBird\Module\Triggers\Controllers;
-use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Hydrators;
 use FastyBird\Module\Triggers\Middleware;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
-use FastyBird\Module\Triggers\Utilities;
-use IPub\DoctrineCrud;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
 use Nette\DI;
-use Nette\PhpGenerator;
 use Nette\Schema;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
+use function array_keys;
+use function array_pop;
 use function assert;
-use function ucfirst;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -55,12 +55,12 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 	public const TRIGGER_TYPE_TAG = 'trigger_type';
 
 	public static function register(
-		BootstrapBoot\Configurator $config,
+		ApplicationBoot\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
 		$config->onCompile[] = static function (
-			BootstrapBoot\Configurator $config,
+			ApplicationBoot\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -109,24 +109,19 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Models\Entities\Notifications\NotificationsRepository::class);
 
 		$builder->addDefinition($this->prefix('models.triggersManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Triggers\TriggersManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Triggers\TriggersManager::class);
 
 		$builder->addDefinition($this->prefix('models.triggersControlsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Triggers\Controls\ControlsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Triggers\Controls\ControlsManager::class);
 
 		$builder->addDefinition($this->prefix('models.actionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Actions\ActionsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Actions\ActionsManager::class);
 
 		$builder->addDefinition($this->prefix('models.conditionsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Conditions\ConditionsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Conditions\ConditionsManager::class);
 
 		$builder->addDefinition($this->prefix('models.notificationsManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Notifications\NotificationsManager::class)
-			->setArgument('entityCrud', '__placeholder__');
+			->setType(Models\Entities\Notifications\NotificationsManager::class);
 
 		$builder->addDefinition($this->prefix('subscribers.notificationEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\NotificationEntity::class);
@@ -155,19 +150,19 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->addTag('nette.inject');
 
 		$builder->addDefinition($this->prefix('schemas.triggers.automatic'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Triggers\AutomaticTrigger::class);
+			->setType(Schemas\Triggers\Automatic::class);
 
 		$builder->addDefinition($this->prefix('schemas.triggers.manual'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Triggers\ManualTrigger::class);
+			->setType(Schemas\Triggers\Manual::class);
 
 		$builder->addDefinition($this->prefix('schemas.trigger.control'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Triggers\Controls\Control::class);
 
 		$builder->addDefinition($this->prefix('schemas.notifications.email'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Notifications\EmailNotification::class);
+			->setType(Schemas\Notifications\Email::class);
 
 		$builder->addDefinition($this->prefix('schemas.notifications.sms'), new DI\Definitions\ServiceDefinition())
-			->setType(Schemas\Notifications\SmsNotification::class);
+			->setType(Schemas\Notifications\Sms::class);
 
 		$builder->addDefinition($this->prefix('hydrators.triggers.automatic'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Triggers\AutomaticTrigger::class);
@@ -176,10 +171,10 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 			->setType(Hydrators\Triggers\ManualTrigger::class);
 
 		$builder->addDefinition($this->prefix('hydrators.notifications.email'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Notifications\EmailNotification::class);
+			->setType(Hydrators\Notifications\Email::class);
 
 		$builder->addDefinition($this->prefix('hydrators.notifications.sms'), new DI\Definitions\ServiceDefinition())
-			->setType(Hydrators\Notifications\SmsNotification::class);
+			->setType(Hydrators\Notifications\Sms::class);
 
 		$builder->addDefinition($this->prefix('states.repositories.actions'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ActionsRepository::class);
@@ -192,12 +187,6 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		$builder->addDefinition($this->prefix('states.managers.conditions'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ConditionsManager::class);
-
-		$builder->addDefinition(
-			$this->prefix('utilities.database'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Utilities\Database::class);
 
 		$builder->addDefinition($this->prefix('commands.initialize'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class);
@@ -213,27 +202,65 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder = $this->getContainerBuilder();
 
 		/**
-		 * Doctrine entities
+		 * DOCTRINE ENTITIES
 		 */
 
-		$ormAnnotationDriverService = $builder->getDefinition('nettrineOrmAnnotations.annotationDriver');
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
 
-		if ($ormAnnotationDriverService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverService->addSetup(
-				'addPaths',
-				[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
-			);
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Module\Triggers\Entities',
+					]);
+				}
+			}
 		}
 
-		$ormAnnotationDriverChainService = $builder->getDefinitionByType(
-			Persistence\Mapping\Driver\MappingDriverChain::class,
-		);
+		/**
+		 * APPLICATION DOCUMENTS
+		 */
 
-		if ($ormAnnotationDriverChainService instanceof DI\Definitions\ServiceDefinition) {
-			$ormAnnotationDriverChainService->addSetup('addDriver', [
-				$ormAnnotationDriverService,
-				'FastyBird\Module\Triggers\Entities',
-			]);
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Module\Triggers\Documents',
+					]);
+				}
+			}
 		}
 
 		/**
@@ -248,54 +275,6 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
 		}
-	}
-
-	/**
-	 * @throws Nette\DI\MissingServiceException
-	 */
-	public function afterCompile(PhpGenerator\ClassType $class): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$entityFactoryServiceName = $builder->getByType(DoctrineCrud\Crud\IEntityCrudFactory::class, true);
-
-		$triggersManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__triggersManager',
-		);
-		$triggersManagerService->setBody(
-			'return new ' . Models\Entities\Triggers\TriggersManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Trigger::class . '\'));',
-		);
-
-		$triggersControlsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__triggersControlsManager',
-		);
-		$triggersControlsManagerService->setBody(
-			'return new ' . Models\Entities\Triggers\Controls\ControlsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Triggers\Controls\Control::class . '\'));',
-		);
-
-		$actionsManagerService = $class->getMethod('createService' . ucfirst($this->name) . '__models__actionsManager');
-		$actionsManagerService->setBody(
-			'return new ' . Models\Entities\Actions\ActionsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Actions\Action::class . '\'));',
-		);
-
-		$conditionsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__conditionsManager',
-		);
-		$conditionsManagerService->setBody(
-			'return new ' . Models\Entities\Conditions\ConditionsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Conditions\Condition::class . '\'));',
-		);
-
-		$notificationsManagerService = $class->getMethod(
-			'createService' . ucfirst($this->name) . '__models__notificationsManager',
-		);
-		$notificationsManagerService->setBody(
-			'return new ' . Models\Entities\Notifications\NotificationsManager::class
-			. '($this->getService(\'' . $entityFactoryServiceName . '\')->create(\'' . Entities\Notifications\Notification::class . '\'));',
-		);
 	}
 
 	/**

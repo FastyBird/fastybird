@@ -15,9 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Types;
 
-use Consistence;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
-use function strval;
+use FastyBird\Module\Devices\Types as DevicesTypes;
 
 /**
  * Device property identifier types
@@ -27,27 +25,17 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class DevicePropertyIdentifier extends Consistence\Enum\Enum
+enum DevicePropertyIdentifier: string
 {
 
-	public const STATE = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE;
+	case STATE = DevicesTypes\DevicePropertyIdentifier::STATE->value;
 
-	public const MANUFACTURER = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MANUFACTURER;
+	case MANUFACTURER = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MANUFACTURER->value;
 
-	public const MAC_ADDRESS = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MAC_ADDRESS;
+	case MAC_ADDRESS = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MAC_ADDRESS->value;
 
-	public const MODEL = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_HARDWARE_MODEL;
+	case MODEL = DevicesTypes\DevicePropertyIdentifier::HARDWARE_MODEL->value;
 
-	public const STATE_PROCESSING_DELAY = MetadataTypes\DevicePropertyIdentifier::IDENTIFIER_STATE_PROCESSING_DELAY;
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case STATE_PROCESSING_DELAY = DevicesTypes\DevicePropertyIdentifier::STATE_PROCESSING_DELAY->value;
 
 }

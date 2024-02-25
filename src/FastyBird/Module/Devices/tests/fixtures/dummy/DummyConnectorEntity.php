@@ -3,22 +3,17 @@
 namespace FastyBird\Module\Devices\Tests\Fixtures\Dummy;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Devices\Entities;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
 class DummyConnectorEntity extends Entities\Connectors\Connector
 {
 
-	public const CONNECTOR_TYPE = 'dummy';
+	public const TYPE = 'dummy';
 
-	public function getType(): string
-	{
-		return 'dummy';
-	}
-
-	public function getDiscriminatorName(): string
+	public static function getType(): string
 	{
 		return 'dummy';
 	}

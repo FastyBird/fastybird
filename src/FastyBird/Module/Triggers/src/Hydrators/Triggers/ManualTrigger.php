@@ -20,7 +20,7 @@ use FastyBird\Module\Triggers\Entities;
 /**
  * Manual trigger entity hydrator
  *
- * @extends Trigger<Entities\Triggers\ManualTrigger>
+ * @extends Trigger<Entities\Triggers\Manual>
  *
  * @package        FastyBird:TriggersModule!
  * @subpackage     Hydrators
@@ -31,7 +31,7 @@ final class ManualTrigger extends Trigger
 
 	public function getEntityName(): string
 	{
-		return Entities\Triggers\ManualTrigger::class;
+		return Entities\Triggers\Manual::class;
 	}
 
 }

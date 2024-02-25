@@ -15,9 +15,6 @@
 
 namespace FastyBird\Connector\Shelly\Types;
 
-use Consistence;
-use function strval;
-
 /**
  * Block descriptions
  *
@@ -26,31 +23,21 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class BlockDescription extends Consistence\Enum\Enum
+enum BlockDescription: string
 {
 
-	public const RELAY = 'relay';
+	case RELAY = 'relay';
 
-	public const ROLLER = 'roller';
+	case ROLLER = 'roller';
 
-	public const LIGHT = 'light';
+	case LIGHT = 'light';
 
-	public const INPUT = 'input';
+	case INPUT = 'input';
 
-	public const METER = 'meter';
+	case METER = 'meter';
 
-	public const EMETER = 'emeter';
+	case EMETER = 'emeter';
 
-	public const DEVICE = 'device';
-
-	public function getValue(): string
-	{
-		return strval(parent::getValue());
-	}
-
-	public function __toString(): string
-	{
-		return self::getValue();
-	}
+	case DEVICE = 'device';
 
 }
