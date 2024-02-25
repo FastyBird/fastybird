@@ -51,7 +51,7 @@ jobs:
     secrets: "inherit"
     with:
       php-version: "8.2"
-      working-directory: "src/FastyBird/Library/Application"
+      working-directory: "./src/FastyBird/Library/Application"
 
     strategy:
       fail-fast: false
