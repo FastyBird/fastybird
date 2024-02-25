@@ -14,6 +14,7 @@ use Nette\DI;
 use Nette\Utils;
 use Psr\Http;
 use RuntimeException;
+use function in_array;
 use function strval;
 
 /**
@@ -67,7 +68,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/users/userid123/devices') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/users/userid123/devices') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -290,14 +293,16 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_devices_factory_infos.json',
-							),
-						);
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_devices_factory_infos.json',
+								),
+							);
 					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
@@ -396,7 +401,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -516,7 +523,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/specifications') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/specifications') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -631,7 +640,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/status') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/status') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -731,7 +742,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bfa1a65b1d7f75a9aenvkc/sub-devices') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/devices/bfa1a65b1d7f75a9aenvkc/sub-devices') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -837,7 +850,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -1037,7 +1052,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -1143,7 +1160,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -1256,7 +1275,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -1375,7 +1396,9 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status') {
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status') {
 						$responseBody
 							->method('getContents')
 							->willReturn(
@@ -1475,14 +1498,16 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								),
 							);
 
-					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands') {
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/set_device_state.json',
-							),
-						);
+					} elseif (strval(
+						$request->getUri(),
+					) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/set_device_state.json',
+								),
+							);
 					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);

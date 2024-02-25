@@ -15,14 +15,14 @@ qa: ## Check code quality - coding style and static analysis
 
 cs: ## Check PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcs" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcs" src tests --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 csf: ## Fix PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcbf" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcbf" src tests --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 lint:
-	$(PRE_PHP) "vendor/bin/parallel-lint" src --exclude .git --exclude vendor
+	$(PRE_PHP) "vendor/bin/parallel-lint" src tests --exclude .git --exclude vendor
 
 phpstan: ## Analyse code with PHPStan
 	mkdir -p var/tools
@@ -39,18 +39,18 @@ tests-simple: ## Run all tests
 	$(PRE_PHP) $(PHPUNIT_COMMAND) $(ARGS)
 
 coverage-clover: ## Generate code coverage in XML format
-	$(PRE_PHP) $(PHPUNIT_COVERAGE) --coverage-clover=var/tools/Coverage/clover.xml $(ARGS)
+	$(PRE_PHP) $(PHPUNIT_COVERAGE) --coverage-clover=var/coverage/clover.xml $(ARGS)
 
 coverage-html: ## Generate code coverage in HTML format
-	$(PRE_PHP) $(PHPUNIT_COVERAGE) --coverage-html=var/tools/Coverage/html $(ARGS)
+	$(PRE_PHP) $(PHPUNIT_COVERAGE) --coverage-html=var/coverage/html $(ARGS)
 
 mutations: ## Check code for mutants
 	make mutations-tests
 	make mutations-infection
 
 mutations-tests:
-	mkdir -p var/tools/Coverage
-	$(PRE_PHP) $(PHPUNIT_MUTATIONS) --coverage-xml=var/tools/Coverage/xml --log-junit=var/tools/Coverage/junit.xml
+	mkdir -p var/coverage
+ 	$(PRE_PHP) $(PHPUNIT_MUTATIONS) --coverage-xml=var/coverage/xml --log-junit=var/coverage/junit.xml
 
 mutations-infection:
 	$(PRE_PHP) vendor/bin/infection \
