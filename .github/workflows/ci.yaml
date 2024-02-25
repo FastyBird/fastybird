@@ -29,7 +29,7 @@ jobs:
       matrix:
         operating-system: [ "ubuntu-latest" ]
 
-    uses: "FastyBird/.github/workflows/ci.yml@main"
+    uses: fastybird/.github/workflows/ci.yml@main
     secrets: "inherit"
     with:
       php-version: "8.2"
