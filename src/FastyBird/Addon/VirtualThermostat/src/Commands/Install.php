@@ -287,6 +287,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => true,
 					'queryable' => true,
+					'default' => Types\HvacMode::OFF->value,
 				]),
 			);
 
@@ -314,6 +315,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => false,
 					'queryable' => true,
+					'default' => Types\HvacState::OFF->value,
 				]),
 			);
 
@@ -728,8 +730,8 @@ class Install extends Console\Command\Command
 					'invalid' => null,
 					'scale' => null,
 					'step' => Entities\Devices\Device::PRECISION,
-					'default' => null,
 					'value' => Entities\Devices\Device::COLD_TOLERANCE,
+					'default' => Entities\Devices\Device::COLD_TOLERANCE,
 				]),
 			);
 
@@ -745,8 +747,8 @@ class Install extends Console\Command\Command
 					'invalid' => null,
 					'scale' => null,
 					'step' => Entities\Devices\Device::PRECISION,
-					'default' => null,
 					'value' => Entities\Devices\Device::HOT_TOLERANCE,
+					'default' => Entities\Devices\Device::HOT_TOLERANCE,
 				]),
 			);
 
@@ -784,8 +786,8 @@ class Install extends Console\Command\Command
 						'invalid' => null,
 						'scale' => null,
 						'step' => Entities\Devices\Device::PRECISION,
-						'default' => null,
 						'value' => $maxFloorTemp,
+						'default' => Entities\Devices\Device::MAXIMUM_FLOOR_TEMPERATURE,
 					]),
 				);
 
@@ -859,6 +861,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => false,
 					'queryable' => true,
+					'default' => Types\Preset::MANUAL->value,
 				]),
 			);
 
@@ -892,6 +895,7 @@ class Install extends Console\Command\Command
 							'step' => Entities\Devices\Device::PRECISION,
 							'settable' => true,
 							'queryable' => true,
+							'default' => Entities\Devices\Device::TARGET_TEMPERATURE,
 						]),
 					),
 				];
@@ -1250,6 +1254,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => true,
 					'queryable' => true,
+					'default' => Types\HvacMode::OFF->value,
 				]),
 				$hvacModeProperty,
 			);
@@ -1278,6 +1283,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => false,
 					'queryable' => true,
+					'default' => Types\HvacState::OFF->value,
 				]),
 				$hvacStateProperty,
 			);
@@ -1337,8 +1343,8 @@ class Install extends Console\Command\Command
 						'invalid' => null,
 						'scale' => null,
 						'step' => Entities\Devices\Device::PRECISION,
-						'default' => null,
 						'value' => $maxFloorTemp,
+						'default' => Entities\Devices\Device::MAXIMUM_FLOOR_TEMPERATURE,
 					]),
 					$maxFloorTempProperty,
 				);
@@ -1430,6 +1436,7 @@ class Install extends Console\Command\Command
 					'step' => null,
 					'settable' => false,
 					'queryable' => true,
+					'default' => Types\Preset::MANUAL->value,
 				]),
 				$presetModeProperty,
 			);
@@ -1473,6 +1480,7 @@ class Install extends Console\Command\Command
 									'step' => Entities\Devices\Device::PRECISION,
 									'settable' => true,
 									'queryable' => true,
+									'default' => Entities\Devices\Device::TARGET_TEMPERATURE,
 								]),
 							),
 						];
@@ -2669,6 +2677,7 @@ class Install extends Console\Command\Command
 					'step' => Entities\Devices\Device::PRECISION,
 					'settable' => true,
 					'queryable' => true,
+					'default' => Entities\Devices\Device::TARGET_TEMPERATURE,
 				]),
 				$targetTempProperty,
 			);
@@ -3415,7 +3424,7 @@ class Install extends Console\Command\Command
 			$property = null;
 		}
 
-		$targetTemp = null;
+		$targetTemp = Entities\Devices\Device::TARGET_TEMPERATURE;
 
 		if ($property !== null) {
 			$propertyConfiguration = $this->channelsPropertiesConfigurationRepository->find(

@@ -20,6 +20,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
@@ -73,10 +74,12 @@ final class Device implements Client
 		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		private readonly Helpers\Channels\Channel $channelHelper,
 		private readonly Helpers\Loader $loader,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -223,6 +226,25 @@ final class Device implements Client
 							&& array_key_exists('tag', $matches)
 						) {
 							$tags[$matches['tag']] = $property->getValue();
+						}
+					}
+
+					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findChannelPropertiesQuery->forChannel($channel);
+
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findChannelPropertiesQuery,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
+					);
+
+					foreach ($properties as $property) {
+						$state = $this->channelPropertiesStatesManager->read(
+							$property,
+							MetadataTypes\Sources\Connector::NS_PANEL,
+						);
+
+						if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
+							$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
 						}
 					}
 

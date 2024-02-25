@@ -34,6 +34,8 @@ use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use RuntimeException;
 use Throwable;
+use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Write state to device message consumer
@@ -205,11 +207,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 
 		if ($valueToWrite === null) {
 			if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-				$this->devicePropertiesStatesManager->setPendingState(
+				await($this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::VIRTUAL,
-				);
+				));
 			}
 
 			return true;
@@ -229,11 +231,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		}
 
 		if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-			$this->devicePropertiesStatesManager->setPendingState(
+			await($this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				true,
 				MetadataTypes\Sources\Connector::VIRTUAL,
-			);
+			));
 		}
 
 		try {
@@ -256,11 +258,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			);
 
 			if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-				$this->devicePropertiesStatesManager->setPendingState(
+				await($this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::VIRTUAL,
-				);
+				));
 			}
 
 			$this->logger->error(
@@ -305,13 +307,13 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					],
 				);
 			},
-			function (Throwable $ex) use ($connector, $device, $property, $message): void {
+			async(function (Throwable $ex) use ($connector, $device, $property, $message): void {
 				if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-					$this->devicePropertiesStatesManager->setPendingState(
+					await($this->devicePropertiesStatesManager->setPendingState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::VIRTUAL,
-					);
+					));
 				}
 
 				$this->queue->append(
@@ -344,7 +346,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 						'data' => $message->toArray(),
 					],
 				);
-			},
+			}),
 		);
 
 		$this->logger->debug(

@@ -34,6 +34,8 @@ use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use RuntimeException;
 use Throwable;
+use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Write state to device message consumer
@@ -252,11 +254,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 		if ($valueToWrite === null) {
 			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-				$this->channelPropertiesStatesManager->setPendingState(
+				await($this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::VIRTUAL,
-				);
+				));
 			}
 
 			return true;
@@ -276,11 +278,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				return true;
 			}
 
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				true,
 				MetadataTypes\Sources\Connector::VIRTUAL,
-			);
+			));
 		}
 
 		try {
@@ -303,11 +305,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			);
 
 			if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-				$this->channelPropertiesStatesManager->setPendingState(
+				await($this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::VIRTUAL,
-				);
+				));
 			}
 
 			$this->logger->error(
@@ -358,13 +360,13 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					],
 				);
 			},
-			function (Throwable $ex) use ($connector, $device, $channel, $property, $message): void {
+			async(function (Throwable $ex) use ($connector, $device, $channel, $property, $message): void {
 				if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-					$this->channelPropertiesStatesManager->setPendingState(
+					await($this->channelPropertiesStatesManager->setPendingState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::VIRTUAL,
-					);
+					));
 				}
 
 				$this->queue->append(
@@ -400,7 +402,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						'data' => $message->toArray(),
 					],
 				);
-			},
+			}),
 		);
 
 		$this->logger->debug(

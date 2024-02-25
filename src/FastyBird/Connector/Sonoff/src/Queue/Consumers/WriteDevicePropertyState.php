@@ -41,6 +41,8 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
+use function React\Async\async;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -80,6 +82,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Throwable
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -212,11 +215,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->devicePropertiesStatesManager->setPendingState(
+			await($this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::SONOFF,
-			);
+			));
 
 			return true;
 		}
@@ -234,11 +237,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->devicePropertiesStatesManager->setPendingState(
+		await($this->devicePropertiesStatesManager->setPendingState(
 			$property,
 			true,
 			MetadataTypes\Sources\Connector::SONOFF,
-		);
+		));
 
 		$group = $outlet = null;
 		$parameter = Helpers\Transformer::devicePropertyToParameter($property->getIdentifier());
@@ -331,11 +334,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$outlet,
 				);
 			} else {
-				$this->devicePropertiesStatesManager->setPendingState(
+				await($this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::SONOFF,
-				);
+				));
 
 				return true;
 			}
@@ -351,11 +354,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->devicePropertiesStatesManager->setPendingState(
+			await($this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::SONOFF,
-			);
+			));
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -389,11 +392,11 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->devicePropertiesStatesManager->setPendingState(
+			await($this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::SONOFF,
-			);
+			));
 
 			$extra = [];
 
@@ -455,12 +458,12 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					],
 				);
 			},
-			function (Throwable $ex) use ($connector, $device, $property, $message): void {
-				$this->devicePropertiesStatesManager->setPendingState(
+			async(function (Throwable $ex) use ($connector, $device, $property, $message): void {
+				await($this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::SONOFF,
-				);
+				));
 
 				$extra = [];
 
@@ -521,7 +524,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 						$extra,
 					),
 				);
-			},
+			}),
 		);
 
 		$this->logger->debug(

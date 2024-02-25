@@ -18,11 +18,11 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -35,7 +35,6 @@ use function intval;
 use function is_bool;
 use function is_float;
 use function is_int;
-use function React\Async\await;
 use function strval;
 
 /**
@@ -47,8 +46,8 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
  * @property-read Helpers\Channels\Channel $channelHelper
+ * @property-read Models\StateRepository $stateRepository
  * @property-read DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository
- * @property-read DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager
  */
 trait StateWriter
 {
@@ -56,18 +55,19 @@ trait StateWriter
 	/**
 	 * @return array<mixed>|null
 	 *
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function mapChannelToState(Documents\Channels\Channel $channel): array|null
+	public function mapChannelToState(
+		Documents\Channels\Channel $channel,
+		DevicesDocuments\Channels\Properties\Property $propertyToUpdate,
+		Queue\Messages\State|null $writeState,
+	): array|null
 	{
 		switch ($this->channelHelper->getCapability($channel)) {
 			case Types\Capability::POWER:
@@ -77,7 +77,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -99,7 +101,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -123,7 +127,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -148,7 +154,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -173,7 +181,9 @@ trait StateWriter
 					return null;
 				}
 
-				$red = $this->getPropertyValue($propertyRed);
+				$red = $propertyToUpdate->getId()->equals($propertyRed->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyRed);
 
 				$propertyGreen = $this->findProtocolProperty(
 					$channel,
@@ -184,7 +194,9 @@ trait StateWriter
 					return null;
 				}
 
-				$green = $this->getPropertyValue($propertyGreen);
+				$green = $propertyToUpdate->getId()->equals($propertyGreen->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyGreen);
 
 				$propertyBlue = $this->findProtocolProperty(
 					$channel,
@@ -195,7 +207,9 @@ trait StateWriter
 					return null;
 				}
 
-				$blue = $this->getPropertyValue($propertyBlue);
+				$blue = $propertyToUpdate->getId()->equals($propertyBlue->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($propertyBlue);
 
 				if (
 					$red === null || $propertyRed->getInvalid() === null
@@ -231,7 +245,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -253,7 +269,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -275,7 +293,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -300,7 +320,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -322,7 +344,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -344,7 +368,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null) {
 					return null;
@@ -364,7 +390,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -386,7 +414,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -408,7 +438,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -430,7 +462,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -452,7 +486,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || Types\Payloads\PressPayload::tryFrom(strval($value)) === null) {
 					return null;
@@ -470,7 +506,9 @@ trait StateWriter
 					return null;
 				}
 
-				$value = $this->getPropertyValue($property);
+				$value = $propertyToUpdate->getId()->equals($property->getId())
+					? MetadataUtilities\Value::flattenValue($writeState?->getExpectedValue())
+					: $this->getPropertyValue($property);
 
 				if ($value === null || $property->getInvalid() === null) {
 					return null;
@@ -491,13 +529,9 @@ trait StateWriter
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -505,28 +539,19 @@ trait StateWriter
 		DevicesDocuments\Channels\Properties\Property $property,
 	): string|int|float|bool|null
 	{
-		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-			$state = await($this->channelPropertiesStatesManager->read(
-				$property,
-				MetadataTypes\Sources\Connector::NS_PANEL,
-			));
-
-			$value = is_bool($state) ? null : $state?->getGet()->getExpectedValue();
-		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-			$state = await($this->channelPropertiesStatesManager->read(
-				$property,
-				MetadataTypes\Sources\Connector::NS_PANEL,
-			));
-
-			if (is_bool($state)) {
-				$value = null;
+		try {
+			if (
+				$property instanceof DevicesDocuments\Channels\Properties\Dynamic
+				|| $property instanceof DevicesDocuments\Channels\Properties\Mapped
+			) {
+				$value = $this->stateRepository->get($property->getId());
+			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
+				$value = $property->getValue();
 			} else {
-				$value = $state?->getRead()->getExpectedValue() ?? ($state?->isValid() === true ? $state->getRead()->getActualValue() : null);
+				throw new Exceptions\InvalidArgument('Provided property is not valid');
 			}
-		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
-			$value = $property->getValue();
-		} else {
-			throw new Exceptions\InvalidArgument('Provided property is not valid');
+		} catch (Exceptions\MissingValue) {
+			return null;
 		}
 
 		return MetadataUtilities\Value::flattenValue($value);

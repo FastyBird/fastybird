@@ -155,6 +155,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
 								$document->getGet()->toArray(),
 								[
@@ -190,6 +191,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
+							'property' => $document->getId(),
 							'state' => array_merge(
 								$document->getRead()->toArray(),
 								[
@@ -236,6 +238,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
+							'property' => $document->getId(),
 						],
 					),
 				);
@@ -263,6 +266,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 							'connector' => $device->getConnector(),
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
+							'property' => $document->getId(),
 						],
 					),
 				);

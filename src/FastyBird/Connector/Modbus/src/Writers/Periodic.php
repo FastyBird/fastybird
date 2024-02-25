@@ -212,12 +212,10 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = await(
-				$this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::MODBUS,
-				),
-			);
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::MODBUS,
+			));
 
 			if (is_bool($state)) {
 				// Property state was requested

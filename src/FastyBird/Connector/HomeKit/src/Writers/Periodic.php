@@ -228,12 +228,10 @@ abstract class Periodic
 			$state = null;
 
 			if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
-				$state = await(
-					$this->devicePropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::HOMEKIT,
-					),
-				);
+				$state = await($this->devicePropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::HOMEKIT,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -248,12 +246,10 @@ abstract class Periodic
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
 			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-				$state = await(
-					$this->channelPropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::HOMEKIT,
-					),
-				);
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::HOMEKIT,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -268,12 +264,10 @@ abstract class Periodic
 					$characteristicValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 				}
 			} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-				$state = await(
-					$this->devicePropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::HOMEKIT,
-					),
-				);
+				$state = await($this->devicePropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::HOMEKIT,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -288,12 +282,10 @@ abstract class Periodic
 					$characteristicValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 				}
 			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-				$state = await(
-					$this->channelPropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::HOMEKIT,
-					),
-				);
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::HOMEKIT,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested

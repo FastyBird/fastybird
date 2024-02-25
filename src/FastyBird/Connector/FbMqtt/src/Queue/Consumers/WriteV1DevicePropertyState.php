@@ -38,6 +38,8 @@ use RuntimeException;
 use Throwable;
 use TypeError;
 use ValueError;
+use function React\Async\async;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -210,11 +212,11 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 		$expectedValue = MetadataUtilities\Value::flattenValue($state->getExpectedValue());
 
 		if ($expectedValue === null) {
-			$this->devicePropertiesStatesManager->setPendingState(
+			await($this->devicePropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::FB_MQTT,
-			);
+			));
 
 			return true;
 		}
@@ -232,11 +234,11 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->devicePropertiesStatesManager->setPendingState(
+		await($this->devicePropertiesStatesManager->setPendingState(
 			$property,
 			true,
 			MetadataTypes\Sources\Connector::FB_MQTT,
-		);
+		));
 
 		$topic = API\V1Builder::buildDevicePropertyTopic($device, $property);
 
@@ -265,12 +267,12 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 					],
 				);
 			})
-			->catch(function (Throwable $ex) use ($connector, $device, $property, $message): void {
-				$this->devicePropertiesStatesManager->setPendingState(
+			->catch(async(function (Throwable $ex) use ($connector, $device, $property, $message): void {
+				await($this->devicePropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::FB_MQTT,
-				);
+				));
 
 				$this->logger->error(
 					'Could write state to device',
@@ -290,7 +292,7 @@ final class WriteV1DevicePropertyState implements Queue\Consumer
 						'data' => $message->toArray(),
 					],
 				);
-			});
+			}));
 
 		$this->logger->debug(
 			'Consumed write device state message',

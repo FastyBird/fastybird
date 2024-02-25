@@ -37,6 +37,8 @@ abstract class WriteDeviceState implements Message
 		private readonly Uuid\UuidInterface $device,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
 		private readonly Uuid\UuidInterface $channel,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private readonly Uuid\UuidInterface $property,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(class: State::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -59,6 +61,11 @@ abstract class WriteDeviceState implements Message
 	public function getChannel(): Uuid\UuidInterface
 	{
 		return $this->channel;
+	}
+
+	public function getProperty(): Uuid\UuidInterface
+	{
+		return $this->property;
 	}
 
 	public function getState(): State|null

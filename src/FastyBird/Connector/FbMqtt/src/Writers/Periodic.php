@@ -255,12 +255,10 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await(
-			$this->devicePropertiesStatesManager->read(
-				$property,
-				MetadataTypes\Sources\Connector::FB_MQTT,
-			),
-		);
+		$state = await($this->devicePropertiesStatesManager->read(
+			$property,
+			MetadataTypes\Sources\Connector::FB_MQTT,
+		));
 
 		if (is_bool($state)) {
 			return $state;
@@ -325,12 +323,10 @@ abstract class Periodic
 	{
 		$now = $this->dateTimeFactory->getNow();
 
-		$state = await(
-			$this->channelPropertiesStatesManager->read(
-				$property,
-				MetadataTypes\Sources\Connector::FB_MQTT,
-			),
-		);
+		$state = await($this->channelPropertiesStatesManager->read(
+			$property,
+			MetadataTypes\Sources\Connector::FB_MQTT,
+		));
 
 		if (is_bool($state)) {
 			return $state;

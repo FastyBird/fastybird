@@ -21,6 +21,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
@@ -28,9 +29,11 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -86,8 +89,12 @@ final class Gateway implements Client
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly EventLoop\LoopInterface $eventLoop,
@@ -118,6 +125,35 @@ final class Gateway implements Client
 
 		foreach ($devices as $device) {
 			$this->devices[$device->getId()->toString()] = $device;
+
+			$findChannelsQuery = new Queries\Configuration\FindChannels();
+			$findChannelsQuery->forDevice($device);
+
+			$channels = $this->channelsConfigurationRepository->findAllBy(
+				$findChannelsQuery,
+				Documents\Channels\Channel::class,
+			);
+
+			foreach ($channels as $channel) {
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->forChannel($channel);
+
+				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+					$findChannelPropertiesQuery,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
+				);
+
+				foreach ($properties as $property) {
+					$state = $this->channelPropertiesStatesManager->read(
+						$property,
+						MetadataTypes\Sources\Connector::NS_PANEL,
+					);
+
+					if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
+						$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+					}
+				}
+			}
 		}
 
 		$this->eventLoop->addTimer(

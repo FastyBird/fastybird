@@ -48,6 +48,7 @@ use function in_array;
 use function is_int;
 use function is_string;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Modbus TCP devices client interface
@@ -263,16 +264,16 @@ class Tcp implements Client
 				);
 
 				foreach ($properties as $property) {
-					$this->channelPropertiesStatesManager->setValidState(
+					await($this->channelPropertiesStatesManager->setValidState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::MODBUS,
-					);
-					$this->channelPropertiesStatesManager->setPendingState(
+					));
+					await($this->channelPropertiesStatesManager->setPendingState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::MODBUS,
-					);
+					));
 				}
 
 				$this->logger->warning(
@@ -514,11 +515,11 @@ class Tcp implements Client
 								);
 
 								if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-									$this->channelPropertiesStatesManager->setValidState(
+									await($this->channelPropertiesStatesManager->setValidState(
 										$property,
 										false,
 										MetadataTypes\Sources\Connector::MODBUS,
-									);
+									));
 								}
 							}
 						}

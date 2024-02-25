@@ -18,6 +18,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Consumers;
 use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -52,6 +53,7 @@ final class StoreDeviceState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly Models\StateRepository $stateRepository,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -257,6 +259,8 @@ final class StoreDeviceState implements Queue\Consumer
 					]),
 					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				));
+
+				$this->stateRepository->set($property->getId(), $state->getValue());
 
 			} else {
 				$this->processStates(

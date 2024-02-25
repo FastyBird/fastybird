@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use TypeError;
 use ValueError;
+use function React\Async\await;
 
 /**
  * Store bridge connection state message consumer
@@ -138,11 +139,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 				);
 
 				foreach ($properties as $property) {
-					$this->devicePropertiesStatesManager->setValidState(
+					await($this->devicePropertiesStatesManager->setValidState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-					);
+					));
 				}
 
 				$findChannelsQuery = new Queries\Configuration\FindChannels();
@@ -163,11 +164,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->channelPropertiesStatesManager->setValidState(
+						await($this->channelPropertiesStatesManager->setValidState(
 							$property,
 							false,
 							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-						);
+						));
 					}
 				}
 
@@ -191,11 +192,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 					);
 
 					foreach ($properties as $property) {
-						$this->devicePropertiesStatesManager->setValidState(
+						await($this->devicePropertiesStatesManager->setValidState(
 							$property,
 							false,
 							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-						);
+						));
 					}
 
 					$findChannelsQuery = new Queries\Configuration\FindChannels();
@@ -216,11 +217,11 @@ final class StoreBridgeConnectionState implements Queue\Consumer
 						);
 
 						foreach ($properties as $property) {
-							$this->channelPropertiesStatesManager->setValidState(
+							await($this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,
 								MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-							);
+							));
 						}
 					}
 				}

@@ -19,6 +19,7 @@ use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -51,6 +52,7 @@ final class StoreDeviceState implements Queue\Consumer
 
 	public function __construct(
 		private readonly NsPanel\Logger $logger,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -169,6 +171,8 @@ final class StoreDeviceState implements Queue\Consumer
 				]),
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
+
+			$this->stateRepository->set($property->getId(), MetadataUtilities\Value::flattenValue($item->getValue()));
 		}
 	}
 
@@ -212,8 +216,6 @@ final class StoreDeviceState implements Queue\Consumer
 			}
 
 			$this->writeThirdPartyProperty(
-				$device,
-				$channel,
 				$property,
 				MetadataUtilities\Value::flattenValue($item->getValue()),
 			);
@@ -227,8 +229,6 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws DevicesExceptions\InvalidState
 	 */
 	private function writeThirdPartyProperty(
-		Documents\Devices\Device $device,
-		Documents\Channels\Channel $channel,
 		DevicesDocuments\Channels\Properties\Property $property,
 		float|int|string|bool|null $value,
 	): void
@@ -260,6 +260,8 @@ final class StoreDeviceState implements Queue\Consumer
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
 
+			$this->stateRepository->set($property->getId(), $value);
+
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			await($this->channelPropertiesStatesManager->write(
 				$property,
@@ -268,6 +270,8 @@ final class StoreDeviceState implements Queue\Consumer
 				]),
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
+
+			$this->stateRepository->set($property->getId(), $value);
 		}
 	}
 

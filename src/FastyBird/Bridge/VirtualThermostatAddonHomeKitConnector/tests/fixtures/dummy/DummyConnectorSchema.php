@@ -11,7 +11,8 @@ final class DummyConnectorSchema extends DevicesSchemas\Connectors\Connector
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Connector::VIRTUAL->value . '/connector/' . DummyConnectorEntity::TYPE;
+	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR->value . '/connector/' . DummyConnectorEntity::TYPE;
 
 	public function getEntityClass(): string
 	{

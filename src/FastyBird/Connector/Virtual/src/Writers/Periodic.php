@@ -249,12 +249,10 @@ abstract class Periodic implements Writer
 				$property instanceof DevicesDocuments\Devices\Properties\Dynamic
 				|| $property instanceof DevicesDocuments\Devices\Properties\Mapped
 			) {
-				$state = await(
-					$this->devicePropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::VIRTUAL,
-					),
-				);
+				$state = await($this->devicePropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::VIRTUAL,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -273,12 +271,10 @@ abstract class Periodic implements Writer
 					? $state->getGet()->getExpectedValue()
 					: $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
 			} else {
-				$state = await(
-					$this->channelPropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::VIRTUAL,
-					),
-				);
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::VIRTUAL,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested

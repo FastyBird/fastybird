@@ -266,12 +266,10 @@ abstract class Periodic implements Writer
 
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
-		$state = await(
-			$this->channelPropertiesStatesManager->read(
-				$property,
-				MetadataTypes\Sources\Connector::NS_PANEL,
-			),
-		);
+		$state = await($this->channelPropertiesStatesManager->read(
+			$property,
+			MetadataTypes\Sources\Connector::NS_PANEL,
+		));
 
 		if (is_bool($state)) {
 			return $state;
@@ -302,6 +300,7 @@ abstract class Periodic implements Writer
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
 						'state' => array_merge(
 							$state->getGet()->toArray(),
 							[
@@ -372,12 +371,10 @@ abstract class Periodic implements Writer
 		$this->processedProperties[$property->getId()->toString()] = $now;
 
 		if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-			$state = await(
-				$this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::NS_PANEL,
-				),
-			);
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::NS_PANEL,
+			));
 
 			if (is_bool($state)) {
 				return $state;
@@ -399,6 +396,7 @@ abstract class Periodic implements Writer
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
 						'state' => array_merge(
 							$state->getRead()->toArray(),
 							[
@@ -414,12 +412,10 @@ abstract class Periodic implements Writer
 			);
 
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-			$state = await(
-				$this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::NS_PANEL,
-				),
-			);
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::NS_PANEL,
+			));
 
 			if (is_bool($state)) {
 				return $state;
@@ -441,6 +437,7 @@ abstract class Periodic implements Writer
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
 						'state' => array_merge(
 							$state->getGet()->toArray(),
 							[
@@ -463,6 +460,7 @@ abstract class Periodic implements Writer
 						'connector' => $device->getConnector(),
 						'device' => $device->getId(),
 						'channel' => $property->getChannel(),
+						'property' => $property->getId(),
 					],
 				),
 			);

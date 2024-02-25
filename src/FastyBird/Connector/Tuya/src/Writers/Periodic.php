@@ -210,12 +210,10 @@ abstract class Periodic implements Writer
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = await(
-				$this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::TUYA,
-				),
-			);
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::TUYA,
+			));
 
 			if (is_bool($state)) {
 				// Property state was requested

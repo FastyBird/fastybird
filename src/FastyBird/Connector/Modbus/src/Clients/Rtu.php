@@ -47,6 +47,7 @@ use function in_array;
 use function is_int;
 use function is_numeric;
 use function React\Async\async;
+use function React\Async\await;
 
 /**
  * Modbus RTU devices client interface
@@ -275,16 +276,16 @@ class Rtu implements Client
 				);
 
 				foreach ($properties as $property) {
-					$this->channelPropertiesStatesManager->setValidState(
+					await($this->channelPropertiesStatesManager->setValidState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::MODBUS,
-					);
-					$this->channelPropertiesStatesManager->setPendingState(
+					));
+					await($this->channelPropertiesStatesManager->setPendingState(
 						$property,
 						false,
 						MetadataTypes\Sources\Connector::MODBUS,
-					);
+					));
 				}
 
 				$this->logger->warning(
@@ -477,11 +478,11 @@ class Rtu implements Client
 						);
 
 						if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-							$this->channelPropertiesStatesManager->setValidState(
+							await($this->channelPropertiesStatesManager->setValidState(
 								$property,
 								false,
 								MetadataTypes\Sources\Connector::MODBUS,
-							);
+							));
 						}
 
 						// Increment failed attempts counter

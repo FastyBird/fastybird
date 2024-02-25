@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_merge;
+use function React\Async\await;
 
 /**
  * Device channel property consumer trait
@@ -181,7 +182,7 @@ trait ChannelProperty
 			if ($property instanceof DevicesEntities\Channels\Properties\Dynamic) {
 				// Some Tuya devices has invalid values configured
 				// E.g. wi-fi dimmable device has allowed values "incandescent" and "halogen" but it also provide "led" value
-				$this->channelPropertiesStatesManager->delete($property->getId());
+				await($this->channelPropertiesStatesManager->delete($property->getId()));
 			}
 
 			$property = $this->databaseHelper->transaction(

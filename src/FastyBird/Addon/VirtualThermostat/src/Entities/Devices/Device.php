@@ -47,6 +47,8 @@ class Device extends VirtualEntities\Devices\Device
 
 	public const MAXIMUM_FLOOR_TEMPERATURE = 28.0;
 
+	public const TARGET_TEMPERATURE = 20.0;
+
 	public const PRECISION = 0.1;
 
 	public const COLD_TOLERANCE = 0.3;

@@ -41,6 +41,8 @@ use TypeError;
 use ValueError;
 use function boolval;
 use function intval;
+use function React\Async\async;
+use function React\Async\await;
 use function strval;
 
 /**
@@ -82,6 +84,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Throwable
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -298,11 +301,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		);
 
 		if ($expectedValue === null) {
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::VIERA,
-			);
+			));
 
 			return true;
 		}
@@ -320,11 +323,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setPendingState(
+		await($this->channelPropertiesStatesManager->setPendingState(
 			$property,
 			true,
 			MetadataTypes\Sources\Connector::VIERA,
-		);
+		));
 
 		try {
 			$client = $this->connectionManager->getConnection($device);
@@ -371,11 +374,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					) {
 						$result = $client->sendKey(Types\ActionKey::from(strval($expectedValue)));
 					} else {
-						$this->channelPropertiesStatesManager->setPendingState(
+						await($this->channelPropertiesStatesManager->setPendingState(
 							$property,
 							false,
 							MetadataTypes\Sources\Connector::VIERA,
-						);
+						));
 
 						$this->logger->error(
 							'Provided property is not supported for writing',
@@ -415,11 +418,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::VIERA,
-			);
+			));
 
 			$this->logger->error(
 				'Device is not properly configured',
@@ -456,11 +459,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::VIERA,
-			);
+			));
 
 			$this->logger->error(
 				'Preparing api request failed',
@@ -497,11 +500,11 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				),
 			);
 
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$property,
 				false,
 				MetadataTypes\Sources\Connector::VIERA,
-			);
+			));
 
 			$this->logger->error(
 				'Calling device api failed',
@@ -678,12 +681,12 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					);
 				}
 			},
-			function (Throwable $ex) use ($device, $property): void {
-				$this->channelPropertiesStatesManager->setPendingState(
+			async(function (Throwable $ex) use ($device, $property): void {
+				await($this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
 					MetadataTypes\Sources\Connector::VIERA,
-				);
+				));
 
 				if ($ex instanceof Exceptions\TelevisionApiError) {
 					$this->queue->append(
@@ -708,7 +711,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						),
 					);
 				}
-			},
+			}),
 		);
 
 		$this->logger->debug(

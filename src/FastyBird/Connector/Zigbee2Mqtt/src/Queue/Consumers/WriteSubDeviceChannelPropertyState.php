@@ -21,6 +21,7 @@ use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
@@ -41,8 +42,8 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
-use function is_bool;
 use function preg_match;
+use function React\Async\async;
 use function React\Async\await;
 use function sprintf;
 
@@ -70,6 +71,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly Helpers\Devices\SubDevice $subDeviceHelper,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
@@ -211,7 +213,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$this->logger->error(
 				'Channel property could not be loaded',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -239,7 +241,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$this->logger->warning(
 				'Channel property is not writable',
 				[
-					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'write-sub-device-channel-property-state-message-consumer',
 					'connector' => [
 						'id' => $connector->getId()->toString(),
@@ -270,11 +272,11 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 		}
 
 		if ($state->getExpectedValue() === null) {
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$propertyToUpdate,
 				false,
 				MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-			);
+			));
 
 			return true;
 		}
@@ -292,11 +294,11 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$this->channelPropertiesStatesManager->setPendingState(
+		await($this->channelPropertiesStatesManager->setPendingState(
 			$propertyToUpdate,
 			true,
 			MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-		);
+		));
 
 		$findPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
 		$findPropertiesQuery->forChannel($channel);
@@ -316,15 +318,19 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-				));
-
-				if (!is_bool($state) && $state?->getGet()->getExpectedValue() !== null) {
+				if ($message->getProperty()->equals($property->getId())) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
-						$state->getGet()->getExpectedValue(),
+						$state->getExpectedValue(),
 					);
+
+				} else {
+					try {
+						$value = $this->stateRepository->get($property->getId());
+
+						$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue($value);
+					} catch (Exceptions\MissingValue) {
+						// Could be ignored
+					}
 				}
 			}
 
@@ -349,15 +355,19 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			$writeData = new stdClass();
 
 			foreach ($properties as $property) {
-				$state = await($this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::NS_PANEL,
-				));
-
-				if (!is_bool($state) && $state?->getGet()->getExpectedValue() !== null) {
+				if ($message->getProperty()->equals($property->getId())) {
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
-						$state->getGet()->getExpectedValue(),
+						$state->getExpectedValue(),
 					);
+
+				} else {
+					try {
+						$value = $this->stateRepository->get($property->getId());
+
+						$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue($value);
+					} catch (Exceptions\MissingValue) {
+						// Could be ignored
+					}
 				}
 			}
 
@@ -368,11 +378,11 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				$payload = $writeData;
 			}
 		} else {
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$propertyToUpdate,
 				false,
 				MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-			);
+			));
 
 			$this->logger->error(
 				'Channel identifier has invalid value',
@@ -417,7 +427,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					$this->logger->debug(
 						'Channel state was successfully sent to device',
 						[
-							'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 							'type' => 'write-sub-device-channel-property-state-message-consumer',
 							'connector' => [
 								'id' => $connector->getId()->toString(),
@@ -439,57 +449,59 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					);
 				})
 				->catch(
-					function (Throwable $ex) use ($connector, $propertyToUpdate, $bridge, $device, $channel, $message): void {
-						$this->channelPropertiesStatesManager->setPendingState(
-							$propertyToUpdate,
-							false,
-							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-						);
+					async(
+						function (Throwable $ex) use ($connector, $propertyToUpdate, $bridge, $device, $channel, $message): void {
+							await($this->channelPropertiesStatesManager->setPendingState(
+								$propertyToUpdate,
+								false,
+								MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+							));
 
-						$this->queue->append(
-							$this->messageBuilder->create(
-								Queue\Messages\StoreDeviceConnectionState::class,
+							$this->queue->append(
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $connector->getId(),
+										'base_topic' => $this->bridgeHelper->getBaseTopic($bridge),
+										'identifier' => $bridge->getIdentifier(),
+										'state' => Types\ConnectionState::UNKNOWN->value,
+									],
+								),
+							);
+
+							$this->logger->error(
+								'Could write state to sub-device',
 								[
-									'connector' => $connector->getId(),
-									'base_topic' => $this->bridgeHelper->getBaseTopic($bridge),
-									'identifier' => $bridge->getIdentifier(),
-									'state' => Types\ConnectionState::UNKNOWN->value,
+									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+									'type' => 'write-sub-device-channel-property-state-message-consumer',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'connector' => [
+										'id' => $connector->getId()->toString(),
+									],
+									'bridge' => [
+										'id' => $bridge->getId()->toString(),
+									],
+									'device' => [
+										'id' => $device->getId()->toString(),
+									],
+									'channel' => [
+										'id' => $channel->getId()->toString(),
+									],
+									'property' => [
+										'id' => $message->getProperty()->toString(),
+									],
+									'data' => $message->toArray(),
 								],
-							),
-						);
-
-						$this->logger->error(
-							'Could write state to sub-device',
-							[
-								'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
-								'type' => 'write-sub-device-channel-property-state-message-consumer',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-								'connector' => [
-									'id' => $connector->getId()->toString(),
-								],
-								'bridge' => [
-									'id' => $bridge->getId()->toString(),
-								],
-								'device' => [
-									'id' => $device->getId()->toString(),
-								],
-								'channel' => [
-									'id' => $channel->getId()->toString(),
-								],
-								'property' => [
-									'id' => $message->getProperty()->toString(),
-								],
-								'data' => $message->toArray(),
-							],
-						);
-					},
+							);
+						},
+					),
 				);
 		} catch (Throwable $ex) {
-			$this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->setPendingState(
 				$propertyToUpdate,
 				false,
 				MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-			);
+			));
 
 			$this->logger->error(
 				'An unhandled error occurred',

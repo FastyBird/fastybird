@@ -25,6 +25,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
 use FastyBird\Connector\Zigbee2Mqtt\Subscribers;
@@ -309,6 +310,13 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Channels\Channel::class);
+
+		/**
+		 * MODELS
+		 */
+
+		$builder->addDefinition($this->prefix('models.stateRepository'), new DI\Definitions\ServiceDefinition())
+			->setType(Models\StateRepository::class);
 
 		/**
 		 * HELPERS

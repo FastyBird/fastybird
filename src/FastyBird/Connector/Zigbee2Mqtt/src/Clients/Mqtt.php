@@ -22,12 +22,15 @@ use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
+use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
 use Throwable;
@@ -58,10 +61,16 @@ final class Mqtt implements Client
 		private readonly Clients\Subscribers\BridgeFactory $bridgeSubscriberFactory,
 		private readonly Clients\Subscribers\DeviceFactory $deviceSubscriberFactory,
 		private readonly API\ConnectionManager $connectionManager,
+		private readonly Models\StateRepository $stateRepository,
 		private readonly Zigbee2Mqtt\Logger $logger,
 		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Bridge $bridgeHelper,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesStatesManager,
+		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
 		$this->bridgeSubscriber = $this->bridgeSubscriberFactory->create($this->connector);
@@ -85,6 +94,74 @@ final class Mqtt implements Client
 
 		$this->bridgeSubscriber->subscribe($client);
 		$this->deviceSubscriber->subscribe($client);
+
+		$findDevicesQuery = new Queries\Configuration\FindBridgeDevices();
+		$findDevicesQuery->forConnector($this->connector);
+
+		$bridges = $this->devicesConfigurationRepository->findAllBy(
+			$findDevicesQuery,
+			Documents\Devices\Bridge::class,
+		);
+
+		foreach ($bridges as $bridge) {
+			$findDevicesQuery = new Queries\Configuration\FindSubDevices();
+			$findDevicesQuery->forParent($bridge);
+
+			$subDevices = $this->devicesConfigurationRepository->findAllBy(
+				$findDevicesQuery,
+				Documents\Devices\SubDevice::class,
+			);
+
+			foreach ($subDevices as $subDevice) {
+				$findDeviceProperties = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
+				$findDeviceProperties->forDevice($subDevice);
+
+				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
+					$findDeviceProperties,
+					DevicesDocuments\Devices\Properties\Dynamic::class,
+				);
+
+				foreach ($properties as $property) {
+					$state = $this->devicePropertiesStatesManager->read(
+						$property,
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					);
+
+					if ($state instanceof DevicesDocuments\States\Devices\Properties\Property) {
+						$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+					}
+				}
+
+				$findChannels = new Queries\Configuration\FindChannels();
+				$findChannels->forDevice($subDevice);
+
+				$channels = $this->channelsConfigurationRepository->findAllBy(
+					$findChannels,
+					Documents\Channels\Channel::class,
+				);
+
+				foreach ($channels as $channel) {
+					$findChannelProperties = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+					$findChannelProperties->forChannel($channel);
+
+					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+						$findChannelProperties,
+						DevicesDocuments\Channels\Properties\Dynamic::class,
+					);
+
+					foreach ($properties as $property) {
+						$state = $this->channelPropertiesStatesManager->read(
+							$property,
+							MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+						);
+
+						if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
+							$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
+						}
+					}
+				}
+			}
+		}
 
 		$client->connect();
 	}

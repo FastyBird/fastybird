@@ -27,6 +27,7 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
+use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Schemas;
@@ -295,6 +296,13 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Channels\Channel::class);
+
+		/**
+		 * MODELS
+		 */
+
+		$builder->addDefinition($this->prefix('models.stateRepository'), new DI\Definitions\ServiceDefinition())
+			->setType(Models\StateRepository::class);
 
 		/**
 		 * HELPERS

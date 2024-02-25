@@ -210,12 +210,10 @@ abstract class Periodic
 
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$state = await(
-				$this->channelPropertiesStatesManager->read(
-					$property,
-					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-				),
-			);
+			$state = await($this->channelPropertiesStatesManager->read(
+				$property,
+				MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+			));
 
 			if (is_bool($state)) {
 				// Property state was requested

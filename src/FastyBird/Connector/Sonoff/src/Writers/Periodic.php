@@ -220,12 +220,10 @@ abstract class Periodic implements Writer
 			$this->processedProperties[$property->getId()->toString()] = $now;
 
 			if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-				$state = await(
-					$this->devicePropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::SONOFF,
-					),
-				);
+				$state = await($this->devicePropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::SONOFF,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
@@ -243,12 +241,10 @@ abstract class Periodic implements Writer
 				$propertyValue = $state->getGet()->getExpectedValue();
 
 			} else {
-				$state = await(
-					$this->channelPropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::SONOFF,
-					),
-				);
+				$state = await($this->channelPropertiesStatesManager->read(
+					$property,
+					MetadataTypes\Sources\Connector::SONOFF,
+				));
 
 				if (is_bool($state)) {
 					// Property state was requested
