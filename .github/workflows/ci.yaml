@@ -20,39 +20,14 @@ env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ORGANIZATION_ACCESS_TOKEN }}"}}'
 
 jobs:
-  build_matrix:
-    name: "Create list of packages for check"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    # This step is needed, so the output gets to the next defined job
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.content }}
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4"
-
-      - name: "Read matrix configuration"
-        id: "set-matrix"
-        uses: "juliangruber/read-file-action@v1"
-        with:
-          path: "./.github/workflows/monorepo-matrix.json"
-
   ci:
     name: "CI"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build_matrix" ]
 
     strategy:
       fail-fast: false
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
@@ -60,4 +35,3 @@ jobs:
 
       - name: "Check of ${{ matrix.package.name }}"
         uses: "src/FastyBird/Library/Application/.github/workflows/ci.yml@main"
-        secrets: "inherit"
