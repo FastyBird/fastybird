@@ -15,6 +15,12 @@
 
 namespace FastyBird\Library\Tools\Transformers;
 
+use function abs;
+use function floatval;
+use function max;
+use function min;
+use function round;
+
 /**
  * RGB value object
  *
@@ -27,9 +33,9 @@ final readonly class RgbTransformer implements Transformer
 {
 
 	public function __construct(
-		private int      $red,
-		private int      $green,
-		private int      $blue,
+		private int $red,
+		private int $green,
+		private int $blue,
 		private int|null $white = null,
 	)
 	{

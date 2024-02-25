@@ -7,7 +7,6 @@ use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Formats;
 use FastyBird\Library\Metadata\Types;
 use FastyBird\Library\Metadata\Utilities;
-use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use PHPUnit\Framework\TestCase;
 use TypeError;
 use ValueError;
@@ -29,7 +28,6 @@ final class ValueTest extends TestCase
 		bool|float|int|string|DateTimeInterface|Types\Payloads\Button|Types\Payloads\Switcher|Types\Payloads\Cover|null $value,
 		Formats\StringEnum|Formats\NumberRange|Formats\CombinedEnum|null $format = null,
 		float|int|string|null $invalid = null,
-		ToolsTransformers\EquationTransformer|null $transformer = null,
 		float|int|string|null $expected = null,
 		bool $throwError = false,
 	): void
@@ -60,7 +58,6 @@ final class ValueTest extends TestCase
 				'10',
 				null,
 				null,
-				null,
 				10,
 				false,
 			],
@@ -68,7 +65,6 @@ final class ValueTest extends TestCase
 				Types\DataType::CHAR,
 				'9',
 				new Formats\NumberRange([10, 20]),
-				null,
 				null,
 				null,
 				true,
@@ -79,13 +75,11 @@ final class ValueTest extends TestCase
 				new Formats\NumberRange([10, 20]),
 				null,
 				null,
-				null,
 				true,
 			],
 			'float_1' => [
 				Types\DataType::FLOAT,
 				'30.3',
-				null,
 				null,
 				null,
 				30.3,

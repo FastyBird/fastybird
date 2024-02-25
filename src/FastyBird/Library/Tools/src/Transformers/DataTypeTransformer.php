@@ -19,6 +19,8 @@ use Contributte\Monolog;
 use DateTimeInterface;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use function boolval;
+use function in_array;
 
 /**
  * Compatible data type value transformer
@@ -33,8 +35,8 @@ final readonly class DataTypeTransformer
 
 	public function __construct(
 		private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
-		private MetadataTypes\DataType                                                      $source,
-		private MetadataTypes\DataType                                                      $destination,
+		private MetadataTypes\DataType $source,
+		private MetadataTypes\DataType $destination,
 	)
 	{
 	}

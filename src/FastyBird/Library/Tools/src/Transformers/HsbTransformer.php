@@ -15,6 +15,13 @@
 
 namespace FastyBird\Library\Tools\Transformers;
 
+use function abs;
+use function floor;
+use function intval;
+use function min;
+use function pow;
+use function round;
+
 /**
  * HSB value object
  *
@@ -160,18 +167,18 @@ final readonly class HsbTransformer implements Transformer
 		$temperature = 0;
 
 		// Calculate color temperature based on RGB values
-		$X = (-0.14282 * $rgb->getRed()) + (1.54924 * $rgb->getGreen()) + (-0.95641 * $rgb->getBlue());
-		$Y = (-0.32466 * $rgb->getRed()) + (1.57837 * $rgb->getGreen()) + (-0.73191 * $rgb->getBlue());
-		$Z = (-0.68202 * $rgb->getRed()) + (0.77073 * $rgb->getGreen()) + (0.56332 * $rgb->getBlue());
+		$X = (-0.142_82 * $rgb->getRed()) + (1.549_24 * $rgb->getGreen()) + (-0.956_41 * $rgb->getBlue());
+		$Y = (-0.324_66 * $rgb->getRed()) + (1.578_37 * $rgb->getGreen()) + (-0.731_91 * $rgb->getBlue());
+		$Z = (-0.682_02 * $rgb->getRed()) + (0.770_73 * $rgb->getGreen()) + (0.563_32 * $rgb->getBlue());
 
 		// Calculate xy values
 		$x = $X / ($X + $Y + $Z);
 		$y = $Y / ($X + $Y + $Z);
 
 		// Calculate correlated color temperature (CCT)
-		$n = ( $x - 0.3320 ) / ( 0.1858 - $y );
+		$n = ($x - 0.332_0) / (0.185_8 - $y);
 
-		$temperature = 449.0 * pow($n, 3) + 3525.0 * pow($n, 2) + 6823.3 * $n + 5520.33;
+		$temperature = 449.0 * pow($n, 3) + 3_525.0 * pow($n, 2) + 6_823.3 * $n + 5_520.33;
 
 		return new MiredTransformer(intval(round(1_000_000 / $temperature)), $this->getBrightness());
 	}

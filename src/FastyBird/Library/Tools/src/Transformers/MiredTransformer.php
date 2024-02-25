@@ -15,6 +15,9 @@
 
 namespace FastyBird\Library\Tools\Transformers;
 
+use function array_key_exists;
+use function round;
+
 /**
  * Light temperature in mired transformer
  *
@@ -441,7 +444,7 @@ final class MiredTransformer implements Transformer
 	{
 		if ($this->temperature > 500) {
 			return 500;
-		} else if ($this->temperature < 100) {
+		} elseif ($this->temperature < 100) {
 			return 100;
 		}
 
@@ -458,7 +461,7 @@ final class MiredTransformer implements Transformer
 		$saturation = $hue = 0;
 
 		if (array_key_exists($this->getTemperature(), self::LOOKUP_TABLE)) {
-			list($saturation, $hue) = self::LOOKUP_TABLE[$this->getTemperature()] + [null, null];
+			[$saturation, $hue] = self::LOOKUP_TABLE[$this->getTemperature()] + [null, null];
 		}
 
 		return new HsbTransformer(round($hue ?? 0), round($saturation ?? 0), $this->getBrightness());

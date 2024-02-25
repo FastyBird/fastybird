@@ -19,6 +19,13 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions;
 use MathSolver\Math;
+use function array_key_exists;
+use function floatval;
+use function implode;
+use function intval;
+use function is_array;
+use function preg_match;
+use function round;
 
 /**
  * Equation value transformer
