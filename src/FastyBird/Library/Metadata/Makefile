@@ -56,7 +56,7 @@ mutations-infection:
 	$(PRE_PHP) vendor/bin/infection \
 		--configuration=$(INFECTION_CONFIG) \
 		--threads=$(LOGICAL_CORES) \
-		--coverage=../var/tools/Coverage \
+		--coverage=../var/coverage \
 		--skip-initial-tests \
 		$(ARGS)
 
