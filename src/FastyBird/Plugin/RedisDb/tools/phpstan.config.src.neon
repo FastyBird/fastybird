@@ -12,3 +12,4 @@ parameters:
             message: '#^Instanceof between string\|null and Predis\\Response\\ResponseInterface will always evaluate to false.#'
             path: ../src/Clients/Client.php
             count: 1
+        - message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'

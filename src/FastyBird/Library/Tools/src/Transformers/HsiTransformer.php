@@ -15,6 +15,11 @@
 
 namespace FastyBird\Library\Tools\Transformers;
 
+use function cos;
+use function floatval;
+use function fmod;
+use function intval;
+
 /**
  * HSI value object
  *
