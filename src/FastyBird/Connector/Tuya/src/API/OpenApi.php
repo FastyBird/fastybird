@@ -216,7 +216,7 @@ final class OpenApi
 	public function getUid(): string
 	{
 		if (!$this->isConnected()) {
-			$this->connect();
+			$this->connect(false);
 		}
 
 		if ($this->tokenInfo === null) {
@@ -240,7 +240,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -285,7 +289,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -331,7 +339,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -374,7 +386,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -417,7 +433,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -460,7 +480,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -505,7 +529,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -551,7 +579,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -597,7 +629,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -640,7 +676,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -683,7 +723,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		$request = $this->createRequest(
@@ -728,7 +772,11 @@ final class OpenApi
 		$deferred = new Promise\Deferred();
 
 		if (!$this->isConnected()) {
-			$this->connect();
+			if ($async) {
+				await($this->connect($async));
+			} else {
+				$this->connect($async);
+			}
 		}
 
 		try {
@@ -1300,7 +1348,7 @@ final class OpenApi
 			$this->tokenInfo = null;
 
 			if (!Utils\Strings::endsWith(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
-				$this->connect();
+				$this->connect(false);
 
 			} else {
 				throw new Exceptions\OpenApiCall(
@@ -1513,7 +1561,7 @@ final class OpenApi
 				) {
 					$this->tokenInfo = null;
 
-					$this->connect();
+					$this->connect(false);
 
 					$this->refreshTokenPromise->resolve(true);
 					$this->refreshTokenPromise = null;

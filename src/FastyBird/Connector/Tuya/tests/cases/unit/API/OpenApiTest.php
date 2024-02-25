@@ -49,18 +49,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/users/userid123/devices',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/users/userid123/devices',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_devices.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/users/userid123/devices') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_devices.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -257,11 +272,25 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc',
+						],
+						true,
+					));
 
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
 					$responseBody
 						->method('getContents')
 						->willReturn(
@@ -269,6 +298,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								__DIR__ . '/../../../fixtures/API/response/get_user_devices_factory_infos.json',
 							),
 						);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -348,18 +378,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_device_detail.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_device_detail.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -453,18 +498,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/specifications',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/specifications',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_device_specifications.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/specifications') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_device_specifications.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -553,18 +613,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/status',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/status',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_device_state.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bf3e9d85a52b163f940wgx/status') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_device_state.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -638,18 +713,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/devices/bfa1a65b1d7f75a9aenvkc/sub-devices',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/devices/bfa1a65b1d7f75a9aenvkc/sub-devices',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_user_device_children.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/devices/bfa1a65b1d7f75a9aenvkc/sub-devices') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_user_device_children.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -729,18 +819,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_devices.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.3/iot-03/devices?source_id=' . self::UID . '&source_type=tuyaUser') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_devices.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -914,18 +1019,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/iot-03/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/iot-03/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_devices_factory_infos.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/factory-infos?device_ids=bf3e9d85a52b163f940wgx%2Cbfa1a65b1d7f75a9aenvkc') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_devices_factory_infos.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -1005,18 +1125,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_device_detail.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.1/iot-03/devices/bf3e9d85a52b163f940wgx') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_device_detail.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -1103,18 +1238,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_device_specification.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.2/iot-03/devices/bf3e9d85a52b163f940wgx/specification') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_device_specification.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -1207,18 +1357,33 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status',
+						],
+						true,
+					));
 
-					$responseBody
-						->method('getContents')
-						->willReturn(
-							Utils\FileSystem::read(
-								__DIR__ . '/../../../fixtures/API/response/get_device_state.json',
-							),
-						);
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/status') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/get_device_state.json',
+								),
+							);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response
@@ -1292,11 +1457,25 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 					$responseBody
 						->method('rewind');
 
-					self::assertSame(
-						'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands',
+					self::assertTrue(in_array(
 						strval($request->getUri()),
-					);
+						[
+							'https://openapi.tuyaeu.com/v1.0/token?grant_type=1',
+							'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands',
+						],
+						true,
+					));
 
+					if (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/token?grant_type=1') {
+						$responseBody
+							->method('getContents')
+							->willReturn(
+								Utils\FileSystem::read(
+									__DIR__ . '/../../../fixtures/API/response/connect.json',
+								),
+							);
+
+					} elseif (strval($request->getUri()) === 'https://openapi.tuyaeu.com/v1.0/iot-03/devices/bf3e9d85a52b163f940wgx/commands') {
 					$responseBody
 						->method('getContents')
 						->willReturn(
@@ -1304,6 +1483,7 @@ final class OpenApiTest extends Tests\Cases\Unit\DbTestCase
 								__DIR__ . '/../../../fixtures/API/response/set_device_state.json',
 							),
 						);
+					}
 
 					$response = $this->createMock(Http\Message\ResponseInterface::class);
 					$response

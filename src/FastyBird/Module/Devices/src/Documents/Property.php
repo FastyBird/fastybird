@@ -186,13 +186,13 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('created_at')]
-		private readonly DateTimeInterface|null $createdAt = null,
+		protected readonly DateTimeInterface|null $createdAt = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(),
 		])]
 		#[ObjectMapper\Modifiers\FieldName('updated_at')]
-		private readonly DateTimeInterface|null $updatedAt = null,
+		protected readonly DateTimeInterface|null $updatedAt = null,
 	)
 	{
 	}
