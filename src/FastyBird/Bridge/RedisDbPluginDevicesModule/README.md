@@ -4,15 +4,15 @@
 
 # FastyBird IoT Redis DB & Devices module bridge
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/redisdb-plugin-devices-module-bridge/ci.yaml?style=flat-square)](https://github.com/FastyBird/redisdb-plugin-devices-module-bridge/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/redisdb-plugin-devices-module-bridge?style=flat-square)](https://github.com/FastyBird/redisdb-plugin-devices-module-bridge/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/redisdb-plugin-devices-module-bridge?style=flat-square)](https://coveralls.io/r/FastyBird/redisdb-plugin-devices-module-bridge)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/redisdb-plugin-devices-module-bridge/main?cache=300&style=flat-square)](https://github.com/FastyBird/redisdb-plugin-devices-module-bridge/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)](https://github.com/FastyBird/redisdb-plugin-devices-module-bridge/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/redisdb-plugin-devices-module-bridge)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fredisdb-plugin-devices-module-bridge%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/redisdb-plugin-devices-module-bridge/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/redisdb-plugin-devices-module-bridge/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/redisdb-plugin-devices-module-bridge)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/redisdb-plugin-devices-module-bridge)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/redisdb-plugin-devices-module-bridge/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/redisdb-plugin-devices-module-bridge)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/redisdb-plugin-devices-module-bridge?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/redisdb-plugin-devices-module-bridge)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 

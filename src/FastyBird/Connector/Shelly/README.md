@@ -4,15 +4,15 @@
 
 # FastyBird IoT Shelly connector
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/shelly-connector/ci.yaml?style=flat-square)](https://github.com/FastyBird/shelly-connector/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/shelly-connector?style=flat-square)](https://github.com/FastyBird/shelly-connector/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/shelly-connector?style=flat-square)](https://coveralls.io/r/FastyBird/shelly-connector)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/shelly-connector/main?cache=300&style=flat-square)](https://github.com/FastyBird/shelly-connector/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/shelly-connector?cache=300&style=flat-square)](https://github.com/FastyBird/shelly-connector/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/shelly-connector?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/shelly-connector)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fshelly-connector%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/shelly-connector/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/shelly-connector?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/shelly-connector/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/shelly-connector)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/shelly-connector?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/shelly-connector)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/shelly-connector?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/shelly-connector/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/shelly-connector)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/shelly-connector?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/shelly-connector)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 

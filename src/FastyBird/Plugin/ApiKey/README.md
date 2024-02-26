@@ -4,15 +4,15 @@
 
 # FastyBird Api key plugin
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/apikey-plugin/ci.yaml?style=flat-square)](https://github.com/FastyBird/apikey-plugin/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/apikey-plugin?style=flat-square)](https://github.com/FastyBird/apikey-plugin/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/apikey-plugin?style=flat-square)](https://coveralls.io/r/FastyBird/apikey-plugin)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/apikey-plugin/main?cache=300&style=flat-square)](https://github.com/FastyBird/apikey-plugin/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/apikey-plugin?cache=300&style=flat-square)](https://github.com/FastyBird/apikey-plugin/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/apikey-plugin?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/apikey-plugin)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fapikey-plugin%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/apikey-plugin/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/apikey-plugin?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/apikey-plugin/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/apikey-plugin)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/apikey-plugin?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/apikey-plugin)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/apikey-plugin?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/apikey-plugin/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/apikey-plugin)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/apikey-plugin?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/apikey-plugin)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 
