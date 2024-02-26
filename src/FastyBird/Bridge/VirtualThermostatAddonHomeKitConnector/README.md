@@ -4,22 +4,22 @@
 
 # FastyBird IoT Virtual thermostat & HomeKit connector bridge
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/ci.yaml?style=flat-square)](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?style=flat-square)](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?style=flat-square)](https://coveralls.io/r/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/main?cache=300&style=flat-square)](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fvirtual-thermostat-addon-homekit-connector-bridge%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/virtual-thermostat-addon-homekit-connector-bridge?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/virtual-thermostat-addon-homekit-connector-bridge)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 
 ## What is Virtual thermostat & HomeKit connector bridge?
 
 Virtual thermostat & HomeKit connector bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-addon) and [HomeKit connector](https://github.com/FastyBird/homekit-connector).
+which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-addon) and [HomeKit connector](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge).
 
 ### Features:
 
@@ -41,12 +41,12 @@ This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https
 In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/virtual-thermostat-addon-homekit-connector-bridge
+composer require fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge
 ```
 
 ## Documentation
 
-:book: Learn how to build bridge between Virtual thermostat and HomeKit connector in [documentation](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/wiki).
+:book: Learn how to build bridge between Virtual thermostat and HomeKit connector in [documentation](https://github.com/FastyBird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge/wiki).
 
 # FastyBird
 
@@ -94,4 +94,4 @@ For release info check [release page](https://github.com/FastyBird/fastybird/rel
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/fastybird/virtual-thermostat-addon-homekit-connector-bridge](https://github.com/fastybird/virtual-thermostat-addon-homekit-connector-bridge).
+repository [https://github.com/fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge](https://github.com/fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge).

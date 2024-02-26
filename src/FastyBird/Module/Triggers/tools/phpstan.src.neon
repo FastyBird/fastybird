@@ -11,6 +11,3 @@ parameters:
         - ../tests/stubs/LinkInterface.stub
         - ../tests/stubs/PositionInterface.stub
         - ../tests/stubs/SchemaInterface.stub
-
-    ignoreErrors:
-        - message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'

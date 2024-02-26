@@ -4,15 +4,15 @@
 
 # FastyBird exchange library
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/exchange-library/ci.yaml?style=flat-square)](https://github.com/FastyBird/exchange-library/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/exchange-library?style=flat-square)](https://github.com/FastyBird/exchange-library/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/exchange-library?style=flat-square)](https://coveralls.io/r/FastyBird/exchange-library)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/exchange-library/main?cache=300&style=flat-square)](https://github.com/FastyBird/exchange-library/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/exchange-library?cache=300&style=flat-square)](https://github.com/FastyBird/exchange-library/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/exchange-library?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/exchange-library)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fexchange-library%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/exchange-library/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/exchange-library?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/exchange-library/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/exchange-library?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/exchange-library?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/exchange-library/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/exchange-library?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/exchange-library)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 

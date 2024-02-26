@@ -4,15 +4,15 @@
 
 # FastyBird IoT date & time automator
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/FastyBird/date-time-automator/ci.yaml?style=flat-square)](https://github.com/FastyBird/date-time-automator/actions)
-[![Licence](https://img.shields.io/github/license/FastyBird/date-time-automator?style=flat-square)](https://github.com/FastyBird/date-time-automator/blob/main/LICENSE.md)
-[![Code coverage](https://img.shields.io/coverallsCoverage/github/FastyBird/date-time-automator?style=flat-square)](https://coveralls.io/r/FastyBird/date-time-automator)
+[![Build Status](https://flat.badgen.net/github/checks/FastyBird/date-time-automator/main?cache=300&style=flat-square)](https://github.com/FastyBird/date-time-automator/actions)
+[![Licence](https://flat.badgen.net/github/license/FastyBird/date-time-automator?cache=300&style=flat-square)](https://github.com/FastyBird/date-time-automator/blob/main/LICENSE.md)
+[![Code coverage](https://flat.badgen.net/coveralls/c/github/FastyBird/date-time-automator?cache=300&style=flat-square)](https://coveralls.io/r/FastyBird/date-time-automator)
 [![Mutation testing](https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FFastyBird%2Fdate-time-automator%2Fmain)](https://dashboard.stryker-mutator.io/reports/github.com/FastyBird/date-time-automator/main)
 
-![PHP](https://badgen.net/packagist/php/FastyBird/date-time-automator?cache=300&style=flat-square)
-[![Latest stable](https://badgen.net/packagist/v/FastyBird/date-time-automator/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/date-time-automator)
-[![Downloads total](https://badgen.net/packagist/dt/FastyBird/date-time-automator?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/date-time-automator)
-[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+![PHP](https://flat.badgen.net/packagist/php/FastyBird/date-time-automator?cache=300&style=flat-square)
+[![Latest stable](https://flat.badgen.net/packagist/v/FastyBird/date-time-automator/latest?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/date-time-automator)
+[![Downloads total](https://flat.badgen.net/packagist/dt/FastyBird/date-time-automator?cache=300&style=flat-square)](https://packagist.org/packages/FastyBird/date-time-automator)
+[![PHPStan](https://flat.badgen.net/static/PHPStan/enabled/green?cache=300&style=flat-square)](https://github.com/phpstan/phpstan)
 
 ***
 
