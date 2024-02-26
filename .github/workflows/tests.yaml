@@ -20,6 +20,7 @@ jobs:
     name: "PHP Tests"
 
     uses: "fastybird/.github/.github/workflows/phpunit.yaml@main"
+    secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
 
@@ -36,6 +37,7 @@ jobs:
     if: "github.event_name == 'push'"
 
     uses: "fastybird/.github/.github/workflows/phpunit.yaml@main"
+    secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
       coverage: true
@@ -53,9 +55,9 @@ jobs:
     if: "github.event_name == 'push'"
 
     uses: "fastybird/.github/.github/workflows/mutations.yaml@main"
+    secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
-      coverage: true
 
     strategy:
       fail-fast: false

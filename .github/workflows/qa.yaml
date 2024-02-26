@@ -20,6 +20,7 @@ jobs:
     name: "PHP Code quality assurance"
 
     uses: "fastybird/.github/.github/workflows/cs.yaml@main"
+    secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
 
@@ -33,6 +34,7 @@ jobs:
     name: "JS Code quality assurance"
 
     uses: "fastybird/.github/.github/workflows/prettier.yaml@main"
+    secrets: inherit
     with:
       node: "${{ matrix.node-version }}"
 
