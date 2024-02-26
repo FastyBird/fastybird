@@ -1,4 +1,4 @@
-name: "Code quality assurance"
+name: "Code Linting"
 
 on:
   pull_request:
@@ -17,9 +17,9 @@ env:
 
 jobs:
   php:
-    name: "PHP Code quality assurance"
+    name: "PHP Lint"
 
-    uses: "fastybird/.github/.github/workflows/php-cs.yaml@main"
+    uses: "fastybird/.github/.github/workflows/php-lint.yaml@main"
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
@@ -31,9 +31,9 @@ jobs:
         operating-system: [ "ubuntu-latest" ]
 
   js:
-    name: "JS Code quality assurance"
+    name: "JS Lint"
 
-    uses: "fastybird/.github/.github/workflows/prettier.yaml@main"
+    uses: "fastybird/.github/.github/workflows/js-lint.yaml@main"
     secrets: inherit
     with:
       node: "${{ matrix.node-version }}"
