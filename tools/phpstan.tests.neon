@@ -44,6 +44,3 @@ parameters:
 
     bootstrapFiles:
         - phpstan-bootstrap.php
-
-    ignoreErrors:
-        - message: '#^Return type of call to method PHPUnit\\Framework\\TestCase::createMock\(\) contains unresolvable type.#'
