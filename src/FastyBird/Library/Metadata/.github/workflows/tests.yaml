@@ -40,7 +40,6 @@ jobs:
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
-      coverage: true
 
     strategy:
       fail-fast: false
