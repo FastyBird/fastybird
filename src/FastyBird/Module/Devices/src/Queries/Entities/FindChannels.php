@@ -19,10 +19,8 @@ use Closure;
 use Doctrine\Common;
 use Doctrine\ORM;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
-use function in_array;
 
 /**
  * Find device channels entities query
@@ -113,17 +111,13 @@ class FindChannels extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 */
-	public function sortBy(string $sortBy, string $sortDir = Common\Collections\Criteria::ASC): void
+	public function sortBy(
+		string $sortBy,
+		Common\Collections\Order $sortDir = Common\Collections\Order::Ascending,
+	): void
 	{
-		if (!in_array($sortDir, [Common\Collections\Criteria::ASC, Common\Collections\Criteria::DESC], true)) {
-			throw new Exceptions\InvalidArgument('Provided sortDir value is not valid.');
-		}
-
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($sortBy, $sortDir): void {
-			$qb->addOrderBy($sortBy, $sortDir);
+			$qb->addOrderBy($sortBy, $sortDir->value);
 		};
 	}
 

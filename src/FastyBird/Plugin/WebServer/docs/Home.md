@@ -1,23 +1,32 @@
-# Quick start
+<p align="center">
+	<img src="https://github.com/fastybird/.github/blob/main/assets/repo_title.png?raw=true" alt="FastyBird"/>
+</p>
+
+> [!IMPORTANT]
+This documentation is meant to be used by developers or users which has basic programming skills. If you are regular user
+please use FastyBird IoT documentation which is available on [docs.fastybird.com](https://docs.fastybird.com).
+
+# About Plugin
 
 The purpose of this plugin is to create php based web server for serving and handling API request and responses.
 
-***
+This library has some services divided into namespaces. All services are preconfigured and imported into application
+container automatically.
 
-## Installation
-
-The best way to install **fastybird/web-server-plugin** is using [Composer](http://getcomposer.org/):
-
-```sh
-composer require fastybird/web-server-plugin
+```
+\FastyBird\Plugin\RedisDb
+  \Commands - Console commands to run WS server
+  \Events - Events which are triggered by plugin and other services
+  \Middleware - Server basic middlewares
+  \Subscribers - Plugin subscribers which are subscribed to main sockets library
 ```
 
-After that, you have to register plugin in *config.neon*.
+All services, helpers, etc. are written to be self-descriptive :wink:.
 
-```neon
-extensions:
-    fbWebServerPlugin: FastyBird\Plugin\WebServer\DI\WebServerExtension(%consoleMode%)
-```
+## Using Plugin
+
+The plugin is ready to be used as is. Has configured all services in application container and there is no need to develop
+some other services or bridges.
 
 This plugin is dependent on other extensions, and they have to be registered too
 
@@ -28,9 +37,7 @@ extensions:
     contributteEvents: Contributte\EventDispatcher\DI\EventDispatcherExtension
 ```
 
-> For information how to configure these extensions please visit their doc pages
-
-## Configuration
+## Plugin Configuration
 
 This plugin has some configuration options:
 
@@ -246,7 +253,3 @@ your responses and document to entity hydrator
 
 And last but not least, [fastybird/simple-auth](https://github.com/FastyBird/simple-auth). With this package you could
 create basic token based authentication and authorization.
-
-***
-Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/FastyBird/web-server-pluging](https://github.com/FastyBird/web-server-plugin).

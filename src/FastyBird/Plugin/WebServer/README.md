@@ -41,8 +41,7 @@ composer require fastybird/web-server-plugin
 
 ## Documentation
 
-Learn how to build and handle http api requests
-in [documentation](https://github.com/FastyBird/web-server-plugin/blob/main/docs/index.md).
+:book: Learn how to build and handle http api requests in [documentation](https://github.com/FastyBird/web-server-plugin/wiki).
 
 # FastyBird
 
@@ -54,7 +53,7 @@ FastyBird is an Open Source IOT solution built from decoupled components with po
 
 ## Documentation
 
-Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+:book: Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 

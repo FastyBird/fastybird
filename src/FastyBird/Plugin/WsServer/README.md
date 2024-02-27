@@ -39,7 +39,7 @@ composer require fastybird/ws-server-plugin
 
 ## Documentation
 
-Learn how to start server, consume & call RPC messages in [documentation](https://github.com/FastyBird/ws-server-plugin/blob/main/docs/index.md).
+:book: Learn how to start server, consume & call RPC messages in [documentation](https://github.com/FastyBird/ws-server-plugin/wiki).
 
 # FastyBird
 
@@ -51,7 +51,7 @@ FastyBird is an Open Source IOT solution built from decoupled components with po
 
 ## Documentation
 
-Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
+:book: Documentation is available on [docs.fastybird.com](https://docs.fastybird.com).
 
 ## Contributing
 
