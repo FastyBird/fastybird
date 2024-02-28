@@ -56,8 +56,8 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "workspace:1.0.0-dev.20",
-    "@fastybird/web-ui-library": "workspace:1.0.0-dev.20",
+    "@fastybird/metadata-library": "1.0.0-dev.20",
+    "@fastybird/web-ui-library": "1.0.0-dev.20",
     "@fortawesome/vue-fontawesome": "^2.0.9",
     "ajv": "^8.12",
     "axios": "^1.6",

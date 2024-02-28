@@ -38,12 +38,12 @@
     "pretty:write": "prettier assets --write"
   },
   "dependencies": {
-    "@fastybird/accounts-module": "workspace:1.0.0-dev.20",
-    "@fastybird/devices-module": "workspace:1.0.0-dev.20",
-    "@fastybird/metadata-library": "workspace:1.0.0-dev.20",
-    "@fastybird/triggers-module": "workspace:1.0.0-dev.20",
+    "@fastybird/accounts-module": "1.0.0-dev.20",
+    "@fastybird/devices-module": "1.0.0-dev.20",
+    "@fastybird/metadata-library": "1.0.0-dev.20",
+    "@fastybird/triggers-module": "1.0.0-dev.20",
     "@fastybird/vue-wamp-v1": "^1.2",
-    "@fastybird/web-ui-library": "workspace:1.0.0-dev.20",
+    "@fastybird/web-ui-library": "1.0.0-dev.20",
     "@fortawesome/fontawesome-svg-core": "^6.2",
     "@fortawesome/free-brands-svg-icons": "^6.2",
     "@fortawesome/free-solid-svg-icons": "^6.2",
