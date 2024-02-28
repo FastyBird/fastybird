@@ -9,10 +9,10 @@ import get from 'lodash/get';
 import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/document.account.json';
 import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useEmails, useIdentities } from '@/models';
-import { IEmail, IEmailResponseModel, IIdentityResponseModel, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useEmails, useIdentities } from '../../models';
+import { IEmail, IEmailResponseModel, IIdentityResponseModel, IPlainRelation } from '../../models/types';
 
 import {
 	IAccount,

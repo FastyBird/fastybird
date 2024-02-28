@@ -1,4 +1,4 @@
-import { IConnector } from '@/models/types';
+import { IConnector } from '../models/types';
 
 export interface IViewConnectorDetailProps {
 	id: string;

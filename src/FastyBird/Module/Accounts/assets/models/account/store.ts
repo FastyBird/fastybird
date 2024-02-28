@@ -4,9 +4,9 @@ import { Jsona } from 'jsona';
 
 import { ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useAccounts, useEmails, useIdentities, useSession } from '@/models';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useAccounts, useEmails, useIdentities, useSession } from '../../models';
 import {
 	IAccount,
 	IAccountResponseJson,
@@ -15,7 +15,7 @@ import {
 	IEmailResponseJson,
 	IEmailResponseModel,
 	IIdentityResponseJson,
-} from '@/models/types';
+} from '../../models/types';
 
 import {
 	IAccountState,

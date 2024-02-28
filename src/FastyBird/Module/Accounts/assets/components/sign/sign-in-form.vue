@@ -40,9 +40,9 @@ import get from 'lodash/get';
 
 import { FbUiContent, FbFormInput, FbFormCheckbox, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
 
-import { useSession } from '@/models';
-import { useFlashMessage } from '@/composables';
-import { ISignInForm, ISignInProps } from '@/components/sign/sign-in-form.types';
+import { useSession } from '../../models';
+import { useFlashMessage } from '../../composables';
+import { ISignInForm, ISignInProps } from './sign-in-form.types';
 
 const props = withDefaults(defineProps<ISignInProps>(), {
 	remoteFormSubmit: false,
@@ -120,4 +120,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

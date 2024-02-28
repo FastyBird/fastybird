@@ -15,10 +15,10 @@ import {
 	PropertyType,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectors } from '@/models';
-import { IConnector } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useConnectors } from '../../models';
+import { IConnector } from '../../models/types';
 
 import {
 	IConnectorPropertiesState,

@@ -9,10 +9,10 @@ import isEqual from 'lodash/isEqual';
 import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.device.control.json';
 import { DeviceControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useDevices } from '@/models';
-import { IDevice } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useDevices } from '../../models';
+import { IDevice } from '../devices/types';
 
 import {
 	IDeviceControlsState,

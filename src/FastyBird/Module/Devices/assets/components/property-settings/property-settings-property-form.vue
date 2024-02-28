@@ -106,12 +106,9 @@ import get from 'lodash/get';
 import { FbFormInput, FbUiContent, FbFormSelect, FbFormCheckbox, FbSizeTypes, FbFormResultTypes, IFbFormSelectItem } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
-import { useFlashMessage } from '@/composables';
-import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '@/models';
-import {
-	IPropertySettingsPropertyFormForm,
-	IPropertySettingsPropertyFormProps,
-} from '@/components/property-settings/property-settings-property-form.types';
+import { useFlashMessage } from '../../composables';
+import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '../../models';
+import { IPropertySettingsPropertyFormForm, IPropertySettingsPropertyFormProps } from './property-settings-property-form.types';
 
 const props = withDefaults(defineProps<IPropertySettingsPropertyFormProps>(), {
 	connector: undefined,

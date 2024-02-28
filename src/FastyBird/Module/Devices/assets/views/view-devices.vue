@@ -142,11 +142,11 @@ import {
 	FbSizeTypes,
 } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '@/composables';
-import { useDevices } from '@/models';
-import { IDevice } from '@/models/types';
-import { DevicesPreviewInfo, DevicesListDevices } from '@/components';
-import { ApplicationError } from '@/errors';
+import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
+import { useDevices } from '../models';
+import { IDevice } from '../models/types';
+import { DevicesPreviewInfo, DevicesListDevices } from '../components';
+import { ApplicationError } from '../errors';
 
 const emit = defineEmits<{
 	(e: 'toggleMenu'): void;

@@ -19,11 +19,11 @@ export function useNormalizeValue(
 			const floatValue = parseFloat(String(value));
 
 			if (Array.isArray(format) && format.length === 2) {
-				if (format[0] !== null && format[0] > floatValue) {
+				if (format[0] !== null && parseFloat(`${format[0]}`) > floatValue) {
 					return null;
 				}
 
-				if (format[1] !== null && format[1] < floatValue) {
+				if (format[1] !== null && parseFloat(`${format[1]}`) < floatValue) {
 					return null;
 				}
 			}
@@ -71,11 +71,11 @@ export function useNormalizeValue(
 				const intValue = parseInt(String(value), 10);
 
 				if (Array.isArray(format) && format.length === 2) {
-					if (format[0] !== null && format[0] > intValue) {
+					if (format[0] !== null && parseFloat(`${format[0]}`) > intValue) {
 						return null;
 					}
 
-					if (format[1] !== null && format[1] < intValue) {
+					if (format[1] !== null && parseFloat(`${format[1]}`) < intValue) {
 						return null;
 					}
 				}

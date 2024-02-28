@@ -1,6 +1,6 @@
 import { Router, RouteRecordRaw } from 'vue-router';
 
-import { useRoutesNames } from '@/composables';
+import { useRoutesNames } from '../composables';
 
 const { routeNames } = useRoutesNames();
 
@@ -8,12 +8,12 @@ const moduleRoutes: RouteRecordRaw[] = [
 	{
 		path: '/',
 		name: routeNames.root,
-		component: () => import('@/layouts/layout-default.vue'),
+		component: () => import('../layouts/layout-default.vue'),
 		children: [
 			{
 				path: 'triggers',
 				name: routeNames.triggers,
-				component: () => import('@/views/view-triggers.vue'),
+				component: () => import('../views/view-triggers.vue'),
 				meta: {
 					guards: ['authenticated'],
 				},

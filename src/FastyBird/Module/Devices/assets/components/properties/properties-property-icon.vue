@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { IPropertiesPropertyIconProps } from '@/components/properties/properties-property-icon.types';
+import { IPropertiesPropertyIconProps } from './properties-property-icon.types';
 
 defineProps<IPropertiesPropertyIconProps>();
 </script>

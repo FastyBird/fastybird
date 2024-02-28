@@ -51,9 +51,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbLayoutPreviewHeading, FbUiButton, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/composables';
-import { DevicesDeviceIcon } from '@/components';
-import { IDevicesPreviewHeadingProps } from '@/components/devices/devices-device-heading.types';
+import { useEntityTitle } from '../../composables';
+import { DevicesDeviceIcon } from '../../components';
+import { IDevicesPreviewHeadingProps } from './devices-device-heading.types';
 
 const props = withDefaults(defineProps<IDevicesPreviewHeadingProps>(), {
 	editMode: false,

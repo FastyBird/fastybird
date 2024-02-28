@@ -1,4 +1,4 @@
-import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '@/models/types';
+import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '../../models/types';
 
 export interface IPropertySettingsVariablePropertiesEditModel {
 	id: string;

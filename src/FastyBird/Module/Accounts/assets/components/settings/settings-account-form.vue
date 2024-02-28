@@ -141,9 +141,9 @@ import {
 	IFbFormSelectItemGroup,
 } from '@fastybird/web-ui-library';
 
-import { useAccount } from '@/models';
-import { useFlashMessage, useTimezones } from '@/composables';
-import { ISettingsAccountProps } from '@/components/settings/settings-account-form.types';
+import { useAccount } from '../../models';
+import { useFlashMessage, useTimezones } from '../../composables';
+import { ISettingsAccountProps } from './settings-account-form.types';
 
 const props = withDefaults(defineProps<ISettingsAccountProps>(), {
 	remoteFormSubmit: false,
@@ -434,4 +434,4 @@ watch(
 @import 'settings-account-form';
 </style>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

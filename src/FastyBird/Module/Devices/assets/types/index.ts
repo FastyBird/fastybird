@@ -12,12 +12,12 @@ import {
 	IDevice,
 	IDeviceControl,
 	IDeviceProperty,
-} from '@/models/types';
+} from '../models/types';
 
-export * from '@/components/types';
-export * from '@/composables/types';
-export * from '@/models/types';
-export * from '@/views/types';
+export * from '../components/types';
+export * from '../composables/types';
+export * from '../models/types';
+export * from '../views/types';
 
 export type InstallFunction = Plugin & { installed?: boolean };
 

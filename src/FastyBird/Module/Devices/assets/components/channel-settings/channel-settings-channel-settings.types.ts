@@ -1,7 +1,7 @@
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
 
-import { IDevice } from '@/models/types';
-import { IChannelData } from '@/types';
+import { IDevice } from '../../models/types';
+import { IChannelData } from '../../types';
 
 export interface IChannelSettingsChannelSettingsProps {
 	device: IDevice;

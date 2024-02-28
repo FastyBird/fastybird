@@ -15,10 +15,10 @@ import {
 	PropertyType,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useChannels } from '@/models';
-import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useChannels } from '../../models';
+import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '../../models/types';
 
 import {
 	IChannelPropertiesState,
@@ -354,7 +354,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										channel: newProperty.channel,
 										parent: newProperty.parent,
 										relationshipNames: ['channel', 'parent'],
-								  }
+									}
 								: newProperty;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -440,7 +440,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										channel: updatedRecord.channel,
 										parent: updatedRecord.parent,
 										relationshipNames: ['channel', 'parent'],
-								  }
+									}
 								: updatedRecord;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -548,7 +548,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 									channel: recordToSave.channel,
 									parent: recordToSave.parent,
 									relationshipNames: ['channel', 'parent'],
-							  }
+								}
 							: recordToSave;
 
 					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {

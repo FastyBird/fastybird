@@ -1,5 +1,5 @@
-import { IConnector, IConnectorControl, IConnectorProperty } from '@/models/types';
-import { IDeviceData } from '@/types';
+import { IConnector, IConnectorControl, IConnectorProperty } from '../../models/types';
+import { IDeviceData } from '../../types';
 
 export interface IConnectorsConnectorDetailDefaultProps {
 	connectorData: {

@@ -15,10 +15,16 @@ import {
 	ModulePrefix,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '@/models';
-import { IChannelResponseModel, IDeviceControlResponseModel, IDeviceProperty, IDevicePropertyResponseModel, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '../../models';
+import {
+	IChannelResponseModel,
+	IDeviceControlResponseModel,
+	IDeviceProperty,
+	IDevicePropertyResponseModel,
+	IPlainRelation,
+} from '../../models/types';
 
 import {
 	IDevicesState,

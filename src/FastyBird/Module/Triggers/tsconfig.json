@@ -19,6 +19,7 @@
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
+      "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash.get",
       "@types/lodash.capitalize",
       "@types/uuid",
@@ -29,6 +30,7 @@
       "natural-orderby",
       "pinia",
       "vee-validate",
+      "vite-plugin-vue-type-imports",
       "vue",
       "vue-i18n",
       "vue-meta",
@@ -36,11 +38,6 @@
       "vue-toastification",
       "vite/client"
     ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",

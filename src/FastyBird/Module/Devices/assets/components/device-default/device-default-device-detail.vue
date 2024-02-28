@@ -42,9 +42,9 @@ import { orderBy } from 'natural-orderby';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
-import { DeviceDefaultDeviceChannel } from '@/components';
-import { IChannelData } from '@/types';
-import { IDevicesDeviceDetailDefaultProps } from '@/components/device-default/device-default-device-detail.types';
+import { DeviceDefaultDeviceChannel } from '../../components';
+import { IChannelData } from '../../types';
+import { IDevicesDeviceDetailDefaultProps } from './device-default-device-detail.types';
 
 const props = withDefaults(defineProps<IDevicesDeviceDetailDefaultProps>(), {
 	editMode: false,

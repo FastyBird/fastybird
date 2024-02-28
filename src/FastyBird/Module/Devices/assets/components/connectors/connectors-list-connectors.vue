@@ -76,10 +76,10 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiItem, FbUiSwipeActionsList, FbUiNoResults, FbSizeTypes, FbUiItemVariantTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/composables';
-import { IConnector } from '@/models/types';
-import { ConnectorSettingsConnectorRemove, ConnectorsConnectorIcon } from '@/components';
-import { IConnectorsListConnectorsProps, ConnectorsListConnectorsViewTypes } from '@/components/connectors/connectors-list-connectors.types';
+import { useEntityTitle } from '../../composables';
+import { IConnector } from '../../models/types';
+import { ConnectorSettingsConnectorRemove, ConnectorsConnectorIcon } from '../../components';
+import { IConnectorsListConnectorsProps, ConnectorsListConnectorsViewTypes } from './connectors-list-connectors.types';
 
 const props = defineProps<IConnectorsListConnectorsProps>();
 

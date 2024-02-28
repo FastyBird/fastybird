@@ -9,10 +9,10 @@ import isEqual from 'lodash/isEqual';
 import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.connector.control.json';
 import { ConnectorControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectors } from '@/models';
-import { IConnector } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useConnectors } from '../../models';
+import { IConnector } from '../../models/types';
 
 import {
 	IConnectorControlsState,

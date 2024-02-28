@@ -49,10 +49,10 @@ import {
 	FbUiContent,
 } from '@fastybird/web-ui-library';
 
-import { configurationKey } from '@/configuration';
-import { EventBusEventsType } from '@/types';
-import { useRoutesNames } from '@/composables';
-import { LayoutSignBox, LayoutSignHeader, SignInForm } from '@/components';
+import { configurationKey } from '../configuration';
+import { EventBusEventsType } from '../types';
+import { useRoutesNames } from '../composables';
+import { LayoutSignBox, LayoutSignHeader, SignInForm } from '../components';
 
 const configuration = inject(configurationKey);
 
@@ -89,4 +89,4 @@ watch(
 @import 'view-sign-in';
 </style>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../locales/locales.json" />

@@ -2,7 +2,7 @@ import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRela
 
 import { AccountState } from '@fastybird/metadata-library';
 
-import { IEmail, IEmailResponseData, IEmailResponseModel, IIdentityResponseData, IIdentityResponseModel, IPlainRelation } from '@/models/types';
+import { IEmail, IEmailResponseData, IEmailResponseModel, IIdentityResponseData, IIdentityResponseModel, IPlainRelation } from '../../models/types';
 
 // STORE STATE
 // ===========

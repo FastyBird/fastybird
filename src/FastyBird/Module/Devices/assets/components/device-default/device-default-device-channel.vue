@@ -76,14 +76,11 @@ import {
 } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
-import { useBreakpoints, useEntityTitle, useUuid } from '@/composables';
-import { useChannelProperties } from '@/models';
-import { IChannelProperty } from '@/models/types';
-import { PropertyDefaultProperty, PropertySettingsPropertyAddModal } from '@/components';
-import {
-	IDeviceDefaultDeviceChannelProps,
-	DeviceDefaultDeviceChannelViewTypes,
-} from '@/components/device-default/device-default-device-channel.types';
+import { useBreakpoints, useEntityTitle, useUuid } from '../../composables';
+import { useChannelProperties } from '../../models';
+import { IChannelProperty } from '../../models/types';
+import { PropertyDefaultProperty, PropertySettingsPropertyAddModal } from '../../components';
+import { IDeviceDefaultDeviceChannelProps, DeviceDefaultDeviceChannelViewTypes } from './device-default-device-channel.types';
 
 const props = withDefaults(defineProps<IDeviceDefaultDeviceChannelProps>(), {
 	editMode: false,

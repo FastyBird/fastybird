@@ -1,4 +1,4 @@
-import { IDevice } from '@/models/types';
+import { IDevice } from '../../models/types';
 
 export interface IDeviceSettingsDeviceRenameModel {
 	identifier: string;

@@ -25,8 +25,8 @@ import { FbUiIconWithChild, FbUiVariantTypes } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
-import { useDeviceState } from '@/composables';
-import { IDevicesIconProps } from '@/components/devices/devices-device-icon.types';
+import { useDeviceState } from '../../composables';
+import { IDevicesIconProps } from './devices-device-icon.types';
 
 const props = withDefaults(defineProps<IDevicesIconProps>(), {
 	withState: false,

@@ -1,10 +1,10 @@
 import { Plugin } from 'vue';
 import { Router } from 'vue-router';
 
-export * from '@/components/types';
-export * from '@/composables/types';
-export * from '@/models/types';
-export * from '@/types';
+export * from '../components/types';
+export * from '../composables/types';
+export * from '../models/types';
+export * from '../types';
 
 export type InstallFunction = Plugin & { installed?: boolean };
 

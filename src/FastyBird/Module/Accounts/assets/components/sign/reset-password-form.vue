@@ -19,9 +19,9 @@ import get from 'lodash/get';
 
 import { FbFormInput, FbFormResultTypes, FbSizeTypes, FbUiContent } from '@fastybird/web-ui-library';
 
-import { useAccount } from '@/models';
-import { useFlashMessage } from '@/composables';
-import { IResetPasswordForm, IResetPasswordProps } from '@/components/sign/reset-password-form.types';
+import { useAccount } from '../../models';
+import { useFlashMessage } from '../../composables';
+import { IResetPasswordForm, IResetPasswordProps } from './reset-password-form.types';
 
 const props = withDefaults(defineProps<IResetPasswordProps>(), {
 	remoteFormSubmit: false,
@@ -93,4 +93,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

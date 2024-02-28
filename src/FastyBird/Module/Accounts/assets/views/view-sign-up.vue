@@ -28,9 +28,9 @@ import { Emitter } from 'mitt';
 
 import { FbFormResultTypes, FbUiButton, FbUiButtonVariantTypes, FbUiButtonButtonTypes } from '@fastybird/web-ui-library';
 
-import { configurationKey } from '@/configuration';
-import { EventBusEventsType } from '@/types';
-import { LayoutSignHeader, LayoutSignBox, SignUpForm } from '@/components';
+import { configurationKey } from '../configuration';
+import { EventBusEventsType } from '../types';
+import { LayoutSignHeader, LayoutSignBox, SignUpForm } from '../components';
 
 const configuration = inject(configurationKey);
 
@@ -58,4 +58,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../locales/locales.json" />

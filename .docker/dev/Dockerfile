@@ -22,7 +22,7 @@ EXPOSE 9001
 EXPOSE 6666
 EXPOSE 6667
 EXPOSE 6668
-# Shelly local
+# Shelly local devices
 EXPOSE 5683
-# Homekit
+# HomeKit
 EXPOSE 51827

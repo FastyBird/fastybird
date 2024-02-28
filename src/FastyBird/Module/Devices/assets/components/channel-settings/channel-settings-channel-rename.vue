@@ -40,10 +40,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiContent, FbFormInput, FbFormTextArea, FbSizeTypes } from '@fastybird/web-ui-library';
 
-import {
-	IChannelSettingsChannelRenameModel,
-	IChannelSettingsChannelRenameProps,
-} from '@/components/channel-settings/channel-settings-channel-rename.types';
+import { IChannelSettingsChannelRenameModel, IChannelSettingsChannelRenameProps } from './channel-settings-channel-rename.types';
 
 const props = defineProps<IChannelSettingsChannelRenameProps>();
 

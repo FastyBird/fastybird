@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Dotenv\Dotenv;
-use FastyBird\Library\Bootstrap\Boot;
+use FastyBird\Library\Application\Boot;
 use FastyBird\Library\Metadata;
 use FastyBird\Plugin\WebServer\Application as WebServerApplication;
 use Nette\Application as NetteApplication;

@@ -82,7 +82,7 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiMediaItem, FbUiContent, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { IConnectorsDesktopInfoProps } from '@/components/connectors/connectors-preview-info.types';
+import { IConnectorsDesktopInfoProps } from './connectors-preview-info.types';
 
 const props = defineProps<IConnectorsDesktopInfoProps>();
 

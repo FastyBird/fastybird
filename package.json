@@ -23,6 +23,8 @@
     "url": "https://github.com/FastyBird/fastybird.git"
   },
   "workspaces": [
+    "app",
+    "src/FastyBird/Addon/*",
     "src/FastyBird/Automator/*",
     "src/FastyBird/Bridge/*",
     "src/FastyBird/Connector/*",
@@ -31,9 +33,9 @@
     "src/FastyBird/Plugin/*"
   ],
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "link": "lerna link",
+    "dev": "lerna run dev --stream",
     "build": "lerna run build --stream",
+    "build:dev": "lerna run build:dev --stream",
     "clean": "lerna clean && rm -rf node_modules",
     "fix": "lerna run fix",
     "graph": "nx graph",
@@ -47,6 +49,9 @@
     "test": "yarn jest --coverage"
   },
   "devDependencies": {
-    "lerna": "^6.0.3"
+    "lerna": "^8.1"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

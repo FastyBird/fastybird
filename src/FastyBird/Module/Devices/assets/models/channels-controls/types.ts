@@ -10,7 +10,7 @@ import {
 	IPlainRelation,
 	IChannelResponseModel,
 	IControlResponseModel,
-} from '@/models/types';
+} from '../../models/types';
 
 // STORE
 // =====

@@ -71,9 +71,9 @@ import get from 'lodash/get';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
-import { useEntityTitle, useFlashMessage } from '@/composables';
-import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '@/models';
-import { IPropertySettingsPropertyRemoveProps } from '@/components/property-settings/property-settings-property-remove.types';
+import { useEntityTitle, useFlashMessage } from '../../composables';
+import { useChannelProperties, useConnectorProperties, useDeviceProperties } from '../../models';
+import { IPropertySettingsPropertyRemoveProps } from './property-settings-property-remove.types';
 
 const props = withDefaults(defineProps<IPropertySettingsPropertyRemoveProps>(), {
 	connector: undefined,

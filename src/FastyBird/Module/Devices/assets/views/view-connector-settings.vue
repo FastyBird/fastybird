@@ -85,7 +85,7 @@ import {
 	FbFormResultTypes,
 } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/composables';
+import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '../composables';
 import {
 	useChannelControls,
 	useChannelProperties,
@@ -96,10 +96,10 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
-} from '@/models';
-import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '@/models/types';
-import { ConnectorSettingsConnectorSettings } from '@/components';
-import { IChannelData, IConnectorData, IDeviceData, IViewConnectorSettingsProps } from '@/types';
+} from '../models';
+import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '../models/types';
+import { ConnectorSettingsConnectorSettings } from '../components';
+import { IChannelData, IConnectorData, IDeviceData, IViewConnectorSettingsProps } from '../types';
 
 const props = defineProps<IViewConnectorSettingsProps>();
 

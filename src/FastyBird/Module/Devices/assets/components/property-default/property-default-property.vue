@@ -59,9 +59,9 @@ import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
-import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '@/composables';
-import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '@/components';
-import { IPropertyDefaultPropertyProps } from '@/components/property-default/property-default-property.types';
+import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '../../composables';
+import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '../../components';
+import { IPropertyDefaultPropertyProps } from './property-default-property.types';
 
 const props = defineProps<IPropertyDefaultPropertyProps>();
 

@@ -62,11 +62,11 @@ import { useRoute } from 'vue-router';
 
 import { FbLayoutSignBox, FbLayoutSignFooter, FbLayoutSignFooterItem } from '@fastybird/web-ui-library';
 
-import { metaKey } from '@/configuration';
-import { useRoutesNames } from '@/composables';
+import { metaKey } from '../../configuration';
+import { useRoutesNames } from '../../composables';
 
 // @ts-ignore
-import Logo from '@/assets/images/fastybird_bird.svg?component';
+import Logo from '../../assets/images/fastybird_bird.svg?component';
 
 const { routeNames } = useRoutesNames();
 

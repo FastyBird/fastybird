@@ -86,11 +86,11 @@ import {
 } from '@fastybird/web-ui-library';
 import { ModuleSource } from '@fastybird/metadata-library';
 
-import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '@/composables';
-import { useChannelControls, useChannelProperties, useChannels, useDevices } from '@/models';
-import { IChannel, IChannelControl, IChannelProperty, IDevice } from '@/models/types';
-import { ChannelSettingsChannelSettings } from '@/components';
-import { IChannelData, IViewChanelSettingsProps } from '@/types';
+import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '../composables';
+import { useChannelControls, useChannelProperties, useChannels, useDevices } from '../models';
+import { IChannel, IChannelControl, IChannelProperty, IDevice } from '../models/types';
+import { ChannelSettingsChannelSettings } from '../components';
+import { IChannelData, IViewChanelSettingsProps } from '../types';
 
 const props = withDefaults(defineProps<IViewChanelSettingsProps>(), {
 	channelId: null,

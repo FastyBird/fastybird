@@ -8,9 +8,9 @@ import get from 'lodash/get';
 import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/document.email.json';
 import { EmailDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useAccounts } from '@/models';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useAccounts } from '../../models';
 
 import {
 	IEmail,

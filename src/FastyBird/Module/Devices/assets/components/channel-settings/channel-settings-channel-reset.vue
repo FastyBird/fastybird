@@ -36,9 +36,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
-import { useDeviceState, useEntityTitle, useFlashMessage } from '@/composables';
-import { useChannelControls } from '@/models';
-import { IChannelSettingsChannelResetProps } from '@/components/channel-settings/channel-settings-channel-reset.types';
+import { useDeviceState, useEntityTitle, useFlashMessage } from '../../composables';
+import { useChannelControls } from '../../models';
+import { IChannelSettingsChannelResetProps } from './channel-settings-channel-reset.types';
 
 const props = withDefaults(defineProps<IChannelSettingsChannelResetProps>(), {
 	transparentBg: false,

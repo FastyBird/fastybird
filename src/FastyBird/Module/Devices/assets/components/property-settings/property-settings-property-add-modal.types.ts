@@ -1,4 +1,4 @@
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
 
 export interface IPropertySettingsPropertyAddModalProps {
 	connector?: IConnector;

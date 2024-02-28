@@ -19,6 +19,7 @@
     "types": [
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
+      "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash.get",
       "@types/uuid",
       "ajv",
@@ -27,18 +28,14 @@
       "node",
       "pinia",
       "vee-validate",
+      "vite-plugin-vue-type-imports",
       "vue",
       "vue-i18n",
       "vue-meta",
       "vue-router",
       "vue-toastification",
-      "vite/client"
+      "vite/client",
     ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",

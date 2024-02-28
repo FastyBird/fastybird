@@ -37,9 +37,9 @@ import get from 'lodash/get';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
-import { useEntityTitle, useFlashMessage } from '@/composables';
-import { useChannels } from '@/models';
-import { IChannelSettingsChannelRemoveProps } from '@/components/channel-settings/channel-settings-channel-remove.types';
+import { useEntityTitle, useFlashMessage } from '../../composables';
+import { useChannels } from '../../models';
+import { IChannelSettingsChannelRemoveProps } from './channel-settings-channel-remove.types';
 
 const props = withDefaults(defineProps<IChannelSettingsChannelRemoveProps>(), {
 	callRemove: true,

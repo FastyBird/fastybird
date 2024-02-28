@@ -2,7 +2,7 @@ import { useToast } from 'vue-toastification';
 import { AxiosResponse } from 'axios';
 import get from 'lodash/get';
 
-import { UseFlashMessage } from '@/composables/types';
+import { UseFlashMessage } from './types';
 
 export function useFlashMessage(): UseFlashMessage {
 	const toast = useToast();

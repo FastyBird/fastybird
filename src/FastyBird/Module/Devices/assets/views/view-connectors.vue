@@ -142,11 +142,11 @@ import {
 	FbSizeTypes,
 } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '@/composables';
-import { useConnectors } from '@/models';
-import { IConnector } from '@/models/types';
-import { ConnectorsPreviewInfo, ConnectorsListConnectors } from '@/components';
-import { ApplicationError } from '@/errors';
+import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
+import { useConnectors } from '../models';
+import { IConnector } from '../models/types';
+import { ConnectorsPreviewInfo, ConnectorsListConnectors } from '../components';
+import { ApplicationError } from '../errors';
 
 const emit = defineEmits<{
 	(e: 'toggleMenu'): void;
