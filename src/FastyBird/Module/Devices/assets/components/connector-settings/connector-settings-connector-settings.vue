@@ -216,22 +216,22 @@ import {
 } from '@fastybird/web-ui-library';
 import { DataType, ModuleSource, PropertyType } from '@fastybird/metadata-library';
 
-import { useEntityTitle, useFlashMessage, useUuid } from '@/composables';
-import { useConnectors, useConnectorProperties } from '@/models';
-import { IConnectorProperty } from '@/models/types';
+import { useEntityTitle, useFlashMessage, useUuid } from '../../composables';
+import { useConnectors, useConnectorProperties } from '../../models';
+import { IConnectorProperty } from '../../models/types';
 import {
 	ConnectorSettingsConnectorDevice,
 	ConnectorSettingsConnectorRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
-} from '@/components';
-import { IDeviceData } from '@/types';
+} from '../../components';
+import { IDeviceData } from '../../types';
 import {
 	IConnectorSettingsConnectorSettingsProps,
 	IConnectorSettingsConnectorSettingsForm,
 	ConnectorSettingsConnectorSettingsViewTypes,
-} from '@/components/connector-settings/connector-settings-connector-settings.types';
+} from './connector-settings-connector-settings.types';
 
 const props = withDefaults(defineProps<IConnectorSettingsConnectorSettingsProps>(), {
 	remoteFormSubmit: false,

@@ -33,9 +33,9 @@ import get from 'lodash/get';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
-import { useEntityTitle, useFlashMessage } from '@/composables';
-import { useDevices } from '@/models';
-import { IDeviceSettingsDeviceRemoveProps } from '@/components/device-settings/device-settings-device-remove.types';
+import { useEntityTitle, useFlashMessage } from '../../composables';
+import { useDevices } from '../../models';
+import { IDeviceSettingsDeviceRemoveProps } from './device-settings-device-remove.types';
 
 const props = withDefaults(defineProps<IDeviceSettingsDeviceRemoveProps>(), {
 	callRemove: true,

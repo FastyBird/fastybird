@@ -10,8 +10,8 @@ import {
 	CHANNEL_DOCUMENT_REG_EXP,
 	CONNECTOR_DOCUMENT_REG_EXP,
 	DEVICE_DOCUMENT_REG_EXP,
-} from '@/jsonapi/utilities';
-import { useNormalizeValue } from '@/composables';
+} from './utilities';
+import { useNormalizeValue } from '../composables';
 
 const CASE_REG_EXP = '_([a-z0-9])';
 

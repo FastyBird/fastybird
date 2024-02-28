@@ -219,22 +219,22 @@ import {
 } from '@fastybird/web-ui-library';
 import { DataType, ModuleSource, PropertyType } from '@fastybird/metadata-library';
 
-import { useEntityTitle, useFlashMessage, useUuid } from '@/composables';
-import { useDevices, useDeviceProperties } from '@/models';
-import { IDevice, IDeviceProperty } from '@/models/types';
+import { useEntityTitle, useFlashMessage, useUuid } from '../../composables';
+import { useDevices, useDeviceProperties } from '../../models';
+import { IDevice, IDeviceProperty } from '../../models/types';
 import {
 	DeviceSettingsDeviceChannel,
 	DeviceSettingsDeviceRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
-} from '@/components';
-import { IChannelData } from '@/types';
+} from '../../components';
+import { IChannelData } from '../../types';
 import {
 	IDeviceSettingsDeviceSettingsForm,
 	IDeviceSettingsDeviceSettingsProps,
 	DeviceSettingsDeviceSettingsViewTypes,
-} from '@/components/device-settings/device-settings-device-settings.types';
+} from './device-settings-device-settings.types';
 
 const props = withDefaults(defineProps<IDeviceSettingsDeviceSettingsProps>(), {
 	remoteFormSubmit: false,

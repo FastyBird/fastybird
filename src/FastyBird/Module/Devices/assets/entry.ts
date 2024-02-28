@@ -4,9 +4,9 @@ import get from 'lodash/get';
 import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
 
-import moduleRouter from '@/router';
-import { IDevicesModuleOptions, InstallFunction } from '@/types';
-import { configurationKey, metaKey } from '@/configuration';
+import moduleRouter from './router';
+import { IDevicesModuleOptions, InstallFunction } from './types';
+import { configurationKey, metaKey } from './configuration';
 import {
 	useChannelControls,
 	useChannelProperties,
@@ -17,11 +17,11 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
-} from '@/models';
-import { useFlashMessage } from '@/composables';
+} from './models';
+import { useFlashMessage } from './composables';
 
 export function createDevicesModule(): InstallFunction {
-	const plugin: InstallFunction = {
+	return {
 		install(app: App, options: IDevicesModuleOptions): void {
 			if (this.installed) {
 				return;
@@ -40,8 +40,6 @@ export function createDevicesModule(): InstallFunction {
 			wampClient.subscribe(`/${ModulePrefix.MODULE_DEVICES}/v1/exchange`, onWsMessage);
 		},
 	};
-
-	return plugin;
 }
 
 const onWsMessage = (data: string): void => {
@@ -86,11 +84,11 @@ const onWsMessage = (data: string): void => {
 	}
 };
 
-export * from '@/configuration';
-export * from '@/components';
-export * from '@/composables';
-export * from '@/layouts';
-export * from '@/models';
-export * from '@/router';
+export * from './configuration';
+export * from './components';
+export * from './composables';
+export * from './layouts';
+export * from './models';
+export * from './router';
 
-export * from '@/types';
+export * from './types';

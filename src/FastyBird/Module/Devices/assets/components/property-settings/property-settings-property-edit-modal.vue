@@ -38,9 +38,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '@/composables';
-import { PropertySettingsPropertyForm } from '@/components';
-import { IPropertySettingsPropertyEditModalProps } from '@/components/property-settings/property-settings-property-edit-modal.types';
+import { useBreakpoints } from '../../composables';
+import { PropertySettingsPropertyForm } from '../../components';
+import { IPropertySettingsPropertyEditModalProps } from './property-settings-property-edit-modal.types';
 
 const props = defineProps<IPropertySettingsPropertyEditModalProps>();
 

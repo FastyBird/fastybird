@@ -1,4 +1,4 @@
-import { IChannel, IChannelProperty, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
+import { IChannel, IChannelProperty, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
 
 export interface IPropertyActorProps {
 	device?: IDevice;

@@ -1,8 +1,8 @@
 import { App } from 'vue';
 
-import moduleRouter from '@/router';
-import { ITriggersModuleOptions, InstallFunction } from '@/types';
-import { configurationKey, metaKey } from '@/configuration';
+import moduleRouter from './router';
+import { ITriggersModuleOptions, InstallFunction } from './types';
+import { configurationKey, metaKey } from './configuration';
 
 export function createTriggersModule(): InstallFunction {
 	const plugin: InstallFunction = {
@@ -26,9 +26,9 @@ export function createTriggersModule(): InstallFunction {
 	return plugin;
 }
 
-export * from '@/configuration';
-export * from '@/composables';
-export * from '@/layouts';
-export * from '@/router';
+export * from './configuration';
+export * from './composables';
+export * from './layouts';
+export * from './router';
 
-export * from '@/types';
+export * from './types';

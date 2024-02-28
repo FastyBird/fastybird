@@ -133,7 +133,7 @@ import {
 	FbMenuItemTypes,
 } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '@/composables';
+import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '../composables';
 import {
 	useChannelControls,
 	useChannelProperties,
@@ -144,18 +144,18 @@ import {
 	useDeviceControls,
 	useDeviceProperties,
 	useDevices,
-} from '@/models';
-import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '@/models/types';
+} from '../models';
+import { IChannelControl, IChannelProperty, IConnectorControl, IConnectorProperty, IDeviceControl, IDeviceProperty } from '../models/types';
 import {
 	ConnectorDefaultConnectorDetail,
 	ConnectorsConnectorHeading,
 	ConnectorsConnectorToolbar,
 	ConnectorsConnectorIcon,
 	ConnectorSettingsConnectorRemove,
-} from '@/components';
-import { ApplicationError } from '@/errors';
-import { IChannelData, IConnectorData, IDeviceData, IViewConnectorDetailProps } from '@/types';
-import { ViewConnectorDetailViewTypes } from '@/views/view-connector-detail.types';
+} from '../components';
+import { ApplicationError } from '../errors';
+import { IChannelData, IConnectorData, IDeviceData, IViewConnectorDetailProps } from '../types';
+import { ViewConnectorDetailViewTypes } from './view-connector-detail.types';
 
 const props = defineProps<IViewConnectorDetailProps>();
 

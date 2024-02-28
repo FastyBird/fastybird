@@ -77,7 +77,7 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbLayoutPreviewToolbar, FbUiButton, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { IDevicesPreviewToolbarProps } from '@/components/devices/devices-device-toolbar.types';
+import { IDevicesPreviewToolbarProps } from './devices-device-toolbar.types';
 
 const props = withDefaults(defineProps<IDevicesPreviewToolbarProps>(), {
 	editMode: false,

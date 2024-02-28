@@ -33,9 +33,9 @@ import get from 'lodash/get';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
-import { useEntityTitle, useFlashMessage } from '@/composables';
-import { useConnectors } from '@/models';
-import { IConnectorSettingsConnectorRemoveProps } from '@/components/connector-settings/connector-settings-connector-remove.types';
+import { useEntityTitle, useFlashMessage } from '../../composables';
+import { useConnectors } from '../../models';
+import { IConnectorSettingsConnectorRemoveProps } from './connector-settings-connector-remove.types';
 
 const props = withDefaults(defineProps<IConnectorSettingsConnectorRemoveProps>(), {
 	callRemove: true,

@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.channel.property.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.channel.property.json';
 import {
 	ChannelPropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
@@ -15,10 +15,10 @@ import {
 	PropertyType,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useChannels } from '@/models';
-import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useChannels } from '../../models';
+import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '../../models/types';
 
 import {
 	IChannelPropertiesState,
@@ -354,7 +354,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										channel: newProperty.channel,
 										parent: newProperty.parent,
 										relationshipNames: ['channel', 'parent'],
-								  }
+									}
 								: newProperty;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -440,7 +440,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										channel: updatedRecord.channel,
 										parent: updatedRecord.parent,
 										relationshipNames: ['channel', 'parent'],
-								  }
+									}
 								: updatedRecord;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -548,7 +548,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 									channel: recordToSave.channel,
 									parent: recordToSave.parent,
 									relationshipNames: ['channel', 'parent'],
-							  }
+								}
 							: recordToSave;
 
 					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {

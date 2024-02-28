@@ -1,4 +1,4 @@
-import { IRoutes } from '@/types';
+import { IRoutes } from '../types';
 
 export function useRoutesNames(): { routeNames: IRoutes } {
 	const routeNames: IRoutes = {

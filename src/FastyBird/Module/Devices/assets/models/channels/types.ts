@@ -12,7 +12,7 @@ import {
 	IDeviceResponseData,
 	IDeviceResponseModel,
 	IPlainRelation,
-} from '@/models/types';
+} from '../../models/types';
 
 // STORE
 // =====

@@ -1,7 +1,7 @@
 import { RouteLocationNormalized } from 'vue-router';
 import get from 'lodash/get';
 
-import { useSession } from '@/models';
+import { useSession } from '../../models';
 
 const authenticatedGuard = (to: RouteLocationNormalized): boolean | { name: string } | undefined => {
 	const sessionStore = useSession();

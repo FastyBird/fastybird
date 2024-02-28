@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/vue';
 
-import { useSession } from '@/models';
+import { useSession } from '../../models';
 
 const accountGuard = (): boolean | { name: string } | undefined => {
 	const sessionStore = useSession();

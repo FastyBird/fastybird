@@ -40,7 +40,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiContent, FbFormInput, FbFormTextArea, FbSizeTypes } from '@fastybird/web-ui-library';
 
-import { IDeviceSettingsDeviceRenameModel, IDeviceSettingsDeviceRenameProps } from '@/components/device-settings/device-settings-device-rename.types';
+import { IDeviceSettingsDeviceRenameModel, IDeviceSettingsDeviceRenameProps } from './device-settings-device-rename.types';
 
 const props = withDefaults(defineProps<IDeviceSettingsDeviceRenameProps>(), {
 	device: null,

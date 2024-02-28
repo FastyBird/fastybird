@@ -14,7 +14,7 @@ import {
 	IProperty,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
-} from '@/models/types';
+} from '../../models/types';
 
 // STORE
 // =====

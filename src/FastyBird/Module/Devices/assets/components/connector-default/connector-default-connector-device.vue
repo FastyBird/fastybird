@@ -15,9 +15,9 @@
 <script setup lang="ts">
 import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle } from '@/composables';
-import { DevicesDeviceIcon } from '@/components';
-import { IDeviceDefaultChannelPropertyProps } from '@/components/connector-default/connector-default-connector-device.types';
+import { useBreakpoints, useEntityTitle } from '../../composables';
+import { DevicesDeviceIcon } from '../../components';
+import { IDeviceDefaultChannelPropertyProps } from './connector-default-connector-device.types';
 
 const props = defineProps<IDeviceDefaultChannelPropertyProps>();
 

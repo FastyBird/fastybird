@@ -5,8 +5,8 @@
 <script setup lang="ts">
 import { computed, onBeforeMount } from 'vue';
 
-import { useConnectors } from '@/models';
-import { ApplicationError } from '@/errors';
+import { useConnectors } from '../models';
+import { ApplicationError } from '../errors';
 
 const emit = defineEmits<{
 	(e: 'toggleMenu', event: Event): void;

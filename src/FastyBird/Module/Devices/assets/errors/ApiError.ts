@@ -1,4 +1,4 @@
-import ExceptionError from '@/errors/ExceptionError';
+import ExceptionError from './ExceptionError';
 
 class ApiError extends ExceptionError {}
 

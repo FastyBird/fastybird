@@ -1,7 +1,7 @@
 import { DataType } from '@fastybird/metadata-library';
 import { FbFormResultTypes } from '@fastybird/web-ui-library';
 
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
 
 export interface IPropertySettingsPropertyFormForm {
 	identifier: string;

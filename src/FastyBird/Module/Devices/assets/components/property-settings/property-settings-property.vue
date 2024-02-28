@@ -56,9 +56,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/composables';
-import { PropertySettingsPropertyEditModal, PropertySettingsPropertyRemove } from '@/components';
-import { IPropertySettingsPropertyProps, PropertySettingsPropertyViewTypes } from '@/components/property-settings/property-settings-property.types';
+import { useEntityTitle } from '../../composables';
+import { PropertySettingsPropertyEditModal, PropertySettingsPropertyRemove } from '../../components';
+import { IPropertySettingsPropertyProps, PropertySettingsPropertyViewTypes } from './property-settings-property.types';
 
 const props = defineProps<IPropertySettingsPropertyProps>();
 

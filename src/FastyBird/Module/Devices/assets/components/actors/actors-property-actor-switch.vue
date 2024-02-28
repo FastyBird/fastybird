@@ -50,10 +50,10 @@ import { FbUiSwitchElement, FbUiSpinner, FbSizeTypes, FbUiVariantTypes } from '@
 import { ActionRoutes, DataType, ModulePrefix, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
-import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '@/composables';
-import { useChannelProperties, useDeviceProperties } from '@/models';
-import { IPropertyActorProps } from '@/components/actors/actors-property-actor-switch.types';
-import { PropertyCommandResult, PropertyCommandState } from '@/models/properties/types';
+import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '../../composables';
+import { useChannelProperties, useDeviceProperties } from '../../models';
+import { IPropertyActorProps } from './actors-property-actor-switch.types';
+import { PropertyCommandResult, PropertyCommandState } from '../../models/properties/types';
 
 const props = defineProps<IPropertyActorProps>();
 

@@ -73,13 +73,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 import { ControlName } from '@fastybird/metadata-library';
 
-import { useDeviceState, useEntityTitle } from '@/composables';
-import { IChannelControl } from '@/models/types';
-import { ChannelSettingsChannelRemove, ChannelSettingsChannelReset } from '@/components';
-import {
-	IDeviceSettingsDevicePropertyProps,
-	DeviceSettingsDeviceChannelViewTypes,
-} from '@/components/device-settings/device-settings-device-channel.types';
+import { useDeviceState, useEntityTitle } from '../../composables';
+import { IChannelControl } from '../../models/types';
+import { ChannelSettingsChannelRemove, ChannelSettingsChannelReset } from '../../components';
+import { IDeviceSettingsDevicePropertyProps, DeviceSettingsDeviceChannelViewTypes } from './device-settings-device-channel.types';
 
 const props = defineProps<IDeviceSettingsDevicePropertyProps>();
 

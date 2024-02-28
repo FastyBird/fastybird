@@ -14,7 +14,7 @@ import {
 	IDevicePropertyResponseData,
 	IDevicePropertyResponseModel,
 	IPlainRelation,
-} from '@/models/types';
+} from '../../models/types';
 
 // STORE
 // =====

@@ -5,11 +5,11 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/document.role.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.role.json';
 import { RoleDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 
 import {
 	IRole,
@@ -25,7 +25,7 @@ import {
 	IRolesRemoveActionPayload,
 	IRolesSocketDataActionPayload,
 } from './types';
-import { IPlainRelation } from '@/models/types';
+import { IPlainRelation } from '../types';
 
 const jsonSchemaValidator = new Ajv();
 

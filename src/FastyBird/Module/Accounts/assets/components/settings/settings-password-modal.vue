@@ -34,9 +34,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '@/composables';
-import { useIdentities, useSession } from '@/models';
-import { IIdentity } from '@/models/identities/types';
+import { useBreakpoints } from '../../composables';
+import { useIdentities, useSession } from '../../models';
+import { IIdentity } from '../../models/identities/types';
 
 const emit = defineEmits<{
 	(e: 'close'): void;
@@ -84,4 +84,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

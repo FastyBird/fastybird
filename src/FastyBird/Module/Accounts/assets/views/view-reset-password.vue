@@ -59,7 +59,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FbUiButton, FbUiSpinner, FbSizeTypes, FbUiButtonVariantTypes, FbUiButtonButtonTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
 
-import { LayoutSignHeader, LayoutSignBox, ResetPasswordForm } from '@/components';
+import { LayoutSignHeader, LayoutSignBox, ResetPasswordForm } from '../components';
 
 const { t } = useI18n();
 
@@ -94,4 +94,4 @@ watch(
 @import 'view-reset-password';
 </style>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../locales/locales.json" />

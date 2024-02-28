@@ -51,9 +51,9 @@ import get from 'lodash/get';
 
 import { FbFormInput, FbFormInputTypeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
 
-import { useAccount } from '@/models';
-import { useFlashMessage } from '@/composables';
-import { ISettingsPasswordProps } from '@/components/settings/settings-password-form.types';
+import { useAccount } from '../../models';
+import { useFlashMessage } from '../../composables';
+import { ISettingsPasswordProps } from './settings-password-form.types';
 
 const props = withDefaults(defineProps<ISettingsPasswordProps>(), {
 	remoteFormSubmit: false,
@@ -154,4 +154,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

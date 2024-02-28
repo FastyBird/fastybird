@@ -34,8 +34,8 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '@/composables';
-import { useSession } from '@/models';
+import { useBreakpoints } from '../../composables';
+import { useSession } from '../../models';
 import SettingsAccountForm from './settings-account-form.vue';
 
 const emit = defineEmits<{
@@ -74,4 +74,4 @@ watch(
 );
 </script>
 
-<i18n src="@/locales/locales.json" />
+<i18n src="../../locales/locales.json" />

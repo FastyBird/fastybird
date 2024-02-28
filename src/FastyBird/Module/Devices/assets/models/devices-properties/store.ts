@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.device.property.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
 import {
 	DevicePropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
@@ -15,10 +15,10 @@ import {
 	PropertyType,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useDevices } from '@/models';
-import { IDevice, IDevicePropertiesSetStateActionPayload, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useDevices } from '../../models';
+import { IDevice, IDevicePropertiesSetStateActionPayload, IPlainRelation } from '../../models/types';
 
 import {
 	IDevicePropertiesState,
@@ -336,7 +336,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 										device: newProperty.device,
 										parent: newProperty.parent,
 										relationshipNames: ['device', 'parent'],
-								  }
+									}
 								: newProperty;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -412,7 +412,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 										device: updatedRecord.device,
 										parent: updatedRecord.parent,
 										relationshipNames: ['device', 'parent'],
-								  }
+									}
 								: updatedRecord;
 
 						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
@@ -432,7 +432,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 												device: updatedRecord.device,
 												parent: updatedRecord.parent,
 												relationshipNames: ['device', 'parent'],
-										  }
+											}
 										: updatedRecord,
 							})
 						);
@@ -521,7 +521,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 									device: recordToSave.device,
 									parent: recordToSave.parent,
 									relationshipNames: ['device', 'parent'],
-							  }
+								}
 							: recordToSave;
 
 					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {

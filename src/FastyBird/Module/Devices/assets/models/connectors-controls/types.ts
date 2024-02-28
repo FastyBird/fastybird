@@ -10,7 +10,7 @@ import {
 	IControlRecordFactoryPayload,
 	IConnectorResponseModel,
 	IControlResponseModel,
-} from '@/models/types';
+} from '../../models/types';
 
 // STORE
 // =====

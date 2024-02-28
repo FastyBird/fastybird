@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.connector.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.connector.json';
 import {
 	ConnectorCategory,
 	ConnectorDocument,
@@ -15,10 +15,10 @@ import {
 	ModulePrefix,
 } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useConnectorControls, useConnectorProperties, useDevices } from '@/models';
-import { IConnectorProperty, IConnectorPropertyResponseModel, IConnectorControlResponseModel, IPlainRelation } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useConnectorControls, useConnectorProperties, useDevices } from '../../models';
+import { IConnectorProperty, IConnectorPropertyResponseModel, IConnectorControlResponseModel, IPlainRelation } from '../../models/types';
 
 import {
 	IConnectorsState,

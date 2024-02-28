@@ -29,11 +29,11 @@ import { ref, watch } from 'vue';
 import { FbFormCheckbox, FbFormInput, FbUiContent, FbSizeTypes } from '@fastybird/web-ui-library';
 import { DataType } from '@fastybird/metadata-library';
 
-import { useEntityTitle } from '@/composables';
+import { useEntityTitle } from '../../composables';
 import {
 	IPropertySettingsVariablePropertiesEditModel,
 	IPropertySettingsVariablePropertiesEditProps,
-} from '@/components/property-settings/property-settings-variable-properties-edit.types';
+} from './property-settings-variable-properties-edit.types';
 
 const props = defineProps<IPropertySettingsVariablePropertiesEditProps>();
 

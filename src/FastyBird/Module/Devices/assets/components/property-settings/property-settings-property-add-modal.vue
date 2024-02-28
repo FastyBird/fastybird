@@ -417,17 +417,17 @@ import {
 } from '@fastybird/web-ui-library';
 import { PropertyType } from '@fastybird/metadata-library';
 
-import { useBreakpoints, useEntityTitle } from '@/composables';
-import { useChannelProperties, useChannels, useConnectorProperties, useConnectors, useDeviceProperties, useDevices } from '@/models';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '@/models/types';
-import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertySettingsPropertyForm } from '@/components';
+import { useBreakpoints, useEntityTitle } from '../../composables';
+import { useChannelProperties, useChannels, useConnectorProperties, useConnectors, useDeviceProperties, useDevices } from '../../models';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
+import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertySettingsPropertyForm } from '../../components';
 import {
 	IChannelListItem,
 	IConnectorListItem,
 	IDeviceListItem,
 	IPropertySettingsPropertyAddModalProps,
 	PropertySettingsPropertyAddModalViewTypes,
-} from '@/components/property-settings/property-settings-property-add-modal.types';
+} from './property-settings-property-add-modal.types';
 
 const props = defineProps<IPropertySettingsPropertyAddModalProps>();
 

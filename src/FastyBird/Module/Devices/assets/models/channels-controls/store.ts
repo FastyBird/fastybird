@@ -6,13 +6,13 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/devices-module/document.channel.control.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.channel.control.json';
 import { ActionRoutes, ChannelControlDocument, ControlAction, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useChannels, useDevices } from '@/models';
-import { IChannel } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useChannels, useDevices } from '../../models';
+import { IChannel } from '../channels/types';
 
 import {
 	IChannelControlsState,

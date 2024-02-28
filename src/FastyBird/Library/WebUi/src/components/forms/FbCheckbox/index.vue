@@ -108,10 +108,10 @@ export default defineComponent({
 				return props.group !== null
 					? props.group.modelValue
 					: props.modelValue !== undefined
-					? Array.isArray(props.modelValue)
-						? props.modelValue
-						: [props.modelValue]
-					: props.modelValue;
+						? Array.isArray(props.modelValue)
+							? props.modelValue
+							: [props.modelValue]
+						: props.modelValue;
 			},
 			set: (val) => {
 				if (props.group !== null) {

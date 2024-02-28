@@ -50,12 +50,9 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/composables';
-import { DeviceSettingsDeviceRemove } from '@/components';
-import {
-	IConnectorSettingsConnectorPropertyProps,
-	ConnectorSettingsConnectorDeviceViewTypes,
-} from '@/components/connector-settings/connector-settings-connector-device.types';
+import { useEntityTitle } from '../../composables';
+import { DeviceSettingsDeviceRemove } from '../../components';
+import { IConnectorSettingsConnectorPropertyProps, ConnectorSettingsConnectorDeviceViewTypes } from './connector-settings-connector-device.types';
 
 const props = defineProps<IConnectorSettingsConnectorPropertyProps>();
 

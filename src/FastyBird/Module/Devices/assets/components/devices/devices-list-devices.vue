@@ -76,10 +76,10 @@ import { useI18n } from 'vue-i18n';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiItem, FbUiSwipeActionsList, FbUiNoResults, FbSizeTypes, FbUiItemVariantTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
-import { useEntityTitle } from '@/composables';
-import { IDevice } from '@/models/types';
-import { DeviceSettingsDeviceRemove, DevicesDeviceIcon } from '@/components';
-import { IDevicesListDevicesProps, DevicesListDevicesViewTypes } from '@/components/devices/devices-list-devices.types';
+import { useEntityTitle } from '../../composables';
+import { IDevice } from '../../models/types';
+import { DeviceSettingsDeviceRemove, DevicesDeviceIcon } from '../../components';
+import { IDevicesListDevicesProps, DevicesListDevicesViewTypes } from './devices-list-devices.types';
 
 const props = defineProps<IDevicesListDevicesProps>();
 

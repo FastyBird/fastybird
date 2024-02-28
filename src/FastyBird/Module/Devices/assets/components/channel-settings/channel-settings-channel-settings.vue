@@ -170,20 +170,20 @@ import {
 } from '@fastybird/web-ui-library';
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
-import { useEntityTitle, useFlashMessage, useUuid } from '@/composables';
-import { useChannels, useChannelProperties } from '@/models';
-import { IChannel, IChannelProperty } from '@/models/types';
+import { useEntityTitle, useFlashMessage, useUuid } from '../../composables';
+import { useChannels, useChannelProperties } from '../../models';
+import { IChannel, IChannelProperty } from '../../models/types';
 import {
 	ChannelSettingsChannelRename,
 	PropertySettingsProperty,
 	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
-} from '@/components';
+} from '../../components';
 import {
 	IChannelSettingsChannelSettingsForm,
 	IChannelSettingsChannelSettingsProps,
 	ChannelSettingsChannelSettingsViewTypes,
-} from '@/components/channel-settings/channel-settings-channel-settings.types';
+} from './channel-settings-channel-settings.types';
 
 const props = withDefaults(defineProps<IChannelSettingsChannelSettingsProps>(), {
 	remoteFormSubmit: false,

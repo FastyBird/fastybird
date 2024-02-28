@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useCookies } from 'vue3-cookies';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { Jsona } from 'jsona';
 import get from 'lodash/get';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
 
-import { ApiError } from '@/errors';
-import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '@/jsonapi';
-import { useAccounts } from '@/models';
-import { IAccount } from '@/models/types';
+import { ApiError } from '../../errors';
+import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
+import { useAccounts } from '../../models';
+import { IAccount } from '../accounts/types';
 
 import {
 	ISessionCreateActionPayload,

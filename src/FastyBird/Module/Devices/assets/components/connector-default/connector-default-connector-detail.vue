@@ -42,10 +42,10 @@ import { orderBy } from 'natural-orderby';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiContent, FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '@/composables';
-import { ConnectorDefaultConnectorDevice } from '@/components';
-import { IDeviceData } from '@/types';
-import { IConnectorsConnectorDetailDefaultProps } from '@/components/connector-default/connector-default-connector-detail.types';
+import { useBreakpoints } from '../../composables';
+import { ConnectorDefaultConnectorDevice } from '../../components';
+import { IDeviceData } from '../../types';
+import { IConnectorsConnectorDetailDefaultProps } from './connector-default-connector-detail.types';
 
 const props = defineProps<IConnectorsConnectorDetailDefaultProps>();
 
