@@ -41,6 +41,7 @@
     "graph": "nx graph",
     "types": "lerna run types --stream --parallel",
     "lint:js": "lerna run lint:js --stream --parallel",
+    "lint:js:fix": "lerna run lint:js:fix --stream --parallel",
     "lint:styles": "lerna run lint:styles --stream --parallel",
     "playground": "lerna run playground --scope=@starter/storybook",
     "pretty": "yarn pretty:write && yarn pretty:check",

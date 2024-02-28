@@ -5,7 +5,7 @@ import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash/get';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/document.identity.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.identity.json';
 import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource, IdentityState } from '@fastybird/metadata-library';
 
 import { ApiError } from '../../errors';

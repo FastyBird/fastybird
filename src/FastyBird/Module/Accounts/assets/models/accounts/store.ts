@@ -6,7 +6,7 @@ import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import get from 'lodash/get';
 
-import exchangeDocumentSchema from '@fastybird/metadata-library/resources/schemas/modules/accounts-module/document.account.json';
+import exchangeDocumentSchema from '../../../resources/schemas/document.account.json';
 import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '../../errors';

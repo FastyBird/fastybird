@@ -46,7 +46,7 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			'@fastybird': resolve(__dirname, './../../../../node_modules/@fastybird'),
+			'@fastybird/web-ui-library': resolve(__dirname, './../../../../node_modules/@fastybird/web-ui-library'),
 		},
 	},
 	build: {
