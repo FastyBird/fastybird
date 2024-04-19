@@ -1,4 +1,5 @@
 export * from './alert/index';
+export * from './app-bar/index';
 export * from './badge/index';
 export * from './bottom-navigation/index';
 export * from './breadcrumb/index';
