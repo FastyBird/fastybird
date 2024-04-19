@@ -512,7 +512,7 @@ final readonly class Device
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -527,7 +527,7 @@ final readonly class Device
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -595,7 +595,7 @@ final readonly class Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -610,7 +610,7 @@ final readonly class Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -625,7 +625,7 @@ final readonly class Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -640,7 +640,7 @@ final readonly class Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 

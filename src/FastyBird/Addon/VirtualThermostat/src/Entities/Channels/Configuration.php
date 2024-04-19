@@ -77,7 +77,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::MAXIMUM_FLOOR_TEMPERATURE->value,
 			)
 			->first();
 
@@ -104,7 +104,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::MINIMUM_CYCLE_DURATION->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::MINIMUM_CYCLE_DURATION->value,
 			)
 			->first();
 
@@ -132,7 +132,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::LOW_TARGET_TEMPERATURE_TOLERANCE->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::LOW_TARGET_TEMPERATURE_TOLERANCE->value,
 			)
 			->first();
 
@@ -160,7 +160,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HIGH_TARGET_TEMPERATURE_TOLERANCE->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HIGH_TARGET_TEMPERATURE_TOLERANCE->value,
 			)
 			->first();
 
