@@ -1,0 +1,276 @@
+@use 'mixins/mixins' as *;
+@use 'mixins/var' as *;
+@use 'common/var' as *;
+
+$directions: rtl, ltr, ttb, btt;
+
+@include b(drawer) {
+  @include set-component-css-var('drawer', $drawer);
+  @include css-var-from-global(
+    ('drawer', 'header', 'bg-color'),
+    ('color', 'primary')
+  );
+  @include css-var-from-global(
+    ('drawer', 'header', 'color'),
+    ('color', 'white')
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'heading'),
+    '50px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'font-size'),
+    '20px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'font-weight'),
+    500
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'line-height'),
+    1.1
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'padding'),
+    '0 12px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'margin'),
+    0
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'icon-size'),
+    '35px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'icon-font-size'),
+    '20px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'icon-size', 'large'),
+    '55px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'icon-font-size', 'large'),
+    '40px'
+  );
+  @include set-css-var-value(
+    ('drawer', 'header', 'icon-margin'),
+    '10px'
+  );
+}
+
+@include b(drawer) {
+  position: absolute;
+  box-sizing: border-box;
+  background-color: getCssVar('drawer', 'bg-color');
+  display: flex;
+  flex-direction: column;
+  box-shadow: getCssVar('box-shadow', 'dark');
+  overflow: hidden;
+
+  transition: all getCssVar('transition-duration');
+
+  @each $direction in $directions {
+    @include m($direction) {
+      transform: translate(0, 0);
+    }
+  }
+
+  @include m(ltr) {
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  @include m(rtl) {
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  @include m(ttb) {
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 0;
+  }
+
+  @include m(btt) {
+    width: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  @include e(body) {
+    flex: 1;
+    padding: getCssVar('drawer-padding-primary');
+    overflow: auto;
+    & > * {
+      box-sizing: border-box;
+    }
+  }
+}
+
+@include b(drawer-header) {
+  color: getCssVar('drawer', 'header', 'color');
+  background-color: getCssVar('drawer', 'header', 'bg-color');
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+
+  @include e(inner) {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: getCssVar('drawer', 'header', 'padding');
+    min-height: getCssVar('drawer', 'header', 'heading');
+  }
+
+  @include e(heading) {
+    flex-grow: 1;
+    align-items: center;
+    display: flex;
+    flex-flow: row nowrap;
+  }
+
+  @include e(title) {
+    flex-grow: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: getCssVar('drawer', 'header', 'font-size');
+    font-weight: getCssVar('drawer', 'header', 'font-weight');
+    line-height: getCssVar('drawer', 'header', 'line-height');
+    margin: getCssVar('drawer', 'header', 'margin');
+  }
+
+  @include e(subtitle) {
+    display: block;
+    font-size: 65%;
+    font-weight: normal;
+  }
+
+  @include e(icon) {
+    color: getCssVar('drawer', 'header', 'bg-color');
+    background-color: getCssVar('drawer', 'header', 'color');
+    border-radius: 50%;
+    height: getCssVar('drawer', 'header', 'icon-size');
+    width: getCssVar('drawer', 'header', 'icon-size');
+    line-height: getCssVar('drawer', 'header', 'icon-size');
+    font-size: getCssVar('drawer', 'header', 'icon-font-size');
+    margin-right: getCssVar('drawer', 'header', 'icon-margin');
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+  }
+
+  @include e(close) {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    color: getCssVar('drawer', 'header', 'color');
+  }
+
+  @each $variant in (primary, success, warning, danger, error, info, default) {
+    @include m(variant-#{$variant}) {
+      @include css-var-from-global(
+        ('drawer', 'header', 'bg-color'),
+        ('color', $variant)
+      );
+      @include css-var-from-global(
+        ('drawer', 'header', 'color'),
+        ('color', 'white')
+      );
+    }
+  }
+
+  @include e(description) {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+
+    .#{$namespace}-drawer-header__icon {
+      background-color: getCssVar('drawer', 'header', 'bg-color');
+      color: getCssVar('drawer', 'header', 'color');
+      margin-bottom: 15px;
+      height: getCssVar('drawer', 'header', 'icon-size', 'large');
+      width: getCssVar('drawer', 'header', 'icon-size', 'large');
+      line-height: getCssVar('drawer', 'header', 'icon-size', 'large');
+      font-size: getCssVar('drawer', 'header', 'icon-font-size', 'large');
+    }
+
+    @include e(content) {
+      padding: 10px;
+    }
+  }
+}
+
+@include b(drawer-footer) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding: getCssVar('drawer', 'padding-primary');
+  border-top: 1px solid getCssVar('border-color', 'dark');
+
+  @include e(left-button) {
+    margin-right: 5px;
+  }
+
+  @include e(right-button) {
+    margin-left: 5px;
+  }
+}
+
+.#{$namespace}-drawer-fade {
+  &-enter-active,
+  &-leave-active {
+    transition: all getCssVar('transition-duration');
+  }
+
+  &-enter-from,
+  &-enter-active,
+  &-enter-to,
+  &-leave-from,
+  &-leave-active,
+  &-leave-to {
+    overflow: hidden !important;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+  }
+
+  &-enter-to,
+  &-leave-from {
+    opacity: 1;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    .#{$namespace}-drawer--ltr {
+      transform: translateX(-100%);
+    }
+
+    .#{$namespace}-drawer--rtl {
+      transform: translateX(100%);
+    }
+
+    .#{$namespace}-drawer--rtl {
+      transform: translateX(100%);
+    }
+
+    .#{$namespace}-drawer--btt {
+      transform: translateY(100%);
+    }
+  }
+}

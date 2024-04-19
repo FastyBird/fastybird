@@ -1,0 +1,70 @@
+import { Canvas, Meta, Controls } from '@storybook/blocks';
+import * as BadgeStories from './fb-badge.stories';
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+A number or status mark on buttons and icons.
+
+<Canvas of={BadgeStories.Component} />
+
+## Playground
+
+<Controls of={BadgeStories.Component} />
+
+## Basic Usage
+
+Displays the amount of new messages.
+
+The amount is defined with value which accepts Number or String.
+
+<Canvas withToolbar={true} of={BadgeStories.BasicUsage} />
+
+## Max Value
+
+You can customize the max value.
+
+The max value is defined by property max which is a Number. Note that it only works when value is also a Number.
+
+<Canvas withToolbar={true} of={BadgeStories.MaxValue} />
+
+## Customizations
+
+Displays text content other than numbers.
+
+When value is a String, it can display customized text.
+
+<Canvas withToolbar={true} of={BadgeStories.Customizations} />
+
+## Red Dot
+
+Use a red dot to mark content that needs to be noticed.
+
+Use the property `is-dot`. It is a Boolean.
+
+<Canvas withToolbar={true} of={BadgeStories.RedDot} />
+
+***
+
+## Badge API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name      | Description                                                                   | Type                                                                    | Default   |
+	| --------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------- | --------- |
+	| value     | display value                                                                 | `string` \| `number`                                                    | —         |
+	| max       | maximum value, shows `{max}+` when exceeded. Only works if value is a number  | `number`                                                                | 99        |
+	| is-dot    | whether a little dot is displayed                                             | `boolean`                                                               | false     |
+	| hidden    | whether a badge is hidden                                                     | `boolean`                                                               | false     |
+	| variant   | badge variant                                                                 | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`  | `danger`  |
+	| show-zero | whether to show badge when value is zero                                      | `boolean`                                                               | true      |
+
+	### Slots
+
+	| Name    | Description               |
+	| ------- | ------------------------- |
+	| default | customize default content |
+</div>

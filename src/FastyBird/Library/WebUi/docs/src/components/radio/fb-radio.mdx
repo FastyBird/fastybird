@@ -1,0 +1,127 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as RadioStories from './fb-radio.stories';
+
+<Meta of={RadioStories} />
+
+# Radio
+
+This component allows for single selection from multiple options.
+
+## Basic Usage
+
+It's recommended not to use Radios for too many options; instead, consider using the Select component. To create a Radio component, simply bind a variable
+to the `v-model` of the Radio component. This variable will hold the value of the selected Radio button, which can be of type `String`, `Number`, or `Boolean`.
+
+<Canvas withToolbar={true} of={RadioStories.BasicUsage} />
+
+## Disabled
+
+To disable a Radio button, simply add the `disabled` property to it.
+
+<Canvas withToolbar={true} of={RadioStories.Disabled} />
+
+## Radio Group
+
+To create a group of mutually exclusive options, you can use the `fb-radio-group` component along with individual `fb-radio` components. Bind a variable
+to the `v-model` of the `fb-radio-group` element to track the selected option. Each `fb-radio` component should specify its label value. Additionally,
+you can listen for the `change` event on the `fb-radio-group` component to handle changes in selection, with the current value provided as a parameter.
+
+<Canvas withToolbar={true} of={RadioStories.RadioGroup} />
+
+## Button Style
+
+To style Radio buttons as buttons, simply replace the `fb-radio` element with the `fb-radio-button` element. Additionally, you can use the `size` property
+to adjust the button size as needed.
+
+<Canvas withToolbar={true} of={RadioStories.Button} />
+
+## With Borders
+
+The `border` property adds a border around the Radio buttons. You can use this property to enhance the visual appearance of the Radio buttons with borders.
+
+<Canvas withToolbar={true} of={RadioStories.Bordered} />
+
+***
+
+## Radio API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                  | Description                                                            | Type                                     | Default |
+	| --------------------- | ---------------------------------------------------------------------- | ---------------------------------------- | ------- |
+	| model-value / v-model | binding value                                                          | `string` \| `number` \| `boolean`        | —       |
+	| value                 | the value of Radio                                                     | `string` \| `number` \| `boolean`        | —       |
+	| label                 | the label of Radio. If there's no `value`, `label` will act as `value` | `string` \| `number` \| `boolean`        | —       |
+	| disabled              | whether Radio is disabled                                              | `boolean`                                | false   |
+	| border                | whether to add a border around Radio                                   | `boolean`                                | false   |
+	| size                  | size of the Radio                                                      | `large` \| `default` \| `small`          | —       |
+	| name                  | native `name` attribute                                                | `string`                                 | —       |
+
+	### Events
+
+	| Name   | Description                           | Type                                           |
+	| ------ | ------------------------------------- | ---------------------------------------------- |
+	| change | triggers when the bound value changes | `(value: string \| number \| boolean) => void` |
+
+	### Slots
+
+	| Name    | Description               |
+	| ------- | ------------------------- |
+	| default | customize default content |
+
+</div>
+
+## Radio Group API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                  | Description                                       | Type                               | Default |
+	| --------------------- | ------------------------------------------------- | ---------------------------------- | ------- |
+	| model-value / v-model | binding value                                     | `string` \| `number` \| `boolean`  | —       |
+	| size                  | the size of Radio buttons or bordered Radios      | `string`                           | default |
+	| disabled              | whether the nesting Radios are disabled           | `boolean`                          | false   |
+	| text-color            | font color when button is active                  | `string`                           | —       |
+	| fill                  | border and background color when button is active | `string`                           | —       |
+	| validate-event        | whether to trigger form validation                | `boolean`                          | true    |
+	| label `a11y`          | same as `aria-label` in RadioGroup                | `string`                           | —       |
+	| name                  | native `name` attribute                           | `string`                           | —       |
+	| id                    | native `id` attribute                             | `string`                           | —       |
+
+	### Events
+
+	| Name   | Description                           | Type                                           |
+	| ------ | ------------------------------------- | ---------------------------------------------- |
+	| change | triggers when the bound value changes | `(value: string \| number \| boolean) => void` |
+
+	### Slots
+
+	| Name    | Description               | Subtags                         |
+	| ------- | ------------------------- | ------------------------------- |
+	| default | customize default content | `fb-radio` \| `rb-radio-button` |
+
+</div>
+
+## Radio Button API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name       | Description                                                            | Type                               | Default |
+	| ---------- | ---------------------------------------------------------------------- | ---------------------------------- | ------- |
+	| value      | the value of Radio                                                     | `string` \| `number` \| `boolean`  | —       |
+	| label      | the label of Radio. If there's no `value`, `label` will act as `value` | `string` \| `number` \| `boolean`  | —       |
+	| disabled   | whether Radio is disabled                                              | `boolean`                          | false   |
+	| name       | native 'name' attribute                                                | `string`                           | —       |
+
+	### Slots
+
+	| Name    | Description               |
+	| ------- | ------------------------- |
+	| default | customize default content |
+
+</div>

@@ -1,0 +1,153 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as CheckboxStories from './fb-checkbox.stories';
+
+<Meta of={CheckboxStories} />
+
+# Checkbox
+
+A group of options for making multiple selections.
+
+## Basic Usage
+
+Checkbox can be used alone to switch between two states.
+
+To define a bound variable using `v-model` in `fb-checkbox`, set the default value as a `Boolean` for a single `checkbox`. When selected, it defaults
+to `true`. Content within the `fb-checkbox` tag becomes the description displayed alongside the Checkbox button.
+
+<Canvas withToolbar={true} of={CheckboxStories.BasicUsage} />
+
+## Disabled
+
+To disable a Checkbox, simply add the `disabled` property.
+
+<Canvas withToolbar={true} of={CheckboxStories.Disabled} />
+
+## Checkbox Group
+
+The `fb-checkbox-group` component manages multiple Checkboxes bound to an array using the `v-model` directive. Each `fb-checkbox` element within the group
+has a `value` property representing its value. If no content is provided within the tag, the `label` property serves as the Checkbox description.
+The Checkbox is considered selected if its value exists in the array bound to `v-model`, and vice versa.
+
+<Canvas withToolbar={true} of={CheckboxStories.CheckboxGroup} />
+
+## Indeterminate
+
+The `indeterminate` property enables you to achieve a "check all" effect.
+
+<Canvas withToolbar={true} of={CheckboxStories.Indeterminate} />
+
+## Minimum & Maximum Items Checked
+
+The `min` and `max` properties can be used to restrict the number of checked items.
+
+<Canvas withToolbar={true} of={CheckboxStories.MinMax} />
+
+## Button Style
+
+To style a Checkbox like a button, replace the `fb-checkbox` element with the `fb-checkbox-button` element. Additionally, you can use the `size` property
+for customization.
+
+<Canvas withToolbar={true} of={CheckboxStories.Button} />
+
+## With Borders
+
+The `border` property adds a border to Checkboxes.
+
+<Canvas withToolbar={true} of={CheckboxStories.Bordered} />
+
+***
+
+## Checkbox API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                     | Description                                                                                                                                                    | Type                                          | Default |
+	| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- | ------- |
+	| model-value / v-model    | binding value                                                                                                                                                  | `string` \| `number` \| `boolean`             | —       |
+	| value                    | value of the Checkbox when used inside a `fb-checkbox-group`                                                                                                      | `string` \| `number` \| `boolean` \| `object` | —       |
+	| label                    | label of the Checkbox when used inside a `fb-checkbox-group`. If there's no value, `label` will act as `value`                                                    | `string` \| `number` \| `boolean` \| `object` | —       |
+	| true-value               | value of the Checkbox if it's checked                                                                                                                          | `string` \| `number`                          | —       |
+	| false-value              | value of the Checkbox if it's not checked                                                                                                                      | `string` \| `number`                          | —       |
+	| disabled                 | whether the Checkbox is disabled                                                                                                                               | `boolean`                                     | false   |
+	| border                   | whether to add a border around Checkbox                                                                                                                        | `boolean`                                     | false   |
+	| size                     | size of the Checkbox                                                                                                                                           | `large` \| `default` \| `small`               | —       |
+	| name                     | native 'name' attribute                                                                                                                                        | `string`                                      | —       |
+	| checked                  | if the Checkbox is checked                                                                                                                                     | `boolean`                                     | false   |
+	| indeterminate            | Set indeterminate state, only responsible for style control                                                                                                    | `boolean`                                     | false   |
+	| validate-event           | whether to trigger form validation                                                                                                                             | `boolean`                                     | true    |
+	| tabindex                 | input tabindex                                                                                                                                                 | `string` \| `number`                          | —       |
+	| id                       | input id                                                                                                                                                       | `string`                                      | —       |
+	| controls `a11y`          | same as [aria-controls](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-controls), takes effect when `indeterminate` is `true` | `boolean`                                     | —       |
+
+	### Events
+
+	| Name   | Description                             | Type                                           |
+	| ------ | --------------------------------------- | ---------------------------------------------- |
+	| change | triggers when the binding value changes | `(value: string \| number \| boolean) => void` |
+
+	### Slots
+
+	| Name    | Description               |
+	| ------- | ------------------------- |
+	| default | customize default content |
+
+</div>
+
+## Checkbox Group API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                  | Description                                       | Type                                     | Default |
+	| --------------------- | ------------------------------------------------- | ---------------------------------------- | ------- |
+	| model-value / v-model | binding value                                     | `object` \| `string[]` \| `number[]`     | []      |
+	| size                  | size of Checkbox                                  | `large` \| `default` \| `small`          | —       |
+	| disabled              | whether the nesting Checkboxes are disabled       | `boolean`                                | false   |
+	| min                   | minimum number of Checkbox checked                | `number`                                 | —       |
+	| max                   | maximum number of Checkbox checked                | `number`                                 | —       |
+	| label                 | label for screen reader                           | `string`                                 | —       |
+	| text-color            | font color when button is active                  | `string`                                 | —       |
+	| fill                  | border and background color when button is active | `string`                                 | —       |
+	| tag                   | element tag of the Checkbox group                 | `string`                                 | div     |
+	| validate-event        | whether to trigger form validation                | `boolean`                                | true    |
+
+	### Events
+
+	| Name   | Description                             | Type                                      |
+	| ------ | --------------------------------------- | ----------------------------------------- |
+	| change | triggers when the binding value changes | `(value: string[] \| number[]) => void`   |
+
+	### Slots
+
+	| Name    | Description               | Subtags                               |
+	| ------- | ------------------------- | ------------------------------------- |
+	| default | customize default content | `fb-checkbox` \| `fb-checkbox-button` |
+
+</div>
+
+## Checkbox Button API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name              | Description                                                                                                    | Type                                           | Default |
+	| ----------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------- |
+	| value             | value of the Checkbox when used inside a `fb-checkbox-group`                                                   | `string` \| `number` \| `boolean` \| `object`  | —       |
+	| label             | label of the Checkbox when used inside a `fb-checkbox-group`. If there's no value, `label` will act as `value` | `string` \| `number` \| `boolean` \| `object`  | —       |
+	| true-value        | value of the Checkbox if it's checked                                                                          | `string` \| `number`                           | —       |
+	| false-value       | value of the Checkbox if it's not checked                                                                      | `string` \| `number`                           | —       |
+	| disabled          | whether the Checkbox is disabled                                                                               | `boolean`                                      | false   |
+	| name              | native `name` attribute                                                                                        | `string`                                       | —       |
+	| checked           | if the Checkbox is checked                                                                                     | `boolean`                                      | false   |
+
+	### Slots
+
+	| Name    | Description               |
+	| ------- | ------------------------- |
+	| default | customize default content |
+
+</div>

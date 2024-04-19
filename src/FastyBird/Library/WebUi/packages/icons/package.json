@@ -1,0 +1,80 @@
+{
+  "name": "@fastybird/web-ui-icons",
+  "version": "1.0.0-dev.20",
+  "type": "module",
+  "description": "Fontawesome Icons implemented for FastyBird IoT application",
+  "keywords": [
+    "icon",
+    "svg",
+    "fastybird"
+  ],
+  "homepage": "https://github.com/FastyBird/web-ui-library/blob/packages/theme-chalk/README.md",
+  "bugs": "https://github.com/FastyBird/fastybird#issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./global": {
+      "types": "./dist/types/global.d.ts",
+      "require": "./dist/global.cjs",
+      "import": "./dist/global.js"
+    },
+    "./*": "./*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./*",
+        "./dist/types/*"
+      ]
+    }
+  },
+  "sideEffects": false,
+  "unpkg": "dist/index.iife.min.js",
+  "jsdelivr": "dist/index.iife.min.js",
+  "files": [
+    "dist",
+    "svg/**/*.svg"
+  ],
+  "scripts": {
+    "build": "npm run build:generate && run-p build:build build:types",
+    "build:generate": "tsx build/generate.ts",
+    "build:build": "NODE_ENV=production tsx build/build.ts",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly",
+    "optimize": "svgo -f . -o ."
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0",
+    "@types/node": "^20.11",
+    "camelcase": "^8.0",
+    "chalk": "^5.3",
+    "consola": "^3.2",
+    "esbuild": "^0.20",
+    "esbuild-plugin-globals": "^0.2",
+    "fast-glob": "^3.3",
+    "fs-extra": "^11.2",
+    "npm-run-all": "^4.1",
+    "prettier": "^3.2",
+    "svgo": "^3.2",
+    "tsx": "^4.7",
+    "typescript": "^5.4",
+    "unplugin-vue": "^5.0",
+    "vue": "^3.4",
+    "vue-tsc": "^2.0"
+  }
+}

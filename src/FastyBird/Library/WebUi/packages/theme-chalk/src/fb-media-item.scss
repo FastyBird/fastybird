@@ -1,0 +1,41 @@
+@use 'common/var' as *;
+@use 'mixins/mixins' as *;
+@use 'mixins/var' as *;
+
+@include b(media-item) {
+  @include set-component-css-var('media-item', $media-item);
+}
+
+@include b(media-item) {
+  zoom: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  @include e(left) {
+    text-align: center;
+    -webkit-box-flex: 0;
+    flex: 0 0 5rem;
+    max-width: 5rem;
+  }
+
+  @include e(right) {
+    text-align: center;
+    -webkit-box-flex: 0;
+    flex: 0 0 5rem;
+    max-width: 5rem;
+  }
+
+  @include e(body) {
+    -webkit-box-flex: 0;
+    flex: 4 0 0;
+
+    > h3 {
+      font-weight: 300;
+      font-size: getCssVar('media-item', 'heading-font-size');
+      line-height: getCssVar('media-item', 'heading-line-height');
+      margin: getCssVar('media-item', 'heading-margin');
+    }
+  }
+}
+

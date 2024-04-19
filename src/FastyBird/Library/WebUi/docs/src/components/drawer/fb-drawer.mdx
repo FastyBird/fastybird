@@ -1,0 +1,119 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as DrawerStories from './fb-drawer.stories';
+
+<Meta of={DrawerStories} />
+
+# Drawer
+
+In some cases, Modal might not fully meet our needs, such as when dealing with large forms or displaying content like terms and conditions. The Drawer
+component has a similar API to Modal but offers a different user experience.
+
+## Basic Usage
+
+Introducing a temporary drawer that can be called from multiple directions.
+
+To control the visibility of the Drawer, you must set the `model-value` property, similar to how it's done with Modal. This property accepts a boolean value.
+The Drawer consists of three parts: `title`, `body`, and `footer`. The title can be defined using a named slot or the `title` attribute, which defaults
+to an empty string. The body contains the main content of the Drawer.
+
+By default, the Drawer expands from the right corner to the left, occupying 30% of the browser window. You can customize this behavior by adjusting
+the `direction` and `size` attributes. Additionally, this example demonstrates how to use the `before-close` API. For more details, refer to the Attribute section.
+
+<Canvas of={DrawerStories.BasicUsage} />
+
+## No Title
+
+If you want to remove the title from the drawer, you can set the `show-header` property to `false`. This will create more space on the screen for
+the content of the drawer. However, if you want to ensure accessibility, it's recommended to set the `title` attribute.
+
+<Canvas of={DrawerStories.NoTitle} />
+
+## Customized Content
+
+Similar to Modal, Drawer can be utilized to showcase a wide range of interactions.
+
+<Canvas of={DrawerStories.CustomizedContent} />
+
+## Customized Header
+
+You can utilize the `header` slot to personalize the section where the title is shown. For accessibility purposes, it's recommended to use the `title`
+attribute along with this slot. Alternatively, you can specify the element to be read as the drawer title using the `titleId` slot property.
+
+<Canvas of={DrawerStories.CustomizedHeader} />
+
+## Nested Drawer
+
+You can also create multiple layers of Drawers, similar to Modals.
+
+To have multiple Drawers in different layers, ensure to set the `append-to-body` property to `true`.
+
+<Canvas of={DrawerStories.NestedDrawer} />
+
+## With Description
+
+The Drawer header can be enhanced with additional descriptions, which is useful for more complex scenarios requiring extra information.
+
+<Canvas of={DrawerStories.WithDescription} />
+
+***
+
+## Drawer API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                       | Description                                                                                                                                                                                                                                                                                                  | Type                                              | Default |
+	| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- | ------- |
+	| model-value / v-model      | Should Drawer be displayed                                                                                                                                                                                                                                                                                   | `boolean`                                         | false   |
+	| append-to-body             | Controls should Drawer be inserted to DocumentBody Element, nested Drawer must assign this param to **true**                                                                                                                                                                                                 | `boolean`                                         | false   |
+	| lock-scroll                | whether scroll of body is disabled while Drawer is displayed                                                                                                                                                                                                                                                 | `boolean`                                         | true    |
+	| before-close               | If set, closing procedure will be halted                                                                                                                                                                                                                                                                     | `(done: (cancel?: boolean) => void) => void`      | —       |
+	| close-on-click-backdrop    | whether the Drawer can be closed by clicking the mask                                                                                                                                                                                                                                                        | `boolean`                                         | true    |
+	| close-on-press-escape      | Indicates whether Drawer can be closed by pressing ESC                                                                                                                                                                                                                                                       | `boolean`                                         | true    |
+	| open-delay                 | Time(milliseconds) before open                                                                                                                                                                                                                                                                               | `number`                                          | 0       |
+	| close-delay                | Time(milliseconds) before close                                                                                                                                                                                                                                                                              | `number`                                          | 0       |
+	| destroy-on-close           | Indicates whether children should be destroyed after Drawer closed                                                                                                                                                                                                                                           | `boolean`                                         | false   |
+	| backdrop                   | Should show shadowing layer                                                                                                                                                                                                                                                                                  | `boolean`                                         | true    |
+	| custom-class               | custom class names for backdrop                                                                                                                                                                                                                                                                              | `string`                                          | —       |
+	| direction                  | Drawer's opening direction                                                                                                                                                                                                                                                                                   | `rtl` \| `ltr` \| `ttb` \| `btt` \| `rtl`         | `rtl`   |
+	| show-close                 | Should show close button at the top right of Drawer                                                                                                                                                                                                                                                          | `boolean`                                         | true    |
+	| size                       | Drawer's size, if Drawer is horizontal mode, it effects the width property, otherwise it effects the height property, when size is `number` type, it describes the size by unit of pixels; when size is `string` type, it should be used with `x%` notation, other wise it will be interpreted to pixel unit | `number` \| `string`                              | 30%     |
+	| title                      | Drawer's title, can also be set by named slot, detailed descriptions can be found in the slot form                                                                                                                                                                                                           | `string`                                          | —       |
+	| show-header                | Flag that controls the header section's existence, default to true, when withHeader set to false, both `title attribute` and `title slot` won't work                                                                                                                                                         | `boolean`                                         | true    |
+	| backdrop-class             | Extra class names for shadowing layer                                                                                                                                                                                                                                                                        | `string`                                          | —       |
+	| z-index                    | set z-index                                                                                                                                                                                                                                                                                                  | `number`                                          | —       |
+	| header-aria-level `a11y`   | header's `aria-level` attribute                                                                                                                                                                                                                                                                              | `string`                                          | 2       |
+
+	### Events
+
+	| Name             | Description                                      | Type         |
+	| ---------------- | ------------------------------------------------ | ------------ |
+	| open             | Triggered before Drawer opening animation begins | `() => void` |
+	| opened           | Triggered after Drawer opening animation ended   | `() => void` |
+	| close            | Triggered before Drawer closing animation begins | `() => void` |
+	| closed           | Triggered after Drawer closing animation ended   | `() => void` |
+	| open-auto-focus  | triggers after Drawer opens and content focused  | `() => void` |
+	| close-auto-focus | triggers after Drawer closed and content focused | `() => void` |
+
+	### Slots
+
+	| Name                | Description                                                                                    |
+	| ------------------- | ---------------------------------------------------------------------------------------------- |
+	| —                   | content of drawer                                                                              |
+	| header              | content of the drawer header for replacing whole drawer header content with custom one         |
+	| footer              | content of the drawer footer for replacing whole drawer footer content with custom one         |
+	| content             | content of the drawer footer for replacing whole drawer content with custom one                |
+	| title               | title of the drawer                                                                            |
+	| subtitle            | subtitle of the drawer                                                                         |
+	| icon                | drawer header icon                                                                             |
+	| left-button         | slot for using custom left button used as `Close` action                                       |
+	| right-button        | slot for using custom right button used as `Ok` action                                         |
+
+	### Exposes
+
+	| Name        | Description                                                     |
+	| ----------- | --------------------------------------------------------------- |
+	| handleClose | In order to close Drawer, this method will call `before-close`. |
+
+</div>

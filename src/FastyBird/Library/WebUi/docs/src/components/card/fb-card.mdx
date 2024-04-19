@@ -1,0 +1,103 @@
+import { Canvas, Meta, Controls, Story } from '@storybook/blocks';
+import * as CardStories from './fb-card.stories';
+
+<Meta of={CardStories} />
+
+# Card
+
+Integrate information in a card container.
+
+<Canvas of={CardStories.Component} />
+
+## Playground
+
+<Controls of={CardStories.Component} />
+
+## Basic Usage
+
+Card includes title, content and operations.
+
+Card is made up of `header`, `body` and `footer`. `header` and `footer` are optional, and its content distribution depends on a named slot.
+
+<Canvas of={CardStories.BasicUsage} />
+
+## Simple Card
+
+The header and footer part can be omitted.
+
+<Canvas of={CardStories.Simple} />
+
+## No Border
+
+A borderless card on a gray background.
+
+<div style={{ background: '#f0f2f5' }}>
+	<Canvas of={CardStories.NoBorder} />
+</div>
+
+## Shadow
+
+You can define when to show the card shadows
+
+The `shadow` property determines when the card shadows are displayed. It can be `always`, `hover` or `never`.
+
+<Canvas of={CardStories.Shadow} />
+
+## Theme
+
+Alert provide two different themes, `light` and `dark`.
+
+Set `effect` to change theme, default is `light`.
+
+<Canvas of={CardStories.Variants} />
+
+<Canvas of={CardStories.VariantsDark} />
+
+Variant can be also set to each part of the card `header`, `footer` and `body`
+
+<Canvas of={CardStories.VariantsParts} />
+
+## Support more content configuration
+
+A Card that supports `cover` slot and also footer could be updated to display user actions
+
+<Canvas of={CardStories.MoreContent} />
+
+***
+
+## Card API
+
+<div style={{ marginTop: '30px' }}>
+	### Attributes
+
+	| Name           | Description                                                            | Type                                                                    | Default  |
+	| -------------- | ---------------------------------------------------------------------- |-------------------------------------------------------------------------| -------- |
+	| header         | title of the card. Also accepts a DOM passed by `slot#header`          | `string`                                                                | —        |
+	| footer         | footer of the card. Also accepts a DOM passed by `slot#footer`         | `string`                                                                | —        |
+	| extra          | extra of the card header. Also accepts a DOM passed by `slot#extra`    | `string`                                                                | —        |
+	| cover          | cover of the card. Also accepts a DOM passed by `slot#cover`           | `string`                                                                | —        |
+	| variant        | card variant                                                           | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`  | —        |
+	| effect         | card theme style                                                       | `light` \| `dark`                                                       | `light`  |
+	| header-variant | card header variant                                                    | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`  | —        |
+	| body-variant   | card body variant                                                      | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`  | —        |
+	| footer-variant | card footer variant                                                    | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`  | —        |
+	| header-style   | CSS style of card header                                               | `CSSProperties`                                                         | —        |
+	| header-class   | custom class name of card header                                       | `string`                                                                | —        |
+	| body-style     | CSS style of card body                                                 | `CSSProperties`                                                         | —        |
+	| body-class     | custom class name of card body                                         | `string`                                                                | —        |
+	| footer-style   | CSS style of card footer                                               | `CSSProperties`                                                         | —        |
+	| footer-class   | custom class name of card footer                                       | `string`                                                                | —        |
+	| shadow         | when to show card shadows                                              | `always` \| `never` \| `hover`                                          | `always` |
+	| bordered       | when to show card border                                               | `boolean`                                                               | true     |
+	| loading        | when to show card loading animation                                    | `boolean`                                                               | false    |
+
+	### Slots
+
+	| Name    | Description                                  |
+	| ------- | -------------------------------------------- |
+	| default | customize default content                    |
+	| header  | content of the card header                   |
+	| footer  | content of the card footer                   |
+	| extra   | content of the extra part of the card header |
+	| cover   | content of the card cover used for images    |
+</div>

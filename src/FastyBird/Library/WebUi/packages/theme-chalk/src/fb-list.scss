@@ -1,0 +1,122 @@
+@use 'common/var' as *;
+@use 'mixins/mixins' as *;
+@use 'mixins/var' as *;
+
+@include b(list) {
+  @include set-component-css-var('list', $list);
+}
+
+@include b(list) {
+  margin: getCssVar('list', 'list-margin');
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+
+  @include e(header) {
+    height: getCssVar('list', 'header-size');
+    border-bottom: getCssVar('list', 'header-border');
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  @include e(title) {
+    padding: 0;
+    margin: 0;
+    line-height: getCssVar('list', 'header-line-height');
+    font-size: getCssVar('list', 'header-font-size');
+    height: auto;
+    flex-grow: 1;
+
+    @media (getCssVar('breakpoints', 'sm')) {
+      -webkit-box-flex: 0;
+      flex: 4 0 0;
+    }
+
+    small {
+      font-weight: normal;
+      line-height: 1;
+      color: getCssVar('list', 'header-subtitle-color');
+      font-size: 65%;
+      margin-left: 0.5rem;
+    }
+  }
+
+  @include e(buttons) {
+    align-items: center;
+    justify-content: flex-end;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+}
+
+@include b(list-item) {
+  height: getCssVar('list', 'item-height');
+  align-items: center;
+  padding: 0 1.5rem;
+  background-color: getCssVar('list', 'item-background');
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  @include m(variant-default) {
+    margin: 0.8rem 0 0 0;
+    border: getCssVar('list', 'item-border');
+    border-radius: getCssVar('border-radius', 'small');
+  }
+
+  @include m(variant-list) {
+    border-bottom: getCssVar('list', 'item-border');
+  }
+
+  &[role='button'] {
+    cursor: pointer;
+  }
+
+  @include e(icon) {
+    font-size: 2rem;
+    line-height: 2rem;
+    -webkit-box-flex: 0;
+    flex: 0 0 3rem;
+    max-width: 3rem;
+  }
+
+  @include e(title) {
+    overflow: hidden;
+    -webkit-box-flex: 0;
+    flex: 4 0 0;
+    margin: 0;
+    line-height: getCssVar('font-size', 'medium');
+    font-size: getCssVar('font-size', 'medium');
+    font-weight: 400;
+
+    > small {
+      font-size: 75%;
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      width: 95%;
+      white-space: nowrap;
+    }
+  }
+
+  @include e(content) {
+    font-size: 1.75rem;
+    color: getCssVar('text-color', 'secondary');
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+
+  @include e(button) {
+    text-align: right;
+    color: getCssVar('text-color', 'secondary');
+    -webkit-box-flex: 0;
+    flex: 0 0 4rem;
+    max-width: 4rem;
+  }
+}

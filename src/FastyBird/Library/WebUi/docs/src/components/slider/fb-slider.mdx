@@ -1,0 +1,106 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as SliderStories from './fb-slider.stories';
+
+<Meta of={SliderStories} />
+
+# Slider
+
+You can drag the slider within a fixed range.
+
+## Basic Usage
+
+The current value is displayed while dragging the slider. You can customize the initial value of the slider by setting the binding value.
+
+<Canvas withToolbar={true} of={SliderStories.BasicUsage} />
+
+## Discrete Values
+
+The options can be discrete.
+
+Define the step size using the `step` property. You can choose to display breakpoints by setting the `show-stops` property.
+
+<Canvas withToolbar={true} of={SliderStories.Discrete} />
+
+## With Input Box
+
+Set value via an input box.
+
+Enable the input box by setting the `show-input` property to display it on the right side.
+
+<Canvas withToolbar={true} of={SliderStories.WithInput} />
+
+## Sizes
+
+<Canvas withToolbar={true} of={SliderStories.Sizes} />
+
+## Variants
+
+<Canvas withToolbar={true} of={SliderStories.Variants} />
+
+## Placement
+
+You can customize the tooltip placement.
+
+<Canvas withToolbar={true} of={SliderStories.Placement} />
+
+## Range Selection
+
+Support for selecting a range of values is available. When you set the `range` property, it activates range mode. In this mode, the binding value
+becomes an array consisting of two boundary values.
+
+<Canvas withToolbar={true} of={SliderStories.RangeSelection} />
+
+## Vertical Mode
+
+When you set the `vertical` property to `true`, it enables vertical mode. In this mode, you need to specify the `height` property.
+
+<Canvas withToolbar={true} of={SliderStories.Vertical} />
+
+## Show Marks
+
+By setting the `marks` property, you can display marks on the slider.
+
+<Canvas withToolbar={true} of={SliderStories.Marks} />
+
+***
+
+## Slider API
+
+<div style={{ marginTop: '30px' }}>
+
+	### Attributes
+
+	| Name                  | Description                                                                                              | Type                                                                                                                                                                        | Default |
+	| --------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+	| model-value / v-model | binding value                                                                                            | `number` / `number[]`                                                                                                                                                       | 0       |
+	| min                   | minimum value                                                                                            | `number`                                                                                                                                                                    | 0       |
+	| max                   | maximum value                                                                                            | `number`                                                                                                                                                                    | 100     |
+	| disabled              | whether Slider is disabled                                                                               | `boolean`                                                                                                                                                                   | false   |
+	| step                  | step size                                                                                                | `number`                                                                                                                                                                    | 1       |
+	| show-input            | whether to display an input box, works when `range` is false                                             | `boolean`                                                                                                                                                                   | false   |
+	| show-input-controls   | whether to display control buttons when `show-input` is true                                             | `boolean`                                                                                                                                                                   | true    |
+	| size                  | size of the slider wrapper, will not work in vertical mode                                               | `large` \| `default` \| `small`                                                                                                                                             | default |
+	| input-size            | size of the input box, when set `size`, the default is the value of `size`                               | `large` \| `default` \| `small`                                                                                                                                             | default |
+	| show-stops            | whether to display breakpoints                                                                           | `boolean`                                                                                                                                                                   | false   |
+	| show-tooltip          | whether to display tooltip value                                                                         | `boolean`                                                                                                                                                                   | true    |
+	| format-tooltip        | format to display tooltip value                                                                          | `(value: number) => number \| string`                                                                                                                                       | —       |
+	| range                 | whether to select a range                                                                                | `boolean`                                                                                                                                                                   | false   |
+	| vertical              | vertical mode                                                                                            | `boolean`                                                                                                                                                                   | false   |
+	| height                | slider height, required in vertical mode                                                                 | `string`                                                                                                                                                                    | —       |
+	| label                 | label for screen reader                                                                                  | `string`                                                                                                                                                                    | —       |
+	| range-start-label     | when `range` is true, screen reader label for the start of the range                                     | `string`                                                                                                                                                                    | —       |
+	| range-end-label       | when `range` is true, screen reader label for the end of the range                                       | `string`                                                                                                                                                                    | —       |
+	| format-value-text     | format to display the `aria-valuenow` attribute for screen readers                                       | ^[Function]`(value: number) => string`                                                                                                                                      | —       |
+	| debounce              | debounce delay when typing, in milliseconds, works when `show-input` is true                             | `number`                                                                                                                                                                    | 300     |
+	| tooltip-class         | custom class name for the tooltip                                                                        | `string`                                                                                                                                                                    | —       |
+	| placement             | position of Tooltip                                                                                      | `top` \| `top-start` \| `top-end` \| `bottom` \| `bottom-start` \| `bottom-end` \| `left` \| `left-start` \| `left-end` \| `right` \| `right-start` \| `right-end`          | top     |
+	| marks                 | marks, type of key must be `number` and must in closed interval `[min, max]`, each mark can custom style | `SliderMarks`                                                                                                                                                               | —       |
+	| validate-event        | whether to trigger form validation                                                                       | `boolean`                                                                                                                                                                   | true    |
+
+	### Events
+
+	| Name   | Description                                                                                                       | Type                                    |
+	| ------ | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+	| change | triggers when the value changes (if the mouse is being dragged, this event only fires when the mouse is released) | `(value: Arrayable<number>) => boolean` |
+	| input  | triggers when the data changes (It'll be emitted in real time during sliding)                                     | `(value: Arrayable<number>) => boolean` |
+</div>

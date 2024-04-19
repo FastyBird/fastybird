@@ -1,0 +1,20 @@
+{
+  "name": "@fastybird/web-ui-constants",
+  "private": true,
+  "version": "1.0.0-dev.20",
+  "description": "FastyBird IoT application components constants",
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird#issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "./src/index.ts",
+  "sideEffects": false
+}

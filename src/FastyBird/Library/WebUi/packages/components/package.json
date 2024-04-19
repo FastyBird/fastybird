@@ -1,0 +1,41 @@
+{
+  "name": "@fastybird/web-ui-components",
+  "version": "1.0.0-dev.20",
+  "description": "FastyBird IoT application components",
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird#issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "./src/entry.ts",
+  "module": "./src/entry.ts",
+  "unpkg": "./src/entry.js",
+  "jsdelivr": "./src/entry.js",
+  "types": "./src/entry.d.ts",
+  "sideEffects": false,
+  "dependencies": {
+    "@ctrl/tinycolor": "^4.0",
+    "@fastybird/web-ui-constants": "1.0.0-dev.20",
+    "@fastybird/web-ui-hooks": "1.0.0-dev.20",
+    "@fastybird/web-ui-icons": "1.0.0-dev.20",
+    "@fastybird/web-ui-locale": "1.0.0-dev.20",
+    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.20",
+    "@fastybird/web-ui-utils": "1.0.0-dev.20",
+    "@popperjs/core": "^2.11",
+    "@vueuse/core": "^10.9",
+    "@vue/shared": "^3.4",
+    "async-validator": "^4.2",
+    "csstype": "^3.1",
+    "lodash-unified": "^1.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.4"
+  }
+}

@@ -1,0 +1,130 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as TooltipStories from './fb-tooltip.stories';
+
+<Meta of={TooltipStories} />
+
+# Tooltip
+
+Show informative tooltips upon mouse hover.
+
+## Basic Usage
+
+The tooltip offers 9 placement options.
+
+Set the `content` property to specify the content displayed upon hover. The `placement` property determines the tooltip's position, using a combination
+of `[orientation]-[alignment]`. The orientations include `top`, `left`, `right`, and `bottom`, while alignments consist of `start`, `end`, and `null`,
+with the default alignment being `null`. For instance, with `placement="left-end"`, the tooltip appears to the left of the hovered element, with its
+bottom aligned with the bottom of the element.
+
+<Canvas of={TooltipStories.BasicUsage} />
+
+## Theme
+
+The tooltip offers two predefined themes: `dark` and `light`.
+
+To change the theme, use the `effect` property. The default theme is `dark`.
+
+<Canvas of={TooltipStories.Theme} />
+
+## More Content
+
+To display multiple lines of text and customize their format:
+
+Instead of using the `content` property of `fb-tooltip`, provide the content using a slot named `content`.
+
+<Canvas of={TooltipStories.MoreContent} />
+
+## Advanced usage
+
+Apart from basic usage, you can customize tooltips with additional propertys:
+
+- Use the `transition` property to customize the show/hide animation. The default value is `fb-fade-in-linear`.
+- Disable tooltips by setting the `disabled` property to `true`.
+
+Tooltip is built on top of **FbPopper**, so you can utilize any property supported by **FbPopper** for further customization.
+
+<Canvas of={TooltipStories.Advanced} />
+
+## HTML as content
+
+You can set the `content` property to an HTML string.
+
+<Canvas of={TooltipStories.HtmlContent} />
+
+## Virtual triggering
+
+At times, we may need to display the tooltip on a different element than the trigger. In such cases, we can separate the trigger from the content.
+
+<Canvas of={TooltipStories.VirtualTrigger} />
+
+## Singleton
+
+Tooltip can also function as a singleton, allowing multiple triggers to share a single tooltip instance. This feature is implemented using `virtual triggering`.
+
+<Canvas of={TooltipStories.Singleton} />
+
+## Controlled
+
+Tooltip visibility can be controlled by the parent component using the `visible` property, enabling two-way binding.
+
+<Canvas of={TooltipStories.Controlled} />
+
+## Animations
+
+You can customize the animation of the tooltip by setting the desired animation function according to your preferences.
+
+<Canvas of={TooltipStories.Animations} />
+
+***
+
+## Tooltip API
+
+<div style={{ marginTop: '30px' }}>
+	### Attributes
+
+	| Name                      | Description                                                                                                                                             | Type                                                                                                                                                                       | Default             |
+	| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+	| append-to                 | which element the tooltip CONTENT appends to                                                                                                            | `CSSSelector` / `HTMLElement`                                                                                                                                              | —                   |
+	| effect                    | Tooltip theme, built-in theme: `dark` / `light`                                                                                                         | `dark` \| `light`                                                                                                                                                          | `dark`              |
+	| content                   | display content, can be overridden by `slot#content`                                                                                                    | `string`                                                                                                                                                                   | —                   |
+	| raw-content               | whether `content` is treated as HTML string                                                                                                             | `boolean`                                                                                                                                                                  | false               |
+	| placement                 | position of Tooltip                                                                                                                                     | `top` \| `top-start` \| `top-end` \| `bottom` \| `bottom-start` \| `bottom-end` \| `left` \| `left-start` \| `left-end` \| `right` \| `right-start` \| `right-end`         | `bottom`            |
+	| fallback-placements       | list of possible positions for Tooltip [popper.js](https://popper.js.org/docs/v2/modifiers/flip/#fallbackplacements)                                    | ^[arrary]`Placement[]`                                                                                                                                                     | —                   |
+	| visible / v-model:visible | visibility of Tooltip                                                                                                                                   | `boolean`                                                                                                                                                                  | —                   |
+	| disabled                  | whether Tooltip is disabled                                                                                                                             | `boolean`                                                                                                                                                                  | —                   |
+	| offset                    | offset of the Tooltip                                                                                                                                   | `number`                                                                                                                                                                   | 12                  |
+	| transition                | animation name                                                                                                                                          | `string`                                                                                                                                                                   | —                   |
+	| popper-options            | [popper.js](https://popper.js.org/docs/v2/) parameters                                                                                                  | `object` refer to [popper.js](https://popper.js.org/docs/v2/) doc                                                                                                          | {}                  |
+	| show-after                | delay of appearance, in millisecond                                                                                                                     | `number`                                                                                                                                                                   | 0                   |
+	| show-arrow                | whether the tooltip content has an arrow                                                                                                                | `boolean`                                                                                                                                                                  | true                |
+	| hide-after                | delay of disappear, in millisecond                                                                                                                      | `number`                                                                                                                                                                   | 200                 |
+	| auto-close                | timeout in milliseconds to hide tooltip                                                                                                                 | `number`                                                                                                                                                                   | 0                   |
+	| popper-class              | custom class name for Tooltip's popper                                                                                                                  | `string`                                                                                                                                                                   | —                   |
+	| enterable                 | whether the mouse can enter the tooltip                                                                                                                 | `boolean`                                                                                                                                                                  | true                |
+	| teleported                | whether tooltip content is teleported, if `true` it will be teleported to where `append-to` sets                                                        | `boolean`                                                                                                                                                                  | true                |
+	| trigger                   | How should the tooltip be triggered (to show)                                                                                                           | `hover` \| `click` \| `focus` \| `contextmenu`                                                                                                                             | `hover`             |
+	| virtual-triggering        | Indicates whether virtual triggering is enabled                                                                                                         | `boolean`                                                                                                                                                                  | —                   |
+	| virtual-ref               | Indicates the reference element to which the tooltip is attached                                                                                        | `HTMLElement`                                                                                                                                                              | —                   |
+	| trigger-keys              | When you click the mouse to focus on the trigger element, you can define a set of keyboard codes to control the display of tooltip through the keyboard | `array`                                                                                                                                                                    | `['Enter','Space']` |
+	| persistent                | when tooltip inactive and `persistent` is `false` , popconfirm will be destroyed                                                                        | `boolean`                                                                                                                                                                  | —                   |
+	| aria-label `a11y`         | same as `aria-label`                                                                                                                                    | `string`                                                                                                                                                                   | —                   |
+
+	### Slots
+
+	| Name    | Description                            |
+	| ------- | -------------------------------------- |
+	| default | Tooltip triggering & reference element |
+	| content | customize content                      |
+
+	### Exposes
+
+	| Name                 | Description                                                       | Type                                   |
+	| -------------------- | ----------------------------------------------------------------- | -------------------------------------- |
+	| popperRef            | fb-popper component instance                                      | `Ref<PopperInstance \| null>`          |
+	| contentRef           | fb-tooltip-content component instance                             | `Ref<TooltipContentInstance \| null>`  |
+	| isFocusInsideContent | validate current focus event is trigger inside fb-tooltip-content | `() => boolean \| undefined`           |
+	| updatePopper         | update fb-popper component instance                               | `() => void`                           |
+	| onOpen               | expose onOpen function to mange fb-tooltip open state             | `(event?: Event \| undefined) => void` |
+	| onClose              | expose onClose function to mange fb-tooltip open state            | `(event?: Event \| undefined) => void` |
+	| hide                 | expose hide function                                              | `(event?: Event \| undefined) => void` |
+</div>

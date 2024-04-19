@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext"],
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "internal/**/*",
+    "internal/**/*.json",
+    "scripts/**/*",
+    "packages/theme-chalk/*",
+    "packages/web-ui-library/version.ts",
+    "packages/web-ui-library/package.json"
+  ],
+  "exclude": ["**/__tests__/**", "**/tests/**", "**/dist"]
+}
