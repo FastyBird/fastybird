@@ -3,7 +3,7 @@ import { withInstall } from '@fastybird/web-ui-utils';
 import AppBar from './src/app-bar.vue';
 import AppBarButton from './src/button.vue';
 import AppBarContent from './src/content.vue';
-import AppBarHeading from './src/heding.vue';
+import AppBarHeading from './src/heading.vue';
 import AppBarIcon from './src/icon.vue';
 
 export const FbAppBar = withInstall(AppBar);

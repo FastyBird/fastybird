@@ -1,50 +1,9 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "declaration": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "baseUrl": "src",
-    "types": [
-      "@vueuse/core",
-      "@types/body-scroll-lock",
-      "@types/lodash.get",
-      "@types/lodash.isempty",
-      "node",
-      "vue",
-      "vite/client"
-    ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts",
-    "src/**/*.vue"
-  ],
-  "exclude": [
-    "src/**/*.stories.ts",
-    "src/**/stories.ts",
-    "src/**/*.spec.ts",
-    "node_modules",
-    "dist"
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.web.json" },
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.vite-config.json" },
+    { "path": "./tsconfig.vitest.json" }
   ]
 }

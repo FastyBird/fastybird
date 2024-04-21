@@ -7,17 +7,30 @@
   "plugins": [
     "vue",
     "@typescript-eslint",
-    "prettier"
+    "prettier",
+    "unicorn"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "plugin:eslint-comments/recommended",
     "plugin:vue/vue3-essential",
     "plugin:vue/vue3-strongly-recommended",
     "plugin:vue/vue3-recommended",
+    "plugin:json/recommended",
+    "plugin:jsonc/recommended-with-jsonc",
+    "plugin:markdown/recommended",
     "prettier"
   ],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".mjs", ".ts", ".d.ts", ".tsx"]
+      }
+    }
+  },
   "rules": {
     "lines-between-class-members": [
       "error",
