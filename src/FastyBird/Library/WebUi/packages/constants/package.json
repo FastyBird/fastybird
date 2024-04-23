@@ -16,5 +16,17 @@
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
   "main": "./src/index.ts",
-  "sideEffects": false
+  "scripts": {
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier src --check",
+    "pretty:write": "prettier src --write"
+  },
+  "devDependencies": {
+    "@types/node": "*",
+    "eslint": "^8.57",
+    "prettier": "^3.2",
+    "typescript": "^5.3"
+  }
 }
