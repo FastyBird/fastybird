@@ -29,8 +29,6 @@
   "scripts": {
     "serve": "vite preview",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn clean && vite build",
-    "build:only": "yarn clean && vite build",
     "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
     "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
     "lint:styles": "stylelint 'src/**/*.scss'",

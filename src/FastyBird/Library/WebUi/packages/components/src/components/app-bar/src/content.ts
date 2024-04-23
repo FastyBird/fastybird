@@ -8,7 +8,7 @@ export const appBarContentProps = buildProps({
 	 */
 	teleport: {
 		type: definePropType<boolean>(Boolean),
-		default: true,
+		default: false,
 	},
 });
 

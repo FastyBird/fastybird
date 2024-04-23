@@ -1,1 +1,0 @@
-export { useEventElementPath } from './useEventElementPath';

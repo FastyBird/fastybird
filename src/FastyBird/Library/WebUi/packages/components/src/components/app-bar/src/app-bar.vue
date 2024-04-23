@@ -1,17 +1,17 @@
 <template>
-	<div class="fb-theme-layout-header__container">
+	<div :class="[ns.b()]">
 		<div
-			id="fb-layout-header-button-small"
+			id="fb-app-bar-button-small"
 			ref="buttonSmall"
-			:class="['fb-theme-layout-header__buttons-small', { 'fb-theme-layout-header__buttons-small-expanded': hasSmallButtons }]"
+			:class="[ns.e('buttons-small'), ns.is('expanded', hasSmallButtons)]"
 		>
 			<slot name="button-small" />
 		</div>
 
-		<div class="fb-theme-layout-header__heading">
+		<div :class="[ns.e('header')]">
 			<div
-				id="fb-layout-header-heading"
-				class="fb-theme-layout-header__heading-heading"
+				id="fb-app-bar-header"
+				:class="[ns.e('heading')]"
 			>
 				<slot name="heading">
 					<slot name="logo" />
@@ -19,44 +19,48 @@
 			</div>
 
 			<div
-				id="fb-layout-header-button-left"
-				class="fb-theme-layout-header__heading-button-left"
+				id="fb-app-bar-button-left"
+				:class="[ns.e('button-left')]"
 			>
 				<slot name="button-left" />
 			</div>
 
 			<div
-				id="fb-layout-header-button-right"
-				class="fb-theme-layout-header__heading-button-right"
+				id="fb-app-bar-button-right"
+				:class="[ns.e('button-right')]"
 			>
 				<slot name="button-right">
-					<button
+					<fb-button
 						v-if="!props.menuButtonHidden"
-						:class="['fb-theme-layout-header__button-hamburger', { 'fb-theme-layout-header__button-hamburger-opened': !props.menuCollapsed }]"
-						type="button"
+						:size="ComponentSizeTypes.LARGE"
+						:icon="props.menuCollapsed ? FasBars : FasXmark"
+						:variant="VariantTypes.PRIMARY"
+						circle
 						@click.prevent="emit('toggleMenu', $event)"
-					>
-						<span class="fb-theme-layout-header__button-hamburger-bars" />
-						<span class="fb-theme-layout-header__button-hamburger-bars" />
-						<span class="fb-theme-layout-header__button-hamburger-bars" />
-						<span class="fb-theme-layout-header__button-hamburger-label">Toggle navigation</span>
-					</button>
+					/>
 				</slot>
 			</div>
 		</div>
 
 		<div
-			id="fb-layout-header-sub-content"
+			id="fb-app-bar-content"
 			ref="subContent"
-			:class="['fb-theme-layout-header__content', { 'fb-theme-layout-header__content-expanded': hasSubContent }]"
+			:class="[ns.e('content'), ns.is('expanded', hasSubContent)]"
 		>
-			<slot name="sub-content" />
+			<slot name="content" />
 		</div>
 	</div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref } from 'vue';
+
+import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
+import { useNamespace } from '@fastybird/web-ui-hooks';
+import { FasBars, FasXmark } from '@fastybird/web-ui-icons';
+
+import { FbButton } from '../../button';
+
 import { appBarEmits, appBarProps } from './app-bar';
 
 defineOptions({
@@ -65,6 +69,8 @@ defineOptions({
 
 const props = defineProps(appBarProps);
 const emit = defineEmits(appBarEmits);
+
+const ns = useNamespace('app-bar');
 
 const newMutationObserver = (callback: () => void): MutationObserver | null => {
 	// Skip this feature for browsers which
@@ -87,12 +93,12 @@ let mutationObserver: MutationObserver | null = null;
 
 const mutationObserverCallback = (): void => {
 	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
-	hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0;
+	hasSubContent.value = subContent.value !== null && (subContent.value?.childElementCount > 0 || subContent.value.textContent !== null);
 };
 
 onMounted((): void => {
 	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
-	hasSubContent.value = subContent.value !== null && subContent.value?.children.length > 0;
+	hasSubContent.value = subContent.value !== null && (subContent.value?.childElementCount > 0 || subContent.value.textContent !== null);
 
 	mutationObserver = newMutationObserver(mutationObserverCallback);
 

@@ -22,7 +22,7 @@ export const appBarIconProps = buildProps({
 	 */
 	teleport: {
 		type: definePropType<boolean>(Boolean),
-		default: true,
+		default: false,
 	},
 });
 

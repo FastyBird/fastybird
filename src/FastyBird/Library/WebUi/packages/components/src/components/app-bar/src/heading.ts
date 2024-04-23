@@ -16,20 +16,6 @@ export const appBarHeadingProps = buildProps({
 	/**
 	 * @description
 	 */
-	heading: {
-		type: definePropType<string>(String),
-		required: true,
-	},
-	/**
-	 * @description
-	 */
-	subHeading: {
-		type: definePropType<string | undefined>(String),
-		default: undefined,
-	},
-	/**
-	 * @description
-	 */
 	align: {
 		type: definePropType<AppBarHeadingAlign>(String),
 		values: appBarHeadingAlignTypes,
@@ -40,7 +26,7 @@ export const appBarHeadingProps = buildProps({
 	 */
 	teleport: {
 		type: definePropType<boolean>(Boolean),
-		default: true,
+		default: false,
 	},
 });
 

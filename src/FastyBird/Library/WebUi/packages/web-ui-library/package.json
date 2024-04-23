@@ -1,0 +1,50 @@
+{
+  "name": "@fastybird/web-ui-library",
+  "version": "1.0.0-dev.20",
+  "description": "FastyBird IoT application UI components & utilities",
+  "homepage": "https://www.fastybird.com",
+  "bugs": "https://github.com/FastyBird/fastybird#issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "dist/web-ui-library.umd.js",
+  "module": "dist/web-ui-library.es.js",
+  "types": "dist/web-ui-library.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/web-ui-library.es.js",
+      "require": "./dist/web-ui-library.umd.js"
+    }
+  },
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
+    "build:dev": "vue-tsc --noEmit --composite false && vite build --watch --mode development",
+    "build:only": "yarn clean && vite build",
+    "types": "vue-tsc --noEmit --composite false",
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier assets --check",
+    "pretty:write": "prettier assets --write"
+  },
+  "dependencies": {
+    "@fastybird/web-ui-components": "1.0.0-dev.20",
+    "@fastybird/web-ui-constants": "1.0.0-dev.20",
+    "@fastybird/web-ui-hooks": "1.0.0-dev.20",
+    "@fastybird/web-ui-utils": "1.0.0-dev.20"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

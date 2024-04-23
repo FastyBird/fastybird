@@ -1,20 +1,18 @@
 <template>
 	<template v-if="props.teleport">
-		<teleport to="#fb-layout-header-sub-content">
-			<div class="fb-theme-layout-phone-header-content__container">
-				<slot />
-			</div>
+		<teleport :to="`#${teleportTarget}`">
+			<slot />
 		</teleport>
 	</template>
 
 	<template v-else>
-		<div class="fb-theme-layout-phone-header-content__container">
-			<slot />
-		</div>
+		<slot />
 	</template>
 </template>
 
 <script lang="ts" setup>
+import { useNamespace } from '@fastybird/web-ui-hooks';
+
 import { appBarContentProps } from './content';
 
 defineOptions({
@@ -22,4 +20,8 @@ defineOptions({
 });
 
 const props = defineProps(appBarContentProps);
+
+const ns = useNamespace('app-bar-content');
+
+const teleportTarget = 'fb-app-bar-content';
 </script>
