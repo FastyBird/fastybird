@@ -3,8 +3,11 @@ const FOCUSABLE_ELEMENT_SELECTORS = `a[href],button:not([disabled]),button:not([
 /**
  * Determine if the testing element is visible on screen no matter if its on the viewport or not
  */
-export const isVisible = (element: HTMLElement) => {
-	if (process.env.NODE_ENV === 'test') return true;
+export const isVisible = (element: HTMLElement): boolean => {
+	if (process.env.NODE_ENV === 'test') {
+		return true;
+	}
+
 	const computed = getComputedStyle(element);
 	// element.offsetParent won't work on fix positioned
 	// WARNING: potential issue here, going to need some expert advices on this issue
@@ -26,6 +29,7 @@ export const isFocusable = (element: HTMLElement): boolean => {
 	if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
 		return true;
 	}
+
 	// HTMLButtonElement has disabled
 	if ((element as HTMLButtonElement).disabled) {
 		return false;
@@ -61,8 +65,10 @@ export const attemptFocus = (element: HTMLElement): boolean => {
 	if (!isFocusable(element)) {
 		return false;
 	}
+
 	// Remove the old try catch block since there will be no error to be thrown
 	element.focus?.();
+
 	return document.activeElement === element;
 };
 
@@ -83,25 +89,36 @@ export const triggerEvent = function (elm: HTMLElement, name: string, ...opts: A
 	} else {
 		eventName = 'HTMLEvents';
 	}
+
 	const evt = document.createEvent(eventName);
 
 	evt.initEvent(name, ...opts);
 	elm.dispatchEvent(evt);
+
 	return elm;
 };
 
-export const isLeaf = (el: HTMLElement) => !el.getAttribute('aria-owns');
+export const isLeaf = (el: HTMLElement): boolean => !el.getAttribute('aria-owns');
 
-export const getSibling = (el: HTMLElement, distance: number, elClass: string) => {
+export const getSibling = (el: HTMLElement, distance: number, elClass: string): any => {
 	const { parentNode } = el;
-	if (!parentNode) return null;
+
+	if (!parentNode) {
+		return null;
+	}
+
 	const siblings = parentNode.querySelectorAll(elClass);
 	const index = Array.prototype.indexOf.call(siblings, el);
+
 	return siblings[index + distance] || null;
 };
 
-export const focusNode = (el: HTMLElement) => {
-	if (!el) return;
+export const focusNode = (el: HTMLElement): void => {
+	if (!el) {
+		return;
+	}
+
 	el.focus();
+
 	!isLeaf(el) && el.click();
 };

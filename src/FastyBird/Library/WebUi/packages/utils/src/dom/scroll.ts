@@ -5,7 +5,9 @@ import { rAF } from '../raf';
 import { getStyle } from './style';
 
 export const isScroll = (el: HTMLElement, isVertical?: boolean): boolean => {
-	if (!isClient) return false;
+	if (!isClient) {
+		return false;
+	}
 
 	const key = (
 		{
@@ -14,14 +16,19 @@ export const isScroll = (el: HTMLElement, isVertical?: boolean): boolean => {
 			false: 'overflow-x',
 		} as const
 	)[String(isVertical)]!;
+
 	const overflow = getStyle(el, key);
+
 	return ['scroll', 'auto', 'overlay'].some((s) => overflow.includes(s));
 };
 
 export const getScrollContainer = (el: HTMLElement, isVertical?: boolean): Window | HTMLElement | undefined => {
-	if (!isClient) return;
+	if (!isClient) {
+		return;
+	}
 
 	let parent: HTMLElement = el;
+
 	while (parent) {
 		if ([window, document, document.documentElement].includes(parent)) return window;
 
@@ -35,8 +42,13 @@ export const getScrollContainer = (el: HTMLElement, isVertical?: boolean): Windo
 
 let scrollBarWidth: number;
 export const getScrollBarWidth = (namespace: string): number => {
-	if (!isClient) return 0;
-	if (scrollBarWidth !== undefined) return scrollBarWidth;
+	if (!isClient) {
+		return 0;
+	}
+
+	if (scrollBarWidth !== undefined) {
+		return scrollBarWidth;
+	}
 
 	const outer = document.createElement('div');
 	outer.className = `${namespace}-scrollbar__wrap`;
@@ -65,19 +77,25 @@ export const getScrollBarWidth = (namespace: string): number => {
  * of the container
  */
 export function scrollIntoView(container: HTMLElement, selected: HTMLElement): void {
-	if (!isClient) return;
+	if (!isClient) {
+		return;
+	}
 
 	if (!selected) {
 		container.scrollTop = 0;
+
 		return;
 	}
 
 	const offsetParents: HTMLElement[] = [];
+
 	let pointer = selected.offsetParent;
+
 	while (pointer !== null && container !== pointer && container.contains(pointer)) {
 		offsetParents.push(pointer as HTMLElement);
 		pointer = (pointer as HTMLElement).offsetParent;
 	}
+
 	const top = selected.offsetTop + offsetParents.reduce((prev, curr) => prev + curr.offsetTop, 0);
 	const bottom = top + selected.offsetHeight;
 	const viewRectTop = container.scrollTop;
@@ -90,10 +108,10 @@ export function scrollIntoView(container: HTMLElement, selected: HTMLElement): v
 	}
 }
 
-export function animateScrollTo(container: HTMLElement | Window, from: number, to: number, duration: number, callback?: unknown) {
+export function animateScrollTo(container: HTMLElement | Window, from: number, to: number, duration: number, callback?: unknown): void {
 	const startTime = Date.now();
 
-	const scroll = () => {
+	const scroll = (): void => {
 		const timestamp = Date.now();
 		const time = timestamp - startTime;
 		const nextScrollTop = easeInOutCubic(time > duration ? duration : time, from, to, duration);
@@ -103,6 +121,7 @@ export function animateScrollTo(container: HTMLElement | Window, from: number, t
 		} else {
 			container.scrollTop = nextScrollTop;
 		}
+
 		if (time < duration) {
 			rAF(scroll);
 		} else if (typeof callback === 'function') {
@@ -113,16 +132,18 @@ export function animateScrollTo(container: HTMLElement | Window, from: number, t
 	scroll();
 }
 
-export const getScrollElement = (target: HTMLElement, container: HTMLElement | Window) => {
+export const getScrollElement = (target: HTMLElement, container: HTMLElement | Window): HTMLElement => {
 	if (isWindow(container)) {
 		return target.ownerDocument.documentElement;
 	}
+
 	return container;
 };
 
-export const getScrollTop = (container: HTMLElement | Window) => {
+export const getScrollTop = (container: HTMLElement | Window): number => {
 	if (isWindow(container)) {
 		return window.scrollY;
 	}
+
 	return container.scrollTop;
 };

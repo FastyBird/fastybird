@@ -1,4 +1,4 @@
-export const unique = <T>(arr: T[]) => [...new Set(arr)];
+export const unique = <T>(arr: T[]): Array<T> => [...new Set(arr)];
 
 type Many<T> = T | ReadonlyArray<T>;
 

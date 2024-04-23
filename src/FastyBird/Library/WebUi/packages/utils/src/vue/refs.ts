@@ -4,8 +4,8 @@ import type { ComponentPublicInstance, Ref } from 'vue';
 
 export type RefSetter = (el: Element | ComponentPublicInstance | undefined) => void;
 
-export const composeRefs = (...refs: (Ref<HTMLElement | undefined> | RefSetter)[]) => {
-	return (el: Element | ComponentPublicInstance | null) => {
+export const composeRefs = (...refs: (Ref<HTMLElement | undefined> | RefSetter)[]): ((el: Element | ComponentPublicInstance | null) => void) => {
+	return (el: Element | ComponentPublicInstance | null): void => {
 		refs.forEach((ref) => {
 			if (isFunction(ref)) {
 				ref(el as Element | ComponentPublicInstance);

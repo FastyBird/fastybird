@@ -1,5 +1,5 @@
 import { warn } from 'vue';
-import { hasOwn } from '@vue/shared';
+import { hasOwn } from 'vue';
 import { fromPairs } from 'lodash-unified';
 
 import { isObject } from '../../types';
@@ -48,27 +48,34 @@ export const buildProp = <
 
 	const _validator =
 		values || validator
-			? (val: unknown) => {
+			? (val: unknown): boolean => {
 					let valid = false;
 					let allowedValues: unknown[] = [];
 
 					if (values) {
 						allowedValues = Array.from(values);
+
 						if (hasOwn(prop, 'default')) {
 							allowedValues.push(defaultValue);
 						}
+
 						valid ||= allowedValues.includes(val);
 					}
-					if (validator) valid ||= validator(val);
+
+					if (validator) {
+						valid ||= validator(val);
+					}
 
 					if (!valid && allowedValues.length > 0) {
 						const allowValuesText = [...new Set(allowedValues)].map((value) => JSON.stringify(value)).join(', ');
+
 						warn(
 							`Invalid prop: validation failed${key ? ` for prop "${key}"` : ''}. Expected one of [${allowValuesText}], got value ${JSON.stringify(
 								val
 							)}.`
 						);
 					}
+
 					return valid;
 				}
 			: undefined;
@@ -79,7 +86,11 @@ export const buildProp = <
 		validator: _validator,
 		[fbPropKey]: true,
 	};
-	if (hasOwn(prop, 'default')) fbProp.default = defaultValue;
+
+	if (hasOwn(prop, 'default')) {
+		fbProp.default = defaultValue;
+	}
+
 	return fbProp;
 };
 

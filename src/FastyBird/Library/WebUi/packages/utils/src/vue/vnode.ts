@@ -1,5 +1,5 @@
 import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock } from 'vue';
-import { camelize, isArray } from '@vue/shared';
+import { camelize, isArray } from 'vue';
 
 import { hasOwn } from '../objects';
 import { debugWarn } from '../error';
@@ -75,7 +75,7 @@ function getChildren(node: VNodeNormalizedChildren | VNodeChild, depth: number):
 	return node;
 }
 
-export const getFirstValidNode = (nodes: VNodeNormalizedChildren, maxDepth = 3) => {
+export const getFirstValidNode = (nodes: VNodeNormalizedChildren, maxDepth = 3): VNodeNormalizedChildren | VNodeChild => {
 	if (Array.isArray(nodes)) {
 		return getChildren(nodes[0], maxDepth);
 	} else {
@@ -83,15 +83,15 @@ export const getFirstValidNode = (nodes: VNodeNormalizedChildren, maxDepth = 3) 
 	}
 };
 
-export function renderIf(condition: boolean, ...args: Parameters<typeof createBlock>) {
+export function renderIf(condition: boolean, ...args: Parameters<typeof createBlock>): VNode {
 	return condition ? renderBlock(...args) : createCommentVNode('v-if', true);
 }
 
-export function renderBlock(...args: Parameters<typeof createBlock>) {
+export function renderBlock(...args: Parameters<typeof createBlock>): VNode {
 	return openBlock(), createBlock(...args);
 }
 
-export const getNormalizedProps = (node: VNode) => {
+export const getNormalizedProps = (node: VNode): Record<string, any> => {
 	if (!isVNode(node)) {
 		debugWarn(SCOPE, '[getNormalizedProps] must be a VNode');
 		return {};
@@ -114,7 +114,7 @@ export const getNormalizedProps = (node: VNode) => {
 	return props;
 };
 
-export const ensureOnlyChild = (children: VNodeArrayChildren | undefined) => {
+export const ensureOnlyChild = (children: VNodeArrayChildren | undefined): VNodeChild => {
 	if (!isArray(children) || children.length > 1) {
 		throw new Error('expect to receive a single Vue element child');
 	}
@@ -139,5 +139,6 @@ export const flattedChildren = (children: FlattenVNodes | VNode | VNodeNormalize
 			}
 		}
 	});
+
 	return result;
 };

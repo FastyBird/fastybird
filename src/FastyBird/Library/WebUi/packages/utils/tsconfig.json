@@ -15,10 +15,14 @@
     "sourceMap": true,
     "baseUrl": "src",
     "types": [
-      "node"
+      "@types/lodash",
+      "node",
+      "vue"
     ],
     "lib": [
-      "esnext"
+      "esnext",
+      "dom",
+      "dom.iterable"
     ]
   },
   "include": [
