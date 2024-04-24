@@ -14,14 +14,14 @@ export interface RepeatClickOptions {
 const RepeatClick: ObjectDirective<HTMLElement, RepeatClickOptions | RepeatClickOptions['handler']> = {
 	beforeMount(el, binding): void {
 		const value = binding.value;
-		const { interval = REPEAT_INTERVAL, delay = REPEAT_DELAY } = isFunction(value) ? {} : value;
+		const { interval = REPEAT_INTERVAL, delay = REPEAT_DELAY } = isFunction(value) ? {} : (value as RepeatClickOptions);
 
 		let intervalId: ReturnType<typeof setInterval> | undefined;
 		let delayId: ReturnType<typeof setTimeout> | undefined;
 
-		const handler = () => (isFunction(value) ? value() : value.handler());
+		const handler = (): void => (isFunction(value) ? value() : (value as RepeatClickOptions).handler());
 
-		const clear = () => {
+		const clear = (): void => {
 			if (delayId) {
 				clearTimeout(delayId);
 				delayId = undefined;
