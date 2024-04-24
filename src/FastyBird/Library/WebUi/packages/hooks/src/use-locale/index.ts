@@ -35,7 +35,7 @@ export const buildLocaleContext = (locale: MaybeRef<Language>): LocaleContext =>
 
 export const localeContextKey: InjectionKey<Ref<Language | undefined>> = Symbol('localeContextKey');
 
-export const useLocale = (localeOverrides?: Ref<Language | undefined>) => {
+export const useLocale = (localeOverrides?: Ref<Language | undefined>): LocaleContext => {
 	const locale = localeOverrides || inject(localeContextKey, ref())!;
 	return buildLocaleContext(computed(() => locale.value || English));
 };

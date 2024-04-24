@@ -3,7 +3,7 @@ import { computed, inject, unref } from 'vue';
 import { buildProp } from '@fastybird/web-ui-utils';
 import { EFFECTS } from '@fastybird/web-ui-constants';
 
-import type { InjectionKey, Ref } from 'vue';
+import type { ComputedRef, InjectionKey, Ref } from 'vue';
 import type { Effect } from '@fastybird/web-ui-constants';
 
 export const useEffectProp = buildProp({
@@ -22,7 +22,7 @@ export interface EffectContext {
 
 export const EFFECT_INJECTION_KEY: InjectionKey<EffectContext> = Symbol('effect');
 
-export const useGlobalEffect = () => {
+export const useGlobalEffect = (): ComputedRef<Effect> => {
 	const injectedEffect = inject(EFFECT_INJECTION_KEY, {} as EffectContext);
 
 	return computed<Effect>(() => {

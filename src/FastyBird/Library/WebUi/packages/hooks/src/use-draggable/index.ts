@@ -9,13 +9,13 @@ export const useDraggable = (
 	dragRef: Ref<HTMLElement | undefined>,
 	draggable: ComputedRef<boolean>,
 	overflow?: ComputedRef<boolean>
-) => {
+): void => {
 	let transform = {
 		offsetX: 0,
 		offsetY: 0,
 	};
 
-	const onMousedown = (e: MouseEvent) => {
+	const onMousedown = (e: MouseEvent): void => {
 		const downX = e.clientX;
 		const downY = e.clientY;
 		const { offsetX, offsetY } = transform;
@@ -34,7 +34,7 @@ export const useDraggable = (
 		const maxLeft = clientWidth - targetLeft - targetWidth + offsetX;
 		const maxTop = clientHeight - targetTop - targetHeight + offsetY;
 
-		const onMousemove = (e: MouseEvent) => {
+		const onMousemove = (e: MouseEvent): void => {
 			let moveX = offsetX + e.clientX - downX;
 			let moveY = offsetY + e.clientY - downY;
 
@@ -53,7 +53,7 @@ export const useDraggable = (
 			}
 		};
 
-		const onMouseup = () => {
+		const onMouseup = (): void => {
 			document.removeEventListener('mousemove', onMousemove);
 			document.removeEventListener('mouseup', onMouseup);
 		};
@@ -62,19 +62,19 @@ export const useDraggable = (
 		document.addEventListener('mouseup', onMouseup);
 	};
 
-	const onDraggable = () => {
+	const onDraggable = (): void => {
 		if (dragRef.value && targetRef.value) {
 			dragRef.value.addEventListener('mousedown', onMousedown);
 		}
 	};
 
-	const offDraggable = () => {
+	const offDraggable = (): void => {
 		if (dragRef.value && targetRef.value) {
 			dragRef.value.removeEventListener('mousedown', onMousedown);
 		}
 	};
 
-	onMounted(() => {
+	onMounted((): void => {
 		watchEffect(() => {
 			if (draggable.value) {
 				onDraggable();
@@ -84,7 +84,7 @@ export const useDraggable = (
 		});
 	});
 
-	onBeforeUnmount(() => {
+	onBeforeUnmount((): void => {
 		offDraggable();
 	});
 };

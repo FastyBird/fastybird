@@ -3,7 +3,7 @@ import { getCurrentInstance, ref, shallowRef, watch } from 'vue';
 import { useEventListener } from '@vueuse/core';
 import { isFunction } from '@fastybird/web-ui-utils';
 
-import type { ShallowRef } from 'vue';
+import type { Ref, ShallowRef } from 'vue';
 
 interface UseFocusControllerOptions {
 	afterFocus?: () => void;
@@ -18,21 +18,26 @@ interface UseFocusControllerOptions {
 export function useFocusController<T extends HTMLElement>(
 	target: ShallowRef<T | undefined>,
 	{ afterFocus, beforeBlur, afterBlur }: UseFocusControllerOptions = {}
-) {
+): {
+	wrapperRef: ShallowRef<HTMLElement | undefined>;
+	isFocused: Ref<boolean>;
+	handleFocus: (event: FocusEvent) => void;
+	handleBlur: (event: FocusEvent) => void;
+} {
 	const instance = getCurrentInstance()!;
 	const { emit } = instance;
 	const wrapperRef = shallowRef<HTMLElement>();
 	const isFocused = ref(false);
 
-	const handleFocus = (event: FocusEvent) => {
+	const handleFocus = (event: FocusEvent): void => {
 		if (isFocused.value) return;
 		isFocused.value = true;
 		emit('focus', event);
 		afterFocus?.();
 	};
 
-	const handleBlur = (event: FocusEvent) => {
-		const cancelBlur = isFunction(beforeBlur) ? beforeBlur(event) : false;
+	const handleBlur = (event: FocusEvent): void => {
+		const cancelBlur = isFunction(beforeBlur) ? beforeBlur!(event) : false;
 		if (cancelBlur || (event.relatedTarget && wrapperRef.value?.contains(event.relatedTarget as Node))) return;
 
 		isFocused.value = false;
@@ -40,7 +45,7 @@ export function useFocusController<T extends HTMLElement>(
 		afterBlur?.();
 	};
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		target.value?.focus();
 	};
 

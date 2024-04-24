@@ -3,7 +3,7 @@ import { computed, inject, unref } from 'vue';
 import { buildProp } from '@fastybird/web-ui-utils';
 import { COMPONENT_SIZES } from '@fastybird/web-ui-constants';
 
-import type { InjectionKey, Ref } from 'vue';
+import type { ComputedRef, InjectionKey, Ref } from 'vue';
 import type { ComponentSize } from '@fastybird/web-ui-constants';
 
 export const useSizeProp = buildProp({
@@ -22,7 +22,7 @@ export interface SizeContext {
 
 export const SIZE_INJECTION_KEY: InjectionKey<SizeContext> = Symbol('size');
 
-export const useGlobalSize = () => {
+export const useGlobalSize = (): ComputedRef<ComponentSize> => {
 	const injectedSize = inject(SIZE_INJECTION_KEY, {} as SizeContext);
 
 	return computed<ComponentSize>(() => {

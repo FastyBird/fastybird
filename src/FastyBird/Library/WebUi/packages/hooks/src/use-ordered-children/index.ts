@@ -1,4 +1,4 @@
-import { shallowRef } from 'vue';
+import { ShallowRef, shallowRef } from 'vue';
 
 import { flattedChildren, isVNode } from '@fastybird/web-ui-utils';
 
@@ -11,7 +11,14 @@ const getOrderedChildren = <T>(vm: ComponentInternalInstance, childComponentName
 	return uids.map((uid) => children[uid]).filter((p) => !!p);
 };
 
-export const useOrderedChildren = <T extends { uid: number }>(vm: ComponentInternalInstance, childComponentName: string) => {
+export const useOrderedChildren = <T extends { uid: number }>(
+	vm: ComponentInternalInstance,
+	childComponentName: string
+): {
+	children: ShallowRef<T[]>;
+	addChild: (child: T) => void;
+	removeChild: (uid: number) => void;
+} => {
 	const children: Record<number, T> = {};
 	const orderedChildren = shallowRef<T[]>([]);
 

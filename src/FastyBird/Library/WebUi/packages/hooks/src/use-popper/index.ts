@@ -1,4 +1,4 @@
-import { computed, onBeforeUnmount, ref, shallowRef, unref, watch } from 'vue';
+import { computed, ComputedRef, onBeforeUnmount, ref, shallowRef, unref, watch } from 'vue';
 import { fromPairs } from 'lodash-unified';
 
 import { createPopper } from '@popperjs/core';
@@ -15,7 +15,14 @@ export const usePopper = (
 	referenceElementRef: Ref<ReferenceElement>,
 	popperElementRef: Ref<ElementType>,
 	opts: Ref<PartialOptions> | PartialOptions = {} as PartialOptions
-) => {
+): {
+	state: ComputedRef<any>;
+	styles: ComputedRef<any>;
+	attributes: ComputedRef<any>;
+	update: () => Promise<Partial<State>> | undefined;
+	forceUpdate: () => void;
+	instanceRef: ComputedRef<any>;
+} => {
 	const stateUpdater = {
 		name: 'updateState',
 		enabled: true,
@@ -91,19 +98,21 @@ export const usePopper = (
 		state: computed(() => ({ ...(unref(instanceRef)?.state || {}) })),
 		styles: computed(() => unref(states).styles),
 		attributes: computed(() => unref(states).attributes),
-		update: () => unref(instanceRef)?.update(),
-		forceUpdate: () => unref(instanceRef)?.forceUpdate(),
+		update: (): Promise<Partial<State>> | undefined => unref(instanceRef)?.update(),
+		forceUpdate: (): void => unref(instanceRef)?.forceUpdate(),
 		// Preventing end users from modifying the instance.
 		instanceRef: computed(() => unref(instanceRef)),
 	};
 };
 
-function deriveState(state: State) {
+const deriveState = (state: State): { styles: string[]; attributes: string[] } => {
 	const elements = Object.keys(state.elements) as unknown as Array<keyof State['elements']>;
 
-	const styles = fromPairs(elements.map((element) => [element, state.styles[element] || {}] as [string, State['styles'][keyof State['styles']]]));
+	const styles: string[] = fromPairs(
+		elements.map((element) => [element, state.styles[element] || {}] as [string, State['styles'][keyof State['styles']]])
+	);
 
-	const attributes = fromPairs(
+	const attributes: string[] = fromPairs(
 		elements.map((element) => [element, state.attributes[element]] as [string, State['attributes'][keyof State['attributes']]])
 	);
 
@@ -111,6 +120,6 @@ function deriveState(state: State) {
 		styles,
 		attributes,
 	};
-}
+};
 
 export type UsePopperReturn = ReturnType<typeof usePopper>;

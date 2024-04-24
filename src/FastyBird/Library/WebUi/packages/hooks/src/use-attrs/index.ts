@@ -26,11 +26,9 @@ export const useAttrs = (params: Params = {}): ComputedRef<Record<string, unknow
 		return computed(() => ({}));
 	}
 
-	return computed(() =>
-		fromPairs(
-			Object.entries(instance.proxy?.$attrs!).filter(
-				([key]) => !allExcludeKeys.value.includes(key) && !(excludeListeners && LISTENER_PREFIX.test(key))
-			)
-		)
-	);
+	return computed(() => {
+		const entries = Object.entries(instance.proxy?.$attrs || []);
+
+		return fromPairs(entries.filter(([key]) => !allExcludeKeys.value.includes(key) && !(excludeListeners && LISTENER_PREFIX.test(key))));
+	});
 };

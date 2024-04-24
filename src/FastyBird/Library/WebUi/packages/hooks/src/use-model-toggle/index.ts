@@ -1,6 +1,5 @@
-import { computed, getCurrentInstance, onMounted, watch } from 'vue';
+import { computed, isFunction, getCurrentInstance, onMounted, watch, ComputedRef } from 'vue';
 
-import { isFunction } from '@vue/shared';
 import { buildProp, definePropType, isBoolean, isClient } from '@fastybird/web-ui-utils';
 
 import type { ComponentPublicInstance, ExtractPropTypes, Ref } from 'vue';
@@ -28,7 +27,18 @@ export type UseModelTogglePropsGeneric<T extends string> = {
 	[K in `onUpdate:${T}`]: ExtractPropType<typeof _event>;
 };
 
-export const createModelToggleComposable = <T extends string>(name: T) => {
+export const createModelToggleComposable = <T extends string>(
+	name: T
+): {
+	useModelToggle: ({ indicator, toggleReason, shouldHideWhenRouteChanges, shouldProceed, onShow, onHide }: ModelToggleParams) => {
+		hide: (event?: Event) => void;
+		show: (event?: Event) => void;
+		toggle: () => void;
+		hasUpdateHandler: ComputedRef<boolean>;
+	};
+	useModelToggleProps: UseModelTogglePropsRaw<T>;
+	useModelToggleEmits: `update:${T}`[];
+} => {
 	const updateEventKey = `update:${name}` as const;
 	const updateEventKeyRaw = `onUpdate:${name}` as const;
 	const useModelToggleEmits = [updateEventKey];
@@ -38,7 +48,19 @@ export const createModelToggleComposable = <T extends string>(name: T) => {
 		[updateEventKeyRaw]: _event,
 	} as UseModelTogglePropsRaw<T>;
 
-	const useModelToggle = ({ indicator, toggleReason, shouldHideWhenRouteChanges, shouldProceed, onShow, onHide }: ModelToggleParams) => {
+	const useModelToggle = ({
+		indicator,
+		toggleReason,
+		shouldHideWhenRouteChanges,
+		shouldProceed,
+		onShow,
+		onHide,
+	}: ModelToggleParams): {
+		hide: (event?: Event) => void;
+		show: (event?: Event) => void;
+		toggle: () => void;
+		hasUpdateHandler: ComputedRef<boolean>;
+	} => {
 		const instance = getCurrentInstance()!;
 		const { emit } = instance;
 		const props = instance.props as UseModelTogglePropsGeneric<T> & {
@@ -51,7 +73,7 @@ export const createModelToggleComposable = <T extends string>(name: T) => {
 		const isModelBindingAbsent = computed(() => props[name] === null);
 
 		const doShow = (event?: Event): void => {
-			if (indicator.value === true) {
+			if (indicator.value) {
 				return;
 			}
 
@@ -62,12 +84,12 @@ export const createModelToggleComposable = <T extends string>(name: T) => {
 			}
 
 			if (isFunction(onShow)) {
-				onShow(event);
+				onShow!(event);
 			}
 		};
 
 		const doHide = (event?: Event): void => {
-			if (indicator.value === false) {
+			if (!indicator.value) {
 				return;
 			}
 
@@ -78,12 +100,12 @@ export const createModelToggleComposable = <T extends string>(name: T) => {
 			}
 
 			if (isFunction(onHide)) {
-				onHide(event);
+				onHide!(event);
 			}
 		};
 
 		const show = (event?: Event): void => {
-			if (props.disabled === true || (isFunction(shouldProceed) && !shouldProceed())) {
+			if (props.disabled || (isFunction(shouldProceed) && !shouldProceed!())) {
 				return;
 			}
 
@@ -99,7 +121,7 @@ export const createModelToggleComposable = <T extends string>(name: T) => {
 		};
 
 		const hide = (event?: Event): void => {
-			if (props.disabled === true || !isClient) {
+			if (props.disabled || !isClient) {
 				return;
 			}
 

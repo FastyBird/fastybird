@@ -1,5 +1,6 @@
 {
   "name": "@fastybird/web-ui-hooks",
+  "private": true,
   "version": "1.0.0-dev.20",
   "description": "FastyBird IoT application components hooks",
   "homepage": "https://www.fastybird.com",
@@ -15,15 +16,27 @@
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
   "main": "./src/index.ts",
-  "module": "./src/index.ts",
-  "unpkg": "./src/index.js",
-  "jsdelivr": "./src/index.js",
-  "types": "./src/index.d.ts",
-  "sideEffects": false,
+  "scripts": {
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier src --check",
+    "pretty:write": "prettier src --write"
+  },
   "dependencies": {
+    "@fastybird/web-ui-constants": "1.0.0-dev.20",
+    "@fastybird/web-ui-utils": "1.0.0-dev.20",
     "@popperjs/core": "^2.11",
     "@vueuse/core": "^10.9",
-    "lodash-unified": "^1.0"
+    "lodash-unified": "^1.0",
+    "vue-router": "^4.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14",
+    "@types/node": "*",
+    "eslint": "^8.57",
+    "prettier": "^3.2",
+    "typescript": "^5.3"
   },
   "peerDependencies": {
     "vue": "^3.4"

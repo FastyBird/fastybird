@@ -1,5 +1,4 @@
-import { isRef, onScopeDispose, watch } from 'vue';
-import { computed } from '@vue/reactivity';
+import { computed, isRef, onScopeDispose, watch } from 'vue';
 import { addClass, getScrollBarWidth, getStyle, hasClass, isClient, removeClass, throwError } from '@fastybird/web-ui-utils';
 import { useNamespace } from '../use-namespace';
 
@@ -16,7 +15,7 @@ export type UseLockScreenOptions = {
  * When the trigger became true, it assumes modal is now opened and vice versa.
  * @param trigger {Ref<boolean>}
  */
-export const useLockscreen = (trigger: Ref<boolean>, options: UseLockScreenOptions = {}) => {
+export const useLockscreen = (trigger: Ref<boolean>, options: UseLockScreenOptions = {}): void => {
 	if (!isRef(trigger)) {
 		throwError('[useLockscreen]', 'You need to pass a ref param to this function');
 	}
@@ -33,7 +32,7 @@ export const useLockscreen = (trigger: Ref<boolean>, options: UseLockScreenOptio
 	let withoutHiddenClass = false;
 	let bodyWidth = '0';
 
-	const cleanup = () => {
+	const cleanup = (): void => {
 		setTimeout(() => {
 			removeClass(document?.body, hiddenCls.value);
 			if (withoutHiddenClass && document) {
@@ -41,6 +40,7 @@ export const useLockscreen = (trigger: Ref<boolean>, options: UseLockScreenOptio
 			}
 		}, 200);
 	};
+
 	watch(trigger, (val) => {
 		if (!val) {
 			cleanup();
@@ -59,5 +59,6 @@ export const useLockscreen = (trigger: Ref<boolean>, options: UseLockScreenOptio
 		}
 		addClass(document.body, hiddenCls.value);
 	});
+
 	onScopeDispose(() => cleanup());
 };
