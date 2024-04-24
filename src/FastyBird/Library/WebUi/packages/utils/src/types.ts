@@ -1,18 +1,18 @@
-import { isArray, isObject, isString } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isArray, isObject, isString } from '@vue/shared';
+import { isNil } from 'lodash';
 
-export { isArray, isFunction, isObject, isString, isDate, isPromise, isSymbol } from 'vue';
+export { isArray, isFunction, isObject, isString, isDate, isPromise, isSymbol } from '@vue/shared';
 
-export { isVNode } from 'vue';
+export { isVNode } from '@vue/runtime-core';
 
 export const isUndefined = (val: any): val is undefined => val === undefined;
 export const isBoolean = (val: any): val is boolean => typeof val === 'boolean';
 export const isNumber = (val: any): val is number => typeof val === 'number';
 
-export const isEmpty = (val: unknown): boolean =>
+export const isEmpty = (val: any): boolean =>
 	(!val && val !== 0) || (isArray(val) && val.length === 0) || (isObject(val) && !Object.keys(val).length);
 
-export const isElement = (e: unknown): e is Element => {
+export const isElement = (e: any): e is Element => {
 	if (typeof Element === 'undefined') {
 		return false;
 	}
@@ -20,7 +20,7 @@ export const isElement = (e: unknown): e is Element => {
 	return e instanceof Element;
 };
 
-export const isPropAbsent = (prop: unknown): prop is null | undefined => {
+export const isPropAbsent = (prop: any): prop is null | undefined => {
 	return isNil(prop);
 };
 
@@ -32,6 +32,6 @@ export const isStringNumber = (val: string): boolean => {
 	return !Number.isNaN(Number(val));
 };
 
-export const isWindow = (val: unknown): val is Window => {
+export const isWindow = (val: any): val is Window => {
 	return val === window;
 };

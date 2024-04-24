@@ -26,14 +26,15 @@
   "dependencies": {
     "@fastybird/web-ui-constants": "1.0.0-dev.20",
     "@fastybird/web-ui-utils": "1.0.0-dev.20",
-    "lodash-unified": "^1.0"
+    "lodash": "^4.17"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14",
+    "@types/lodash": "^4.17",
     "@types/node": "*",
     "eslint": "^8.57",
     "prettier": "^3.2",
-    "typescript": "^5.3"
+    "typescript": "^5.3",
+    "vue": "^3.4"
   },
   "peerDependencies": {
     "vue": "^3.4"

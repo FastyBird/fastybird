@@ -7,7 +7,7 @@ type FlushList = Map<
 	HTMLElement,
 	{
 		documentHandler: DocumentHandler;
-		bindingFn: (...args: unknown[]) => unknown;
+		bindingFn: (...args: any[]) => any;
 	}[]
 >;
 
@@ -33,7 +33,7 @@ const createDocumentHandler = (el: HTMLElement, binding: DirectiveBinding): Docu
 		excludes = binding.arg;
 	} else if (isElement(binding.arg)) {
 		// due to current implementation on binding type is wrong the type casting is necessary here
-		excludes.push(binding.arg as unknown as HTMLElement);
+		excludes.push(binding.arg as any as HTMLElement);
 	}
 
 	return function (mouseup, mousedown) {

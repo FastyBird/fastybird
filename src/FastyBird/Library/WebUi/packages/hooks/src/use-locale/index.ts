@@ -1,5 +1,5 @@
 import { computed, inject, isRef, ref, unref } from 'vue';
-import { get } from 'lodash-unified';
+import { get } from 'lodash';
 
 import English from '@fastybird/web-ui-locale/lang/en';
 

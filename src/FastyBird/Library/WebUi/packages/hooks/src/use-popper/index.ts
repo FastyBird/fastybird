@@ -1,5 +1,5 @@
 import { computed, ComputedRef, onBeforeUnmount, ref, shallowRef, unref, watch } from 'vue';
-import { fromPairs } from 'lodash-unified';
+import { fromPairs } from 'lodash';
 
 import { createPopper } from '@popperjs/core';
 
@@ -8,6 +8,10 @@ import type { Instance, Modifier, Options, State, VirtualElement } from '@popper
 
 type ElementType = HTMLElement | undefined;
 type ReferenceElement = ElementType | VirtualElement;
+
+interface Dictionary<T> {
+	[index: string]: T;
+}
 
 export type PartialOptions = Partial<Options>;
 
@@ -105,14 +109,16 @@ export const usePopper = (
 	};
 };
 
-const deriveState = (state: State): { styles: string[]; attributes: string[] } => {
-	const elements = Object.keys(state.elements) as unknown as Array<keyof State['elements']>;
+const deriveState = (
+	state: State
+): { styles: Dictionary<Partial<CSSStyleDeclaration>>; attributes: Dictionary<{ [key: string]: string | boolean }> } => {
+	const elements = Object.keys(state.elements) as any as Array<keyof State['elements']>;
 
-	const styles: string[] = fromPairs(
+	const styles: Dictionary<Partial<CSSStyleDeclaration>> = fromPairs(
 		elements.map((element) => [element, state.styles[element] || {}] as [string, State['styles'][keyof State['styles']]])
 	);
 
-	const attributes: string[] = fromPairs(
+	const attributes: Dictionary<{ [key: string]: string | boolean }> = fromPairs(
 		elements.map((element) => [element, state.attributes[element]] as [string, State['attributes'][keyof State['attributes']]])
 	);
 

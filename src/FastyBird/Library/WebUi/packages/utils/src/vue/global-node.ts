@@ -28,7 +28,7 @@ export function changeGlobalNodesTarget(el: HTMLElement): void {
 
 	target = el;
 	globalNodes.forEach((el) => {
-		if (el.contains(target) === false) {
+		if (!el.contains(target)) {
 			target.appendChild(el);
 		}
 	});

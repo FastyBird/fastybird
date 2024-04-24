@@ -108,7 +108,7 @@ export function scrollIntoView(container: HTMLElement, selected: HTMLElement): v
 	}
 }
 
-export function animateScrollTo(container: HTMLElement | Window, from: number, to: number, duration: number, callback?: unknown): void {
+export function animateScrollTo(container: HTMLElement | Window, from: number, to: number, duration: number, callback?: any): void {
 	const startTime = Date.now();
 
 	const scroll = (): void => {

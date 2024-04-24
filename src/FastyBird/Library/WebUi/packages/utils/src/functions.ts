@@ -1,1 +1,1 @@
-export { NOOP } from 'vue';
+export { NOOP } from '@vue/shared';

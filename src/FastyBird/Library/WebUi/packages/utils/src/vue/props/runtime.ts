@@ -1,17 +1,17 @@
-import { warn } from 'vue';
-import { hasOwn } from 'vue';
-import { fromPairs } from 'lodash-unified';
+import { warn } from '@vue/runtime-core';
+import { fromPairs } from 'lodash';
 
+import { hasOwn } from '../../objects';
 import { isObject } from '../../types';
 
-import type { PropType } from 'vue';
+import type { PropType } from '@vue/runtime-core';
 import type { FbProp, FbPropConvert, FbPropFinalized, FbPropInput, FbPropMergeType, IfFbProp, IfNativePropType, NativePropType } from './types';
 
 export const fbPropKey = '__fbPropKey';
 
 export const definePropType = <T>(val: any): PropType<T> => val;
 
-export const isFbProp = (val: unknown): val is FbProp<any, any, any> => isObject(val) && !!(val as any)[fbPropKey];
+export const isFbProp = (val: any): val is FbProp<any, any, any> => isObject(val) && !!(val as any)[fbPropKey];
 
 /**
  * @description Build prop. It can better optimize prop types
@@ -28,7 +28,7 @@ export const isFbProp = (val: unknown): val is FbProp<any, any, any> => isObject
   buildProp({
     type: [String, Number],
     values: ['small', 'large'],
-    validator: (val: unknown): val is number => typeof val === 'number',
+    validator: (val: any): val is number => typeof val === 'number',
   } as const)
  */
 export const buildProp = <
@@ -48,9 +48,9 @@ export const buildProp = <
 
 	const _validator =
 		values || validator
-			? (val: unknown): boolean => {
+			? (val: any): boolean => {
 					let valid = false;
-					let allowedValues: unknown[] = [];
+					let allowedValues: any[] = [];
 
 					if (values) {
 						allowedValues = Array.from(values);

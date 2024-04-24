@@ -44,7 +44,6 @@
       ]
     }
   },
-  "sideEffects": false,
   "unpkg": "dist/index.iife.min.js",
   "jsdelivr": "dist/index.iife.min.js",
   "files": [

@@ -1,10 +1,10 @@
-import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock } from 'vue';
-import { camelize, isArray } from 'vue';
+import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock } from '@vue/runtime-core';
+import { camelize, isArray } from '@vue/shared';
 
 import { hasOwn } from '../objects';
 import { debugWarn } from '../error';
 
-import type { VNode, VNodeArrayChildren, VNodeChild, VNodeNormalizedChildren } from 'vue';
+import type { VNode, VNodeArrayChildren, VNodeChild, VNodeNormalizedChildren } from '@vue/runtime-core';
 
 const SCOPE = 'utils/vue/vnode';
 
@@ -28,27 +28,27 @@ export type VNodeChildAtom = Exclude<VNodeChild, Array<any>>;
 export type RawSlots = Exclude<VNodeNormalizedChildren, Array<any> | null | string>;
 
 export function isFragment(node: VNode): boolean;
-export function isFragment(node: unknown): node is VNode;
-export function isFragment(node: unknown): node is VNode {
+export function isFragment(node: any): node is VNode;
+export function isFragment(node: any): node is VNode {
 	return isVNode(node) && node.type === Fragment;
 }
 
 export function isText(node: VNode): boolean;
-export function isText(node: unknown): node is VNode;
-export function isText(node: unknown): node is VNode {
+export function isText(node: any): node is VNode;
+export function isText(node: any): node is VNode {
 	return isVNode(node) && node.type === Text;
 }
 
 export function isComment(node: VNode): boolean;
-export function isComment(node: unknown): node is VNode;
-export function isComment(node: unknown): node is VNode {
+export function isComment(node: any): node is VNode;
+export function isComment(node: any): node is VNode {
 	return isVNode(node) && node.type === Comment;
 }
 
 const TEMPLATE = 'template';
 export function isTemplate(node: VNode): boolean;
-export function isTemplate(node: unknown): node is VNode;
-export function isTemplate(node: unknown): node is VNode {
+export function isTemplate(node: any): node is VNode;
+export function isTemplate(node: any): node is VNode {
 	return isVNode(node) && node.type === TEMPLATE;
 }
 
@@ -57,8 +57,8 @@ export function isTemplate(node: unknown): node is VNode {
  * @param node {VNode} node to be tested
  */
 export function isValidElementNode(node: VNode): boolean;
-export function isValidElementNode(node: unknown): node is VNode;
-export function isValidElementNode(node: unknown): node is VNode {
+export function isValidElementNode(node: any): node is VNode;
+export function isValidElementNode(node: any): node is VNode {
 	return isVNode(node) && !isFragment(node) && !isComment(node);
 }
 

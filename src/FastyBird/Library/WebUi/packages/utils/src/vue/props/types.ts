@@ -1,4 +1,5 @@
-import type { ExtractPropTypes, PropType } from 'vue';
+import type { ExtractPropTypes, PropType } from '@vue/runtime-core';
+
 import type { fbPropKey } from './runtime';
 import type { IfNever, UnknownToNever, WritableArray } from './util';
 
@@ -51,7 +52,7 @@ export type FbPropMergeType<Type, Value, Validator> =
  */
 export type FbPropInputDefault<Required extends boolean, Default> = Required extends true
 	? never
-	: Default extends Record<string, unknown> | Array<any>
+	: Default extends Record<string, any> | Array<any>
 		? () => Default
 		: (() => Default) | Default;
 
@@ -92,7 +93,7 @@ export type FbPropInput<Type, Value, Validator, Default extends FbPropMergeType<
  * {
     readonly type: PropType<"a">;
     readonly required: true;
-    readonly validator: ((val: unknown) => boolean) | undefined;
+    readonly validator: ((val: any) => boolean) | undefined;
     readonly default: "b";
     __fbPropKey: true;
   }
@@ -100,9 +101,9 @@ export type FbPropInput<Type, Value, Validator, Default extends FbPropMergeType<
 export type FbProp<Type, Default, Required> = {
 	readonly type: PropType<Type>;
 	readonly required: [Required] extends [true] ? true : false;
-	readonly validator: ((val: unknown) => boolean) | undefined;
+	readonly validator: ((val: any) => boolean) | undefined;
 	[fbPropKey]: true;
-} & IfNever<Default, unknown, { readonly default: Default }>;
+} & IfNever<Default, any, { readonly default: Default }>;
 
 /**
  * Determine if it is `FbProp`

@@ -4,7 +4,7 @@ import { camelize } from '../strings';
 import { entriesOf, keysOf } from '../objects';
 import { debugWarn } from '../error';
 
-import type { CSSProperties } from 'vue';
+import type { CSSProperties } from '@vue/runtime-dom';
 
 const SCOPE = 'utils/dom/style';
 

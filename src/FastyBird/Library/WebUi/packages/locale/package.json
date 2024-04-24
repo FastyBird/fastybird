@@ -1,5 +1,6 @@
 {
   "name": "@fastybird/web-ui-locale",
+  "private": true,
   "version": "1.0.0-dev.20",
   "description": "FastyBird IoT application localization",
   "homepage": "https://www.fastybird.com",
@@ -14,13 +15,5 @@
     "type": "git",
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
-  "main": "index.ts",
-  "module": "index.ts",
-  "unpkg": "index.js",
-  "jsdelivr": "index.js",
-  "types": "index.d.ts",
-  "sideEffects": false,
-  "peerDependencies": {
-    "vue": "^3.4"
-  }
+  "main": "index.ts"
 }

@@ -1,5 +1,5 @@
 import { computed, getCurrentInstance } from 'vue';
-import { fromPairs } from 'lodash-unified';
+import { fromPairs } from 'lodash';
 
 import { debugWarn } from '@fastybird/web-ui-utils';
 
@@ -13,7 +13,7 @@ interface Params {
 const DEFAULT_EXCLUDE_KEYS = ['class', 'style'];
 const LISTENER_PREFIX = /^on[A-Z]/;
 
-export const useAttrs = (params: Params = {}): ComputedRef<Record<string, unknown>> => {
+export const useAttrs = (params: Params = {}): ComputedRef<Record<string, any>> => {
 	const { excludeListeners = false, excludeKeys } = params;
 	const allExcludeKeys = computed<string[]>(() => {
 		return (excludeKeys?.value || []).concat(DEFAULT_EXCLUDE_KEYS);

@@ -1,4 +1,4 @@
-import { get } from 'lodash-unified';
+import { get } from 'lodash';
 
 export interface TouchHorizontalDirectiveBinding {
 	value: (pan: TouchHorizontalChanges) => void;

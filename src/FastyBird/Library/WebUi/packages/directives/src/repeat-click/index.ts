@@ -8,7 +8,7 @@ export const REPEAT_DELAY = 600;
 export interface RepeatClickOptions {
 	interval?: number;
 	delay?: number;
-	handler: (...args: unknown[]) => unknown;
+	handler: (...args: any[]) => any;
 }
 
 const RepeatClick: ObjectDirective<HTMLElement, RepeatClickOptions | RepeatClickOptions['handler']> = {
@@ -19,7 +19,7 @@ const RepeatClick: ObjectDirective<HTMLElement, RepeatClickOptions | RepeatClick
 		let intervalId: ReturnType<typeof setInterval> | undefined;
 		let delayId: ReturnType<typeof setTimeout> | undefined;
 
-		const handler = (): void => (isFunction(value) ? value() : (value as RepeatClickOptions).handler());
+		const handler = (): any => (isFunction(value) ? value() : (value as RepeatClickOptions).handler());
 
 		const clear = (): void => {
 			if (delayId) {

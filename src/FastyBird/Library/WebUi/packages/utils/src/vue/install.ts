@@ -1,10 +1,10 @@
-import { NOOP } from 'vue';
+import { NOOP } from '@vue/shared';
 
-import type { App, Directive } from 'vue';
+import type { App, Directive } from '@vue/runtime-core';
 import type { SFCInstallWithContext, SFCWithInstall } from './typescript';
 
 export const withInstall = <T, E extends Record<string, any>>(main: T, extra?: E): SFCWithInstall<T> & E => {
-	(main as SFCWithInstall<T>).install = (app): void => {
+	(main as SFCWithInstall<T>).install = (app: App): void => {
 		for (const comp of [main, ...Object.values(extra ?? {})]) {
 			app.component(comp.name, comp);
 		}

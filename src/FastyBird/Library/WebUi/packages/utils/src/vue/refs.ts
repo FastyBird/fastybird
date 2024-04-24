@@ -1,6 +1,6 @@
 import { isFunction } from '../types';
 
-import type { ComponentPublicInstance, Ref } from 'vue';
+import type { ComponentPublicInstance, Ref } from '@vue/runtime-core';
 
 export type RefSetter = (el: Element | ComponentPublicInstance | undefined) => void;
 
