@@ -8,8 +8,8 @@ import { emptyDir } from 'fs-extra';
 import { version } from '../package.json';
 import { pathOutput, pathSrc } from './paths';
 
-const buildBundle = () => {
-	const getBuildOptions = (format: Format) => {
+const buildBundle = (): Promise<[void, void]> => {
+	const getBuildOptions = (format: Format): BuildOptions => {
 		const options: BuildOptions = {
 			entryPoints: [path.resolve(pathSrc, 'index.ts'), path.resolve(pathSrc, 'global.ts')],
 			target: 'es2018',
@@ -43,7 +43,7 @@ const buildBundle = () => {
 
 		return options;
 	};
-	const doBuild = async (minify: boolean) => {
+	const doBuild = async (minify: boolean): Promise<void> => {
 		await Promise.all([
 			build({
 				...getBuildOptions('esm'),

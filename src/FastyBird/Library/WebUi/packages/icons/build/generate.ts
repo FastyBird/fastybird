@@ -21,14 +21,18 @@ await Promise.all(files.map((file) => transformToVueComponent(file)));
 consola.info(chalk.blue('generating entry file'));
 await generateEntry(files);
 
-async function getSvgFiles() {
+async function getSvgFiles(): Promise<string[]> {
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
 
 	return glob('**/*.svg', { cwd: path.resolve(__dirname, '../svg'), absolute: true });
 }
 
-function getName(file: string) {
+function getName(file: string): {
+	filename: string;
+	prefix: string | null;
+	componentName: string;
+} {
 	const filename = path.basename(file).replace('.svg', '');
 
 	let prefix = null;
@@ -53,7 +57,7 @@ function getName(file: string) {
 	};
 }
 
-function formatCode(code: string, parser: BuiltInParserName = 'typescript') {
+function formatCode(code: string, parser: BuiltInParserName = 'typescript'): Promise<string> {
 	return format(code, {
 		parser,
 		semi: false,
@@ -61,7 +65,7 @@ function formatCode(code: string, parser: BuiltInParserName = 'typescript') {
 	});
 }
 
-async function transformToVueComponent(file: string) {
+async function transformToVueComponent(file: string): Promise<void> {
 	const content = await readFile(file, 'utf-8');
 	const { filename, prefix, componentName } = getName(file);
 	const vue = await formatCode(
@@ -80,7 +84,7 @@ defineOptions({
 	writeFile(path.resolve(pathComponents, `${prefix ? prefix + '-' : ''}${filename}.vue`), vue, 'utf-8');
 }
 
-async function generateEntry(files: string[]) {
+async function generateEntry(files: string[]): Promise<void> {
 	const code = await formatCode(
 		files
 			.map((file) => {
