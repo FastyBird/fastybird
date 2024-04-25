@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "stylelint-config-recommended-scss"
+  ],
+  "syntax": "scss",
+  "plugins": [
+    "stylelint-scss",
+    "stylelint-prettier"
+  ],
+  "rules": {
+    "at-rule-no-unknown": null,
+    "scss/at-rule-no-unknown": true,
+    "no-empty-source": null,
+    "prettier/prettier": [true, {"singleQuote": true, "tabWidth": 4}]
+  }
+}

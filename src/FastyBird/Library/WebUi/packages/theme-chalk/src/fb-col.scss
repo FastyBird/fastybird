@@ -2,43 +2,44 @@
 
 @use 'common/var' as *;
 @use 'mixins/mixins' as *;
-@use 'mixins/_col' as *;
+@use 'mixins/col' as *;
 
 [class*='#{$namespace}-col-'] {
-  box-sizing: border-box;
-  @include when(guttered) {
-    display: block;
-    min-height: 1px;
-  }
+	box-sizing: border-box;
+	@include when(guttered) {
+		display: block;
+		min-height: 1px;
+	}
 }
 
 .#{$namespace}-col-0 {
-  display: none;
-  // to avoid introducing !important syntax, redundant css rule is required due to selector priority.
-  @include when(guttered) {
-    display: none;
-  }
+	display: none;
+
+	// to avoid introducing !important syntax, redundant css rule is required due to selector priority.
+	@include when(guttered) {
+		display: none;
+	}
 }
 
 @for $i from 0 through 24 {
-  .#{$namespace}-col-#{$i} {
-    max-width: (math.div(1, 24) * $i * 100) * 1%;
-    flex: 0 0 (math.div(1, 24) * $i * 100) * 1%;
-  }
+	.#{$namespace}-col-#{$i} {
+		max-width: (math.div(1, 24) * $i * 100) * 1%;
+		flex: 0 0 (math.div(1, 24) * $i * 100) * 1%;
+	}
 
-  .#{$namespace}-col-offset-#{$i} {
-    margin-left: (math.div(1, 24) * $i * 100) * 1%;
-  }
+	.#{$namespace}-col-offset-#{$i} {
+		margin-left: (math.div(1, 24) * $i * 100) * 1%;
+	}
 
-  .#{$namespace}-col-pull-#{$i} {
-    position: relative;
-    right: (math.div(1, 24) * $i * 100) * 1%;
-  }
+	.#{$namespace}-col-pull-#{$i} {
+		position: relative;
+		right: (math.div(1, 24) * $i * 100) * 1%;
+	}
 
-  .#{$namespace}-col-push-#{$i} {
-    position: relative;
-    left: (math.div(1, 24) * $i * 100) * 1%;
-  }
+	.#{$namespace}-col-push-#{$i} {
+		position: relative;
+		left: (math.div(1, 24) * $i * 100) * 1%;
+	}
 }
 
 @include col-size(xs);

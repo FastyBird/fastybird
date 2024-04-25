@@ -1,118 +1,114 @@
 @use 'mixins/mixins' as *;
-@use 'mixins/var' as *;
 @use 'common/var' as *;
 
 @include b(alert) {
-  @include set-component-css-var('alert', $alert);
+	@include set-component-css-var('alert', $alert);
 }
 
 @include b(alert) {
-  width: 100%;
-  padding: getCssVar('alert', 'padding');
-  margin: 0;
-  box-sizing: border-box;
-  border-radius: getCssVar('alert', 'border-radius-base');
-  position: relative;
-  background-color: getCssVar('color', 'white');
-  overflow: hidden;
-  opacity: 1;
-  display: flex;
-  align-items: center;
-  transition: opacity getCssVar('transition-duration', 'fast');
+	width: 100%;
+	padding: getCssVar('alert', 'padding');
+	margin: 0;
+	box-sizing: border-box;
+	border-radius: getCssVar('alert', 'border-radius-base');
+	position: relative;
+	background-color: getCssVar('color', 'white');
+	overflow: hidden;
+	opacity: 1;
+	display: flex;
+	align-items: center;
+	transition: opacity getCssVar('transition-duration', 'fast');
 
-  @include when(light) {
-    @include e(close-btn) {
-      color: getCssVar('text-color', 'placeholder');
-    }
-  }
+	@include when(light) {
+		@include e(close-btn) {
+			color: getCssVar('text-color', 'placeholder');
+		}
+	}
 
-  @include when(dark) {
-    @include e(close-btn) {
-      color: getCssVar('color', 'white');
-    }
-    @include e(description) {
-      color: getCssVar('color', 'white');
-    }
-  }
+	@include when(dark) {
+		@include e(close-btn) {
+			color: getCssVar('color', 'white');
+		}
+		@include e(description) {
+			color: getCssVar('color', 'white');
+		}
+	}
 
-  @include when(center) {
-    justify-content: center;
-  }
+	@include when(center) {
+		justify-content: center;
+	}
 
-  @each $variant in (primary, default, info, success, warning, error) {
-    @include m(variant-#{$variant}) {
-      @include css-var-from-global(
-        ('alert', 'bg-color'),
-        ('color', $variant, 'light-9')
-      );
+	@each $variant in (primary, default, info, success, warning, error) {
+		@include m(variant-#{$variant}) {
+			@include css-var-from-global(('alert', 'bg-color'), ('color', $variant, 'light-9'));
 
-      @include when(light) {
-        background-color: getCssVar('alert', 'bg-color');
-        color: getCssVar('color', $variant);
+			@include when(light) {
+				background-color: getCssVar('alert', 'bg-color');
+				color: getCssVar('color', $variant);
 
-        @include e(description) {
-          color: getCssVar('color', $variant);
-        }
-      }
+				@include e(description) {
+					color: getCssVar('color', $variant);
+				}
+			}
 
-      @include when(dark) {
-        background-color: getCssVar('color', $variant);
-        color: getCssVar('color', 'white');
-      }
-    }
-  }
+			@include when(dark) {
+				background-color: getCssVar('color', $variant);
+				color: getCssVar('color', 'white');
+			}
+		}
+	}
 
-  @include e(content) {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+	@include e(content) {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
 
-  @include e(icon) {
-    font-size: getCssVar('alert', 'icon-size');
-    width: getCssVar('alert', 'icon-size');
-    margin-right: 8px;
+	@include e(icon) {
+		font-size: getCssVar('alert', 'icon-size');
+		width: getCssVar('alert', 'icon-size');
+		margin-right: 8px;
 
-    @include when(big) {
-      font-size: getCssVar('alert', 'icon-large-size');
-      width: getCssVar('alert', 'icon-large-size');
-      margin-right: 12px;
-    }
-  }
+		@include when(big) {
+			font-size: getCssVar('alert', 'icon-large-size');
+			width: getCssVar('alert', 'icon-large-size');
+			margin-right: 12px;
+		}
+	}
 
-  @include e(title) {
-    font-size: getCssVar('alert', 'title-font-size');
-    line-height: 24px;
+	@include e(title) {
+		font-size: getCssVar('alert', 'title-font-size');
+		line-height: 24px;
 
-    @include m(with-description) {
-      font-size: getCssVar('alert', 'title-with-description-font-size');
-      font-weight: bolder;
-    }
-  }
+		@include m(with-description) {
+			font-size: getCssVar('alert', 'title-with-description-font-size');
+			font-weight: bolder;
+		}
+	}
 
-  @include e(description) {
-    font-size: getCssVar('alert', 'description-font-size');
-    margin: 0;
-  }
+	@include e(description) {
+		font-size: getCssVar('alert', 'description-font-size');
+		margin: 0;
+	}
 
-  @include e(close-btn) {
-    font-size: getCssVar('alert', 'close-font-size');
-    opacity: 1;
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    cursor: pointer;
+	@include e(close-btn) {
+		font-size: getCssVar('alert', 'close-font-size');
+		opacity: 1;
+		position: absolute;
+		top: 12px;
+		right: 16px;
+		cursor: pointer;
 
-    @include when(customed) {
-      font-style: normal;
-      font-size: getCssVar('alert', 'close-customed-font-size');
-      line-height: 24px;
-      top: 8px;
-    }
-  }
+		@include when(customed) {
+			font-style: normal;
+			font-size: getCssVar('alert', 'close-customed-font-size');
+			line-height: 24px;
+			top: 8px;
+		}
+	}
 }
 
 .#{$namespace}-alert-fade-enter-from,
 .#{$namespace}-alert-fade-leave-active {
-  opacity: 0;
+	opacity: 0;
 }

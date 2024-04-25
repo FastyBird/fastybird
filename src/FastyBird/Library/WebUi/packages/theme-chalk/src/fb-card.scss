@@ -5,240 +5,203 @@
 @use 'common/var' as *;
 
 @include b(card) {
-  @include set-component-css-var('card', $card);
+	@include set-component-css-var('card', $card);
 }
 
 @include b(card) {
-  border-radius: getCssVar('card', 'border-radius');
-  background-color: getCssVar('card', 'bg-color');
-  overflow: hidden;
-  color: getCssVar('text-color', 'primary');
-  transition: getCssVar('transition-duration');
+	border-radius: getCssVar('card', 'border-radius');
+	background-color: getCssVar('card', 'bg-color');
+	overflow: hidden;
+	color: getCssVar('text-color', 'primary');
+	transition: getCssVar('transition-duration');
 
-  @include when(dark) {
-    @include e(description) {
-      color: getCssVar('color', 'white');
-    }
-  }
+	@include when(dark) {
+		@include e(description) {
+			color: getCssVar('color', 'white');
+		}
+	}
 
-  @include when(bordered) {
-    border: 1px solid getCssVar('card', 'border-color');
-  }
+	@include when(bordered) {
+		border: 1px solid getCssVar('card', 'border-color');
+	}
 
-  @include when(always-shadow) {
-    box-shadow: getCssVar('card', 'box-shadow');
-  }
+	@include when(always-shadow) {
+		box-shadow: getCssVar('card', 'box-shadow');
+	}
 
-  @include when(hover-shadow) {
-    &:hover,
-    &:focus {
-      box-shadow: getCssVar('card', 'box-shadow');
-    }
-  }
+	@include when(hover-shadow) {
+		&:hover,
+		&:focus {
+			box-shadow: getCssVar('card', 'box-shadow');
+		}
+	}
 
-  @include e(cover) {
-    margin-top: -1px;
-    margin-inline-start: -1px;
-    margin-inline-end: -1px;
-    box-sizing: border-box;
+	@include e(cover) {
+		margin-top: -1px;
+		margin-inline: -1px -1px;
+		box-sizing: border-box;
 
-    & >* {
-      display: block;
-      width: 100%;
-    }
-  }
+		& > * {
+			display: block;
+			width: 100%;
+		}
+	}
 
-  @include e(header-wrapper) {
-    background-color: getCssVar('card', 'header-bg-color');
-    padding: calc(#{getCssVar('card', 'padding')} - 2px) getCssVar('card', 'padding');
-    box-sizing: border-box;
-    border-bottom: 1px solid getCssVar('card', 'border-color');
-    display: flex;
-    align-items: center;
-  }
+	@include e(header-wrapper) {
+		background-color: getCssVar('card', 'header-bg-color');
+		padding: calc(#{getCssVar('card', 'padding')} - 2px) getCssVar('card', 'padding');
+		box-sizing: border-box;
+		border-bottom: 1px solid getCssVar('card', 'border-color');
+		display: flex;
+		align-items: center;
+	}
 
-  @include e(header-title) {
-    display: inline-block;
-    flex: 1;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+	@include e(header-title) {
+		display: inline-block;
+		flex: 1;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 
-  @include e(body) {
-    background-color: getCssVar('card', 'body-bg-color');
-    padding: getCssVar('card', 'padding');
-  }
+	@include e(body) {
+		background-color: getCssVar('card', 'body-bg-color');
+		padding: getCssVar('card', 'padding');
+	}
 
-  @include e(footer) {
-    background-color: getCssVar('card', 'footer-bg-color');
-    padding: calc(#{getCssVar('card', 'padding')} - 2px) getCssVar('card', 'padding');
-    box-sizing: border-box;
-    border-top: 1px solid getCssVar('card', 'border-color');
-  }
+	@include e(footer) {
+		background-color: getCssVar('card', 'footer-bg-color');
+		padding: calc(#{getCssVar('card', 'padding')} - 2px) getCssVar('card', 'padding');
+		box-sizing: border-box;
+		border-top: 1px solid getCssVar('card', 'border-color');
+	}
 
-  @each $variant in (primary, default, info, success, warning, danger) {
-    @include m(variant-#{$variant}) {
-      @include css-var-from-global(
-        ('card', 'bg-color'),
-        ('color', $variant, 'light-9')
-      );
-      @include set-css-var-value(
-        ('card', 'box-shadow'),
-        0px 0px 12px rgba(map.get($colors, $variant, 'base'), 0.5),
-      );
+	@each $variant in (primary, default, info, success, warning, danger) {
+		@include m(variant-#{$variant}) {
+			@include css-var-from-global(('card', 'bg-color'), ('color', $variant, 'light-9'));
+			@include set-css-var-value(('card', 'box-shadow'), 0 0 12px rgba(map.get($colors, $variant, 'base'), 0.5));
 
-      @include when(light) {
-        @include css-var-from-global(
-          ('card', 'border-color'),
-          ('color', $variant)
-        );
+			@include when(light) {
+				@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-        background-color: getCssVar('card', 'bg-color');
-        border-color: getCssVar('card', 'border-color');
-        color: getCssVar('color', $variant);
+				background-color: getCssVar('card', 'bg-color');
+				border-color: getCssVar('card', 'border-color');
+				color: getCssVar('color', $variant);
 
-        @include e(description) {
-          color: getCssVar('color', $variant);
-        }
-      }
+				@include e(description) {
+					color: getCssVar('color', $variant);
+				}
+			}
 
-      @include when(dark) {
-        background-color: getCssVar('color', $variant);
-        color: getCssVar('color', 'white');
-      }
-    }
-  }
+			@include when(dark) {
+				background-color: getCssVar('color', $variant);
+				color: getCssVar('color', 'white');
+			}
+		}
+	}
 
-  @include e(header-wrapper) {
-    @each $variant in (primary, default, info, success, warning, danger) {
-      @include m(variant-#{$variant}) {
-        @include css-var-from-global(
-          ('card', 'header-bg-color'),
-          ('color', $variant, 'light-9')
-        );
-      }
-    }
-  }
+	@include e(header-wrapper) {
+		@each $variant in (primary, default, info, success, warning, danger) {
+			@include m(variant-#{$variant}) {
+				@include css-var-from-global(('card', 'header-bg-color'), ('color', $variant, 'light-9'));
+			}
+		}
+	}
 
-  @include when(light) {
-    @include e(header-wrapper) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(light) {
+		@include e(header-wrapper) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('card', 'header-bg-color');
-          border-color: getCssVar('card', 'border-color');
-          color: getCssVar('color', $variant);
-        }
-      }
-    }
-  }
+					background-color: getCssVar('card', 'header-bg-color');
+					border-color: getCssVar('card', 'border-color');
+					color: getCssVar('color', $variant);
+				}
+			}
+		}
+	}
 
-  @include when(dark) {
-    @include e(header-wrapper) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(dark) {
+		@include e(header-wrapper) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('color', $variant);
-          color: getCssVar('color', 'white');
-        }
-      }
-    }
-  }
+					background-color: getCssVar('color', $variant);
+					color: getCssVar('color', 'white');
+				}
+			}
+		}
+	}
 
-  @include e(body) {
-    @each $variant in (primary, default, info, success, warning, danger) {
-      @include m(variant-#{$variant}) {
-        @include css-var-from-global(
-          ('card', 'body-bg-color'),
-          ('color', $variant, 'light-9')
-        );
-      }
-    }
-  }
+	@include e(body) {
+		@each $variant in (primary, default, info, success, warning, danger) {
+			@include m(variant-#{$variant}) {
+				@include css-var-from-global(('card', 'body-bg-color'), ('color', $variant, 'light-9'));
+			}
+		}
+	}
 
-  @include when(light) {
-    @include e(body) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(light) {
+		@include e(body) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('card', 'body-bg-color');
-          border-color: getCssVar('card', 'border-color');
-          color: getCssVar('color', $variant);
-        }
-      }
-    }
-  }
+					background-color: getCssVar('card', 'body-bg-color');
+					border-color: getCssVar('card', 'border-color');
+					color: getCssVar('color', $variant);
+				}
+			}
+		}
+	}
 
-  @include when(dark) {
-    @include e(body) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(dark) {
+		@include e(body) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('color', $variant);
-          color: getCssVar('color', 'white');
-        }
-      }
-    }
-  }
+					background-color: getCssVar('color', $variant);
+					color: getCssVar('color', 'white');
+				}
+			}
+		}
+	}
 
-  @include e(footer) {
-    @each $variant in (primary, default, info, success, warning, danger) {
-      @include m(variant-#{$variant}) {
-        @include css-var-from-global(
-          ('card', 'footer-bg-color'),
-          ('color', $variant, 'light-9')
-        );
-      }
-    }
-  }
+	@include e(footer) {
+		@each $variant in (primary, default, info, success, warning, danger) {
+			@include m(variant-#{$variant}) {
+				@include css-var-from-global(('card', 'footer-bg-color'), ('color', $variant, 'light-9'));
+			}
+		}
+	}
 
-  @include when(light) {
-    @include e(footer) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(light) {
+		@include e(footer) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('card', 'footer-bg-color');
-          border-color: getCssVar('card', 'border-color');
-          color: getCssVar('color', $variant);
-        }
-      }
-    }
-  }
+					background-color: getCssVar('card', 'footer-bg-color');
+					border-color: getCssVar('card', 'border-color');
+					color: getCssVar('color', $variant);
+				}
+			}
+		}
+	}
 
-  @include when(dark) {
-    @include e(footer) {
-      @each $variant in (primary, default, info, success, warning, danger) {
-        @include m(variant-#{$variant}) {
-          @include css-var-from-global(
-            ('card', 'border-color'),
-            ('color', $variant)
-          );
+	@include when(dark) {
+		@include e(footer) {
+			@each $variant in (primary, default, info, success, warning, danger) {
+				@include m(variant-#{$variant}) {
+					@include css-var-from-global(('card', 'border-color'), ('color', $variant));
 
-          background-color: getCssVar('color', $variant);
-          color: getCssVar('color', 'white');
-        }
-      }
-    }
-  }
+					background-color: getCssVar('color', $variant);
+					color: getCssVar('color', 'white');
+				}
+			}
+		}
+	}
 }
