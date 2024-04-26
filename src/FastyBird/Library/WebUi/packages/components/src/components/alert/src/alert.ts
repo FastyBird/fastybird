@@ -53,7 +53,7 @@ export const alertProps = buildProps({
 export type AlertProps = ExtractPropTypes<typeof alertProps>;
 
 export const alertEmits = {
-	close: (evt: UIEvent) => evt instanceof UIEvent,
+	close: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type AlertEmits = typeof alertEmits;

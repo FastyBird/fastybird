@@ -1,13 +1,6 @@
 <template>
-	<div
-		ref="container"
-		:data-disabled="props.disabled"
-		:class="ns.b()"
-	>
-		<template
-			v-for="(item, index) in props.items"
-			:key="index"
-		>
+	<div ref="container" :data-disabled="props.disabled" :class="ns.b()">
+		<template v-for="(item, index) in props.items" :key="index">
 			<fb-swipe-item
 				ref="elements"
 				v-model:revealed="innerRevealed[index]"
@@ -20,40 +13,26 @@
 				@right-revealed="$emit('rightRevealed', { index, item, close: $event.close })"
 				@active="$emit('active', $event)"
 			>
-				<template #content="{ revealed: rowRevealed, disabled: rowDisabled, revealLeft, revealRight, close }">
+				<template
+					#content="{ revealed: rowRevealed, disabled: rowDisabled, revealLeft: rowRevealLeft, revealRight: rowRevealRight, close: rowClose }"
+				>
 					<slot
 						:item="item"
 						:index="index"
 						:revealed="rowRevealed"
 						:disabled="rowDisabled"
-						:reveal-left="revealLeft"
-						:reveal-right="revealRight"
-						:close="close"
+						:reveal-left="rowRevealLeft"
+						:reveal-right="rowRevealRight"
+						:close="rowClose"
 					/>
 				</template>
 
-				<template
-					v-if="'left' in $slots"
-					#left="{ close }"
-				>
-					<slot
-						:item="item"
-						:index="index"
-						:close="close"
-						name="left"
-					/>
+				<template v-if="'left' in $slots" #left="{ close: closeLeft }">
+					<slot :item="item" :index="index" :close="closeLeft" name="left" />
 				</template>
 
-				<template
-					v-if="'right' in $slots"
-					#right="{ close }"
-				>
-					<slot
-						:item="item"
-						:index="index"
-						:close="close"
-						name="right"
-					/>
+				<template v-if="'right' in $slots" #right="{ close: closeRight }">
+					<slot :item="item" :index="index" :close="closeRight" name="right" />
 				</template>
 			</fb-swipe-item>
 		</template>
@@ -141,7 +120,8 @@ const handleClosed = (item: any, index: number): void => {
 		item,
 	});
 
-	const { [index]: omit, ...newRevealed } = innerRevealed.value;
+	const newRevealed = innerRevealed.value;
+	delete newRevealed[index];
 
 	emitRevealed(newRevealed);
 };

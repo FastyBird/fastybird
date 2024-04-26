@@ -1,8 +1,5 @@
 <template>
-	<teleport
-		to="#fb-layout-phone-menu-button"
-		:disabled="!props.teleport"
-	>
+	<teleport to="#fb-layout-phone-menu-button" :disabled="!props.teleport">
 		<slot />
 	</teleport>
 </template>

@@ -1,8 +1,5 @@
 <template>
-	<span
-		:class="containerClass"
-		@click="handleChange"
-	>
+	<span :class="containerClass" @click="handleChange">
 		<slot />
 	</span>
 </template>

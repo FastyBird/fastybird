@@ -10,28 +10,16 @@
 		<!-- input -->
 		<template v-if="props.type !== 'textarea'">
 			<!-- prepend slot -->
-			<div
-				v-if="'prepend' in $slots"
-				:class="nsInput.be('group', 'prepend')"
-			>
+			<div v-if="'prepend' in $slots" :class="nsInput.be('group', 'prepend')">
 				<slot name="prepend" />
 			</div>
 
-			<div
-				ref="wrapperRef"
-				:class="wrapperClass"
-			>
+			<div ref="wrapperRef" :class="wrapperClass">
 				<!-- prefix slot -->
-				<span
-					v-if="'prefix' in $slots || props.prefixIcon"
-					:class="nsInput.e('prefix')"
-				>
+				<span v-if="'prefix' in $slots || props.prefixIcon" :class="nsInput.e('prefix')">
 					<span :class="nsInput.e('prefix-inner')">
 						<slot name="prefix" />
-						<fb-icon
-							v-if="props.prefixIcon"
-							:class="nsInput.e('icon')"
-						>
+						<fb-icon v-if="props.prefixIcon" :class="nsInput.e('icon')">
 							<component :is="props.prefixIcon" />
 						</fb-icon>
 					</span>
@@ -65,39 +53,21 @@
 				/>
 
 				<!-- suffix slot -->
-				<span
-					v-if="suffixVisible"
-					:class="nsInput.e('suffix')"
-				>
+				<span v-if="suffixVisible" :class="nsInput.e('suffix')">
 					<span :class="nsInput.e('suffix-inner')">
 						<template v-if="!showClear || !showPwdVisible || !isWordLimitVisible">
 							<slot name="suffix" />
-							<fb-icon
-								v-if="props.suffixIcon"
-								:class="nsInput.e('icon')"
-							>
+							<fb-icon v-if="props.suffixIcon" :class="nsInput.e('icon')">
 								<component :is="props.suffixIcon" />
 							</fb-icon>
 						</template>
-						<fb-icon
-							v-if="showClear"
-							:class="[nsInput.e('icon'), nsInput.e('clear')]"
-							@mousedown.prevent="NOOP"
-							@click="clear"
-						>
+						<fb-icon v-if="showClear" :class="[nsInput.e('icon'), nsInput.e('clear')]" @mousedown.prevent="NOOP" @click="clear">
 							<icon-close />
 						</fb-icon>
-						<fb-icon
-							v-if="showPwdVisible"
-							:class="[nsInput.e('icon'), nsInput.e('password')]"
-							@click="handlePasswordVisible"
-						>
+						<fb-icon v-if="showPwdVisible" :class="[nsInput.e('icon'), nsInput.e('password')]" @click="handlePasswordVisible">
 							<component :is="passwordIcon" />
 						</fb-icon>
-						<span
-							v-if="isWordLimitVisible"
-							:class="nsInput.e('count')"
-						>
+						<span v-if="isWordLimitVisible" :class="nsInput.e('count')">
 							<span :class="nsInput.e('count-inner')"> {{ textLength }} / {{ props.maxlength }} </span>
 						</span>
 						<fb-icon
@@ -111,10 +81,7 @@
 			</div>
 
 			<!-- append slot -->
-			<div
-				v-if="'append' in $slots"
-				:class="nsInput.be('group', 'append')"
-			>
+			<div v-if="'append' in $slots" :class="nsInput.be('group', 'append')">
 				<slot name="append" />
 			</div>
 		</template>
@@ -146,20 +113,14 @@
 				@change="handleChange"
 				@keydown="handleKeydown"
 			/>
-			<span
-				v-if="isWordLimitVisible"
-				:style="countStyle"
-				:class="nsInput.e('count')"
-			>
-				{{ textLength }} / {{ props.maxlength }}
-			</span>
+			<span v-if="isWordLimitVisible" :style="countStyle" :class="nsInput.e('count')"> {{ textLength }} / {{ props.maxlength }} </span>
 		</template>
 	</div>
 </template>
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, ref, shallowRef, toRef, useAttrs as useRawAttrs, useSlots, watch } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { useResizeObserver } from '@vueuse/core';
 import { FasCircleXmark as IconClose, FasEyeSlash as IconHide, FasEye as IconView } from '@fastybird/web-ui-icons';

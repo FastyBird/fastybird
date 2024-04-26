@@ -7,7 +7,7 @@ import type { Modifier } from '@popperjs/core';
 import type { Measurable } from './constants';
 import type { PopperCoreConfigProps } from './content';
 
-export const buildPopperOptions = (props: PopperCoreConfigProps, modifiers: Modifier<any, any>[] = []) => {
+export const buildPopperOptions = (props: PopperCoreConfigProps, modifiers: Modifier<any, any>[] = []): PopperCoreConfigProps => {
 	const { placement, strategy, popperOptions } = props;
 	const options = {
 		placement,
@@ -17,10 +17,11 @@ export const buildPopperOptions = (props: PopperCoreConfigProps, modifiers: Modi
 	};
 
 	deriveExtraModifiers(options, popperOptions?.modifiers);
+
 	return options;
 };
 
-export const unwrapMeasurableEl = ($el: MaybeRef<Measurable | undefined | ComponentPublicInstance>) => {
+export const unwrapMeasurableEl = ($el: MaybeRef<Measurable | undefined | ComponentPublicInstance>): HTMLElement | undefined => {
 	if (!isClient) {
 		return;
 	}
@@ -28,8 +29,9 @@ export const unwrapMeasurableEl = ($el: MaybeRef<Measurable | undefined | Compon
 	return unrefElement($el as HTMLElement);
 };
 
-function genModifiers(options: PopperCoreConfigProps) {
+const genModifiers = (options: PopperCoreConfigProps): any[] => {
 	const { offset, gpuAcceleration, fallbackPlacements } = options;
+
 	return [
 		{
 			name: 'offset',
@@ -62,10 +64,10 @@ function genModifiers(options: PopperCoreConfigProps) {
 			},
 		},
 	];
-}
+};
 
-function deriveExtraModifiers(options: any, modifiers: PopperCoreConfigProps['popperOptions']['modifiers']) {
+const deriveExtraModifiers = (options: any, modifiers: PopperCoreConfigProps['popperOptions']['modifiers']): void => {
 	if (modifiers) {
 		options.modifiers = [...options.modifiers, ...(modifiers ?? [])];
 	}
-}
+};

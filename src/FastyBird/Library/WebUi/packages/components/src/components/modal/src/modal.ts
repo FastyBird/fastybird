@@ -127,15 +127,15 @@ export const modalProps = buildProps({
 export type ModalProps = ExtractPropTypes<typeof modalProps>;
 
 export const modalEmits = {
-	open: () => true,
-	opened: () => true,
-	close: () => true,
-	closed: () => true,
-	[UPDATE_MODEL_EVENT]: (value: boolean) => isBoolean(value),
-	openAutoFocus: () => true,
-	closeAutoFocus: () => true,
-	leftClick: () => true,
-	rightClick: () => true,
+	open: (): boolean => true,
+	opened: (): boolean => true,
+	close: (): boolean => true,
+	closed: (): boolean => true,
+	[UPDATE_MODEL_EVENT]: (value: boolean): boolean => isBoolean(value),
+	openAutoFocus: (): boolean => true,
+	closeAutoFocus: (): boolean => true,
+	leftClick: (): boolean => true,
+	rightClick: (): boolean => true,
 };
 
 export type ModalEmits = typeof modalEmits;

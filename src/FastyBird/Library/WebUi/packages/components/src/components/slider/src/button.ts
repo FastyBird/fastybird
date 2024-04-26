@@ -27,7 +27,7 @@ export const sliderButtonProps = buildProps({
 export type SliderButtonProps = ExtractPropTypes<typeof sliderButtonProps>;
 
 export const sliderButtonEmits = {
-	[UPDATE_MODEL_EVENT]: (value: number) => isNumber(value),
+	[UPDATE_MODEL_EVENT]: (value: number): boolean => isNumber(value),
 };
 
 export type SliderButtonEmits = typeof sliderButtonEmits;

@@ -1,10 +1,5 @@
 <template>
-	<div
-		:ref="composedDrawerRef"
-		:class="drawerClass"
-		:style="isHorizontal ? 'width: ' + drawerSize : 'height: ' + drawerSize"
-		tabindex="-1"
-	>
+	<div :ref="composedDrawerRef" :class="drawerClass" :style="isHorizontal ? 'width: ' + drawerSize : 'height: ' + drawerSize" tabindex="-1">
 		<slot name="content">
 			<fb-drawer-header
 				v-if="props.showHeader"
@@ -17,60 +12,36 @@
 				:aria-level="props.ariaLevel"
 				@close="$emit('close', $event)"
 			>
-				<template
-					v-if="'title' in $slots"
-					#title
-				>
+				<template v-if="'title' in $slots" #title>
 					<slot name="title" />
 				</template>
 
-				<template
-					v-if="'subtitle' in $slots"
-					#subtitle
-				>
+				<template v-if="'subtitle' in $slots" #subtitle>
 					<slot name="subtitle" />
 				</template>
 
-				<template
-					v-if="'icon' in $slots"
-					#icon
-				>
+				<template v-if="'icon' in $slots" #icon>
 					<slot name="icon" />
 				</template>
 
-				<template
-					v-if="'description' in $slots"
-					#description
-				>
+				<template v-if="'description' in $slots" #description>
 					<slot name="description" />
 				</template>
 
-				<template
-					v-if="'left-button' in $slots"
-					#left-button
-				>
+				<template v-if="'left-button' in $slots" #left-button>
 					<slot name="left-button" />
 				</template>
 
-				<template
-					v-if="'right-button' in $slots"
-					#right-button
-				>
+				<template v-if="'right-button' in $slots" #right-button>
 					<slot name="right-button" />
 				</template>
 
-				<template
-					v-if="'header' in $slots"
-					#default
-				>
+				<template v-if="'header' in $slots" #default>
 					<slot name="header" />
 				</template>
 			</fb-drawer-header>
 
-			<div
-				:id="bodyId"
-				:class="ns.e('body')"
-			>
+			<div :id="bodyId" :class="ns.e('body')">
 				<slot />
 			</div>
 
@@ -81,27 +52,18 @@
 				:left-btn-label="props.leftBtnLabel"
 				:show-right-btn="props.showRightBtn"
 				:right-btn-label="props.rightBtnLabel"
-				@leftClick="$emit('leftClick', $event)"
-				@rightClick="$emit('rightClick', $event)"
+				@left-click="$emit('leftClick', $event)"
+				@right-click="$emit('rightClick', $event)"
 			>
-				<template
-					v-if="'left-button' in $slots"
-					#left-button
-				>
+				<template v-if="'left-button' in $slots" #left-button>
 					<slot name="left-button" />
 				</template>
 
-				<template
-					v-if="'right-button' in $slots"
-					#right-button
-				>
+				<template v-if="'right-button' in $slots" #right-button>
 					<slot name="right-button" />
 				</template>
 
-				<template
-					v-if="'footer' in $slots"
-					#default
-				>
+				<template v-if="'footer' in $slots" #default>
 					<slot name="footer" />
 				</template>
 			</fb-drawer-footer>

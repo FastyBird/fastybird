@@ -37,10 +37,10 @@ export const tabNavItemProps = buildProps({
 export type TabNavItemProps = ExtractPropTypes<typeof tabNavItemProps>;
 
 export const tabNavItemEmits = {
-	click: (ev: Event) => ev instanceof Event,
-	remove: (ev: Event) => ev instanceof Event,
-	focus: () => true,
-	blur: () => true,
+	click: (ev: Event): boolean => ev instanceof Event,
+	remove: (ev: Event): boolean => ev instanceof Event,
+	focus: (): boolean => true,
+	blur: (): boolean => true,
 };
 
 export type TabNavItemEmits = typeof tabNavItemEmits;

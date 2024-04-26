@@ -1,12 +1,12 @@
 import { defineComponent, inject } from 'vue';
-import { isEqual } from 'lodash-unified';
+import { isEqual } from 'lodash';
 
 import { isArray } from '@vue/shared';
 import { isFunction, isString } from '@fastybird/web-ui-utils';
 
 import { selectContextKey } from './constants';
 
-import type { Component, VNode, VNodeNormalizedChildren } from 'vue';
+import type { Component, RendererElement, RendererNode, VNode, VNodeNormalizedChildren } from 'vue';
 
 export default defineComponent({
 	name: 'FbOptions',
@@ -16,8 +16,8 @@ export default defineComponent({
 
 		let cachedValueList: (string | number | boolean | object)[] = [];
 
-		return () => {
-			const children = slots.default?.()!;
+		return (): VNode<RendererNode, RendererElement, { [key: string]: any }>[] => {
+			const children = slots.default?.() ?? [];
 			const valueList: (string | number | boolean | object)[] = [];
 
 			const filterOptions = (children?: VNodeNormalizedChildren): void => {

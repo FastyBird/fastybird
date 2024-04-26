@@ -1,9 +1,5 @@
 <template>
-	<div
-		ref="barRef"
-		:class="[ns.e('active-bar'), ns.is(rootTabs.props.tabPosition)]"
-		:style="barStyle"
-	/>
+	<div ref="barRef" :class="[ns.e('active-bar'), ns.is(rootTabs.props.tabPosition)]" :style="barStyle" />
 </template>
 
 <script lang="ts" setup>
@@ -67,7 +63,7 @@ const getBarStyle = (): CSSProperties => {
 	};
 };
 
-const update = () => (barStyle.value = getBarStyle());
+const update = (): void => (barStyle.value = getBarStyle());
 
 watch(
 	(): HTMLElement | undefined => props.activeItemRef,

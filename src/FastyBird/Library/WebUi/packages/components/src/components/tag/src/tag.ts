@@ -68,8 +68,8 @@ export const tagProps = buildProps({
 export type TagProps = ExtractPropTypes<typeof tagProps>;
 
 export const tagEmits = {
-	close: (evt: UIEvent) => evt instanceof UIEvent,
-	click: (evt: UIEvent) => evt instanceof UIEvent,
+	close: (evt: UIEvent): boolean => evt instanceof UIEvent,
+	click: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type TagEmits = typeof tagEmits;

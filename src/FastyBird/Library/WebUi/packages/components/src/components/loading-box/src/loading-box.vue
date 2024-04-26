@@ -1,37 +1,21 @@
 <template>
 	<transition :name="props.animation ? ns.b('bounce') : 'none'">
-		<div
-			v-if="props.show"
-			:class="[ns.b(), ns.m('size-' + props.size), ns.m('variant-' + props.variant), ns.is('fullscreen', props.fullScreen)]"
-		>
-			<div
-				v-if="'icon' in $slots"
-				:class="ns.e('icon')"
-			>
+		<div v-if="props.show" :class="[ns.b(), ns.m('size-' + props.size), ns.m('variant-' + props.variant), ns.is('fullscreen', props.fullScreen)]">
+			<div v-if="'icon' in $slots" :class="ns.e('icon')">
 				<slot name="icon" />
 			</div>
 
 			<template v-if="props.spinner">
-				<component
-					v-if="typeof props.spinner === 'string'"
-					:is="props.spinner"
-					class="fb-icon"
-				/>
+				<component :is="props.spinner" v-if="typeof props.spinner === 'string'" class="fb-icon" />
 				<template v-else-if="typeof props.spinner === 'boolean'">
-					<fb-spinner
-						:size="props.size"
-						:variant="props.variant"
-					/>
+					<fb-spinner :size="props.size" :variant="props.variant" />
 				</template>
 				<template v-else>
 					{{ props.spinner }}
 				</template>
 			</template>
 
-			<div
-				v-if="'default' in $slots"
-				:class="ns.e('content')"
-			>
+			<div v-if="'default' in $slots" :class="ns.e('content')">
 				<slot />
 			</div>
 		</div>

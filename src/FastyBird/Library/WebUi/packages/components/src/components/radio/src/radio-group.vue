@@ -2,8 +2,8 @@
 	<component
 		:is="props.tag"
 		:id="groupId"
-		:class="ns.b('group')"
 		ref="radioGroupRef"
+		:class="ns.b('group')"
 		role="radiogroup"
 		:aria-label="!isLabeledByFormItem ? props.label || 'radio-group' : undefined"
 		:aria-labelledby="isLabeledByFormItem ? formItem!.labelId : undefined"

@@ -1,26 +1,14 @@
 <template>
 	<span :class="ns.e('item')">
-		<span
-			ref="link"
-			:class="[ns.e('inner'), ns.is('link', !!props.to)]"
-			role="link"
-			@click="onClick"
-		>
+		<span ref="link" :class="[ns.e('inner'), ns.is('link', !!props.to)]" role="link" @click="onClick">
 			<slot />
 		</span>
 
-		<fb-icon
-			v-if="breadcrumbContext?.separatorIcon"
-			:class="ns.e('separator')"
-		>
+		<fb-icon v-if="breadcrumbContext?.separatorIcon" :class="ns.e('separator')">
 			<component :is="breadcrumbContext.separatorIcon" />
 		</fb-icon>
 
-		<span
-			v-else
-			:class="ns.e('separator')"
-			role="presentation"
-		>
+		<span v-else :class="ns.e('separator')" role="presentation">
 			{{ breadcrumbContext?.separator }}
 		</span>
 	</span>

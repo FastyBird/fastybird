@@ -1,4 +1,4 @@
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { buildProps, definePropType, isNumber } from '@fastybird/web-ui-utils';
 import { CHANGE_EVENT, ComponentSize, ComponentSizeTypes, INPUT_EVENT, UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
@@ -141,11 +141,11 @@ export const inputNumberProps = buildProps({
 export type InputNumberProps = ExtractPropTypes<typeof inputNumberProps>;
 
 export const inputNumberEmits = {
-	[CHANGE_EVENT]: (cur: number | undefined, prev: number | undefined) => prev !== cur,
-	blur: (e: FocusEvent) => e instanceof FocusEvent,
-	focus: (e: FocusEvent) => e instanceof FocusEvent,
-	[INPUT_EVENT]: (val: number | null | undefined) => isNumber(val) || isNil(val),
-	[UPDATE_MODEL_EVENT]: (val: number | undefined) => isNumber(val) || isNil(val),
+	[CHANGE_EVENT]: (cur: number | undefined, prev: number | undefined): boolean => prev !== cur,
+	blur: (e: FocusEvent): boolean => e instanceof FocusEvent,
+	focus: (e: FocusEvent): boolean => e instanceof FocusEvent,
+	[INPUT_EVENT]: (val: number | null | undefined): boolean => isNumber(val) || isNil(val),
+	[UPDATE_MODEL_EVENT]: (val: number | undefined): boolean => isNumber(val) || isNil(val),
 };
 
 export type InputNumberEmits = typeof inputNumberEmits;

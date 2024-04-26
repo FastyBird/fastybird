@@ -4,10 +4,7 @@
 		:class="[ns.b(), ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT)]"
 		@click="emit('click', $event)"
 	>
-		<div
-			v-if="'icon' in $slots"
-			:class="ns.e('icon')"
-		>
+		<div v-if="'icon' in $slots" :class="ns.e('icon')">
 			<slot name="icon" />
 		</div>
 
@@ -18,18 +15,11 @@
 			</small>
 		</h2>
 
-		<div
-			v-if="'detail' in $slots"
-			:class="ns.e('content')"
-		>
+		<div v-if="'detail' in $slots" :class="ns.e('content')">
 			<slot name="detail" />
 		</div>
 
-		<div
-			v-else-if="'button' in $slots"
-			:class="ns.e('button')"
-			@click.stop="void 0"
-		>
+		<div v-else-if="'button' in $slots" :class="ns.e('button')" @click.stop="void 0">
 			<slot name="button" />
 		</div>
 	</div>

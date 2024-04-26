@@ -1,19 +1,10 @@
 <template>
-	<span
-		v-bind="$attrs"
-		:class="[ns.b(), ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT)]"
-	>
-		<fb-icon
-			:class="ns.e('icon')"
-			:size="props.size"
-		>
+	<span v-bind="$attrs" :class="[ns.b(), ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT)]">
+		<fb-icon :class="ns.e('icon')" :size="props.size">
 			<slot name="icon" />
 		</fb-icon>
 
-		<fb-icon
-			:class="ns.e('child-icon')"
-			:size="childSize"
-		>
+		<fb-icon :class="ns.e('child-icon')" :size="childSize">
 			<slot name="child" />
 		</fb-icon>
 	</span>

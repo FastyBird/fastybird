@@ -1,22 +1,46 @@
-import { computed, nextTick, ref, shallowRef } from 'vue';
+import { computed, ComputedRef, nextTick, ref, shallowRef } from 'vue';
 
 import { CHANGE_EVENT, INPUT_EVENT, UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 
 import { useFormItem } from '../../../form-item';
 
-import type { CSSProperties, Ref, SetupContext } from 'vue';
+import type { CSSProperties, Ref, SetupContext, ShallowRef } from 'vue';
 import type { Arrayable } from '@fastybird/web-ui-utils';
+import type { FormItemContext } from '../../../form-item';
 import type { SliderEmits, SliderInitData, SliderProps } from '../slider';
-import type { ButtonRefs, SliderButtonInstance } from '../button';
+import type { ButtonRefs } from '../button';
+import type { FbSliderButtonInstance } from '../instance';
 
-export const useSlide = (props: SliderProps, initData: SliderInitData, emit: SetupContext<SliderEmits>['emit']) => {
+export const useSlide = (
+	props: SliderProps,
+	initData: SliderInitData,
+	emit: SetupContext<SliderEmits>['emit']
+): {
+	formItem: FormItemContext | undefined;
+	slider: ShallowRef<HTMLElement | undefined>;
+	firstButton: Ref<FbSliderButtonInstance | undefined>;
+	secondButton: Ref<FbSliderButtonInstance | undefined>;
+	sliderDisabled: ComputedRef<boolean>;
+	minValue: ComputedRef<number>;
+	maxValue: ComputedRef<number>;
+	runwayStyle: ComputedRef<CSSProperties>;
+	barStyle: ComputedRef<CSSProperties>;
+	resetSize: () => void;
+	setPosition: (percent: number) => Ref<FbSliderButtonInstance | undefined>;
+	emitChange: () => Promise<void>;
+	onSliderWrapperPrevent: (event: TouchEvent) => void;
+	onSliderClick: (event: MouseEvent | TouchEvent) => Promise<void>;
+	onSliderDown: (event: MouseEvent | TouchEvent) => Promise<void>;
+	setFirstValue: (firstValue: number | undefined) => void;
+	setSecondValue: (secondValue: number) => void;
+} => {
 	const { form: elForm, formItem } = useFormItem();
 
-	const slider = shallowRef<HTMLElement>();
+	const slider = shallowRef<HTMLElement | undefined>();
 
-	const firstButton = ref<SliderButtonInstance>();
+	const firstButton = ref<FbSliderButtonInstance | undefined>();
 
-	const secondButton = ref<SliderButtonInstance>();
+	const secondButton = ref<FbSliderButtonInstance | undefined>();
 
 	const buttonRefs: ButtonRefs = {
 		firstButton,
@@ -67,7 +91,7 @@ export const useSlide = (props: SliderProps, initData: SliderInitData, emit: Set
 		}
 	};
 
-	const getButtonRefByPercent = (percent: number): Ref<SliderButtonInstance | undefined> => {
+	const getButtonRefByPercent = (percent: number): Ref<FbSliderButtonInstance | undefined> => {
 		const targetValue = props.min + (percent * (props.max - props.min)) / 100;
 
 		if (!props.range) {
@@ -85,7 +109,7 @@ export const useSlide = (props: SliderProps, initData: SliderInitData, emit: Set
 		return buttonRefs[buttonRefName];
 	};
 
-	const setPosition = (percent: number): Ref<SliderButtonInstance | undefined> => {
+	const setPosition = (percent: number): Ref<FbSliderButtonInstance | undefined> => {
 		const buttonRef = getButtonRefByPercent(percent);
 
 		buttonRef.value!.setPosition(percent);
@@ -118,7 +142,7 @@ export const useSlide = (props: SliderProps, initData: SliderInitData, emit: Set
 		emit(CHANGE_EVENT, props.range ? [minValue.value, maxValue.value] : props.modelValue);
 	};
 
-	const handleSliderPointerEvent = (event: MouseEvent | TouchEvent): Ref<SliderButtonInstance | undefined> | undefined => {
+	const handleSliderPointerEvent = (event: MouseEvent | TouchEvent): Ref<FbSliderButtonInstance | undefined> | undefined => {
 		if (sliderDisabled.value || initData.dragging) {
 			return;
 		}

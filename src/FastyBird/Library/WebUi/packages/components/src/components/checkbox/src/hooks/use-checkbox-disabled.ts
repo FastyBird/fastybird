@@ -1,4 +1,4 @@
-import { computed, inject } from 'vue';
+import { computed, ComputedRef, inject } from 'vue';
 
 import { isUndefined } from '@fastybird/web-ui-utils';
 
@@ -7,7 +7,13 @@ import { checkboxGroupContextKey } from '../constants';
 
 import type { CheckboxModel, CheckboxStatus } from './';
 
-export const useCheckboxDisabled = ({ model, isChecked }: Pick<CheckboxModel, 'model'> & Pick<CheckboxStatus, 'isChecked'>) => {
+export const useCheckboxDisabled = ({
+	model,
+	isChecked,
+}: Pick<CheckboxModel, 'model'> & Pick<CheckboxStatus, 'isChecked'>): {
+	isDisabled: ComputedRef<boolean>;
+	isLimitDisabled: ComputedRef<boolean>;
+} => {
 	const checkboxGroup = inject(checkboxGroupContextKey, undefined);
 
 	const isLimitDisabled = computed(() => {

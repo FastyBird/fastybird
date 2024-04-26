@@ -1,8 +1,5 @@
 <template>
-	<fb-popper
-		ref="popperRef"
-		:role="props.role"
-	>
+	<fb-popper ref="popperRef" :role="props.role">
 		<fb-tooltip-trigger
 			:disabled="props.disabled"
 			:trigger="props.trigger"
@@ -43,17 +40,11 @@
 			:append-to="props.appendTo"
 		>
 			<slot name="content">
-				<span
-					v-if="props.rawContent"
-					v-html="props.content"
-				/>
+				<span v-if="props.rawContent" v-html="props.content" />
 				<span v-else>{{ props.content }}</span>
 			</slot>
 
-			<fb-popper-arrow
-				v-if="props.showArrow"
-				:arrow-offset="props.arrowOffset"
-			/>
+			<fb-popper-arrow v-if="props.showArrow" :arrow-offset="props.arrowOffset" />
 		</fb-tooltip-content>
 	</fb-popper>
 </template>

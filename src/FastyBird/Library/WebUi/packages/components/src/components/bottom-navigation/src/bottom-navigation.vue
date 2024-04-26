@@ -1,50 +1,24 @@
 <template>
-	<div
-		ref="element"
-		class="fb-theme-layout-phone-menu__container"
-		@keyup.esc="emit('close', $event)"
-	>
+	<div ref="element" class="fb-theme-layout-phone-menu__container" @keyup.esc="emit('close', $event)">
 		<transition name="fb-theme-layout-phone-menu-backdrop">
-			<div
-				v-if="show || teleportHasContent"
-				class="fb-theme-layout-phone-menu__backdrop"
-				@click.prevent="emit('close', $event)"
-			/>
+			<div v-if="show || teleportHasContent" class="fb-theme-layout-phone-menu__backdrop" @click.prevent="emit('close', $event)" />
 		</transition>
 
 		<transition name="fb-theme-layout-phone-menu-content">
-			<div
-				v-if="props.show || teleportHasContent"
-				class="fb-theme-layout-phone-menu__inner"
-			>
+			<div v-if="props.show || teleportHasContent" class="fb-theme-layout-phone-menu__inner">
 				<div class="fb-theme-layout-phone-menu__content">
-					<h4
-						id="fb-layout-phone-menu-heading"
-						class="fb-theme-layout-phone-menu__heading"
-					>
+					<h4 id="fb-layout-phone-menu-heading" class="fb-theme-layout-phone-menu__heading">
 						<slot name="heading" />
 					</h4>
 
-					<div
-						id="fb-layout-phone-menu-items"
-						@change="itemsTeleportChanged"
-					>
+					<div id="fb-layout-phone-menu-items" @change="itemsTeleportChanged">
 						<slot />
 					</div>
 				</div>
 
-				<div
-					v-if="props.showClose"
-					id="fb-layout-phone-menu-button"
-					class="fb-theme-layout-phone-menu__footer"
-				>
+				<div v-if="props.showClose" id="fb-layout-phone-menu-button" class="fb-theme-layout-phone-menu__footer">
 					<slot name="close-button">
-						<fb-button
-							:size="ComponentSizeTypes.LARGE"
-							link
-							block
-							@click.prevent="emit('close', $event)"
-						>
+						<fb-button :size="ComponentSizeTypes.LARGE" link block @click.prevent="emit('close', $event)">
 							{{ props.closeBtnText }}
 						</fb-button>
 					</slot>

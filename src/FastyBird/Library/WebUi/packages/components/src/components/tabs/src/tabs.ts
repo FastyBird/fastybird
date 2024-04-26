@@ -1,4 +1,4 @@
-import { buildProps, definePropType, isNumber, isString } from '@fastybird/web-ui-utils';
+import { buildProps, definePropType, isNumber, isObject, isString, isUndefined } from '@fastybird/web-ui-utils';
 import { UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 
 import { tabNavTypes } from './tab-nav';
@@ -85,12 +85,13 @@ export const tabsProps = buildProps({
 export type TabsProps = ExtractPropTypes<typeof tabsProps>;
 
 export const tabsEmits = {
-	[UPDATE_MODEL_EVENT]: (name: TabPaneName) => isPaneName(name),
-	tabClick: (pane: TabsPaneContext, ev: Event) => ev instanceof Event,
-	tabChange: (name: TabPaneName) => isPaneName(name),
-	edit: (paneName: TabPaneName | undefined, action: 'remove' | 'add') => ['remove', 'add'].includes(action),
-	tabRemove: (name: TabPaneName) => isPaneName(name),
-	tabAdd: () => true,
+	[UPDATE_MODEL_EVENT]: (name: TabPaneName): boolean => isPaneName(name),
+	tabClick: (pane: TabsPaneContext, ev: Event): boolean => ev instanceof Event && isObject(pane),
+	tabChange: (name: TabPaneName): boolean => isPaneName(name),
+	edit: (paneName: TabPaneName | undefined, action: 'remove' | 'add'): boolean =>
+		['remove', 'add'].includes(action) && (isString(paneName) || isNumber(paneName) || isUndefined(paneName)),
+	tabRemove: (name: TabPaneName): boolean => isPaneName(name),
+	tabAdd: (): boolean => true,
 };
 
 export type TabsEmits = typeof tabsEmits;

@@ -1,8 +1,5 @@
 <template>
-	<transition
-		mode="out-in"
-		v-bind="listeners"
-	>
+	<transition mode="out-in" v-bind="listeners">
 		<slot />
 	</transition>
 </template>

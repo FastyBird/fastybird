@@ -1,10 +1,7 @@
 <template>
 	<template v-if="props.teleport">
 		<teleport :to="`#${teleportTarget}`">
-			<div
-				v-if="'prepend' in $slots"
-				:class="[ns.e('prepend')]"
-			>
+			<div v-if="'prepend' in $slots" :class="[ns.e('prepend')]">
 				<slot name="prepend" />
 			</div>
 
@@ -18,20 +15,14 @@
 				</template>
 			</h1>
 
-			<div
-				v-if="'append' in $slots"
-				:class="[ns.e('append')]"
-			>
+			<div v-if="'append' in $slots" :class="[ns.e('append')]">
 				<slot name="append" />
 			</div>
 		</teleport>
 	</template>
 
 	<template v-else>
-		<div
-			v-if="'prepend' in $slots"
-			:class="[ns.e('prepend')]"
-		>
+		<div v-if="'prepend' in $slots" :class="[ns.e('prepend')]">
 			<slot name="prepend" />
 		</div>
 
@@ -45,10 +36,7 @@
 			</template>
 		</h1>
 
-		<div
-			v-if="'append' in $slots"
-			:class="[ns.e('append')]"
-		>
+		<div v-if="'append' in $slots" :class="[ns.e('append')]">
 			<slot name="append" />
 		</div>
 	</template>

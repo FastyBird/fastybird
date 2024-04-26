@@ -1,17 +1,6 @@
 <template>
-	<thumb
-		:move="moveX"
-		:ratio="ratioX"
-		:size="sizeWidth"
-		:always="props.always"
-	/>
-	<thumb
-		:move="moveY"
-		:ratio="ratioY"
-		:size="sizeHeight"
-		vertical
-		:always="props.always"
-	/>
+	<thumb :move="moveX" :ratio="ratioX" :size="sizeWidth" :always="props.always" />
+	<thumb :move="moveY" :ratio="ratioY" :size="sizeHeight" vertical :always="props.always" />
 </template>
 
 <script lang="ts" setup>

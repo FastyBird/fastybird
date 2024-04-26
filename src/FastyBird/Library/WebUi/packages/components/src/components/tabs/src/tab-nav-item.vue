@@ -1,6 +1,8 @@
 <template>
 	<div
+		:id="`tab-${tabName}`"
 		ref="tabNavItemRef"
+		:key="`tab-${uid}`"
 		:class="[
 			ns.e('item'),
 			ns.is(rootTabs.props.tabPosition),
@@ -9,8 +11,6 @@
 			ns.is('closable', closable),
 			ns.is('focus', props.isFocus),
 		]"
-		:id="`tab-${tabName}`"
-		:key="`tab-${uid}`"
 		:aria-controls="`pane-${tabName}`"
 		:aria-selected="props.pane.active"
 		:tabindex="!disabled && props.pane.active ? 0 : -1"
@@ -20,21 +20,16 @@
 		@click="handleClick"
 		@keydown="handleRemove"
 	>
-		<component
-			v-if="customLabel"
-			v-for="(label, index) in customLabel"
-			:key="index"
-			:is="label"
-		/>
+		<template v-if="customLabel">
+			<template v-for="(label, index) in customLabel" :key="index">
+				<component :is="label" />
+			</template>
+		</template>
 		<template v-else>
 			{{ props.pane.props.label }}
 		</template>
 
-		<fb-icon
-			v-if="closable"
-			class="is-icon-close"
-			@click="handleRemove"
-		>
+		<fb-icon v-if="closable" class="is-icon-close" @click="handleRemove">
 			<close />
 		</fb-icon>
 	</div>
@@ -79,9 +74,7 @@ const closable = !disabled && (props.pane.isClosable || props.editable);
 
 const customLabel = props.pane.slots.label?.();
 
-props.pane.index = `${props.index}`;
-
-const handleClick = (ev: MouseEvent) => {
+const handleClick = (ev: MouseEvent): void => {
 	emit('blur');
 	emit('click', ev);
 };

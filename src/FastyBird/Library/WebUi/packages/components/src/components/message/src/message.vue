@@ -1,9 +1,5 @@
 <template>
-	<transition
-		:name="ns.b('fade')"
-		@before-leave="$emit('close')"
-		@after-leave="$emit('destroy')"
-	>
+	<transition :name="ns.b('fade')" @before-leave="$emit('close')" @after-leave="$emit('destroy')">
 		<div
 			v-show="visible"
 			:id="props.id"
@@ -20,37 +16,18 @@
 			@mouseenter="handleClearTimer"
 			@mouseleave="handleStartTimer"
 		>
-			<fb-badge
-				v-if="props.repeatNum > 1"
-				:value="props.repeatNum"
-				:type="badgeType"
-				:class="ns.e('badge')"
-			/>
-			<fb-icon
-				v-if="iconComponent"
-				:class="[ns.e('icon'), typeClass]"
-			>
+			<fb-badge v-if="props.repeatNum > 1" :value="props.repeatNum" :type="badgeType" :class="ns.e('badge')" />
+			<fb-icon v-if="iconComponent" :class="[ns.e('icon'), typeClass]">
 				<component :is="iconComponent" />
 			</fb-icon>
 			<slot>
-				<p
-					v-if="!props.dangerouslyUseHTMLString"
-					:class="ns.e('content')"
-				>
+				<p v-if="!props.dangerouslyUseHTMLString" :class="ns.e('content')">
 					{{ props.message }}
 				</p>
 				<!-- Caution here, message could've been compromised, never use user's input as message -->
-				<p
-					v-else
-					:class="ns.e('content')"
-					v-html="props.message"
-				/>
+				<p v-else :class="ns.e('content')" v-html="props.message" />
 			</slot>
-			<fb-icon
-				v-if="props.showClose"
-				:class="ns.e('closeBtn')"
-				@click.stop="handleClose"
-			>
+			<fb-icon v-if="props.showClose" :class="ns.e('closeBtn')" @click.stop="handleClose">
 				<close />
 			</fb-icon>
 		</div>
@@ -81,7 +58,7 @@ defineOptions({
 const props = defineProps(messageProps);
 defineEmits(messageEmits);
 
-const { zIndex } = useGlobalComponentSettings('message');
+const { zIndex } = useGlobalComponentSettings();
 const ns = useNamespace('message');
 const { currentZIndex, nextZIndex } = zIndex;
 const { close } = CloseComponentsMap;
@@ -148,7 +125,7 @@ const handleClose = (): void => {
 	visible.value = false;
 };
 
-const handleKeydown = ({ code }: KeyboardEvent) => {
+const handleKeydown = ({ code }: KeyboardEvent): void => {
 	if (code === EVENT_CODE.esc) {
 		// press esc to close the message
 		handleClose();

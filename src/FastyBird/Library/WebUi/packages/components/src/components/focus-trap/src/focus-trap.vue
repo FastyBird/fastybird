@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { defineComponent, nextTick, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { EVENT_CODE } from '@fastybird/web-ui-constants';
 import { useEscapeKeydown } from '@fastybird/web-ui-hooks';
@@ -40,7 +40,10 @@ export default defineComponent({
 	props: {
 		loop: Boolean,
 		trapped: Boolean,
-		focusTrapEl: Object as PropType<HTMLElement>,
+		focusTrapEl: {
+			type: Object as PropType<HTMLElement>,
+			required: true,
+		},
 		focusStartEl: {
 			type: [Object, String] as PropType<'container' | 'first' | HTMLElement>,
 			default: 'first',

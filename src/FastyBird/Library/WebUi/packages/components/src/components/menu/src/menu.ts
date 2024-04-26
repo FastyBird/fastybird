@@ -165,9 +165,9 @@ export const menuProps = buildProps({
 export type MenuProps = ExtractPropTypes<typeof menuProps>;
 
 export const menuEmits = {
-	close: (index: string, indexPath: string[]) => isString(index) && checkIndexPath(indexPath),
-	open: (index: string, indexPath: string[]) => isString(index) && checkIndexPath(indexPath),
-	select: (index: string, indexPath: string[], item: MenuItemClicked, routerResult?: Promise<void | NavigationFailure>) =>
+	close: (index: string, indexPath: string[]): boolean => isString(index) && checkIndexPath(indexPath),
+	open: (index: string, indexPath: string[]): boolean => isString(index) && checkIndexPath(indexPath),
+	select: (index: string, indexPath: string[], item: MenuItemClicked, routerResult?: Promise<void | NavigationFailure>): boolean =>
 		isString(index) && checkIndexPath(indexPath) && isObject(item) && (routerResult === undefined || routerResult instanceof Promise),
 };
 

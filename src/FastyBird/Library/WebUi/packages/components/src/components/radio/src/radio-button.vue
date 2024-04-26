@@ -14,11 +14,7 @@
 			@blur="focus = false"
 			@click.stop
 		/>
-		<span
-			:class="ns.be('button', 'inner')"
-			:style="modelValue === actualValue ? activeStyle : {}"
-			@keydown.stop
-		>
+		<span :class="ns.be('button', 'inner')" :style="modelValue === actualValue ? activeStyle : {}" @keydown.stop>
 			<slot>
 				{{ props.label }}
 			</slot>

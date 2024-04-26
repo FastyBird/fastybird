@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-swipe.css';
+import '@fastybird/web-ui-theme-chalk/fb-swipe.css';
 
 import '../../../base/style/css';

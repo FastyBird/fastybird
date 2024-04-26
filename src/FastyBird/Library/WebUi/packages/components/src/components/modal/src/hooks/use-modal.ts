@@ -1,5 +1,5 @@
 import { computed, ComputedRef, getCurrentInstance, nextTick, onMounted, ref, watch } from 'vue';
-import { isUndefined } from 'lodash-unified';
+import { isUndefined } from 'lodash';
 
 import { useTimeoutFn } from '@vueuse/core';
 import { useId, useLockscreen, useZIndex } from '@fastybird/web-ui-hooks';

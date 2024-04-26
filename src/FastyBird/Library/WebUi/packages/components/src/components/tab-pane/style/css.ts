@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-tab-pane.css';
+import '@fastybird/web-ui-theme-chalk/fb-tab-pane.css';
 
 import '../../../base/style/css';

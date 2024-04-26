@@ -13,7 +13,7 @@
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, onMounted, watch } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { unrefElement } from '@vueuse/core';
 import { useForwardRef } from '@fastybird/web-ui-hooks';

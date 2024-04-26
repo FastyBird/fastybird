@@ -1,9 +1,5 @@
 <template>
-	<i
-		v-bind="$attrs"
-		:class="ns.b()"
-		:style="iconStyle"
-	>
+	<i v-bind="$attrs" :class="ns.b()" :style="iconStyle">
 		<slot />
 	</i>
 </template>

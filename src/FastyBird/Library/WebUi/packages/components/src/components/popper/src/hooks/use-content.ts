@@ -1,21 +1,35 @@
 import { computed, inject, onMounted, ref, unref, watch } from 'vue';
-import { isUndefined } from 'lodash-unified';
+import { isUndefined } from 'lodash';
 
 import { usePopper } from '@fastybird/web-ui-hooks';
 
 import { Measurable, POPPER_INJECTION_KEY } from '../constants';
 import { buildPopperOptions, unwrapMeasurableEl } from '../utils';
 
-import type { Modifier } from '@popperjs/core';
+import type { ComputedRef, Ref, ShallowRef } from 'vue';
+import type { Instance, Modifier, State } from '@popperjs/core';
 import type { PartialOptions } from '@fastybird/web-ui-hooks';
 import type { PopperContentProps } from '../content';
 
 const DEFAULT_ARROW_OFFSET = 0;
 
-export const usePopperContent = (props: PopperContentProps) => {
+export const usePopperContent = (
+	props: PopperContentProps
+): {
+	attributes: ComputedRef<any>;
+	arrowRef: Ref<HTMLElement | undefined>;
+	contentRef: Ref<HTMLElement | undefined>;
+	instanceRef: ShallowRef<Instance | undefined>;
+	state: ComputedRef<any>;
+	styles: ComputedRef<any>;
+	role: ComputedRef<string>;
+
+	forceUpdate: () => void;
+	update: () => Promise<Partial<State>> | undefined;
+} => {
 	const { popperInstanceRef, contentRef, triggerRef, role } = inject(POPPER_INJECTION_KEY, undefined)!;
 
-	const arrowRef = ref<HTMLElement>();
+	const arrowRef = ref<HTMLElement | undefined>();
 	const arrowOffset = ref<number>();
 
 	const eventListenerModifier = computed(() => {

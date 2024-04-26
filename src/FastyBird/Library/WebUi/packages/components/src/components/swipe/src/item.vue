@@ -1,26 +1,12 @@
 <template>
-	<div
-		ref="element"
-		:data-disabled="props.disabled"
-		:class="ns.b()"
-	>
+	<div ref="element" :data-disabled="props.disabled" :class="ns.b()">
 		<template v-if="'left' in $slots">
-			<div
-				ref="left"
-				:class="ns.e('left')"
-			>
-				<slot
-					:close="close"
-					name="left"
-				/>
+			<div ref="left" :class="ns.e('left')">
+				<slot :close="close" name="left" />
 			</div>
 		</template>
 
-		<div
-			v-if="props.disabled"
-			ref="content"
-			:class="ns.e('content')"
-		>
+		<div v-if="props.disabled" ref="content" :class="ns.e('content')">
 			<slot
 				:revealed="innerRevealed"
 				:disabled="props.disabled"
@@ -31,12 +17,7 @@
 			/>
 		</div>
 
-		<div
-			v-else
-			ref="content"
-			:class="ns.e('content')"
-			v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan"
-		>
+		<div v-else ref="content" v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan" :class="ns.e('content')">
 			<slot
 				:revealed="innerRevealed"
 				:disabled="props.disabled"
@@ -48,14 +29,8 @@
 		</div>
 
 		<template v-if="'right' in $slots">
-			<div
-				ref="right"
-				:class="ns.e('right')"
-			>
-				<slot
-					:close="close"
-					name="right"
-				/>
+			<div ref="right" :class="ns.e('right')">
+				<slot :close="close" name="right" />
 			</div>
 		</template>
 	</div>

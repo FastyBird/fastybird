@@ -3,19 +3,13 @@
 		:class="[ns.b('dropdown'), ns.is('multiple', props.multiple), props.popperClass]"
 		:style="{ [props.fitInputWidth ? 'width' : 'minWidth']: minWidth }"
 	>
-		<div
-			v-if="'header' in $slots"
-			:class="ns.be('dropdown', 'header')"
-		>
+		<div v-if="'header' in $slots" :class="ns.be('dropdown', 'header')">
 			<slot name="header" />
 		</div>
 
 		<slot />
 
-		<div
-			v-if="'footer' in $slots"
-			:class="ns.be('dropdown', 'footer')"
-		>
+		<div v-if="'footer' in $slots" :class="ns.be('dropdown', 'footer')">
 			<slot name="footer" />
 		</div>
 	</div>

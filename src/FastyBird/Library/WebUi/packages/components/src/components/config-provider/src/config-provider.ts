@@ -2,6 +2,7 @@ import { defineComponent, renderSlot, watch } from 'vue';
 import { provideGlobalConfig } from './hooks';
 import { configProviderProps } from './config-provider-props';
 
+import type { RendererElement, RendererNode, VNode } from 'vue';
 import type { MessageConfigContext } from '../../message';
 
 export const messageConfig: MessageConfigContext = {};
@@ -22,7 +23,7 @@ const ConfigProvider = defineComponent({
 
 		const config = provideGlobalConfig(props);
 
-		return () => renderSlot(slots, 'default', { config: config?.value });
+		return (): VNode<RendererNode, RendererElement, { [key: string]: any }> => renderSlot(slots, 'default', { config: config?.value });
 	},
 });
 

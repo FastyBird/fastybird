@@ -10,10 +10,7 @@
 			]"
 			role="alert"
 		>
-			<div
-				v-if="'icon' in $slots || (props.icon && icon)"
-				:class="iconClass"
-			>
+			<div v-if="'icon' in $slots || (props.icon && icon)" :class="iconClass">
 				<slot name="icon">
 					<fb-icon>
 						<component :is="icon" />
@@ -27,26 +24,17 @@
 				</template>
 
 				<template v-else>
-					<span
-						v-if="'title' in $slots"
-						:class="titleClass"
-					>
+					<span v-if="'title' in $slots" :class="titleClass">
 						<slot name="title" />
 					</span>
 
-					<p
-						v-if="'description' in $slots"
-						:class="ns.e('description')"
-					>
+					<p v-if="'description' in $slots" :class="ns.e('description')">
 						<slot name="description" />
 					</p>
 				</template>
 
 				<template v-if="props.closable">
-					<div
-						:class="[ns.e('close-btn'), { [ns.is('customed')]: props.closeText }]"
-						@click="doClose"
-					>
+					<div :class="[ns.e('close-btn'), { [ns.is('customed')]: props.closeText }]" @click="doClose">
 						<template v-if="props.closeText">
 							{{ props.closeText }}
 						</template>
@@ -79,16 +67,6 @@ defineOptions({
 
 const props = defineProps(alertProps);
 const emit = defineEmits(alertEmits);
-defineSlots<{
-	/** Example description for default */
-	icon(props: {}): any;
-	/** Example description for default */
-	default(props: {}): any;
-	/** Example description for named */
-	title(props: {}): any;
-	/** Example description for no-bind */
-	description(props: {}): any;
-}>();
 
 const slots = useSlots();
 const ns = useNamespace('alert');

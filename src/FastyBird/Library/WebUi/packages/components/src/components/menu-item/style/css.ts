@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-menu-item.css';
+import '@fastybird/web-ui-theme-chalk/fb-menu-item.css';
 
 import '../../../base/style/css';

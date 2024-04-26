@@ -142,15 +142,15 @@ export const drawerProps = buildProps({
 export type DrawerProps = ExtractPropTypes<typeof drawerProps>;
 
 export const drawerEmits = {
-	open: () => true,
-	opened: () => true,
-	close: () => true,
-	closed: () => true,
-	[UPDATE_MODEL_EVENT]: (value: boolean) => isBoolean(value),
-	openAutoFocus: () => true,
-	closeAutoFocus: () => true,
-	leftClick: () => true,
-	rightClick: () => true,
+	open: (): boolean => true,
+	opened: (): boolean => true,
+	close: (): boolean => true,
+	closed: (): boolean => true,
+	[UPDATE_MODEL_EVENT]: (value: boolean): boolean => isBoolean(value),
+	openAutoFocus: (): boolean => true,
+	closeAutoFocus: (): boolean => true,
+	leftClick: (): boolean => true,
+	rightClick: (): boolean => true,
 };
 
 export type DrawerEmits = typeof drawerEmits;

@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-bottom-navigation.css';
+import '@fastybird/web-ui-theme-chalk/fb-bottom-navigation.css';
 
 import '../../../base/style/css';

@@ -1,10 +1,6 @@
 <template>
 	<div :class="[ns.b(), ns.m('size-' + props.size)]">
-		<fb-spinner
-			:size="props.size"
-			:class="ns.e('loading')"
-			:variant="VariantTypes.PRIMARY"
-		/>
+		<fb-spinner :size="props.size" :class="ns.e('loading')" :variant="VariantTypes.PRIMARY" />
 
 		<p :class="ns.e('content')">
 			{{ props.text }}

@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 import { inject, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { NOOP } from '@vue/shared';
 import { isElement } from '@fastybird/web-ui-utils';
@@ -113,7 +113,7 @@ onMounted((): void => {
 
 			if (isElement(el)) {
 				triggerTargetAriaStopWatch = watch(
-					[role, () => props.ariaLabel, ariaModal, () => props.id],
+					[role, (): string | undefined => props.ariaLabel, ariaModal, (): string | undefined => props.id],
 					(watches) => {
 						['role', 'aria-label', 'aria-modal', 'id'].forEach((key, idx) => {
 							isNil(watches[idx]) ? el.removeAttribute(key) : el.setAttribute(key, watches[idx]!);

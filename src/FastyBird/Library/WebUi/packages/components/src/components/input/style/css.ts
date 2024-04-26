@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-input.css';
+import '@fastybird/web-ui-theme-chalk/fb-input.css';
 
 import '../../../base/style/css';

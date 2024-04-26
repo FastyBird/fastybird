@@ -1,9 +1,9 @@
 <template>
 	<fb-menu-collapse-transition v-if="props.collapseTransition && props.mode === MenuModeTypes.VERTICAL">
 		<ul
-			role="menubar"
 			ref="menu"
 			v-click-outside="handleClickOutside"
+			role="menubar"
 			:style="ulStyle"
 			:class="{ [nsMenu.b()]: true, [nsMenu.m(props.mode)]: true, [nsMenu.m('collapse')]: props.collapse }"
 		>
@@ -13,13 +13,13 @@
 
 	<template v-else>
 		<ul
-			role="menubar"
 			ref="menu"
 			v-click-outside="handleClickOutside"
+			role="menubar"
 			:style="ulStyle"
 			:class="{ [nsMenu.b()]: true, [nsMenu.m(props.mode)]: true, [nsMenu.m('collapse')]: props.collapse }"
 		>
-			<template v-for="item in slotDefault">
+			<template v-for="(item, index) in slotDefault" :key="index">
 				<component :is="item" />
 			</template>
 
@@ -35,7 +35,7 @@
 					</fb-icon>
 				</template>
 
-				<template v-for="item in slotMore">
+				<template v-for="(item, index) in slotMore" :key="index">
 					<component :is="item" />
 				</template>
 			</fb-sub-menu>
@@ -45,7 +45,7 @@
 
 <script lang="ts" setup>
 import { computed, getCurrentInstance, nextTick, onMounted, provide, reactive, ref, useSlots, watch, watchEffect } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { useResizeObserver } from '@vueuse/core';
 import { flattedChildren } from '@fastybird/web-ui-utils';
@@ -189,7 +189,7 @@ const updateActiveIndex = (val: string): void => {
 	}
 };
 
-const calcMenuItemWidth = (menuItem: HTMLElement) => {
+const calcMenuItemWidth = (menuItem: HTMLElement): number => {
 	const computedStyle = getComputedStyle(menuItem);
 	const marginLeft = Number.parseInt(computedStyle.marginLeft, 10);
 	const marginRight = Number.parseInt(computedStyle.marginRight, 10);
@@ -197,7 +197,7 @@ const calcMenuItemWidth = (menuItem: HTMLElement) => {
 	return menuItem.offsetWidth + marginLeft + marginRight || 0;
 };
 
-const calcSliceIndex = () => {
+const calcSliceIndex = (): number => {
 	if (!menu.value) {
 		return -1;
 	}
@@ -227,15 +227,15 @@ const calcSliceIndex = () => {
 	return sliceIndex === items.length ? -1 : sliceIndex;
 };
 
-const getIndexPath = (index: string) => subMenus.value[index].indexPath;
+const getIndexPath = (index: string): string[] => subMenus.value[index].indexPath;
 
 // Common computer monitor FPS is 60Hz, which means 60 redraws per second. Calculation formula: 1000ms/60 ≈ 16.67ms, In order to avoid a certain chance of repeated triggering when `resize`, set wait to 16.67 * 2 = 33.34
-const debounce = (fn: () => void, wait = 33.34) => {
-	let timmer: ReturnType<typeof setTimeout> | null;
+const debounce = (fn: () => void, wait = 33.34): (() => void) => {
+	let timer: ReturnType<typeof setTimeout> | null;
 
 	return (): void => {
-		timmer && clearTimeout(timmer);
-		timmer = setTimeout((): void => {
+		timer && clearTimeout(timer);
+		timer = setTimeout((): void => {
 			fn();
 		}, wait);
 	};
@@ -248,7 +248,7 @@ const handleResize = (): void => {
 		return;
 	}
 
-	const callback = () => {
+	const callback = (): void => {
 		sliceIndex.value = -1;
 
 		nextTick((): void => {
@@ -378,9 +378,11 @@ const slotMore = computed<VNodeArrayChildren | undefined>((): VNodeArrayChildren
 	if (props.mode === MenuModeTypes.HORIZONTAL && menu.value) {
 		return sliceIndex.value === -1 ? [] : originalSlot.slice(sliceIndex.value);
 	}
+
+	return undefined;
 });
 
-const handleClickOutside = () => {
+const handleClickOutside = (): void => {
 	if (!props.closeOnClickOutside) {
 		return;
 	}

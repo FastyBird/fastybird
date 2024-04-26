@@ -3,7 +3,7 @@ import { ComponentSize, ComponentSizeTypes } from '@fastybird/web-ui-constants';
 
 import { radioEmits } from './radio';
 
-import type { ExtractPropTypes } from '@vue/runtime-core';
+import type { ExtractPropTypes } from 'vue';
 
 export const radioGroupProps = buildProps({
 	/**

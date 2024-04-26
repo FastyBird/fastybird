@@ -162,7 +162,7 @@ export const buttonProps = buildProps({
 export type ButtonProps = ExtractPropTypes<typeof buttonProps>;
 
 export const buttonEmits = {
-	click: (evt: UIEvent) => evt instanceof UIEvent,
+	click: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type ButtonEmits = typeof buttonEmits;

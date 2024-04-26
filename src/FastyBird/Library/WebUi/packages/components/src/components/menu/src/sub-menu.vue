@@ -31,19 +31,13 @@
 					@mouseleave="() => handleMouseleave(true)"
 					@focus="(evt: FocusEvent) => handleMouseenter(evt, 100)"
 				>
-					<ul
-						:class="[nsMenu.b(), nsMenu.m('popup'), nsMenu.m(`popup-${currentPlacement}`)]"
-						:style="ulStyle"
-					>
+					<ul :class="[nsMenu.b(), nsMenu.m('popup'), nsMenu.m(`popup-${currentPlacement}`)]" :style="ulStyle">
 						<slot />
 					</ul>
 				</div>
 			</template>
 
-			<div
-				:class="[nsSubMenu.e('title')]"
-				@click="handleClick"
-			>
+			<div :class="[nsSubMenu.e('title')]" @click="handleClick">
 				<slot name="title" />
 
 				<fb-icon
@@ -62,11 +56,7 @@
 		</fb-tooltip>
 
 		<template v-else>
-			<div
-				ref="verticalTitleRef"
-				:class="[nsSubMenu.e('title')]"
-				@click="handleClick"
-			>
+			<div ref="verticalTitleRef" :class="[nsSubMenu.e('title')]" @click="handleClick">
 				<slot name="title" />
 
 				<fb-icon
@@ -84,11 +74,7 @@
 			</div>
 
 			<fb-collapse-transition v-show="opened">
-				<ul
-					role="menu"
-					:class="[nsMenu.b(), nsMenu.m('inline')]"
-					:style="ulStyle"
-				>
+				<ul role="menu" :class="[nsMenu.b(), nsMenu.m('inline')]" :style="ulStyle">
 					<slot />
 				</ul>
 			</fb-collapse-transition>
@@ -97,7 +83,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, getCurrentInstance, inject, onBeforeUnmount, onMounted, provide, reactive, ref, vShow, watch } from 'vue';
+import { computed, getCurrentInstance, inject, onBeforeUnmount, onMounted, provide, reactive, ref, watch } from 'vue';
 
 import { useTimeoutFn } from '@vueuse/core';
 import { throwError } from '@fastybird/web-ui-utils';
@@ -238,7 +224,7 @@ const subMenuHideTimeout = computed<number>((): number => {
 });
 
 // methods
-const doDestroy = () => vPopper.value?.popperRef?.popperInstanceRef?.destroy();
+const doDestroy = (): void => vPopper.value?.popperRef?.popperInstanceRef?.destroy();
 
 const handleCollapseToggle = (value: boolean): void => {
 	if (!value) {

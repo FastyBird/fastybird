@@ -22,7 +22,7 @@ export const appBarProps = buildProps({
 export type AppBarProps = ExtractPropTypes<typeof appBarProps>;
 
 export const appBarEmits = {
-	toggleMenu: (evt: UIEvent) => evt instanceof UIEvent,
+	toggleMenu: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type AppBarEmits = typeof appBarEmits;

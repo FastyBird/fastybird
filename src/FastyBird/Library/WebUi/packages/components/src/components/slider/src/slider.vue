@@ -16,10 +16,7 @@
 			@mousedown="onSliderDown"
 			@touchstart="onSliderDown"
 		>
-			<div
-				:class="ns.e('bar')"
-				:style="barStyle"
-			/>
+			<div :class="ns.e('bar')" :style="barStyle" />
 
 			<fb-slider-button
 				:id="!props.range ? inputId : undefined"
@@ -58,29 +55,14 @@
 				@update:model-value="setSecondValue"
 			/>
 			<div v-if="props.showStops">
-				<div
-					v-for="(item, key) in stops"
-					:key="key"
-					:class="ns.e('stop')"
-					:style="getStopStyle(item)"
-				/>
+				<div v-for="(item, key) in stops" :key="key" :class="ns.e('stop')" :style="getStopStyle(item)" />
 			</div>
 			<template v-if="markList.length > 0">
 				<div>
-					<div
-						v-for="(item, key) in markList"
-						:key="key"
-						:style="getStopStyle(item.position)"
-						:class="[ns.e('stop'), ns.e('marks-stop')]"
-					/>
+					<div v-for="(item, key) in markList" :key="key" :style="getStopStyle(item.position)" :class="[ns.e('stop'), ns.e('marks-stop')]" />
 				</div>
 				<div :class="ns.e('marks')">
-					<slider-marker
-						v-for="(item, key) in markList"
-						:key="key"
-						:mark="item.mark"
-						:style="getStopStyle(item.position)"
-					/>
+					<slider-marker v-for="(item, key) in markList" :key="key" :mark="item.mark" :style="getStopStyle(item.position)" />
 				</div>
 			</template>
 		</div>
@@ -219,7 +201,7 @@ const { sliderWrapper } = useLifecycle(props, initData, resetSize);
 
 const { firstValue, secondValue, sliderSize } = toRefs(initData);
 
-const updateDragging = (val: boolean) => {
+const updateDragging = (val: boolean): void => {
 	initData.dragging = val;
 };
 

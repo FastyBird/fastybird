@@ -291,15 +291,15 @@ export const selectProps = buildProps({
 export type SelectProps = ExtractPropTypes<typeof selectProps>;
 
 export const selectEmits = {
-	[UPDATE_MODEL_EVENT]: (val: string | number | boolean | object | (string | number | boolean | object)[] | undefined) =>
+	[UPDATE_MODEL_EVENT]: (val: string | number | boolean | object | (string | number | boolean | object)[] | undefined): boolean =>
 		isString(val) || isNumber(val) || isBoolean(val) || isObject(val) || isArray(val) || isUndefined(val),
-	[CHANGE_EVENT]: (val: string | number | boolean | object | (string | number | boolean | object)[] | undefined) =>
+	[CHANGE_EVENT]: (val: string | number | boolean | object | (string | number | boolean | object)[] | undefined): boolean =>
 		isString(val) || isNumber(val) || isBoolean(val) || isObject(val) || isArray(val) || isUndefined(val),
-	['visible-change']: (val: boolean) => isBoolean(val),
-	['remove-tag']: (val: string | number | boolean | object) => isString(val) || isNumber(val) || isBoolean(val) || isObject(val),
-	clear: () => true,
-	focus: (evt: FocusEvent) => evt instanceof FocusEvent,
-	blur: (evt: FocusEvent) => evt instanceof FocusEvent,
+	['visible-change']: (val: boolean): boolean => isBoolean(val),
+	['remove-tag']: (val: string | number | boolean | object): boolean => isString(val) || isNumber(val) || isBoolean(val) || isObject(val),
+	clear: (): boolean => true,
+	focus: (evt: FocusEvent): boolean => evt instanceof FocusEvent,
+	blur: (evt: FocusEvent): boolean => evt instanceof FocusEvent,
 };
 
 export type SelectEmits = typeof selectEmits;

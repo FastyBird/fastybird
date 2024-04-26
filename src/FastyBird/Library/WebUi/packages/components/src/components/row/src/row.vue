@@ -1,9 +1,5 @@
 <template>
-	<component
-		:is="tag"
-		:class="rowClass"
-		:style="rowStyle"
-	>
+	<component :is="tag" :class="rowClass" :style="rowStyle">
 		<slot />
 	</component>
 </template>

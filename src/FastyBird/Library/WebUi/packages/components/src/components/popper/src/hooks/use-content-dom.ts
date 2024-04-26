@@ -3,7 +3,7 @@ import { computed, ref, unref } from 'vue';
 import { useNamespace, useZIndex } from '@fastybird/web-ui-hooks';
 import { isNumber } from '@fastybird/web-ui-utils';
 
-import type { CSSProperties, StyleValue } from 'vue';
+import type { ComputedRef, CSSProperties, Ref, StyleValue } from 'vue';
 import type { UsePopperReturn } from '@fastybird/web-ui-hooks';
 import type { UsePopperContentReturn } from './use-content';
 import type { PopperContentProps } from '../content';
@@ -11,7 +11,16 @@ import type { PopperContentProps } from '../content';
 export const usePopperContentDOM = (
 	props: PopperContentProps,
 	{ attributes, styles, role }: Pick<UsePopperReturn, 'attributes' | 'styles'> & Pick<UsePopperContentReturn, 'role'>
-) => {
+): {
+	ariaModal: ComputedRef<string | undefined>;
+	arrowStyle: ComputedRef<CSSProperties>;
+	contentAttrs: ComputedRef<{ [key: string]: string | boolean }>;
+	contentClass: ComputedRef<(string | Record<string, boolean> | string[] | undefined)[]>;
+	contentStyle: ComputedRef<StyleValue[]>;
+	contentZIndex: Ref<number>;
+
+	updateZIndex: () => void;
+} => {
 	const { nextZIndex } = useZIndex();
 	const ns = useNamespace('popper');
 

@@ -1,9 +1,21 @@
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 
 import type { SetupContext } from 'vue';
 import type { PopperContentEmits, PopperContentProps } from '../content';
 
-export const usePopperContentFocusTrap = (props: PopperContentProps, emit: SetupContext<PopperContentEmits>['emit']) => {
+export const usePopperContentFocusTrap = (
+	props: PopperContentProps,
+	emit: SetupContext<PopperContentEmits>['emit']
+): {
+	focusStartRef: Ref<HTMLElement | 'container' | 'first' | undefined>;
+	trapped: Ref<boolean>;
+
+	onFocusAfterReleased: (event: CustomEvent) => void;
+	onFocusAfterTrapped: () => void;
+	onFocusInTrap: (event: FocusEvent) => void;
+	onFocusoutPrevented: (event: CustomEvent) => void;
+	onReleaseRequested: () => void;
+} => {
 	const trapped = ref<boolean>(false);
 	const focusStartRef = ref<'container' | 'first' | HTMLElement>();
 	const onFocusAfterTrapped = (): void => {

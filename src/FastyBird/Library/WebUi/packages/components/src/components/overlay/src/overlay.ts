@@ -3,7 +3,7 @@ import { createVNode, defineComponent, h, renderSlot } from 'vue';
 import { PatchFlags, buildProps, definePropType } from '@fastybird/web-ui-utils';
 import { useNamespace, useSameTarget } from '@fastybird/web-ui-hooks';
 
-import type { CSSProperties, ExtractPropTypes } from 'vue';
+import type { CSSProperties, ExtractPropTypes, RendererElement, RendererNode, VNode } from 'vue';
 import type { Property } from 'csstype';
 
 export const overlayProps = buildProps({
@@ -27,7 +27,7 @@ export const overlayProps = buildProps({
 export type OverlayProps = ExtractPropTypes<typeof overlayProps>;
 
 export const overlayEmits = {
-	click: (evt: UIEvent) => evt instanceof UIEvent,
+	click: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 export type OverlayEmits = typeof overlayEmits;
 
@@ -51,7 +51,7 @@ export default defineComponent({
 		const { onClick, onMousedown, onMouseup } = useSameTarget(props.customMaskEvent ? undefined : onMaskClick);
 
 		// init here
-		return () => {
+		return (): VNode<RendererNode, RendererElement, { [key: string]: any }> => {
 			// when the vnode meets the same structure but with different change trigger
 			// it will not automatically update, thus we simply use h function to manage updating
 			return props.mask

@@ -63,7 +63,7 @@ const createMessageBox = (options: MessageBoxOptions, appContext: AppContext | n
 		},
 		// Adding destruct method.
 		// when transition leaves emitting `vanish` evt. so that we can do the clean job.
-		onVanish: () => {
+		onVanish: (): void => {
 			// not sure if this causes mem leak, need proof to verify that.
 			// maybe calling out like 1000 msg-box then close them all.
 			render(null, container);
@@ -87,7 +87,7 @@ const createMessageBox = (options: MessageBoxOptions, appContext: AppContext | n
 		props,
 		isFunction(props.message) || isVNode(props.message)
 			? {
-					default: isFunction(props.message) ? props.message : () => props.message,
+					default: isFunction(props.message) ? props.message : (): string | VNode | (() => VNode) => props.message,
 				}
 			: null
 	);
@@ -148,7 +148,12 @@ const MESSAGE_BOX_DEFAULT_OPTS: Record<MessageBoxType, Partial<MessageBoxOptions
 };
 
 const messageBoxFactory = (boxType: MessageBoxType) => {
-	return (message: string | VNode, title: string | MessageBoxOptions, options?: MessageBoxOptions, appContext?: AppContext | null) => {
+	return (
+		message: string | VNode,
+		title: string | MessageBoxOptions,
+		options?: MessageBoxOptions,
+		appContext?: AppContext | null
+	): MessageBoxHandler => {
 		let titleOrOpts: string;
 
 		if (isObject(title)) {

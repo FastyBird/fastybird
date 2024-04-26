@@ -36,27 +36,13 @@
 						nsSelect.is('disabled', selectDisabled),
 					]"
 				>
-					<div
-						v-if="'prefix' in $slots"
-						ref="prefixRef"
-						:class="nsSelect.e('prefix')"
-					>
+					<div v-if="'prefix' in $slots" ref="prefixRef" :class="nsSelect.e('prefix')">
 						<slot name="prefix" />
 					</div>
 
-					<div
-						ref="selectionRef"
-						:class="[nsSelect.e('selection'), nsSelect.is('near', props.multiple && !('prefix' in $slots) && !!selectedCnt)]"
-					>
-						<slot
-							v-if="props.multiple"
-							name="tag"
-						>
-							<div
-								v-for="item in showTagList || []"
-								:key="getValueKey(item)"
-								:class="nsSelect.e('selected-item')"
-							>
+					<div ref="selectionRef" :class="[nsSelect.e('selection'), nsSelect.is('near', props.multiple && !('prefix' in $slots) && !!selectedCnt)]">
+						<slot v-if="props.multiple" name="tag">
+							<div v-for="item in showTagList || []" :key="getValueKey(item)" :class="nsSelect.e('selected-item')">
 								<fb-tag
 									:closable="!selectDisabled && !item.isDisabled"
 									:size="collapseTagSize"
@@ -81,32 +67,16 @@
 								:teleported="props.teleported"
 							>
 								<template #default>
-									<div
-										ref="collapseItemRef"
-										:class="nsSelect.e('selected-item')"
-									>
-										<fb-tag
-											:closable="false"
-											:size="collapseTagSize"
-											:variant="props.tagVariant"
-											disable-transitions
-											:style="collapseTagStyle"
-										>
+									<div ref="collapseItemRef" :class="nsSelect.e('selected-item')">
+										<fb-tag :closable="false" :size="collapseTagSize" :variant="props.tagVariant" disable-transitions :style="collapseTagStyle">
 											<span :class="nsSelect.e('tags-text')"> + {{ selectedCnt - props.maxCollapseTags }} </span>
 										</fb-tag>
 									</div>
 								</template>
 
 								<template #content>
-									<div
-										ref="tagMenuRef"
-										:class="nsSelect.e('selection')"
-									>
-										<div
-											v-for="item in collapseTagList"
-											:key="getValueKey(item)"
-											:class="nsSelect.e('selected-item')"
-										>
+									<div ref="tagMenuRef" :class="nsSelect.e('selection')">
+										<div v-for="item in collapseTagList" :key="getValueKey(item)" :class="nsSelect.e('selected-item')">
 											<fb-tag
 												class="in-tooltip"
 												:closable="!selectDisabled && !item.isDisabled"
@@ -125,10 +95,7 @@
 							</fb-tooltip>
 						</slot>
 
-						<div
-							v-if="!selectDisabled"
-							:class="[nsSelect.e('selected-item'), nsSelect.e('input-wrapper'), nsSelect.is('hidden', !props.filterable)]"
-						>
+						<div v-if="!selectDisabled" :class="[nsSelect.e('selected-item'), nsSelect.e('input-wrapper'), nsSelect.is('hidden', !props.filterable)]">
 							<input
 								:id="inputId"
 								ref="inputRef"
@@ -181,29 +148,16 @@
 						</div>
 					</div>
 
-					<div
-						ref="suffixRef"
-						:class="nsSelect.e('suffix')"
-					>
-						<fb-icon
-							v-if="iconComponent && !showClose"
-							:class="[nsSelect.e('caret'), nsSelect.e('icon'), iconReverse]"
-						>
+					<div ref="suffixRef" :class="nsSelect.e('suffix')">
+						<fb-icon v-if="iconComponent && !showClose" :class="[nsSelect.e('caret'), nsSelect.e('icon'), iconReverse]">
 							<component :is="iconComponent" />
 						</fb-icon>
 
-						<fb-icon
-							v-if="showClose"
-							:class="[nsSelect.e('caret'), nsSelect.e('icon')]"
-							@click="handleClearClick"
-						>
+						<fb-icon v-if="showClose" :class="[nsSelect.e('caret'), nsSelect.e('icon')]" @click="handleClearClick">
 							<component :is="props.clearIcon || closeIcon" />
 						</fb-icon>
 
-						<fb-icon
-							v-if="validateState && validateIcon"
-							:class="[nsInput.e('icon'), nsInput.e('validateIcon')]"
-						>
+						<fb-icon v-if="validateState && validateIcon" :class="[nsInput.e('icon'), nsInput.e('validateIcon')]">
 							<component :is="validateIcon" />
 						</fb-icon>
 					</div>
@@ -211,16 +165,8 @@
 			</template>
 
 			<template #content>
-				<fb-select-dropdown
-					ref="menuRef"
-					:popper-class="props.popperClass"
-					:multiple="props.multiple"
-					:fit-input-width="props.fitInputWidth"
-				>
-					<div
-						v-if="'header' in $slots"
-						:class="nsSelect.be('dropdown', 'header')"
-					>
+				<fb-select-dropdown ref="menuRef" :popper-class="props.popperClass" :multiple="props.multiple" :fit-input-width="props.fitInputWidth">
+					<div v-if="'header' in $slots" :class="nsSelect.be('dropdown', 'header')">
 						<slot name="header" />
 					</div>
 
@@ -236,36 +182,23 @@
 						:aria-label="props.ariaLabel"
 						aria-orientation="vertical"
 					>
-						<fb-option
-							v-if="showNewOption"
-							:value="state.inputValue"
-							:created="true"
-						/>
+						<fb-option v-if="showNewOption" :value="state.inputValue" :created="true" />
 						<fb-options>
 							<slot />
 						</fb-options>
 					</fb-scrollbar>
 
-					<div
-						v-if="'loading' in $slots && props.loading"
-						:class="nsSelect.be('dropdown', 'loading')"
-					>
+					<div v-if="'loading' in $slots && props.loading" :class="nsSelect.be('dropdown', 'loading')">
 						<slot name="loading" />
 					</div>
 
-					<div
-						v-else-if="props.loading || filteredOptionsCount === 0"
-						:class="nsSelect.be('dropdown', 'empty')"
-					>
+					<div v-else-if="props.loading || filteredOptionsCount === 0" :class="nsSelect.be('dropdown', 'empty')">
 						<slot name="empty">
 							<span>{{ emptyText }}</span>
 						</slot>
 					</div>
 
-					<div
-						v-if="'footer' in $slots"
-						:class="nsSelect.be('dropdown', 'footer')"
-					>
+					<div v-if="'footer' in $slots" :class="nsSelect.be('dropdown', 'footer')">
 						<slot name="footer" />
 					</div>
 				</fb-select-dropdown>
@@ -276,7 +209,7 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, provide, reactive, ref, toRaw, watch, watchEffect } from 'vue';
-import { debounce as lodashDebounce, findLastIndex, get, isEqual, isNil } from 'lodash-unified';
+import { debounce as lodashDebounce, findLastIndex, get, isEqual, isNil } from 'lodash';
 
 import { hasOwn, isArray, isObject, toRawType } from '@vue/shared';
 import { useResizeObserver } from '@vueuse/core';
@@ -826,7 +759,7 @@ const handleDeleteTag = (event: Event, tag: SelectOption): void => {
 	focus();
 };
 
-const handleOptionSelect = (option: OptionProxy) => {
+const handleOptionSelect = (option: OptionProxy): void => {
 	if (props.multiple) {
 		const value = ((props.modelValue as Array<string | number | boolean | object> | undefined) || []).slice();
 		const optionIndex = getValueIndex(value, option.value);
@@ -888,7 +821,7 @@ const getValueIndex = (arr: (string | number | boolean | object)[] = [], value: 
 	return index;
 };
 
-const scrollToOption = (option: OptionProxy | SelectOption) => {
+const scrollToOption = (option: OptionProxy | SelectOption): void => {
 	const targetOption = option;
 
 	let target = null;
@@ -959,7 +892,7 @@ const focus = (): void => {
 	inputRef.value?.focus();
 };
 
-const blur = () => {
+const blur = (): void => {
 	handleClickOutside(new UIEvent('click'));
 };
 

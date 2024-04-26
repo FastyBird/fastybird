@@ -25,10 +25,7 @@
 			/>
 			<span :class="ns.e('inner')" />
 		</span>
-		<span
-			:class="ns.e('label')"
-			@keydown.stop
-		>
+		<span :class="ns.e('label')" @keydown.stop>
 			<slot>
 				{{ props.label }}
 			</slot>

@@ -9,10 +9,7 @@
 				</small>
 			</h3>
 
-			<div
-				v-if="'buttons' in $slots"
-				:class="ns.e('buttons')"
-			>
+			<div v-if="'buttons' in $slots" :class="ns.e('buttons')">
 				<slot name="buttons" />
 			</div>
 		</div>

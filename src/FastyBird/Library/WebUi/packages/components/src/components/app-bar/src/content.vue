@@ -11,8 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useNamespace } from '@fastybird/web-ui-hooks';
-
 import { appBarContentProps } from './content';
 
 defineOptions({
@@ -20,8 +18,6 @@ defineOptions({
 });
 
 const props = defineProps(appBarContentProps);
-
-const ns = useNamespace('app-bar-content');
 
 const teleportTarget = 'fb-app-bar-content';
 </script>

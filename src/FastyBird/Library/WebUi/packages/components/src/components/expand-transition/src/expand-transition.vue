@@ -1,15 +1,12 @@
 <template>
-	<transition
-		:name="ns.b()"
-		v-on="on"
-	>
+	<transition :name="ns.b()" v-on="on">
 		<slot />
 	</transition>
 </template>
 
 <script lang="ts" setup>
 import { useNamespace } from '@fastybird/web-ui-hooks';
-import type { RendererElement } from '@vue/runtime-core';
+import type { RendererElement } from 'vue';
 
 defineOptions({
 	name: 'FbExpandTransition',
@@ -18,13 +15,13 @@ defineOptions({
 const ns = useNamespace('expand-transition');
 
 const on = {
-	beforeEnter(el: RendererElement) {
+	beforeEnter(el: RendererElement): void {
 		el.style.transition = 'height 250ms ease-in-out';
-		el.style.transitionProperty = 'opacity, heigh';
+		el.style.transitionProperty = 'opacity, height';
 		el.style.overflow = 'hidden';
 	},
 
-	enter(el: RendererElement) {
+	enter(el: RendererElement): void {
 		el.style.position = 'absolute';
 		el.style.visibility = 'hidden';
 		el.style.height = 'auto';
@@ -41,7 +38,7 @@ const on = {
 		// to make sure the browser has finished
 		// painting after setting the `height`
 		// to `0` in the line above.
-		requestAnimationFrame(() => {
+		requestAnimationFrame((): void => {
 			el.style.height = height;
 		});
 	},

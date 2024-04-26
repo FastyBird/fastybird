@@ -1,8 +1,8 @@
 <template>
 	<component
-		ref="element"
 		v-bind="attributes"
 		:is="props.tag"
+		ref="element"
 		:class="[
 			ns.b(),
 			ns.m('variant-' + props.variant),
@@ -26,26 +26,16 @@
 	>
 		<template v-if="props.loading || remoteLoading">
 			<slot name="loading">
-				<fb-icon
-					v-if="props.loadingIcon"
-					:class="[ns.is('loading'), 'is-spin']"
-				>
+				<fb-icon v-if="props.loadingIcon" :class="[ns.is('loading'), 'is-spin']">
 					<component :is="props.loadingIcon" />
 				</fb-icon>
-				<fb-spinner
-					v-else
-					:variant="props.variant"
-					:class="ns.is('loading')"
-				/>
+				<fb-spinner v-else :variant="props.variant" :class="ns.is('loading')" />
 			</slot>
 		</template>
 
 		<fb-icon v-else-if="props.icon || 'icon' in $slots">
 			<slot name="icon">
-				<component
-					:is="props.icon"
-					v-if="props.icon"
-				/>
+				<component :is="props.icon" v-if="props.icon" />
 			</slot>
 		</fb-icon>
 

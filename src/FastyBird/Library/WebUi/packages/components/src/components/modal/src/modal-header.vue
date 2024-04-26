@@ -1,9 +1,6 @@
 <template>
 	<slot>
-		<header
-			ref="headerRef"
-			:class="[ns.b(), ns.m('variant-' + props.variant), ns.m('layout-' + props.layout), { 'show-close': props.showClose }]"
-		>
+		<header ref="headerRef" :class="[ns.b(), ns.m('variant-' + props.variant), ns.m('layout-' + props.layout), { 'show-close': props.showClose }]">
 			<div :class="[ns.e('inner')]">
 				<template v-if="props.layout === LayoutTypes.PHONE || layout === LayoutTypes.TABLET">
 					<div :class="[ns.e('heading')]">
@@ -15,20 +12,14 @@
 						>
 							<slot name="title">{{ props.title }}</slot>
 
-							<small
-								v-if="'subtitle' in $slots || props.subtitle"
-								:class="[ns.e('subtitle')]"
-							>
+							<small v-if="'subtitle' in $slots || props.subtitle" :class="[ns.e('subtitle')]">
 								<slot name="subtitle">{{ props.subtitle }}</slot>
 							</small>
 						</div>
 					</div>
 
 					<div :class="[ns.e('left-button')]">
-						<slot
-							v-if="props.showLeftBtn"
-							name="left-button"
-						>
+						<slot v-if="props.showLeftBtn" name="left-button">
 							<fb-button
 								:variant="VariantTypes.DEFAULT"
 								:size="ComponentSizeTypes.DEFAULT"
@@ -42,10 +33,7 @@
 					</div>
 
 					<div :class="[ns.e('right-button')]">
-						<slot
-							v-if="props.showRightBtn"
-							name="right-button"
-						>
+						<slot v-if="props.showRightBtn" name="right-button">
 							<fb-button
 								:variant="VariantTypes.DEFAULT"
 								:size="ComponentSizeTypes.DEFAULT"
@@ -60,19 +48,10 @@
 				</template>
 
 				<template v-else>
-					<div
-						v-if="!('description' in $slots)"
-						:class="[ns.e('heading')]"
-					>
-						<fb-icon
-							v-if="'icon' in $slots || props.icon"
-							:class="[ns.e('icon')]"
-						>
+					<div v-if="!('description' in $slots)" :class="[ns.e('heading')]">
+						<fb-icon v-if="'icon' in $slots || props.icon" :class="[ns.e('icon')]">
 							<slot name="icon">
-								<component
-									:is="props.icon"
-									v-if="props.icon"
-								/>
+								<component :is="props.icon" v-if="props.icon" />
 							</slot>
 						</fb-icon>
 
@@ -84,10 +63,7 @@
 						>
 							<slot name="title">{{ props.title }}</slot>
 
-							<small
-								v-if="'subtitle' in $slots || props.subtitle"
-								:class="[ns.e('subtitle')]"
-							>
+							<small v-if="'subtitle' in $slots || props.subtitle" :class="[ns.e('subtitle')]">
 								<slot name="subtitle">{{ props.subtitle }}</slot>
 							</small>
 						</div>
@@ -107,19 +83,10 @@
 				</template>
 			</div>
 
-			<div
-				v-if="'description' in $slots"
-				:class="[ns.e('description')]"
-			>
-				<div
-					v-if="'icon' in $slots || props.icon"
-					:class="[ns.e('icon')]"
-				>
+			<div v-if="'description' in $slots" :class="[ns.e('description')]">
+				<div v-if="'icon' in $slots || props.icon" :class="[ns.e('icon')]">
 					<slot name="icon">
-						<fb-icon
-							v-if="props.icon"
-							:class="[ns.e('icon')]"
-						>
+						<fb-icon v-if="props.icon" :class="[ns.e('icon')]">
 							<component :is="props.icon" />
 						</fb-icon>
 					</slot>
@@ -133,10 +100,7 @@
 				>
 					<slot name="title">{{ props.title }}</slot>
 
-					<small
-						v-if="'subtitle' in $slots || props.subtitle"
-						:class="[ns.e('subtitle')]"
-					>
+					<small v-if="'subtitle' in $slots || props.subtitle" :class="[ns.e('subtitle')]">
 						<slot name="subtitle">{{ props.subtitle }}</slot>
 					</small>
 				</div>

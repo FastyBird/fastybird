@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { computed, getCurrentInstance, inject, toRaw, watch, nextTick, onBeforeUnmount, defineComponent, reactive } from 'vue';
-import { get, isEqual } from 'lodash-unified';
+import { get, isEqual } from 'lodash';
 
 import { useId, useNamespace } from '@fastybird/web-ui-hooks';
 import { escapeStringRegexp, isObject } from '@fastybird/web-ui-utils';

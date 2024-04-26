@@ -142,11 +142,11 @@ export const popperContentProps = buildProps({
 export type PopperContentProps = ExtractPropTypes<typeof popperContentProps>;
 
 export const popperContentEmits = {
-	mouseenter: (evt: MouseEvent) => evt instanceof MouseEvent,
-	mouseleave: (evt: MouseEvent) => evt instanceof MouseEvent,
-	focus: () => true,
-	blur: () => true,
-	close: () => true,
+	mouseenter: (evt: MouseEvent): boolean => evt instanceof MouseEvent,
+	mouseleave: (evt: MouseEvent): boolean => evt instanceof MouseEvent,
+	focus: (): boolean => true,
+	blur: (): boolean => true,
+	close: (): boolean => true,
 };
 
 export type PopperContentEmits = typeof popperContentEmits;

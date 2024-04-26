@@ -25,7 +25,7 @@ export const itemProps = buildProps({
 export type ItemProps = ExtractPropTypes<typeof itemProps>;
 
 export const itemEmits = {
-	click: (evt: UIEvent) => evt instanceof UIEvent,
+	click: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type ItemEmits = typeof itemEmits;

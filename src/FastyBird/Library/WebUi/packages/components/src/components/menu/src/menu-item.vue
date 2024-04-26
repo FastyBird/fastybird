@@ -33,7 +33,7 @@ import { computed, getCurrentInstance, inject, onBeforeUnmount, onMounted, react
 
 import { throwError } from '@fastybird/web-ui-utils';
 import { useNamespace } from '@fastybird/web-ui-hooks';
-import { menuContextKey, SubMenuContext, subMenuContextKey } from './constants';
+import { menuContextKey, subMenuContextKey } from './constants';
 
 import { useMenu } from './hooks';
 import { menuItemEmits, menuItemProps } from './menu-item';
@@ -74,7 +74,7 @@ const item: MenuItemRegistered = reactive({
 	active,
 });
 
-const handleClick = () => {
+const handleClick = (): void => {
 	if (!props.disabled) {
 		rootMenu.handleMenuItemClick({
 			index: props.index,

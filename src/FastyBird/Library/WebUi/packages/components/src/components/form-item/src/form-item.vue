@@ -1,42 +1,17 @@
 <template>
-	<div
-		ref="formItemRef"
-		:class="formItemClass"
-		:role="isGroup ? 'group' : undefined"
-		:aria-labelledby="isGroup ? labelId : undefined"
-	>
-		<form-label-wrap
-			:is-auto-width="labelStyle.width === 'auto'"
-			:update-all="formContext?.labelWidth === 'auto'"
-		>
-			<component
-				:is="labelFor ? 'label' : 'div'"
-				v-if="hasLabel"
-				:id="labelId"
-				:for="labelFor"
-				:class="ns.e('label')"
-				:style="labelStyle"
-			>
-				<slot
-					name="label"
-					:label="currentLabel"
-				>
+	<div ref="formItemRef" :class="formItemClass" :role="isGroup ? 'group' : undefined" :aria-labelledby="isGroup ? labelId : undefined">
+		<form-label-wrap :is-auto-width="labelStyle.width === 'auto'" :update-all="formContext?.labelWidth === 'auto'">
+			<component :is="labelFor ? 'label' : 'div'" v-if="hasLabel" :id="labelId" :for="labelFor" :class="ns.e('label')" :style="labelStyle">
+				<slot name="label" :label="currentLabel">
 					{{ currentLabel }}
 				</slot>
 			</component>
 		</form-label-wrap>
 
-		<div
-			:class="ns.e('content')"
-			:style="contentStyle"
-		>
+		<div :class="ns.e('content')" :style="contentStyle">
 			<slot />
 			<transition-group :name="`${ns.namespace.value}-zoom-in-top`">
-				<slot
-					v-if="shouldShowError"
-					name="error"
-					:error="validateMessage"
-				>
+				<slot v-if="shouldShowError" name="error" :error="validateMessage">
 					<div :class="validateClass">
 						{{ validateMessage }}
 					</div>
@@ -49,7 +24,7 @@
 <script lang="ts" setup>
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, provide, reactive, ref, toRefs, useSlots, watch } from 'vue';
 import AsyncValidator from 'async-validator';
-import { clone } from 'lodash-unified';
+import { clone } from 'lodash';
 
 import { refDebounced } from '@vueuse/core';
 import { addUnit, ensureArray, getProp, isBoolean, isFunction, isString } from '@fastybird/web-ui-utils';

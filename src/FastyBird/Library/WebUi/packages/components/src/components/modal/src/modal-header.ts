@@ -90,9 +90,9 @@ export const modalHeaderProps = buildProps({
 export type ModalHeaderProps = ExtractPropTypes<typeof modalHeaderProps>;
 
 export const modalHeaderEmits = {
-	close: (evt: UIEvent) => evt instanceof UIEvent,
-	leftClick: (evt: UIEvent) => evt instanceof UIEvent,
-	rightClick: (evt: UIEvent) => evt instanceof UIEvent,
+	close: (evt: UIEvent): boolean => evt instanceof UIEvent,
+	leftClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
+	rightClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type ModalHeaderEmits = typeof modalHeaderEmits;

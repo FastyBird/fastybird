@@ -41,10 +41,7 @@
 			/>
 			<span :class="ns.e('inner')" />
 		</span>
-		<span
-			v-if="hasOwnLabel"
-			:class="ns.e('label')"
-		>
+		<span v-if="hasOwnLabel" :class="ns.e('label')">
 			<slot />
 			<template v-if="!('default' in $slots)">{{ props.label }}</template>
 		</span>

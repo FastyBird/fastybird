@@ -1,4 +1,4 @@
-import { buildProps, definePropType, mutable } from '@fastybird/web-ui-utils';
+import { buildProps, definePropType, isNumber, isObject, isString, mutable } from '@fastybird/web-ui-utils';
 
 import type { ExtractPropTypes } from 'vue';
 import type { TabsPaneContext } from './constants';
@@ -60,8 +60,9 @@ export const tabNavProps = buildProps({
 export type TabNavProps = ExtractPropTypes<typeof tabNavProps>;
 
 export const tabNavEmits = {
-	tabClick: (tab: TabsPaneContext, tabName: TabPaneName, ev: Event) => ev instanceof Event,
-	tabRemove: (tab: TabsPaneContext, ev: Event) => ev instanceof Event,
+	tabClick: (tab: TabsPaneContext, tabName: TabPaneName, ev: Event): boolean =>
+		ev instanceof Event && isObject(tab) && (isString(tabName) || isNumber(tabName)),
+	tabRemove: (tab: TabsPaneContext, ev: Event): boolean => ev instanceof Event && isObject(tab),
 };
 
 export type TabNavEmits = typeof tabNavEmits;

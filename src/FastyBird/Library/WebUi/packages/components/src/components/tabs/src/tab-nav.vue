@@ -1,32 +1,20 @@
 <template>
-	<div
-		ref="elRef"
-		:class="[ns.e('nav-wrap'), ns.is('scrollable', !!scrollable), ns.is(rootTabs.props.tabPosition)]"
-	>
+	<div ref="elRef" :class="[ns.e('nav-wrap'), ns.is('scrollable', !!scrollable), ns.is(rootTabs.props.tabPosition)]">
 		<template v-if="scrollable">
-			<span
-				:class="[ns.e('nav-prev'), ns.is('disabled', !scrollable.prev)]"
-				@click="scrollPrev"
-			>
+			<span :class="[ns.e('nav-prev'), ns.is('disabled', !scrollable.prev)]" @click="scrollPrev">
 				<fb-icon>
 					<arrow-left />
 				</fb-icon>
 			</span>
 
-			<span
-				:class="[ns.e('nav-next'), ns.is('disabled', !scrollable.next)]"
-				@click="scrollNext"
-			>
+			<span :class="[ns.e('nav-next'), ns.is('disabled', !scrollable.next)]" @click="scrollNext">
 				<fb-icon>
 					<arrow-right />
 				</fb-icon>
 			</span>
 		</template>
 
-		<div
-			ref="navScrollRef"
-			:class="ns.e('nav-scroll')"
-		>
+		<div ref="navScrollRef" :class="ns.e('nav-scroll')">
 			<div
 				ref="navRef"
 				:class="[
@@ -38,15 +26,11 @@
 				role="tablist"
 				@keydown="changeTab"
 			>
-				<fb-tab-bar
-					v-if="!props.type"
-					ref="tabBarRef"
-					:tabs="props.panes"
-					:active-item-ref="activeItemRef"
-				/>
+				<fb-tab-bar v-if="!props.type" ref="tabBarRef" :tabs="props.panes" :active-item-ref="activeItemRef" />
 
 				<fb-tab-nav-item
 					v-for="(pane, index) in props.panes"
+					:key="index"
 					:ref="(el) => checkMenuItem(el as ComponentPublicInstance, pane)"
 					:index="index"
 					:pane="pane"
@@ -117,7 +101,7 @@ const focusable = ref(true);
 
 const sizeName = computed(() => ([TabPositionTypes.TOP, TabPositionTypes.BOTTOM].includes(rootTabs.props.tabPosition) ? 'width' : 'height'));
 
-const navStyle = computed<CSSProperties>(() => {
+const navStyle = computed<CSSProperties>((): CSSProperties => {
 	const dir = sizeName.value === 'width' ? 'X' : 'Y';
 
 	return {
@@ -135,9 +119,11 @@ const activeItemRef = computed<HTMLElement | undefined>((): HTMLElement | undefi
 			return navItemsRef.value[pane.uid].$el;
 		}
 	}
+
+	return undefined;
 });
 
-const scrollPrev = () => {
+const scrollPrev = (): void => {
 	if (!navScrollRef.value) {
 		return;
 	}
@@ -152,7 +138,7 @@ const scrollPrev = () => {
 	navOffset.value = currentOffset > containerSize ? currentOffset - containerSize : 0;
 };
 
-const scrollNext = () => {
+const scrollNext = (): void => {
 	if (!navScrollRef.value || !navRef.value) {
 		return;
 	}
@@ -168,7 +154,7 @@ const scrollNext = () => {
 	navOffset.value = navSize - currentOffset > containerSize * 2 ? currentOffset + containerSize : navSize - containerSize;
 };
 
-const scrollToActiveTab = async () => {
+const scrollToActiveTab = async (): Promise<void> => {
 	const nav = navRef.value;
 
 	if (!scrollable.value || !elRef.value || !navScrollRef.value || !nav) {
@@ -214,7 +200,7 @@ const scrollToActiveTab = async () => {
 	navOffset.value = Math.min(newOffset, maxOffset);
 };
 
-const update = () => {
+const update = (): void => {
 	if (!navRef.value || !navScrollRef.value) {
 		return;
 	}
@@ -240,7 +226,7 @@ const update = () => {
 	}
 };
 
-const changeTab = (e: KeyboardEvent) => {
+const changeTab = (e: KeyboardEvent): void => {
 	const code = e.code;
 
 	const { up, down, left, right } = EVENT_CODE;
@@ -278,13 +264,13 @@ const changeTab = (e: KeyboardEvent) => {
 	setFocus();
 };
 
-const setFocus = () => {
+const setFocus = (): void => {
 	if (focusable.value) {
 		isFocus.value = true;
 	}
 };
 
-const removeFocus = () => (isFocus.value = false);
+const removeFocus = (): void => (isFocus.value = false);
 
 useResizeObserver(elRef, update);
 

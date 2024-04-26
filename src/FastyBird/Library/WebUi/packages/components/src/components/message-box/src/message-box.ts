@@ -1,4 +1,4 @@
-import { buildProps, definePropType, isClient, mutable } from '@fastybird/web-ui-utils';
+import { buildProps, definePropType, isClient, isObject, mutable } from '@fastybird/web-ui-utils';
 import { ComponentSize, ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
 
 import type { AppContext, Component, ExtractPropTypes, StyleValue, VNode } from 'vue';
@@ -323,8 +323,8 @@ export const messageBoxProps = buildProps({
 export type MessageBoxProps = ExtractPropTypes<typeof messageBoxProps>;
 
 export const messageBoxEmits = {
-	action: (action: MessageBoxAction) => true,
-	vanish: () => true,
+	action: (action: MessageBoxAction): boolean => isObject(action),
+	vanish: (): boolean => true,
 };
 
 export type MessageBoxEmits = typeof messageBoxEmits;

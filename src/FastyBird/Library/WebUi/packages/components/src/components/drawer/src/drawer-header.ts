@@ -59,7 +59,7 @@ export const drawerHeaderProps = buildProps({
 export type DrawerHeaderProps = ExtractPropTypes<typeof drawerHeaderProps>;
 
 export const drawerHeaderEmits = {
-	close: (evt: UIEvent) => evt instanceof UIEvent,
+	close: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type DrawerHeaderEmits = typeof drawerHeaderEmits;

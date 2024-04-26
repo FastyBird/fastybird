@@ -1,6 +1,6 @@
 import { computed, getCurrentInstance, inject, nextTick, watch } from 'vue';
 
-import { debugWarn } from '@fastybird/web-ui-utils';
+import { debugWarn, isArray } from '@fastybird/web-ui-utils';
 
 import { useFormItem } from '../../../form-item';
 import { checkboxGroupContextKey } from '../constants';
@@ -21,7 +21,10 @@ export const useCheckboxEvent = (
 		Pick<CheckboxStatus, 'hasOwnLabel'> &
 		Pick<CheckboxDisabled, 'isDisabled'> &
 		Pick<ReturnType<typeof useFormItemInputId>, 'isLabeledByFormItem'>
-) => {
+): {
+	handleChange: (e: Event) => void;
+	onClickRoot: (e: MouseEvent) => Promise<void>;
+} => {
 	const checkboxGroup = inject(checkboxGroupContextKey, undefined);
 	const { formItem } = useFormItem();
 	const { emit } = getCurrentInstance()!;
@@ -54,7 +57,7 @@ export const useCheckboxEvent = (
 			const hasLabel = eventTargets.some((item) => (item as HTMLElement).tagName === 'LABEL');
 
 			if (!hasLabel) {
-				model.value = getLabeledValue([false, props.falseValue].includes(model.value));
+				model.value = getLabeledValue(!model.value || isArray(model.value) ? false : [false, props.falseValue].includes(model.value));
 				await nextTick();
 				emitChangeEvent(model.value, e);
 			}

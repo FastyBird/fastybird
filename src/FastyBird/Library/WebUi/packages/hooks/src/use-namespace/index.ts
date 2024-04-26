@@ -39,7 +39,7 @@ export const useNamespace = (
 	namespaceOverrides?: Ref<string | undefined>
 ): {
 	namespace: ComputedRef<string>;
-	b: (blockSuffix: string) => string;
+	b: (blockSuffix?: string) => string;
 	e: (element?: string) => string;
 	m: (modifier?: string) => string;
 	be: (blockSuffix?: string, element?: string) => string;

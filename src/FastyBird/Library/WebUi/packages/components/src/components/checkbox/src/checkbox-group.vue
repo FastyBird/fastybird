@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, provide, ref, toRefs, watch } from 'vue';
-import { pick } from 'lodash-unified';
+import { pick } from 'lodash';
 
 import { UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 import { debugWarn } from '@fastybird/web-ui-utils';

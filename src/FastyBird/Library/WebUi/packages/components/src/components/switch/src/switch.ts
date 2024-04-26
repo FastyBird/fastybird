@@ -158,9 +158,9 @@ export const switchProps = buildProps({
 export type SwitchProps = ExtractPropTypes<typeof switchProps>;
 
 export const switchEmits = {
-	[UPDATE_MODEL_EVENT]: (val: boolean | string | number) => isBoolean(val) || isString(val) || isNumber(val),
-	[CHANGE_EVENT]: (val: boolean | string | number) => isBoolean(val) || isString(val) || isNumber(val),
-	[INPUT_EVENT]: (val: boolean | string | number) => isBoolean(val) || isString(val) || isNumber(val),
+	[UPDATE_MODEL_EVENT]: (val: boolean | string | number): boolean => isBoolean(val) || isString(val) || isNumber(val),
+	[CHANGE_EVENT]: (val: boolean | string | number): boolean => isBoolean(val) || isString(val) || isNumber(val),
+	[INPUT_EVENT]: (val: boolean | string | number): boolean => isBoolean(val) || isString(val) || isNumber(val),
 };
 
 export type SwitchEmits = typeof switchEmits;

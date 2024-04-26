@@ -1,8 +1,14 @@
 import { computed } from 'vue';
 
-import type { ComponentInternalInstance, Ref } from 'vue';
+import type { ComputedRef, ComponentInternalInstance, Ref } from 'vue';
 
-export const useMenu = (instance: ComponentInternalInstance, currentIndex: Ref<string>) => {
+export const useMenu = (
+	instance: ComponentInternalInstance,
+	currentIndex: Ref<string>
+): {
+	parentMenu: ComputedRef<ComponentInternalInstance>;
+	indexPath: ComputedRef<string[]>;
+} => {
 	const indexPath = computed<string[]>((): string[] => {
 		let parent = instance.parent!;
 

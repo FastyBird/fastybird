@@ -1,4 +1,4 @@
-import { computed, ComputedRef, onBeforeUnmount, ref, shallowRef, unref, watch } from 'vue';
+import { computed, ComputedRef, onBeforeUnmount, ref, ShallowRef, shallowRef, unref, watch } from 'vue';
 import { fromPairs } from 'lodash';
 
 import { createPopper } from '@popperjs/core';
@@ -25,7 +25,7 @@ export const usePopper = (
 	attributes: ComputedRef<any>;
 	update: () => Promise<Partial<State>> | undefined;
 	forceUpdate: () => void;
-	instanceRef: ComputedRef<any>;
+	instanceRef: ShallowRef<Instance | undefined>;
 } => {
 	const stateUpdater = {
 		name: 'updateState',

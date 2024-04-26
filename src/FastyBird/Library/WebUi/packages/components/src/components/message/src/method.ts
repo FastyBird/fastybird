@@ -79,7 +79,7 @@ const createMessage = (options: MessageOptions, appContext: AppContext | null = 
 		},
 
 		// clean message element preventing mem leak
-		onDestroy: () => {
+		onDestroy: (): void => {
 			// since the element is destroyed, then the VNode should be collected by GC as well
 			// we do not want cause any mem leak because we have returned vm as a reference to users
 			// so that we manually set it to false.
@@ -92,7 +92,7 @@ const createMessage = (options: MessageOptions, appContext: AppContext | null = 
 		props,
 		isFunction(props.message) || isVNode(props.message)
 			? {
-					default: isFunction(props.message) ? props.message : () => props.message,
+					default: isFunction(props.message) ? props.message : (): string | VNode | (() => VNode) => props.message,
 				}
 			: null
 	);
@@ -162,7 +162,7 @@ const message = (options: MessageOptions | string | VNode, appContext: AppContex
 };
 
 const messageFactory = (type: MessageType) => {
-	return (msg: string | VNode, options?: MessageOptions, appContext?: AppContext | null) => {
+	return (msg: string | VNode, options?: MessageOptions, appContext?: AppContext | null): MessageHandler => {
 		return message(
 			Object.assign(
 				{

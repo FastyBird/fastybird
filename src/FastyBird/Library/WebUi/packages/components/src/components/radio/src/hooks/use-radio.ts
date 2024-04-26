@@ -1,16 +1,29 @@
-import { computed, inject, ref } from 'vue';
+import { computed, ComputedRef, inject, Ref, ref, WritableComputedRef } from 'vue';
 
-import { UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
+import { ComponentSize, UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 
 import { useFormDisabled, useFormSize } from '../../../form';
-import { radioGroupContextKey } from '../constants';
+import { RadioGroupContext, radioGroupContextKey } from '../constants';
 
 import type { SetupContext } from 'vue';
 import type { RadioButtonProps } from '../radio-button';
 import type { RadioEmits, RadioProps } from '../radio';
 
-export const useRadio = (props: RadioProps | RadioButtonProps, emit?: SetupContext<RadioEmits>['emit']) => {
-	const radioRef = ref<HTMLInputElement>();
+export const useRadio = (
+	props: RadioProps | RadioButtonProps,
+	emit?: SetupContext<RadioEmits>['emit']
+): {
+	radioRef: Ref<HTMLInputElement | undefined>;
+	isGroup: ComputedRef<boolean>;
+	radioGroup: RadioGroupContext | undefined;
+	focus: Ref<boolean>;
+	size: ComputedRef<ComponentSize>;
+	disabled: ComputedRef<boolean>;
+	tabIndex: ComputedRef<number>;
+	modelValue: WritableComputedRef<number | string | boolean | undefined>;
+	actualValue: ComputedRef<number | string | boolean | undefined>;
+} => {
+	const radioRef = ref<HTMLInputElement | undefined>();
 	const radioGroup = inject(radioGroupContextKey, undefined);
 	const isGroup = computed(() => !!radioGroup);
 	const actualValue = computed(() => props.value);

@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-alert.css';
+import '@fastybird/web-ui-theme-chalk/fb-alert.css';
 
 import '../../../base/style/css';

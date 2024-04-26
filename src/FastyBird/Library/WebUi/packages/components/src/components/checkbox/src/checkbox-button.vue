@@ -30,11 +30,7 @@
 			@click.stop
 		/>
 
-		<span
-			v-if="'default' in $slots || props.label"
-			:class="ns.be('button', 'inner')"
-			:style="isChecked ? activeStyle : undefined"
-		>
+		<span v-if="'default' in $slots || props.label" :class="ns.be('button', 'inner')" :style="isChecked ? activeStyle : undefined">
 			<slot>{{ props.label }}</slot>
 		</span>
 	</label>

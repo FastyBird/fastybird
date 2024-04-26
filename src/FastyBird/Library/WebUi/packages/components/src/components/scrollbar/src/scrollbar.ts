@@ -122,7 +122,7 @@ export const scrollbarProps = buildProps({
 export type ScrollbarProps = ExtractPropTypes<typeof scrollbarProps>;
 
 export const scrollbarEmits = {
-	scroll: ({ scrollTop, scrollLeft }: { scrollTop: number; scrollLeft: number }) => [scrollTop, scrollLeft].every(isNumber),
+	scroll: ({ scrollTop, scrollLeft }: { scrollTop: number; scrollLeft: number }): boolean => [scrollTop, scrollLeft].every(isNumber),
 };
 
 export type ScrollbarEmits = typeof scrollbarEmits;

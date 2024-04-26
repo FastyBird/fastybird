@@ -1,1 +1,1 @@
-import '@fastybird/web-ui-theme-chalk/dist/base.css';
+import '@fastybird/web-ui-theme-chalk/base.css';

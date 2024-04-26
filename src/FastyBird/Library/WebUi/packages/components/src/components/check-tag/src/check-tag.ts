@@ -24,8 +24,8 @@ export const checkTagProps = buildProps({
 export type CheckTagProps = ExtractPropTypes<typeof checkTagProps>;
 
 export const checkTagEmits = {
-	'update:checked': (value: boolean) => isBoolean(value),
-	[CHANGE_EVENT]: (value: boolean) => isBoolean(value),
+	'update:checked': (value: boolean): boolean => isBoolean(value),
+	[CHANGE_EVENT]: (value: boolean): boolean => isBoolean(value),
 };
 
 export type CheckTagEmits = typeof checkTagEmits;

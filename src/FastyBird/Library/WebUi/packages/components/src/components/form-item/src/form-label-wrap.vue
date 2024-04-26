@@ -1,16 +1,8 @@
 <template>
-	<div
-		v-if="isAutoWidth"
-		ref="el"
-		:class="ns.be('item', 'label-wrap')"
-		:style="style"
-	>
+	<div v-if="isAutoWidth" ref="el" :class="ns.be('item', 'label-wrap')" :style="style">
 		<slot />
 	</div>
-	<Fragment
-		v-else
-		ref="el"
-	>
+	<Fragment v-else ref="el">
 		<slot />
 	</Fragment>
 </template>

@@ -188,18 +188,18 @@ export const inputProps = buildProps({
 export type InputProps = ExtractPropTypes<typeof inputProps>;
 
 export const inputEmits = {
-	[UPDATE_MODEL_EVENT]: (value: string) => isString(value),
-	input: (value: string) => isString(value),
-	change: (value: string) => isString(value),
-	focus: (evt: FocusEvent) => evt instanceof FocusEvent,
-	blur: (evt: FocusEvent) => evt instanceof FocusEvent,
-	clear: () => true,
-	mouseleave: (evt: MouseEvent) => evt instanceof MouseEvent,
-	mouseenter: (evt: MouseEvent) => evt instanceof MouseEvent,
-	keydown: (evt: KeyboardEvent | Event) => evt instanceof Event,
-	compositionstart: (evt: CompositionEvent) => evt instanceof CompositionEvent,
-	compositionupdate: (evt: CompositionEvent) => evt instanceof CompositionEvent,
-	compositionend: (evt: CompositionEvent) => evt instanceof CompositionEvent,
+	[UPDATE_MODEL_EVENT]: (value: string): boolean => isString(value),
+	input: (value: string): boolean => isString(value),
+	change: (value: string): boolean => isString(value),
+	focus: (evt: FocusEvent): boolean => evt instanceof FocusEvent,
+	blur: (evt: FocusEvent): boolean => evt instanceof FocusEvent,
+	clear: (): boolean => true,
+	mouseleave: (evt: MouseEvent): boolean => evt instanceof MouseEvent,
+	mouseenter: (evt: MouseEvent): boolean => evt instanceof MouseEvent,
+	keydown: (evt: KeyboardEvent | Event): boolean => evt instanceof Event,
+	compositionstart: (evt: CompositionEvent): boolean => evt instanceof CompositionEvent,
+	compositionupdate: (evt: CompositionEvent): boolean => evt instanceof CompositionEvent,
+	compositionend: (evt: CompositionEvent): boolean => evt instanceof CompositionEvent,
 };
 
 export type InputEmits = typeof inputEmits;

@@ -15,13 +15,13 @@ export const useWatch = (
 	maxValue: ComputedRef<number>,
 	emit: SetupContext<SliderEmits>['emit'],
 	elFormItem: FormItemContext
-) => {
+): void => {
 	const _emit = (val: Arrayable<number>): void => {
 		emit(UPDATE_MODEL_EVENT, val);
 		emit(INPUT_EVENT, val);
 	};
 
-	const valueChanged = () => {
+	const valueChanged = (): boolean => {
 		if (props.range) {
 			return ![minValue.value, maxValue.value].every((item, index) => item === (initData.oldValue as number[])[index]);
 		} else {

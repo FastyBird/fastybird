@@ -1,3 +1,3 @@
-import '@fastybird/web-ui-theme-chalk/dist/fb-switch.css';
+import '@fastybird/web-ui-theme-chalk/fb-switch.css';
 
 import '../../../base/style/css';

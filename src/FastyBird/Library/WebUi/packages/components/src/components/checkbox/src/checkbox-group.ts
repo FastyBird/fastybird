@@ -97,8 +97,8 @@ export const checkboxGroupProps = buildProps({
 export type CheckboxGroupProps = ExtractPropTypes<typeof checkboxGroupProps>;
 
 export const checkboxGroupEmits = {
-	[UPDATE_MODEL_EVENT]: (val: CheckboxGroupValueType) => isArray(val),
-	change: (val: CheckboxValueType[]) => isArray(val),
+	[UPDATE_MODEL_EVENT]: (val: CheckboxGroupValueType): boolean => isArray(val),
+	change: (val: CheckboxValueType[]): boolean => isArray(val),
 };
 
 export type CheckboxGroupEmits = typeof checkboxGroupEmits;

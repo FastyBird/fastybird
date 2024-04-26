@@ -77,8 +77,8 @@ export const radioProps = buildProps({
 export type RadioProps = ExtractPropTypes<typeof radioProps>;
 
 export const radioEmits = {
-	[UPDATE_MODEL_EVENT]: (val: string | number | boolean | undefined) => isString(val) || isNumber(val) || isBoolean(val),
-	[CHANGE_EVENT]: (val: string | number | boolean | undefined) => isString(val) || isNumber(val) || isBoolean(val),
+	[UPDATE_MODEL_EVENT]: (val: string | number | boolean | undefined): boolean => isString(val) || isNumber(val) || isBoolean(val),
+	[CHANGE_EVENT]: (val: string | number | boolean | undefined): boolean => isString(val) || isNumber(val) || isBoolean(val),
 };
 
 export type RadioEmits = typeof radioEmits;

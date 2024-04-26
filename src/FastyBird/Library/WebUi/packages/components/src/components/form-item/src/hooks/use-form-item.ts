@@ -4,14 +4,18 @@ import { useId } from '@fastybird/web-ui-hooks';
 import { debugWarn } from '@fastybird/web-ui-utils';
 
 import { formItemContextKey } from '../constants';
-import { FormItemContext } from '../types';
 import { formContextKey } from '../../../form/src/constants';
 
 import type { ComputedRef, Ref, WatchStopHandle } from 'vue';
+import type { FormContext } from '../../../form';
+import type { FormItemContext } from '../types';
 
 const SCOPE = 'FbForm';
 
-export const useFormItem = () => {
+export const useFormItem = (): {
+	form: FormContext | undefined;
+	formItem: FormItemContext | undefined;
+} => {
 	const form = inject(formContextKey, undefined);
 	const formItem = inject(formItemContextKey, undefined);
 

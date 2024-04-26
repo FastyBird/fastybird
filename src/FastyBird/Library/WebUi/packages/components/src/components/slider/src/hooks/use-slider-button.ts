@@ -1,18 +1,28 @@
 import { computed, inject, nextTick, ref, watch } from 'vue';
-import { debounce } from 'lodash-unified';
+import { debounce, DebouncedFunc } from 'lodash';
 
 import { EVENT_CODE, UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 
 import { sliderContextKey } from '../constants';
 
-import type { CSSProperties, Ref, SetupContext } from 'vue';
+import type { ComputedRef, CSSProperties, Ref, SetupContext } from 'vue';
 import type { FbTooltipInstance } from '../../../tooltip';
 import type { SliderProps } from '../slider';
 import type { SliderButtonEmits, SliderButtonInitData, SliderButtonProps } from '../button';
 
 const { left, down, right, up, home, end, pageUp, pageDown } = EVENT_CODE;
 
-const useTooltip = (props: SliderButtonProps, formatTooltip: Ref<SliderProps['formatTooltip']>, showTooltip: Ref<SliderProps['showTooltip']>) => {
+const useTooltip = (
+	props: SliderButtonProps,
+	formatTooltip: Ref<SliderProps['formatTooltip']>,
+	showTooltip: Ref<SliderProps['showTooltip']>
+): {
+	tooltip: Ref<FbTooltipInstance | undefined>;
+	tooltipVisible: Ref<boolean>;
+	formatValue: ComputedRef<boolean>;
+	displayTooltip: DebouncedFunc<() => void>;
+	hideTooltip: DebouncedFunc<() => void>;
+} => {
 	const tooltip = ref<FbTooltipInstance | undefined>();
 
 	const tooltipVisible = ref<boolean>(false);
@@ -21,7 +31,7 @@ const useTooltip = (props: SliderButtonProps, formatTooltip: Ref<SliderProps['fo
 		return formatTooltip.value instanceof Function;
 	});
 
-	const formatValue = computed(() => {
+	const formatValue = computed<boolean>((): boolean => {
 		return (enableFormat.value && formatTooltip.value!(props.modelValue)) || props.modelValue;
 	});
 
@@ -42,7 +52,24 @@ const useTooltip = (props: SliderButtonProps, formatTooltip: Ref<SliderProps['fo
 	};
 };
 
-export const useSliderButton = (props: SliderButtonProps, initData: SliderButtonInitData, emit: SetupContext<SliderButtonEmits>['emit']) => {
+export const useSliderButton = (
+	props: SliderButtonProps,
+	initData: SliderButtonInitData,
+	emit: SetupContext<SliderButtonEmits>['emit']
+): {
+	disabled: Ref<boolean>;
+	button: Ref<HTMLDivElement | undefined>;
+	tooltip: Ref<FbTooltipInstance | undefined>;
+	tooltipVisible: Ref<boolean>;
+	showTooltip: Ref<boolean>;
+	wrapperStyle: ComputedRef<CSSProperties>;
+	formatValue: ComputedRef<boolean>;
+	handleMouseEnter: () => void;
+	handleMouseLeave: () => void;
+	onButtonDown: (event: MouseEvent | TouchEvent) => void;
+	onKeyDown: (event: KeyboardEvent) => void;
+	setPosition: (newPosition: number) => Promise<void>;
+} => {
 	const { disabled, min, max, step, showTooltip, precision, sliderSize, formatTooltip, emitChange, resetSize, updateDragging } =
 		inject(sliderContextKey)!;
 

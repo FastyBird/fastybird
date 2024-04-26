@@ -1,40 +1,19 @@
 <template>
-	<span
-		v-if="props.disableTransitions"
-		:class="containerClass"
-		:style="{ backgroundColor: props.color }"
-		@click="handleClick"
-	>
+	<span v-if="props.disableTransitions" :class="containerClass" :style="{ backgroundColor: props.color }" @click="handleClick">
 		<span :class="ns.e('content')">
 			<slot />
 		</span>
-		<fb-icon
-			v-if="props.closable"
-			:class="ns.e('close')"
-			@click.stop="handleClose"
-		>
+		<fb-icon v-if="props.closable" :class="ns.e('close')" @click.stop="handleClose">
 			<close />
 		</fb-icon>
 	</span>
 
-	<transition
-		v-else
-		:name="`${ns.namespace.value}-zoom-in-center`"
-		appear
-	>
-		<span
-			:class="containerClass"
-			:style="{ backgroundColor: props.color }"
-			@click="handleClick"
-		>
+	<transition v-else :name="`${ns.namespace.value}-zoom-in-center`" appear>
+		<span :class="containerClass" :style="{ backgroundColor: props.color }" @click="handleClick">
 			<span :class="ns.e('content')">
 				<slot />
 			</span>
-			<fb-icon
-				v-if="props.closable"
-				:class="ns.e('close')"
-				@click.stop="handleClose"
-			>
+			<fb-icon v-if="props.closable" :class="ns.e('close')" @click.stop="handleClose">
 				<close />
 			</fb-icon>
 		</span>

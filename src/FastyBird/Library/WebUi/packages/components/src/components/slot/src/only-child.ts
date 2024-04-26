@@ -1,4 +1,4 @@
-import { Comment, Fragment, Text, cloneVNode, defineComponent, inject, withDirectives, h } from 'vue';
+import { Comment, Fragment, Text, cloneVNode, defineComponent, inject, withDirectives, h, RendererNode, RendererElement } from 'vue';
 
 import { NOOP, isObject } from '@vue/shared';
 import { FORWARD_REF_INJECTION_KEY, useForwardRefDirective, useNamespace } from '@fastybird/web-ui-hooks';
@@ -14,7 +14,7 @@ export const OnlyChild = defineComponent({
 		const forwardRefInjection = inject(FORWARD_REF_INJECTION_KEY);
 		const forwardRefDirective = useForwardRefDirective(forwardRefInjection?.setForwardRef ?? NOOP);
 
-		return () => {
+		return (): VNode<RendererNode, RendererElement, { [key: string]: any }> | null => {
 			const defaultSlot = slots.default?.(attrs);
 
 			if (!defaultSlot) {

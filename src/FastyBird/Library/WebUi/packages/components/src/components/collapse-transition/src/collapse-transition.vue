@@ -1,14 +1,11 @@
 <template>
-	<transition
-		:name="ns.b()"
-		v-on="on"
-	>
+	<transition :name="ns.b()" v-on="on">
 		<slot />
 	</transition>
 </template>
 <script lang="ts" setup>
 import { useNamespace } from '@fastybird/web-ui-hooks';
-import type { RendererElement } from '@vue/runtime-core';
+import type { RendererElement } from 'vue';
 
 defineOptions({
 	name: 'FbCollapseTransition',
@@ -16,7 +13,7 @@ defineOptions({
 
 const ns = useNamespace('collapse-transition');
 
-const reset = (el: RendererElement) => {
+const reset = (el: RendererElement): void => {
 	el.style.maxHeight = '';
 	el.style.overflow = el.dataset.oldOverflow;
 	el.style.paddingTop = el.dataset.oldPaddingTop;
@@ -24,7 +21,7 @@ const reset = (el: RendererElement) => {
 };
 
 const on = {
-	beforeEnter(el: RendererElement) {
+	beforeEnter(el: RendererElement): void {
 		if (!el.dataset) {
 			el.dataset = {};
 		}
@@ -41,7 +38,7 @@ const on = {
 		el.style.paddingBottom = 0;
 	},
 
-	enter(el: RendererElement) {
+	enter(el: RendererElement): void {
 		requestAnimationFrame((): void => {
 			el.dataset.oldOverflow = el.style.overflow;
 

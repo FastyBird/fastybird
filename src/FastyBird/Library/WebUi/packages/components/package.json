@@ -15,11 +15,13 @@
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
   "main": "./src/entry.ts",
-  "module": "./src/entry.ts",
-  "unpkg": "./src/entry.js",
-  "jsdelivr": "./src/entry.js",
-  "types": "./src/entry.d.ts",
-  "sideEffects": false,
+  "scripts": {
+    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src",
+    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore src --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier src --check",
+    "pretty:write": "prettier src --write"
+  },
   "dependencies": {
     "@ctrl/tinycolor": "^4.0",
     "@fastybird/web-ui-constants": "1.0.0-dev.20",
@@ -33,7 +35,16 @@
     "@vue/shared": "^3.4",
     "async-validator": "^4.2",
     "csstype": "^3.1",
-    "lodash-unified": "^1.0"
+    "lodash": "^4.17",
+    "vue-router": "^4.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17",
+    "@types/node": "*",
+    "eslint": "^8.57",
+    "prettier": "^3.2",
+    "typescript": "^5.3",
+    "vue": "^3.4"
   },
   "peerDependencies": {
     "vue": "^3.4"

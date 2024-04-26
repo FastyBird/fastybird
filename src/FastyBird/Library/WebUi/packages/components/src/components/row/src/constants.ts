@@ -1,7 +1,7 @@
-import type { ComputedRef, InjectionKey } from 'vue'
+import type { ComputedRef, InjectionKey } from 'vue';
 
 interface RowContext {
-  gutter: ComputedRef<number>
+	gutter: ComputedRef<number>;
 }
 
-export const rowContextKey: InjectionKey<RowContext> = Symbol('rowContextKey')
+export const rowContextKey: InjectionKey<RowContext> = Symbol('rowContextKey');

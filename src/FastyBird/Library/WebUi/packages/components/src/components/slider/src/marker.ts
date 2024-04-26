@@ -3,7 +3,7 @@ import { computed, defineComponent, h } from 'vue';
 import { buildProps, definePropType, isString } from '@fastybird/web-ui-utils';
 import { useNamespace } from '@fastybird/web-ui-hooks';
 
-import type { CSSProperties, ExtractPropTypes } from 'vue';
+import type { CSSProperties, ExtractPropTypes, RendererElement, RendererNode, VNode } from 'vue';
 
 export const sliderMarkerProps = buildProps({
 	mark: {
@@ -26,7 +26,7 @@ export default defineComponent({
 		});
 		const style = computed(() => (isString(props.mark) ? undefined : props.mark!.style));
 
-		return () =>
+		return (): VNode<RendererNode, RendererElement, { [key: string]: any }> =>
 			h(
 				'div',
 				{

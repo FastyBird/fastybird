@@ -17,14 +17,14 @@ export const checkboxProps = {
 	 * @description label of the Checkbox when used inside a `checkbox-group`
 	 */
 	label: {
-		type: definePropType<number | string | boolean | object | undefined>([Number, String, Boolean, Object]),
+		type: definePropType<number | string | boolean | undefined>([Number, String, Boolean]),
 		default: undefined,
 	},
 	/**
 	 * @description value of the Checkbox when used inside a `checkbox-group`
 	 */
 	value: {
-		type: definePropType<number | string | boolean | object | undefined>([Number, String, Boolean, Object]),
+		type: definePropType<number | string | boolean | undefined>([Number, String, Boolean]),
 		default: undefined,
 	},
 	/**
@@ -117,8 +117,8 @@ export const checkboxProps = {
 export type CheckboxProps = ExtractPropTypes<typeof checkboxProps>;
 
 export const checkboxEmits = {
-	[UPDATE_MODEL_EVENT]: (val: CheckboxValueType) => isString(val) || isNumber(val) || isBoolean(val),
-	change: (val: CheckboxValueType) => isString(val) || isNumber(val) || isBoolean(val),
+	[UPDATE_MODEL_EVENT]: (val: CheckboxValueType): boolean => isString(val) || isNumber(val) || isBoolean(val),
+	change: (val: CheckboxValueType): boolean => isString(val) || isNumber(val) || isBoolean(val),
 };
 
 export type CheckboxEmits = typeof checkboxEmits;

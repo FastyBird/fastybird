@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 import { computed, getCurrentInstance, onMounted, onUpdated, reactive, ref, watch } from 'vue';
-import { isNil } from 'lodash-unified';
+import { isNil } from 'lodash';
 
 import { RepeatClick as vRepeatClick } from '@fastybird/web-ui-directives';
 import { useLocale, useNamespace } from '@fastybird/web-ui-hooks';
@@ -330,7 +330,7 @@ const blur = (): void => {
 	input.value?.blur?.();
 };
 
-const handleFocus = (event: MouseEvent | FocusEvent) => {
+const handleFocus = (event: MouseEvent | FocusEvent): void => {
 	emit('focus', event);
 };
 

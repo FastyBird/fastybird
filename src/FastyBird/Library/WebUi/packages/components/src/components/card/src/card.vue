@@ -24,18 +24,12 @@
 				<slot name="header">{{ props.header }}</slot>
 			</div>
 
-			<div
-				v-if="'extra' in $slots || props.extra"
-				:class="[ns.e('extra')]"
-			>
+			<div v-if="'extra' in $slots || props.extra" :class="[ns.e('extra')]">
 				<slot name="extra">{{ props.extra }}</slot>
 			</div>
 		</div>
 
-		<div
-			v-if="'cover' in $slots || props.cover"
-			:class="[ns.e('cover')]"
-		>
+		<div v-if="'cover' in $slots || props.cover" :class="[ns.e('cover')]">
 			<slot name="cover">{{ props.cover }}</slot>
 		</div>
 

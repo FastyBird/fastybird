@@ -38,7 +38,7 @@ export const bottomNavigationProps = buildProps({
 export type BottomNavigationProps = ExtractPropTypes<typeof bottomNavigationProps>;
 
 export const bottomNavigationEmits = {
-	close: (evt: UIEvent) => evt instanceof UIEvent,
+	close: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type BottomNavigationEmits = typeof bottomNavigationEmits;

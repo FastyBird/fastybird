@@ -1,24 +1,12 @@
 <template>
 	<slot>
-		<header
-			ref="headerRef"
-			:class="[ns.b(), ns.m('variant-' + props.variant), { 'show-close': props.closable }]"
-		>
+		<header ref="headerRef" :class="[ns.b(), ns.m('variant-' + props.variant), { 'show-close': props.closable }]">
 			<div :class="[ns.e('inner')]">
-				<div
-					v-if="!('description' in $slots)"
-					:class="[ns.e('heading')]"
-				>
-					<div
-						v-if="'icon' in $slots || props.icon"
-						:class="[ns.e('icon')]"
-					>
+				<div v-if="!('description' in $slots)" :class="[ns.e('heading')]">
+					<div v-if="'icon' in $slots || props.icon" :class="[ns.e('icon')]">
 						<fb-icon>
 							<slot name="icon">
-								<component
-									:is="props.icon"
-									v-if="props.icon"
-								/>
+								<component :is="props.icon" v-if="props.icon" />
 							</slot>
 						</fb-icon>
 					</div>
@@ -31,10 +19,7 @@
 					>
 						<slot name="title">{{ props.title }}</slot>
 
-						<small
-							v-if="'subtitle' in $slots || props.subtitle"
-							:class="[ns.e('subtitle')]"
-						>
+						<small v-if="'subtitle' in $slots || props.subtitle" :class="[ns.e('subtitle')]">
 							<slot name="subtitle">{{ props.subtitle }}</slot>
 						</small>
 					</div>
@@ -53,19 +38,10 @@
 				</button>
 			</div>
 
-			<div
-				v-if="'description' in $slots"
-				:class="[ns.e('description')]"
-			>
-				<div
-					v-if="'icon' in $slots || props.icon"
-					:class="[ns.e('icon')]"
-				>
+			<div v-if="'description' in $slots" :class="[ns.e('description')]">
+				<div v-if="'icon' in $slots || props.icon" :class="[ns.e('icon')]">
 					<slot name="icon">
-						<fb-icon
-							v-if="props.icon"
-							:class="[ns.e('icon')]"
-						>
+						<fb-icon v-if="props.icon" :class="[ns.e('icon')]">
 							<component :is="props.icon" />
 						</fb-icon>
 					</slot>
@@ -79,10 +55,7 @@
 				>
 					<slot name="title">{{ props.title }}</slot>
 
-					<small
-						v-if="'subtitle' in $slots || props.subtitle"
-						:class="[ns.e('subtitle')]"
-					>
+					<small v-if="'subtitle' in $slots || props.subtitle" :class="[ns.e('subtitle')]">
 						<slot name="subtitle">{{ props.subtitle }}</slot>
 					</small>
 				</div>

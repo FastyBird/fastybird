@@ -203,7 +203,7 @@ export const sliderProps = buildProps({
 
 export type SliderProps = ExtractPropTypes<typeof sliderProps>;
 
-const isValidValue = (value: Arrayable<number>) => isNumber(value) || (isArray(value) && value.every(isNumber));
+const isValidValue = (value: Arrayable<number>): boolean => isNumber(value) || (isArray(value) && value.every(isNumber));
 
 export const sliderEmits = {
 	[UPDATE_MODEL_EVENT]: isValidValue,

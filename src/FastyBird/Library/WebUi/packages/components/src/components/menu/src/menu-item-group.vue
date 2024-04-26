@@ -2,10 +2,7 @@
 	<li :class="ns.b()">
 		<div :class="ns.e('title')">
 			<template v-if="!$slots.title">{{ props.title }}</template>
-			<slot
-				v-else
-				name="title"
-			/>
+			<slot v-else name="title" />
 		</div>
 		<ul>
 			<slot />

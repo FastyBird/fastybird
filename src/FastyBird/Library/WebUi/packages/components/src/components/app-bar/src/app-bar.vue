@@ -1,34 +1,21 @@
 <template>
 	<div :class="[ns.b()]">
-		<div
-			id="fb-app-bar-button-small"
-			ref="buttonSmall"
-			:class="[ns.e('buttons-small'), ns.is('expanded', hasSmallButtons)]"
-		>
+		<div id="fb-app-bar-button-small" ref="buttonSmall" :class="[ns.e('buttons-small'), ns.is('expanded', hasSmallButtons)]">
 			<slot name="button-small" />
 		</div>
 
 		<div :class="[ns.e('header')]">
-			<div
-				id="fb-app-bar-header"
-				:class="[ns.e('heading')]"
-			>
+			<div id="fb-app-bar-header" :class="[ns.e('heading')]">
 				<slot name="heading">
 					<slot name="logo" />
 				</slot>
 			</div>
 
-			<div
-				id="fb-app-bar-button-left"
-				:class="[ns.e('button-left')]"
-			>
+			<div id="fb-app-bar-button-left" :class="[ns.e('button-left')]">
 				<slot name="button-left" />
 			</div>
 
-			<div
-				id="fb-app-bar-button-right"
-				:class="[ns.e('button-right')]"
-			>
+			<div id="fb-app-bar-button-right" :class="[ns.e('button-right')]">
 				<slot name="button-right">
 					<fb-button
 						v-if="!props.menuButtonHidden"
@@ -42,11 +29,7 @@
 			</div>
 		</div>
 
-		<div
-			id="fb-app-bar-content"
-			ref="subContent"
-			:class="[ns.e('content'), ns.is('expanded', hasSubContent)]"
-		>
+		<div id="fb-app-bar-content" ref="subContent" :class="[ns.e('content'), ns.is('expanded', hasSubContent)]">
 			<slot name="content" />
 		</div>
 	</div>

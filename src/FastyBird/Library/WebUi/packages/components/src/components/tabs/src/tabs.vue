@@ -22,10 +22,7 @@
 					<slot name="add-icon" />
 				</template>
 
-				<fb-icon
-					v-else
-					:class="ns.is('icon-plus')"
-				>
+				<fb-icon v-else :class="ns.is('icon-plus')">
 					<fas-plus />
 				</fb-icon>
 			</span>
@@ -84,7 +81,7 @@ const {
 const navRef = ref<FbTabNavInstance>();
 const currentName = ref<TabPaneName>(props.modelValue ?? '0');
 
-const setCurrentName = async (value?: TabPaneName, trigger = false) => {
+const setCurrentName = async (value?: TabPaneName, trigger = false): void => {
 	// should do nothing.
 	if (currentName.value === value || isUndefined(value)) {
 		return;

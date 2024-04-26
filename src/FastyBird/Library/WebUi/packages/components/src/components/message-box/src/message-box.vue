@@ -1,14 +1,6 @@
 <template>
-	<transition
-		name="fade-in-linear"
-		@after-leave="$emit('vanish')"
-	>
-		<fb-overlay
-			v-show="visible"
-			:z-index="currentZIndex"
-			:overlay-class="[ns.is('message-box')]"
-			:mask="props.backdrop"
-		>
+	<transition name="fade-in-linear" @after-leave="$emit('vanish')">
+		<fb-overlay v-show="visible" :z-index="currentZIndex" :overlay-class="[ns.is('message-box')]" :mask="props.backdrop">
 			<div
 				role="dialog"
 				:aria-label="props.title"
@@ -19,13 +11,7 @@
 				@mousedown="overlayEvent.onMousedown"
 				@mouseup="overlayEvent.onMouseup"
 			>
-				<fb-focus-trap
-					loop
-					:trapped="visible"
-					:focus-trap-el="rootRef"
-					:focus-start-el="focusStartRef"
-					@release-requested="onCloseByFocusTrap"
-				>
+				<fb-focus-trap loop :trapped="visible" :focus-trap-el="rootRef" :focus-start-el="focusStartRef" @release-requested="onCloseByFocusTrap">
 					<div
 						ref="rootRef"
 						:class="[ns.b(), props.customClass, ns.is('draggable', draggable), { [ns.m('center')]: props.center }]"
@@ -33,16 +19,9 @@
 						tabindex="-1"
 						@click.stop=""
 					>
-						<div
-							v-if="props.title !== null && props.title !== undefined"
-							ref="headerRef"
-							:class="[ns.e('header'), { 'show-close': props.closable }]"
-						>
+						<div v-if="props.title !== null && props.title !== undefined" ref="headerRef" :class="[ns.e('header'), { 'show-close': props.closable }]">
 							<div :class="ns.e('title')">
-								<fb-icon
-									v-if="iconComponent && props.center"
-									:class="[ns.e('status'), ns.em('icon', props.type)]"
-								>
+								<fb-icon v-if="iconComponent && props.center" :class="[ns.e('status'), ns.em('icon', props.type)]">
 									<component :is="iconComponent" />
 								</fb-icon>
 
@@ -63,21 +42,12 @@
 							</button>
 						</div>
 
-						<div
-							:id="contentId"
-							:class="ns.e('content')"
-						>
+						<div :id="contentId" :class="ns.e('content')">
 							<div :class="ns.e('container')">
-								<fb-icon
-									v-if="iconComponent && !props.center && hasMessage"
-									:class="[ns.e('status'), ns.em('icon', props.type)]"
-								>
+								<fb-icon v-if="iconComponent && !props.center && hasMessage" :class="[ns.e('status'), ns.em('icon', props.type)]">
 									<component :is="iconComponent" />
 								</fb-icon>
-								<div
-									v-if="hasMessage"
-									:class="ns.e('message')"
-								>
+								<div v-if="hasMessage" :class="ns.e('message')">
 									<slot>
 										<component
 											:is="props.showInput ? 'label' : 'p'"
@@ -86,24 +56,16 @@
 										>
 											{{ !props.dangerouslyUseHTMLString ? props.message : '' }}
 										</component>
-										<component
-											:is="props.showInput ? 'label' : 'p'"
-											v-else
-											:for="props.showInput ? inputId : undefined"
-											v-html="props.message"
-										/>
+										<component :is="props.showInput ? 'label' : 'p'" v-else :for="props.showInput ? inputId : undefined" v-html="props.message" />
 									</slot>
 								</div>
 							</div>
 
-							<div
-								v-show="props.showInput"
-								:class="ns.e('input')"
-							>
+							<div v-show="props.showInput" :class="ns.e('input')">
 								<fb-input
 									:id="inputId"
 									ref="inputRef"
-									v-model="props.inputValue"
+									v-model="inputValue"
 									:type="props.inputType"
 									:placeholder="props.inputPlaceholder"
 									:aria-invalid="validateError"
@@ -181,7 +143,7 @@ const props = defineProps(messageBoxProps);
 const emit = defineEmits(messageBoxEmits);
 
 const ns = useNamespace('message-box');
-const { locale, zIndex } = useGlobalComponentSettings('message-box', props.buttonSize);
+const { locale, zIndex } = useGlobalComponentSettings(props.buttonSize);
 const { t } = locale;
 const { currentZIndex, nextZIndex } = zIndex;
 const { close } = CloseComponentsMap;
@@ -210,6 +172,8 @@ const editorErrorMessage = ref<string | undefined>();
 const validateError = ref<boolean>(false);
 
 const action = ref<MessageBoxAction | undefined>(undefined);
+
+const inputValue = ref<string | undefined>(props.inputValue);
 
 const draggable = computed<boolean>(() => props.draggable);
 const overflow = computed<boolean>(() => props.overflow);
@@ -244,7 +208,7 @@ onBeforeUnmount((): void => {
 });
 
 watch(
-	() => props.inputValue,
+	(): string | undefined => inputValue.value,
 	async (val: string | undefined): Promise<void> => {
 		await nextTick();
 
@@ -307,7 +271,7 @@ const doClose = (): void => {
 
 const validate = (): boolean => {
 	if (props.boxType === MessageBoxTypeTypes.PROMPT) {
-		if (props.inputPattern && !props.inputPattern.test(props.inputValue || '')) {
+		if (props.inputPattern && !props.inputPattern.test(inputValue.value || '')) {
 			editorErrorMessage.value = props.inputErrorMessage || t('component.message-box.error');
 			validateError.value = true;
 
@@ -315,7 +279,7 @@ const validate = (): boolean => {
 		}
 
 		if (typeof props.inputValidator === 'function') {
-			const validateResult = props.inputValidator(props.inputValue || '');
+			const validateResult = props.inputValidator(inputValue.value || '');
 
 			if (validateResult === false) {
 				editorErrorMessage.value = props.inputErrorMessage || t('component.message-box.error');
@@ -351,7 +315,7 @@ const getInputElement = (): HTMLElement | undefined => {
 // props.beforeClose method to make an intermediate state by callout a message box
 // for some verification or alerting. then if we allow global event like this
 // to dispatch, it could callout another message box.
-const onCloseByFocusTrap = () => {
+const onCloseByFocusTrap = (): void => {
 	if (props.closeOnPressEscape) {
 		handleClose();
 	}

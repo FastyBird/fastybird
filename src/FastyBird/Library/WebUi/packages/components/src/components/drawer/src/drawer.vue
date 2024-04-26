@@ -1,21 +1,7 @@
 <template>
-	<teleport
-		to="body"
-		:disabled="!props.appendToBody"
-	>
-		<transition
-			:name="ns.b('fade')"
-			@after-enter="afterEnter"
-			@after-leave="afterLeave"
-			@before-leave="beforeLeave"
-		>
-			<fb-overlay
-				v-show="visible"
-				:mask="props.backdrop"
-				:overlay-class="props.customClass"
-				:z-index="zIndex"
-				@click="onBackdropClick"
-			>
+	<teleport to="body" :disabled="!props.appendToBody">
+		<transition :name="ns.b('fade')" @after-enter="afterEnter" @after-leave="afterLeave" @before-leave="beforeLeave">
+			<fb-overlay v-show="visible" :mask="props.backdrop" :overlay-class="props.customClass" :z-index="zIndex" @click="onBackdropClick">
 				<fb-focus-trap
 					loop
 					:trapped="visible"
@@ -45,74 +31,42 @@
 						:aria-level="props.ariaLevel"
 						:closable="props.closable"
 						@close="handleClose"
-						@leftClick="$emit('leftClick')"
-						@rightClick="$emit('rightClick')"
+						@left-click="emit('leftClick')"
+						@right-click="emit('rightClick')"
 					>
-						<template
-							v-if="'content' in $slots"
-							#content
-						>
+						<template v-if="'content' in $slots" #content>
 							<slot name="content" />
 						</template>
 
-						<template
-							v-if="'header' in $slots"
-							#header
-						>
-							<slot
-								name="header"
-								:close="handleClose"
-								:title-id="titleId"
-								:title-class="ns.be('header', 'title')"
-							/>
+						<template v-if="'header' in $slots" #header>
+							<slot name="header" :close="handleClose" :title-id="titleId" :title-class="ns.be('header', 'title')" />
 						</template>
 
-						<template
-							v-if="'footer' in $slots"
-							#footer
-						>
+						<template v-if="'footer' in $slots" #footer>
 							<slot name="footer" />
 						</template>
 
-						<template
-							v-if="'title' in $slots || props.title"
-							#title
-						>
+						<template v-if="'title' in $slots || props.title" #title>
 							<slot name="title" />
 						</template>
 
-						<template
-							v-if="'subtitle' in $slots"
-							#subtitle
-						>
+						<template v-if="'subtitle' in $slots" #subtitle>
 							<slot name="subtitle" />
 						</template>
 
-						<template
-							v-if="'icon' in $slots"
-							#icon
-						>
+						<template v-if="'icon' in $slots" #icon>
 							<slot name="icon" />
 						</template>
 
-						<template
-							v-if="'description' in $slots"
-							#description
-						>
+						<template v-if="'description' in $slots" #description>
 							<slot name="description" />
 						</template>
 
-						<template
-							v-if="'left-button' in $slots"
-							#left-button
-						>
+						<template v-if="'left-button' in $slots" #left-button>
 							<slot name="left-button" />
 						</template>
 
-						<template
-							v-if="'right-button' in $slots"
-							#right-button
-						>
+						<template v-if="'right-button' in $slots" #right-button>
 							<slot name="right-button" />
 						</template>
 
@@ -125,9 +79,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, provide, ref } from 'vue';
+import { provide, ref } from 'vue';
 
-import { addUnit } from '@fastybird/web-ui-utils';
 import { useNamespace } from '@fastybird/web-ui-hooks';
 
 import { FbFocusTrap } from '../../focus-trap';

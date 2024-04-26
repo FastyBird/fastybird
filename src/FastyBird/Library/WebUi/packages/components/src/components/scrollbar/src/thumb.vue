@@ -1,17 +1,7 @@
 <template>
 	<transition :name="ns.b('fade')">
-		<div
-			v-show="always || visible"
-			ref="wrapperRef"
-			:class="[ns.e('bar'), ns.is(bar.key)]"
-			@mousedown="clickTrackHandler"
-		>
-			<div
-				ref="thumbRef"
-				:class="ns.e('thumb')"
-				:style="thumbStyle"
-				@mousedown="clickThumbHandler"
-			/>
+		<div v-show="always || visible" ref="wrapperRef" :class="[ns.e('bar'), ns.is(bar.key)]" @mousedown="clickTrackHandler">
+			<div ref="thumbRef" :class="ns.e('thumb')" :style="thumbStyle" @mousedown="clickThumbHandler" />
 		</div>
 	</transition>
 </template>
@@ -65,10 +55,10 @@ const offsetRatio = computed(
 		// offsetRatioX = original width of thumb / current width of thumb / ratioX
 		// offsetRatioY = original height of thumb / current height of thumb / ratioY
 		// instance height = wrap height - GAP
-		wrapperRef.value![bar.value.offset] ** 2 / scrollbar.wrapElement![bar.value.scrollSize] / props.ratio / thumb.value![bar.value.offset]
+		wrapperRef.value![bar.value.offset] ** 2 / scrollbar.wrapElement![bar.value.scrollSize] / props.ratio / thumbRef.value![bar.value.offset]
 );
 
-const clickThumbHandler = (e: MouseEvent) => {
+const clickThumbHandler = (e: MouseEvent): void => {
 	// prevent click event of middle and right button
 	e.stopPropagation();
 	if (e.ctrlKey || [1, 2].includes(e.button)) {
@@ -105,7 +95,7 @@ const startDrag = (e: MouseEvent): void => {
 	document.addEventListener('mousemove', mouseMoveDocumentHandler);
 	document.addEventListener('mouseup', mouseUpDocumentHandler);
 	originalOnSelectStart = document.onselectstart;
-	document.onselectstart = () => false;
+	document.onselectstart = (): boolean => false;
 };
 
 const mouseMoveDocumentHandler = (e: MouseEvent): void => {
@@ -113,7 +103,7 @@ const mouseMoveDocumentHandler = (e: MouseEvent): void => {
 		return;
 	}
 
-	if (cursorDown === false) {
+	if (!cursorDown) {
 		return;
 	}
 

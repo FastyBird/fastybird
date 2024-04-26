@@ -1,14 +1,6 @@
 <template>
-	<div
-		ref="scrollbarRef"
-		:class="ns.b()"
-	>
-		<div
-			ref="wrapperRef"
-			:class="wrapperClass"
-			:style="wrapperStyle"
-			@scroll="handleScroll"
-		>
+	<div ref="scrollbarRef" :class="ns.b()">
+		<div ref="wrapperRef" :class="wrapperClass" :style="wrapperStyle" @scroll="handleScroll">
 			<component
 				:is="props.tag"
 				:id="props.id"
@@ -22,10 +14,7 @@
 				<slot />
 			</component>
 
-			<span
-				v-if="props.shadow"
-				:class="[ns.e('shadow-top'), { [ns.em('shadow-top', 'active')]: shadow.top }, ns.em('shadow-top', props.shadow)]"
-			/>
+			<span v-if="props.shadow" :class="[ns.e('shadow-top'), { [ns.em('shadow-top', 'active')]: shadow.top }, ns.em('shadow-top', props.shadow)]" />
 			<span
 				v-if="props.shadow"
 				:class="[ns.e('shadow-right'), { [ns.em('shadow-right', 'active')]: shadow.right }, ns.em('shadow-right', props.shadow)]"
@@ -40,11 +29,7 @@
 			/>
 		</div>
 		<template v-if="!props.native">
-			<fb-bar
-				ref="barRef"
-				:always="props.always"
-				:min-size="props.minSize"
-			/>
+			<fb-bar ref="barRef" :always="props.always" :min-size="props.minSize" />
 		</template>
 	</div>
 </template>

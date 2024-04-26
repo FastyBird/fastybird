@@ -1,8 +1,5 @@
 <template>
-	<teleport
-		:disabled="!props.teleported"
-		:to="appendTo"
-	>
+	<teleport :disabled="!props.teleported" :to="appendTo">
 		<transition
 			:name="transitionClass"
 			@after-leave="onTransitionLeave"
@@ -80,7 +77,7 @@ const transitionClass = computed<string>((): string => {
 const persistentRef = computed<boolean>((): boolean => {
 	// For testing, we would always want the content to be rendered
 	// to the DOM, so we need to return true here.
-	if (process.env.NODE_ENV === 'test') {
+	if (import.meta.env.NODE_ENV === 'test') {
 		return true;
 	}
 

@@ -45,8 +45,8 @@ export const drawerFooterProps = buildProps({
 export type DrawerFooterProps = ExtractPropTypes<typeof drawerFooterProps>;
 
 export const drawerFooterEmits = {
-	leftClick: (evt: UIEvent) => evt instanceof UIEvent,
-	rightClick: (evt: UIEvent) => evt instanceof UIEvent,
+	leftClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
+	rightClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type DrawerFooterEmits = typeof drawerFooterEmits;

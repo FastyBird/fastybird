@@ -47,8 +47,8 @@ export const modalFooterProps = buildProps({
 export type ModalFooterProps = ExtractPropTypes<typeof modalFooterProps>;
 
 export const modalFooterEmits = {
-	leftClick: (evt: UIEvent) => evt instanceof UIEvent,
-	rightClick: (evt: UIEvent) => evt instanceof UIEvent,
+	leftClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
+	rightClick: (evt: UIEvent): boolean => evt instanceof UIEvent,
 };
 
 export type ModalFooterEmits = typeof modalFooterEmits;

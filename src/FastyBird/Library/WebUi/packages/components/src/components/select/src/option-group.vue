@@ -1,9 +1,5 @@
 <template>
-	<ul
-		v-show="visible"
-		ref="groupRef"
-		:class="ns.be('group', 'wrap')"
-	>
+	<ul v-show="visible" ref="groupRef" :class="ns.be('group', 'wrap')">
 		<li :class="ns.be('group', 'title')">{{ props.label }}</li>
 		<li>
 			<ul :class="ns.b('group')">

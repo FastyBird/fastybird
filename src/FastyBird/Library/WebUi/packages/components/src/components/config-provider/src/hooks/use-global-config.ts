@@ -1,12 +1,21 @@
 import { computed, getCurrentInstance, inject, provide, ref, unref } from 'vue';
 
 import { debugWarn, keysOf } from '@fastybird/web-ui-utils';
-import { SIZE_INJECTION_KEY, defaultInitialZIndex, localeContextKey, useLocale, useZIndex, zIndexContextKey } from '@fastybird/web-ui-hooks';
+import {
+	SIZE_INJECTION_KEY,
+	defaultInitialZIndex,
+	localeContextKey,
+	useLocale,
+	useZIndex,
+	zIndexContextKey,
+	LocaleContext,
+} from '@fastybird/web-ui-hooks';
 
+import { ConfigProviderProps } from '../config-provider-props';
 import { configProviderContextKey } from '../constants';
 
 import type { MaybeRef } from '@vueuse/core';
-import type { App, Ref } from 'vue';
+import type { App, ComputedRef, Ref } from 'vue';
 import type { ConfigProviderContext } from '../constants';
 
 // this is meant to fix global methods like `FbMessage(opts)`, this way we can inject current locale
@@ -20,7 +29,10 @@ export function useGlobalConfig<K extends keyof ConfigProviderContext, D extends
 
 export function useGlobalConfig(): Ref<ConfigProviderContext>;
 
-export function useGlobalConfig(key?: keyof ConfigProviderContext, defaultValue = undefined) {
+export function useGlobalConfig(
+	key?: keyof ConfigProviderContext,
+	defaultValue = undefined
+): ComputedRef<any> | Ref<Partial<ConfigProviderProps> | undefined> {
 	const config = getCurrentInstance() ? inject(configProviderContextKey, globalConfig) : globalConfig;
 
 	if (key) {
@@ -31,7 +43,11 @@ export function useGlobalConfig(key?: keyof ConfigProviderContext, defaultValue 
 }
 
 // for components like `FbMessage` `FbNotification` `FbMessageBox`.
-export function useGlobalComponentSettings(block: string, sizeFallback?: MaybeRef<ConfigProviderContext['size']>) {
+export function useGlobalComponentSettings(sizeFallback?: MaybeRef<ConfigProviderContext['size']>): {
+	locale: LocaleContext;
+	zIndex: { initialZIndex: ComputedRef<number>; currentZIndex: ComputedRef<number>; nextZIndex: () => number };
+	size: ComputedRef<any>;
+} {
 	const config = useGlobalConfig();
 
 	const locale = useLocale(computed(() => config.value?.locale));
@@ -47,7 +63,11 @@ export function useGlobalComponentSettings(block: string, sizeFallback?: MaybeRe
 	};
 }
 
-export const provideGlobalConfig = (config: MaybeRef<ConfigProviderContext>, app?: App, global = false) => {
+export const provideGlobalConfig = (
+	config: MaybeRef<ConfigProviderContext>,
+	app?: App,
+	global = false
+): ComputedRef<Partial<ConfigProviderProps>> | undefined => {
 	const inSetup = !!getCurrentInstance();
 	const oldConfig = inSetup ? useGlobalConfig() : undefined;
 

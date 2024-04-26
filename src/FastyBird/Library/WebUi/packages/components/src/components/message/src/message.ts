@@ -136,8 +136,8 @@ export const messageProps = buildProps({
 export type MessageProps = ExtractPropTypes<typeof messageProps>;
 
 export const messageEmits = {
-	close: () => true,
-	destroy: () => true,
+	close: (): boolean => true,
+	destroy: (): boolean => true,
 };
 
 export type MessageEmits = typeof messageEmits;

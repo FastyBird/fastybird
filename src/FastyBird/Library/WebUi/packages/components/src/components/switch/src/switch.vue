@@ -1,8 +1,5 @@
 <template>
-	<div
-		:class="switchClass"
-		@click.prevent="switchValue"
-	>
+	<div :class="switchClass" @click.prevent="switchValue">
 		<input
 			:id="inputId"
 			ref="input"
@@ -20,78 +17,46 @@
 			@change="handleChange"
 			@keydown.enter="switchValue"
 		/>
-		<span
-			v-if="!props.inlinePrompt && (props.inactiveIcon || props.inactiveText)"
-			:class="labelLeftClass"
-		>
+		<span v-if="!props.inlinePrompt && (props.inactiveIcon || props.inactiveText)" :class="labelLeftClass">
 			<fb-icon v-if="props.inactiveIcon">
 				<component :is="props.inactiveIcon" />
 			</fb-icon>
-			<span
-				v-if="!props.inactiveIcon && props.inactiveText"
-				:aria-hidden="checked"
-			>
+			<span v-if="!props.inactiveIcon && props.inactiveText" :aria-hidden="checked">
 				{{ props.inactiveText }}
 			</span>
 		</span>
-		<span
-			ref="core"
-			:class="ns.e('core')"
-			:style="coreStyle"
-		>
-			<div
-				v-if="props.inlinePrompt"
-				:class="ns.e('inner')"
-			>
+		<span ref="core" :class="ns.e('core')" :style="coreStyle">
+			<div v-if="props.inlinePrompt" :class="ns.e('inner')">
 				<template v-if="props.activeIcon || props.inactiveIcon">
 					<fb-icon :class="ns.is('icon')">
 						<component :is="checked ? props.activeIcon : props.inactiveIcon" />
 					</fb-icon>
 				</template>
 				<template v-else-if="props.activeText || props.inactiveText">
-					<span
-						:class="ns.is('text')"
-						:aria-hidden="!checked"
-					>
+					<span :class="ns.is('text')" :aria-hidden="!checked">
 						{{ checked ? props.activeText : props.inactiveText }}
 					</span>
 				</template>
 			</div>
 			<div :class="ns.e('action')">
-				<fb-spinner
-					v-if="props.loading"
-					:class="ns.is('loading')"
-				/>
-				<slot
-					v-else-if="checked"
-					name="active-action"
-				>
+				<fb-spinner v-if="props.loading" :class="ns.is('loading')" />
+				<slot v-else-if="checked" name="active-action">
 					<fb-icon v-if="props.activeActionIcon">
 						<component :is="props.activeActionIcon" />
 					</fb-icon>
 				</slot>
-				<slot
-					v-else-if="!checked"
-					name="inactive-action"
-				>
+				<slot v-else-if="!checked" name="inactive-action">
 					<fb-icon v-if="props.inactiveActionIcon">
 						<component :is="props.inactiveActionIcon" />
 					</fb-icon>
 				</slot>
 			</div>
 		</span>
-		<span
-			v-if="!props.inlinePrompt && (props.activeIcon || props.activeText)"
-			:class="labelRightClass"
-		>
+		<span v-if="!props.inlinePrompt && (props.activeIcon || props.activeText)" :class="labelRightClass">
 			<fb-icon v-if="props.activeIcon">
 				<component :is="props.activeIcon" />
 			</fb-icon>
-			<span
-				v-if="!props.activeIcon && props.activeText"
-				:aria-hidden="!checked"
-				>{{ props.activeText }}</span
-			>
+			<span v-if="!props.activeIcon && props.activeText" :aria-hidden="!checked">{{ props.activeText }}</span>
 		</span>
 	</div>
 </template>
