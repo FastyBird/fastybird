@@ -57,10 +57,7 @@ $radio-font-size: map.merge(
 
 		@each $size in (large, small) {
 			&.#{$namespace}-radio--#{$size} {
-				padding: 0
-					map.get($checkbox-bordered-padding-right, $size)-$border-width
-					0
-					map.get($checkbox-bordered-padding-left, $size)-$border-width;
+				padding: 0 map.get($checkbox-bordered-padding-right, $size)-$border-width 0 map.get($checkbox-bordered-padding-left, $size)-$border-width;
 				border-radius: getCssVar('border-radius-base');
 
 				.#{$namespace}-radio__label {

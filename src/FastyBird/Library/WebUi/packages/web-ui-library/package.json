@@ -44,6 +44,9 @@
     "@fastybird/web-ui-hooks": "1.0.0-dev.20",
     "@fastybird/web-ui-utils": "1.0.0-dev.20"
   },
+  "devDependencies": {
+    "rimraf": "^5.0"
+  },
   "engines": {
     "node": ">=20"
   }
