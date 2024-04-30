@@ -1,6 +1,5 @@
 /dist
 /node_modules
-/src/components
 yarn.lock
 tsconfig.tsbuildinfo
 
