@@ -37,7 +37,7 @@ import { menuContextKey, subMenuContextKey } from './constants';
 
 import { useMenu } from './hooks';
 import { menuItemEmits, menuItemProps } from './menu-item';
-import FbTooltip from '../../tooltip/src/tooltip.vue';
+import { FbTooltip } from '../../tooltip';
 
 import type { MenuItemRegistered } from './types';
 

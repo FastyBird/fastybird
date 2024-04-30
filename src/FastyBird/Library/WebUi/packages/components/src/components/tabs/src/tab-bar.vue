@@ -63,7 +63,7 @@ const getBarStyle = (): CSSProperties => {
 	};
 };
 
-const update = (): void => (barStyle.value = getBarStyle());
+const update = (): CSSProperties => (barStyle.value = getBarStyle());
 
 watch(
 	(): HTMLElement | undefined => props.activeItemRef,

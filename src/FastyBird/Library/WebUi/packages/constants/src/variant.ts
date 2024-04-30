@@ -17,6 +17,6 @@ export const VARIANTS = [
 	VariantTypes.WARNING,
 	VariantTypes.DANGER,
 	VariantTypes.ERROR,
-] as const;
+];
 
 export type Variant = (typeof VARIANTS)[number];

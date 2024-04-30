@@ -45,7 +45,7 @@ import FbBar from './bar.vue';
 import { scrollbarContextKey } from './constants';
 import { scrollbarEmits, scrollbarProps } from './scrollbar';
 
-import type { BarInstance } from './bar';
+import type { FbBarInstance } from './instance';
 import type { CSSProperties, StyleValue } from 'vue';
 
 const COMPONENT_NAME = 'FbScrollbar';
@@ -77,7 +77,7 @@ let stopResizeListener: (() => void) | undefined = undefined;
 const scrollbarRef = ref<HTMLDivElement | undefined>();
 const wrapperRef = ref<HTMLDivElement | undefined>();
 const resizeRef = ref<HTMLElement | undefined>();
-const barRef = ref<BarInstance | undefined>();
+const barRef = ref<FbBarInstance | undefined>();
 
 const shadow = reactive({
 	top: false,

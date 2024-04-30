@@ -55,8 +55,8 @@ import { useNamespace } from '@fastybird/web-ui-hooks';
 
 import { useFormDisabled } from '../../form';
 import { useFormItem } from '../../form-item';
-import FbIcon from '../../icon/src/icon.vue';
-import FbSpinner from '../../spinner/src/spinner.vue';
+import { FbIcon } from '../../icon';
+import { FbSpinner } from '../../spinner';
 import { buttonEmits, buttonProps, ButtonButtonTypes } from './button';
 import { useButtonCustomStyle } from './hooks';
 
@@ -102,8 +102,6 @@ const onClick = (evt: MouseEvent): void => {
 };
 
 defineExpose({
-	/** @description button html element */
-	ref: element,
 	/** @description button size */
 	size: props.size,
 	/** @description button variant */

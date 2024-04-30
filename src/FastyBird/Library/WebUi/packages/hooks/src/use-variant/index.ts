@@ -10,7 +10,7 @@ export const useVariantProp = buildProp({
 	type: String,
 	values: VARIANTS,
 	required: false,
-} as const);
+});
 
 export const useVariantProps = {
 	variant: useVariantProp,

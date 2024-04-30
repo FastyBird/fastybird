@@ -4,6 +4,6 @@ export enum LayoutTypes {
 	TABLET = 'tablet',
 }
 
-export const LAYOUTS = ['', LayoutTypes.DEFAULT, LayoutTypes.PHONE, LayoutTypes.TABLET] as const;
+export const LAYOUTS = ['', LayoutTypes.DEFAULT, LayoutTypes.PHONE, LayoutTypes.TABLET];
 
 export type Layout = (typeof LAYOUTS)[number];

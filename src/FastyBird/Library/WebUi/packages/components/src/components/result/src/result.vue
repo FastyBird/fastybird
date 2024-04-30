@@ -34,6 +34,7 @@ import { useNamespace } from '@fastybird/web-ui-hooks';
 import { IconComponentMap, IconMap, resultProps } from './result';
 
 import type { Component } from 'vue';
+import type { ResultIcon } from './result';
 
 defineOptions({
 	name: 'FbResult',
@@ -44,12 +45,12 @@ const props = defineProps(resultProps);
 const ns = useNamespace('result');
 
 const iconClass = computed<string>((): string => {
-	return props.status && IconMap[props.status] ? IconMap[props.status] : 'icon-info';
+	return props.status && IconMap[props.status as ResultIcon] ? IconMap[props.status as ResultIcon] : 'icon-info';
 });
 
 const icon = computed<Component>((): Component => {
 	return iconClass.value in IconComponentMap
 		? IconComponentMap[iconClass.value as (typeof IconMap)[keyof typeof IconMap]]
-		: IconComponentMap['icon-info'];
+		: IconComponentMap[IconMap.info];
 });
 </script>

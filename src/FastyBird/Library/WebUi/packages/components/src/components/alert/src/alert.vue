@@ -2,12 +2,7 @@
 	<transition :name="ns.b('fade')">
 		<div
 			v-show="visible"
-			:class="[
-				ns.b(),
-				ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT),
-				ns.is('center', props.center),
-				ns.is(props.effect ?? EffectTypes.LIGHT),
-			]"
+			:class="[ns.b(), ns.m('variant-' + props.variant), ns.is('center', props.center), ns.is(props.effect ?? EffectTypes.LIGHT)]"
 			role="alert"
 		>
 			<div v-if="'icon' in $slots || (props.icon && icon)" :class="iconClass">

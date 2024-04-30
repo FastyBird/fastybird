@@ -270,7 +270,7 @@ const setFocus = (): void => {
 	}
 };
 
-const removeFocus = (): void => (isFocus.value = false);
+const removeFocus = (): boolean => (isFocus.value = false);
 
 useResizeObserver(elRef, update);
 

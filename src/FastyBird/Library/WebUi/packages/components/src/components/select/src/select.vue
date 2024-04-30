@@ -695,7 +695,7 @@ const onInputChange = (): void => {
 };
 
 const onInput = (event: Event): void => {
-	state.inputValue = event.target?.value || '';
+	state.inputValue = get(event.target, 'value', '');
 
 	if (props.remote) {
 		debouncedOnInputChange();
@@ -723,7 +723,7 @@ const handleDeletePrevTag = (e: KeyboardEvent): void => {
 		return;
 	}
 
-	if (e.target?.value.length <= 0) {
+	if (get(e.target, 'value', []).length <= 0) {
 		const value = ((props.modelValue as Array<string | number | boolean | object> | undefined) || []).slice();
 		const lastNotDisabledIndex = findLastIndex(value, (it) => !state.disabledOptions.has(it));
 

@@ -21,9 +21,8 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: resolve(__dirname, './src/entry.ts'),
-			name: 'web-ui-library',
-			fileName: (format) => `web-ui-library.${format}.js`,
-			formats: ['es', 'cjs'],
+			name: 'web-ui-utils',
+			fileName: (format) => `web-ui-utils.${format}.js`,
 		},
 		rollupOptions: {
 			plugins: [

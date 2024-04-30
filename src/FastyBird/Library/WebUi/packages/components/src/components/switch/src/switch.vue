@@ -71,8 +71,8 @@ import { useNamespace } from '@fastybird/web-ui-hooks';
 
 import { useFormDisabled, useFormSize } from '../../form';
 import { useFormItem, useFormItemInputId } from '../../form-item';
-import FbIcon from '../../icon/src/icon.vue';
-import FbSpinner from '../../spinner/src/spinner.vue';
+import { FbIcon } from '../../icon';
+import { FbSpinner } from '../../spinner';
 import { switchEmits, switchProps } from './switch';
 
 import type { CSSProperties } from 'vue';

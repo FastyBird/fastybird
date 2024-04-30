@@ -1,9 +1,5 @@
 <template>
-	<div
-		:role="'button' in $slots ? 'button' : undefined"
-		:class="[ns.b(), ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT)]"
-		@click="emit('click', $event)"
-	>
+	<div :role="'button' in $slots ? 'button' : undefined" :class="[ns.b(), ns.m('variant-' + props.variant)]" @click="emit('click', $event)">
 		<div v-if="'icon' in $slots" :class="ns.e('icon')">
 			<slot name="icon" />
 		</div>
@@ -27,7 +23,6 @@
 
 <script lang="ts" setup>
 import { useNamespace } from '@fastybird/web-ui-hooks';
-import { VariantTypes } from '@fastybird/web-ui-constants';
 
 import { itemEmits, itemProps } from './item';
 

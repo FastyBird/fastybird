@@ -10,11 +10,11 @@ import type { ExtractPropType } from '@fastybird/web-ui-utils';
 const _prop = buildProp({
 	type: definePropType<boolean | null>(Boolean),
 	default: null,
-} as const);
+});
 
 const _event = buildProp({
 	type: definePropType<(val: boolean) => void>(Function),
-} as const);
+});
 
 export type UseModelTogglePropsRaw<T extends string> = {
 	[K in T]: typeof _prop;
@@ -38,10 +38,10 @@ export const createModelToggleComposable = <T extends string>(
 		hasUpdateHandler: ComputedRef<boolean>;
 	};
 	useModelToggleProps: UseModelTogglePropsRaw<T>;
-	useModelToggleEmits: `update:${T}`[];
+	useModelToggleEmits: string[];
 } => {
-	const updateEventKey = `update:${name}` as const;
-	const updateEventKeyRaw = `onUpdate:${name}` as const;
+	const updateEventKey = `update:${name}`;
+	const updateEventKeyRaw = `onUpdate:${name}`;
 	const useModelToggleEmits = [updateEventKey];
 
 	const useModelToggleProps = {
@@ -67,9 +67,10 @@ export const createModelToggleComposable = <T extends string>(
 		const props = instance.props as UseModelTogglePropsGeneric<T> & {
 			disabled: boolean;
 		};
+		// @ts-ignore
 		const hasUpdateHandler = computed(() => isFunction(props[updateEventKeyRaw]));
 		// when it matches the default value we say this is absent
-		// though this could be mistakenly passed from the user but we need to rule out that
+		// though this could be mistakenly passed from the user, but we need to rule out that
 		// condition
 		const isModelBindingAbsent = computed(() => props[name] === null);
 

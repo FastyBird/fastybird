@@ -10,7 +10,7 @@ export const useEffectProp = buildProp({
 	type: String,
 	values: EFFECTS,
 	required: false,
-} as const);
+});
 
 export const useEffectProps = {
 	effect: useEffectProp,

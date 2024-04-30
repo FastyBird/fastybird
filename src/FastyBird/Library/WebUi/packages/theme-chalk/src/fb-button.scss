@@ -147,9 +147,11 @@ $button-icon-span-gap: map.merge(
 			background-color: getCssVar('mask-color', 'extra-light');
 		}
 	}
+
 	@include when(round) {
 		border-radius: getCssVar('border-radius', 'round');
 	}
+
 	@include when(circle) {
 		width: map.get($input-height, 'default');
 		border-radius: 50%;

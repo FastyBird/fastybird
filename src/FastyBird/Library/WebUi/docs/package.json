@@ -15,10 +15,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "storybook": "storybook dev -p 6006",
-    "storybook-doc": "storybook dev -p 6006 --docs",
-    "build-storybook": "storybook build",
-    "build-storybook-doc": "storybook build --docs"
+    "storybook:serve": "storybook dev -p 6006",
+    "storybook:serve:doc": "storybook dev -p 6006 --docs",
+    "storybook:build": "storybook build",
+    "storybook:build:doc": "storybook build --docs",
+    "storybook:deploy": "storybook-to-ghpages"
   },
   "dependencies": {
     "@fastybird/web-ui-components": "1.0.0-dev.20",

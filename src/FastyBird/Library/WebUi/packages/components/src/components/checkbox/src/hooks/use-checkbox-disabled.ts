@@ -1,6 +1,6 @@
 import { computed, ComputedRef, inject } from 'vue';
 
-import { isUndefined } from '@fastybird/web-ui-utils';
+import { isArray, isUndefined } from '@fastybird/web-ui-utils';
 
 import { useFormDisabled } from '../../../form';
 import { checkboxGroupContextKey } from '../constants';
@@ -21,7 +21,8 @@ export const useCheckboxDisabled = ({
 		const min = checkboxGroup?.min?.value;
 
 		return (
-			(!isUndefined(max) && model.value.length >= max && !isChecked.value) || (!isUndefined(min) && model.value.length <= min && isChecked.value)
+			(!isUndefined(max) && isArray(model.value) && model.value.length >= max && !isChecked.value) ||
+			(!isUndefined(min) && isArray(model.value) && model.value.length <= min && isChecked.value)
 		);
 	});
 

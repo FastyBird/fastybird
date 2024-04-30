@@ -1,10 +1,12 @@
-import { warn } from '@vue/runtime-core';
+// @ts-ignore
+import { warn } from 'vue';
 import { fromPairs } from 'lodash';
 
 import { hasOwn } from '../../objects';
 import { isObject } from '../../types';
 
-import type { PropType } from '@vue/runtime-core';
+// @ts-ignore
+import type { PropType } from 'vue';
 import type { FbProp, FbPropConvert, FbPropFinalized, FbPropInput, FbPropMergeType, IfFbProp, IfNativePropType, NativePropType } from './types';
 
 export const fbPropKey = '__fbPropKey';

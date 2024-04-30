@@ -40,7 +40,7 @@ class MenuItem {
 
 				case EVENT_CODE.up: {
 					triggerEvent(event.currentTarget as HTMLElement, 'mouseenter');
-					this.submenu && this.submenu.gotoSubIndex(this.submenu.subMenuItems.length - 1);
+					this.submenu && this.submenu.gotoSubIndex(this.submenu.subMenuItems!.length - 1);
 					prevDef = true;
 					break;
 				}

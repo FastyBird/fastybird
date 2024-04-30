@@ -16,7 +16,7 @@
 import { useNamespace } from '@fastybird/web-ui-hooks';
 import { TypeComponentsMap } from '@fastybird/web-ui-utils';
 
-import FbIcon from '../../icon/src/icon.vue';
+import { FbIcon } from '../../icon';
 import { componentLoadingErrorProps } from './component-loading-error';
 
 defineOptions({

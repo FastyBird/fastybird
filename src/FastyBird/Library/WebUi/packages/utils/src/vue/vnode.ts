@@ -1,10 +1,12 @@
-import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock } from '@vue/runtime-core';
+// @ts-ignore
+import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock, RendererNode, RendererElement } from 'vue';
 import { camelize, isArray } from '@vue/shared';
 
 import { hasOwn } from '../objects';
 import { debugWarn } from '../error';
 
-import type { VNode, VNodeArrayChildren, VNodeChild, VNodeNormalizedChildren } from '@vue/runtime-core';
+// @ts-ignore
+import type { VNode, VNodeChild, VNodeArrayChildren, VNodeNormalizedChildren } from 'vue';
 
 const SCOPE = 'utils/vue/vnode';
 
@@ -123,7 +125,9 @@ export const ensureOnlyChild = (children: VNodeArrayChildren | undefined): VNode
 
 export type FlattenVNodes = Array<VNodeChildAtom | RawSlots>;
 
-export const flattedChildren = (children: FlattenVNodes | VNode | VNodeNormalizedChildren): FlattenVNodes => {
+export const flattedChildren = (
+	children: FlattenVNodes | VNode<RendererNode, RendererElement, { [key: string]: any }> | VNodeNormalizedChildren | VNodeArrayChildren
+): FlattenVNodes => {
 	const vNodes = isArray(children) ? children : [children];
 	const result: FlattenVNodes = [];
 

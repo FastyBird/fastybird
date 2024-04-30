@@ -12,7 +12,7 @@
 import { useNamespace } from '@fastybird/web-ui-hooks';
 import { VariantTypes } from '@fastybird/web-ui-constants';
 
-import FbSpinner from '../../spinner/src/spinner.vue';
+import { FbSpinner } from '../../spinner';
 import { componentLoadingProps } from './component-loading';
 
 defineOptions({

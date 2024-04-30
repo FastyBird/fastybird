@@ -77,7 +77,7 @@ const typeClass = computed<string[]>((): string[] => {
 	return [ns.em('icon', props.type)];
 });
 
-const iconComponent = computed(() => props.icon || TypeComponentsMap[props.type] || '');
+const iconComponent = computed(() => props.icon || TypeComponentsMap[props.type as 'success' | 'warning' | 'error' | 'info'] || '');
 
 const lastOffset = computed<number>((): number => getLastOffset(props.id));
 

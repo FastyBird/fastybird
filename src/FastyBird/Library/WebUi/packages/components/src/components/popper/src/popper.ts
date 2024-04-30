@@ -6,11 +6,6 @@ import type Popper from './popper.vue';
 const effects = ['light', 'dark'] as const;
 const triggers = ['click', 'contextmenu', 'hover', 'focus'] as const;
 
-export const Effect = {
-	LIGHT: 'light',
-	DARK: 'dark',
-} as const;
-
 export const roleTypes = ['dialog', 'grid', 'group', 'listbox', 'menu', 'navigation', 'tooltip', 'tree'] as const;
 
 export type PopperEffect = (typeof effects)[number];

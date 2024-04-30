@@ -41,8 +41,8 @@ export default defineComponent({
 		loop: Boolean,
 		trapped: Boolean,
 		focusTrapEl: {
-			type: Object as PropType<HTMLElement>,
-			required: true,
+			type: Object as PropType<HTMLElement | undefined>,
+			default: undefined,
 		},
 		focusStartEl: {
 			type: [Object, String] as PropType<'container' | 'first' | HTMLElement>,

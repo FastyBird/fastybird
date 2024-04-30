@@ -152,10 +152,10 @@ const fieldValue = computed(() => {
 const normalizedRules = computed(() => {
 	const { required } = props;
 
-	const rules: FormItemRule[] = [];
+	const rules: Arrayable<FormItemRule> = [];
 
 	if (props.rules) {
-		rules.push(...ensureArray(props.rules));
+		rules.push(...ensureArray<FormItemRule>(props.rules));
 	}
 
 	const formRules = formContext?.rules;

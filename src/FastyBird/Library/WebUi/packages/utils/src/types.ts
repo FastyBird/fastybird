@@ -3,7 +3,8 @@ import { isNil } from 'lodash';
 
 export { isArray, isFunction, isObject, isString, isDate, isPromise, isSymbol } from '@vue/shared';
 
-export { isVNode } from '@vue/runtime-core';
+// @ts-ignore
+export { isVNode } from 'vue';
 
 export const isUndefined = (val: any): val is undefined => val === undefined;
 export const isBoolean = (val: any): val is boolean => typeof val === 'boolean';

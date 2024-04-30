@@ -15,15 +15,14 @@ export default defineConfig({
 			staticImport: true,
 			insertTypesEntry: true,
 			rollupTypes: true,
-			bundledPackages: ['@fastybird/web-ui-constants'],
+			bundledPackages: ['@fastybird/web-ui-constants', '@fastybird/web-ui-utils'],
 		}),
 	],
 	build: {
 		lib: {
 			entry: resolve(__dirname, './src/entry.ts'),
-			name: 'web-ui-library',
-			fileName: (format) => `web-ui-library.${format}.js`,
-			formats: ['es', 'cjs'],
+			name: 'web-ui-hooks',
+			fileName: (format) => `web-ui-hooks.${format}.js`,
 		},
 		rollupOptions: {
 			plugins: [

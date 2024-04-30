@@ -13,7 +13,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "baseUrl": "src",
+    "skipLibCheck": true,
     "types": [
       "node"
     ],
@@ -21,10 +21,6 @@
       "esnext"
     ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
-  ],
   "exclude": [
     "node_modules",
     "dist"

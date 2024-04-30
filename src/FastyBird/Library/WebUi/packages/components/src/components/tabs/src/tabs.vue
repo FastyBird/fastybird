@@ -53,7 +53,7 @@ import { EVENT_CODE, UPDATE_MODEL_EVENT } from '@fastybird/web-ui-constants';
 import { useNamespace, useOrderedChildren } from '@fastybird/web-ui-hooks';
 import { FasPlus } from '@fastybird/web-ui-icons';
 
-import FbIcon from '../../icon/src/icon.vue';
+import { FbIcon } from '../../icon';
 import { tabsRootContextKey } from './constants';
 import { TabNavTypeTypes } from './tab-nav';
 import FbTabNav from './tab-nav.vue';
@@ -81,7 +81,7 @@ const {
 const navRef = ref<FbTabNavInstance>();
 const currentName = ref<TabPaneName>(props.modelValue ?? '0');
 
-const setCurrentName = async (value?: TabPaneName, trigger = false): void => {
+const setCurrentName = async (value?: TabPaneName, trigger = false): Promise<void> => {
 	// should do nothing.
 	if (currentName.value === value || isUndefined(value)) {
 		return;

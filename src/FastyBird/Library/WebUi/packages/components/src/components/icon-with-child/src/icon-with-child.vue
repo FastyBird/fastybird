@@ -1,5 +1,5 @@
 <template>
-	<span v-bind="$attrs" :class="[ns.b(), ns.m('variant-' + props.variant ?? VariantTypes.DEFAULT)]">
+	<span v-bind="$attrs" :class="[ns.b(), ns.m('variant-' + props.variant)]">
 		<fb-icon :class="ns.e('icon')" :size="props.size">
 			<slot name="icon" />
 		</fb-icon>
@@ -13,10 +13,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { VariantTypes } from '@fastybird/web-ui-constants';
 import { useNamespace } from '@fastybird/web-ui-hooks';
 
-import FbIcon from '../../icon/src/icon.vue';
+import { FbIcon } from '../../icon';
 import { iconWithChildProps } from './icon-with-child';
 
 defineOptions({

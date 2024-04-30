@@ -10,7 +10,7 @@ export const useSizeProp = buildProp({
 	type: String,
 	values: COMPONENT_SIZES,
 	required: false,
-} as const);
+});
 
 export const useSizeProps = {
 	size: useSizeProp,

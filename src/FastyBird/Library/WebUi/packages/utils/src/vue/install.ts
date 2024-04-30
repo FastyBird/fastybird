@@ -1,6 +1,7 @@
 import { NOOP } from '@vue/shared';
 
-import type { App, Directive } from '@vue/runtime-core';
+// @ts-ignore
+import type { App, Directive } from 'vue';
 import type { SFCInstallWithContext, SFCWithInstall } from './typescript';
 
 export const withInstall = <T, E extends Record<string, any>>(main: T, extra?: E): SFCWithInstall<T> & E => {

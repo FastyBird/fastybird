@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { useNamespace } from '@fastybird/web-ui-hooks';
 
-import FbSpinner from '../../spinner/src/spinner.vue';
+import { FbSpinner } from '../../spinner';
 import { loadingBoxProps } from './loading-box';
 
 defineOptions({

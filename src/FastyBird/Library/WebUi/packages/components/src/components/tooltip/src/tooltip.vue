@@ -57,7 +57,7 @@ import { useDelayedToggle, useId, usePopperContainer } from '@fastybird/web-ui-h
 
 import { FbPopper, FbPopperArrow } from '../../popper';
 import { TOOLTIP_INJECTION_KEY } from './constants';
-import { TooltipContentInstance } from './content';
+import { FbTooltipContentInstance } from './instance';
 import { tooltipEmits, useTooltipModelToggle, useTooltipProps } from './tooltip';
 import FbTooltipContent from './content.vue';
 import FbTooltipTrigger from './trigger.vue';
@@ -75,7 +75,7 @@ usePopperContainer();
 
 const id = useId();
 const popperRef = ref<PopperInstance | undefined>();
-const contentRef = ref<TooltipContentInstance | undefined>();
+const contentRef = ref<FbTooltipContentInstance | undefined>();
 
 const updatePopper = (): void => {
 	const popperComponent = unref(popperRef);

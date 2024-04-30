@@ -5,4 +5,3 @@ export { FbFocusTrap };
 export default FbFocusTrap;
 
 export * from './src/tokens';
-export * from './src/utils';

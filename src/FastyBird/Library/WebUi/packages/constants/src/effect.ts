@@ -4,6 +4,6 @@ export enum EffectTypes {
 	PLAIN = 'plain',
 }
 
-export const EFFECTS = ['', EffectTypes.LIGHT, EffectTypes.DARK, EffectTypes.PLAIN] as const;
+export const EFFECTS = ['', EffectTypes.LIGHT, EffectTypes.DARK, EffectTypes.PLAIN];
 
 export type Effect = (typeof EFFECTS)[number];

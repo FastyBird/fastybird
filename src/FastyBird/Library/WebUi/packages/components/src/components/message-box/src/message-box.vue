@@ -154,7 +154,8 @@ const contentId = useId();
 const inputId = useId();
 
 const iconComponent = computed<string | Component | undefined>(
-	(): string | Component | undefined => props.icon || (props.type && TypeComponentsMap[props.type]) || undefined
+	(): string | Component | undefined =>
+		props.icon || (props.type && TypeComponentsMap[props.type as 'success' | 'warning' | 'error' | 'info']) || undefined
 );
 
 const buttonVariant = computed<Variant>((): Variant => props.type || VariantTypes.PRIMARY);
@@ -321,7 +322,7 @@ const onCloseByFocusTrap = (): void => {
 	}
 };
 
-const handleInputEnter = (e: KeyboardEvent): void => {
+const handleInputEnter = (e: Event | KeyboardEvent): void => {
 	if (props.inputType !== 'textarea') {
 		e.preventDefault();
 

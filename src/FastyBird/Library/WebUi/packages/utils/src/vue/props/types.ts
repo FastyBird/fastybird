@@ -1,4 +1,5 @@
-import type { ExtractPropTypes, PropType } from '@vue/runtime-core';
+// @ts-ignore
+import type { ExtractPropTypes, PropType } from 'vue';
 
 import type { fbPropKey } from './runtime';
 import type { IfNever, UnknownToNever, WritableArray } from './util';

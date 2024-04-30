@@ -46,6 +46,7 @@
 
 <script lang="ts" setup>
 import { computed, inject, onBeforeUnmount, ref, type StyleValue, unref, watch } from 'vue';
+import { get } from 'lodash';
 
 import { onClickOutside } from '@vueuse/core';
 import { useNamespace, usePopperContainerId } from '@fastybird/web-ui-hooks';
@@ -77,7 +78,7 @@ const transitionClass = computed<string>((): string => {
 const persistentRef = computed<boolean>((): boolean => {
 	// For testing, we would always want the content to be rendered
 	// to the DOM, so we need to return true here.
-	if (import.meta.env.NODE_ENV === 'test') {
+	if (get(import.meta, 'env.NODE_ENV') === 'test') {
 		return true;
 	}
 

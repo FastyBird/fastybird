@@ -15,7 +15,6 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "types": [
-      "@types/lodash",
       "node",
       "vue"
     ],
@@ -25,10 +24,6 @@
       "dom.iterable"
     ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.d.ts"
-  ],
   "exclude": [
     "node_modules",
     "dist"

@@ -49,7 +49,7 @@ const FOCUS_HANDLER = (e: KeyboardEvent): void => {
 			focusableElement[0].focus();
 		}
 
-		// the is critical since jsdom did not implement user actions, you can only mock it
+		// there is critical since jsdom did not implement user actions, you can only mock it
 		// DELETE ME: when testing env switches to puppeteer
 		if (process.env.NODE_ENV === 'test') {
 			const index = focusableElement.indexOf(e.target as HTMLElement);
