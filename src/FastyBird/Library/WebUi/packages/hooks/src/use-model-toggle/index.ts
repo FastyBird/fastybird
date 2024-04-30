@@ -1,6 +1,7 @@
 import { computed, getCurrentInstance, onMounted, watch, ComputedRef } from 'vue';
 
-import { isFunction } from '@vue/shared';
+// @ts-ignore
+import { isFunction } from 'vue';
 import { buildProp, definePropType, isBoolean, isClient } from '@fastybird/web-ui-utils';
 
 import type { ComponentPublicInstance, ExtractPropTypes, Ref } from 'vue';

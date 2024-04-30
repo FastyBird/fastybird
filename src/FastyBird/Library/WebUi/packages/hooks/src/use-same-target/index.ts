@@ -1,4 +1,5 @@
-import { NOOP } from '@vue/shared';
+// @ts-ignore
+import { NOOP } from 'vue';
 
 export const useSameTarget = (
 	handleClick?: (e: MouseEvent) => void

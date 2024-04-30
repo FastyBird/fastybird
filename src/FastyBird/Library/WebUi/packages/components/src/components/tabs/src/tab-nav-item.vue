@@ -21,7 +21,7 @@
 		@keydown="handleRemove"
 	>
 		<template v-if="customLabel">
-			<component v-for="(label, index) in customLabel" :key="index" :is="label" />
+			<component :is="label" v-for="(label, index) in customLabel" :key="index" />
 		</template>
 		<template v-else>
 			{{ props.pane.props.label }}

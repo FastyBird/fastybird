@@ -19,7 +19,7 @@
 			:style="ulStyle"
 			:class="{ [nsMenu.b()]: true, [nsMenu.m(props.mode)]: true, [nsMenu.m('collapse')]: props.collapse }"
 		>
-			<component v-for="(item, index) in slotDefault" :key="index" :is="item" />
+			<component :is="item" v-for="(item, index) in slotDefault" :key="index" />
 
 			<fb-sub-menu
 				v-if="props.mode === MenuModeTypes.HORIZONTAL && slotMore?.length"
@@ -33,7 +33,7 @@
 					</fb-icon>
 				</template>
 
-				<component v-for="(item, index) in slotMore" :key="index" :is="item" />
+				<component :is="item" v-for="(item, index) in slotMore" :key="index" />
 			</fb-sub-menu>
 		</ul>
 	</template>
