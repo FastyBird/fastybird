@@ -3,6 +3,7 @@
 		<slot />
 	</transition>
 </template>
+
 <script lang="ts" setup>
 import { useNamespace } from '@fastybird/web-ui-hooks';
 import type { RendererElement } from 'vue';
