@@ -1,6 +1,5 @@
 import { NOOP } from '@vue/shared';
 
-// @ts-ignore
 import type { App, Directive } from 'vue';
 import type { SFCInstallWithContext, SFCWithInstall } from './typescript';
 

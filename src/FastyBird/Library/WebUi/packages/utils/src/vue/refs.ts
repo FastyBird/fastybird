@@ -1,6 +1,5 @@
 import { isFunction } from '../types';
 
-// @ts-ignore
 import type { ComponentPublicInstance, Ref } from 'vue';
 
 export type RefSetter = (el: Element | ComponentPublicInstance | undefined) => void;

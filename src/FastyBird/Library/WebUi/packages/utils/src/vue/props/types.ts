@@ -1,4 +1,3 @@
-// @ts-ignore
 import type { ExtractPropTypes, PropType } from 'vue';
 
 import type { fbPropKey } from './runtime';

@@ -1,11 +1,9 @@
-// @ts-ignore
 import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock, RendererNode, RendererElement } from 'vue';
 import { camelize, isArray } from '@vue/shared';
 
 import { hasOwn } from '../objects';
 import { debugWarn } from '../error';
 
-// @ts-ignore
 import type { VNode, VNodeChild, VNodeArrayChildren, VNodeNormalizedChildren } from 'vue';
 
 const SCOPE = 'utils/vue/vnode';
