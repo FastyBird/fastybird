@@ -1,7 +1,7 @@
-import { capitalize as toCapitalize } from '@vue/shared';
+import { capitalize as toCapitalize } from 'vue';
 
+export { camelize } from 'vue';
 export {
-	camelize,
 	hyphenate,
 	hyphenate as kebabCase, // alias
 } from '@vue/shared';

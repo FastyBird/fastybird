@@ -1,5 +1,5 @@
 import type FbOptionGroup from './option-group.vue';
-import type FbSelectDropdown from './option-group.vue';
+import type FbSelectDropdown from './select-dropdown.vue';
 import type FbOption from './option.vue';
 import type FbSelect from './select.vue';
 

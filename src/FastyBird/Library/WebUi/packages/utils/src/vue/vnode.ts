@@ -1,5 +1,5 @@
-import { Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock, RendererNode, RendererElement } from 'vue';
-import { camelize, isArray } from '@vue/shared';
+import { camelize, Comment, Fragment, Text, createBlock, createCommentVNode, isVNode, openBlock, RendererNode, RendererElement } from 'vue';
+import { isArray } from '@vue/shared';
 
 import { hasOwn } from '../objects';
 import { debugWarn } from '../error';
@@ -115,10 +115,10 @@ export const getNormalizedProps = (node: VNode): Record<string, any> => {
 };
 
 export const ensureOnlyChild = (children: VNodeArrayChildren | undefined): VNodeChild => {
-	if (!isArray(children) || children.length > 1) {
+	if (!isArray(children) || children!.length > 1) {
 		throw new Error('expect to receive a single Vue element child');
 	}
-	return children[0];
+	return children![0];
 };
 
 export type FlattenVNodes = Array<VNodeChildAtom | RawSlots>;
@@ -126,15 +126,19 @@ export type FlattenVNodes = Array<VNodeChildAtom | RawSlots>;
 export const flattedChildren = (
 	children: FlattenVNodes | VNode<RendererNode, RendererElement, { [key: string]: any }> | VNodeNormalizedChildren | VNodeArrayChildren
 ): FlattenVNodes => {
-	const vNodes = isArray(children) ? children : [children];
+	// @ts-ignore
+	const vNodes: FlattenVNodes | VNode<RendererNode, RendererElement, { [key: string]: any }>[] | VNodeNormalizedChildren[] | VNodeArrayChildren =
+		isArray(children) ? children : [children];
 	const result: FlattenVNodes = [];
 
-	vNodes.forEach((child) => {
+	vNodes!.forEach((child) => {
 		if (isArray(child)) {
+			// @ts-ignore
 			result.push(...flattedChildren(child));
 		} else if (isVNode(child) && isArray(child.children)) {
 			result.push(...flattedChildren(child.children));
 		} else {
+			// @ts-ignore
 			result.push(child);
 			if (isVNode(child) && child.component?.subTree) {
 				result.push(...flattedChildren(child.component.subTree));
