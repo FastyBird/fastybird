@@ -3,3 +3,4 @@ export * from '@fastybird/web-ui-constants';
 export * from '@fastybird/web-ui-directives';
 export * from '@fastybird/web-ui-hooks';
 export * from '@fastybird/web-ui-utils';
+export * from '@fastybird/web-ui-locale';

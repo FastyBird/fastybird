@@ -15,7 +15,6 @@ export default defineConfig({
 			staticImport: true,
 			insertTypesEntry: true,
 			rollupTypes: true,
-			bundledPackages: ['@fastybird/web-ui-constants'],
 		}),
 	],
 	build: {
@@ -23,7 +22,6 @@ export default defineConfig({
 			entry: resolve(__dirname, './src/entry.ts'),
 			name: 'web-ui-library',
 			fileName: (format) => `web-ui-library.${format}.js`,
-			formats: ['es', 'cjs'],
 		},
 		rollupOptions: {
 			plugins: [

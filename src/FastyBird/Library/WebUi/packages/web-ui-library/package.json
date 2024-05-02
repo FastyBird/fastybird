@@ -1,6 +1,7 @@
 {
   "name": "@fastybird/web-ui-library",
   "version": "1.0.0-dev.20",
+  "type": "module",
   "description": "FastyBird IoT application UI components & utilities",
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird#issues",
@@ -28,9 +29,9 @@
   ],
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
-    "build:dev": "vue-tsc --noEmit --composite false && vite build --watch --mode development",
-    "build:only": "yarn clean && vite build",
+    "build": "npm run build:generate && run-p build:build build:types",
+    "build:generate": "tsx build/generate.ts",
+    "build:build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
     "lint:js": "eslint src",
     "lint:js:fix": "eslint src --fix",
     "pretty": "yarn pretty:write && yarn pretty:check",
@@ -55,6 +56,7 @@
     "@vue/eslint-config-prettier": "^9.0",
     "@vue/eslint-config-typescript": "^13.0",
     "babel-loader": "^9.1",
+    "consola": "^3.2",
     "eslint": "^9.1",
     "eslint-config-prettier": "^9.1",
     "eslint-plugin-prettier": "^5.1",

@@ -16,6 +16,17 @@
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
   "main": "./src/entry.ts",
+  "module": "dist/web-ui-constants.es.js",
+  "types": "dist/web-ui-constants.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/web-ui-constants.es.js",
+      "require": "./dist/web-ui-constants.umd.js"
+    }
+  },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
