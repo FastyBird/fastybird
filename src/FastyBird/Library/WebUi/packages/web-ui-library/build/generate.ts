@@ -1,5 +1,5 @@
 import path from 'path';
-import { emptyDir, ensureDir, mkdir, readFile, readdir, copyFile, lstat, writeFile } from 'fs-extra';
+import fs from 'fs-extra';
 import consola from 'consola';
 import chalk from 'chalk';
 
@@ -9,8 +9,8 @@ try {
 	consola.info(chalk.blue('generating web ui library'));
 
 	for (const name of Object.keys(packages)) {
-		await ensureDir(packages[name].dest);
-		await emptyDir(packages[name].dest);
+		await fs.ensureDir(packages[name].dest);
+		await fs.emptyDir(packages[name].dest);
 	}
 
 	consola.info(chalk.blue('generating web ui packages'));
@@ -23,45 +23,45 @@ try {
 	}
 
 	async function copyPackage(destination: string, source: string): Promise<void> {
-		await mkdir(destination, { recursive: true });
+		await fs.mkdir(destination, { recursive: true });
 
-		const files = await readdir(source);
+		const files = await fs.readdir(source);
 
 		for (const file of files) {
 			const sourcePath = path.join(source, file);
 			const destPath = path.join(destination, file);
 
-			const info = await lstat(sourcePath);
+			const info = await fs.lstat(sourcePath);
 
 			if (info.isDirectory()) {
 				await copyPackage(sourcePath, destPath);
 			} else {
-				await copyFile(sourcePath, destPath);
+				await fs.copy(sourcePath, destPath);
 			}
 		}
 	}
 
 	async function replaceImports(directory: string, packageName: string, relativePath?: string): Promise<void> {
-		const files = await readdir(directory);
+		const files = await fs.readdir(directory);
 
 		for (const file of files) {
 			const filePath = path.join(directory, file);
 
-			const info = await lstat(filePath);
+			const info = await fs.lstat(filePath);
 
 			if (info.isDirectory()) {
 				const newRelativePath = relativePath ? path.join(relativePath, file) : file;
 
 				await replaceImports(filePath, packageName, newRelativePath);
 			} else if (filePath.endsWith('.ts') || filePath.endsWith('.vue')) {
-				let content = await readFile(filePath, 'utf8');
+				let content = await fs.readFile(filePath, 'utf8');
 
 				content = content.replace(
 					new RegExp(`import\\s+\\{\\s*(\\w+)\\s*\\}\\s+from\\s+(['"])${packageName}\\2`, 'g'),
 					`import { $1 } from '${relativePath ? `./${relativePath}/${file}` : `./${file}`}';`
 				);
 
-				await writeFile(filePath, content);
+				await fs.writeFile(filePath, content);
 			}
 		}
 	}
