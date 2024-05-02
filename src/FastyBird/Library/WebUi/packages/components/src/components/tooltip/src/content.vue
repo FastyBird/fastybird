@@ -52,7 +52,7 @@ import { onClickOutside } from '@vueuse/core';
 import { useNamespace, usePopperContainerId } from '@fastybird/web-ui-hooks';
 import { composeEventHandlers } from '@fastybird/web-ui-utils';
 
-import { FbPopperContent, PopperContentInstance } from '../../popper';
+import { FbPopperContent } from '../../popper';
 import { TOOLTIP_INJECTION_KEY } from './constants';
 import { useTooltipContentProps } from './content';
 
@@ -66,7 +66,7 @@ const props = defineProps(useTooltipContentProps);
 const ns = useNamespace('tooltip');
 const { selector } = usePopperContainerId();
 
-const contentRef = ref<PopperContentInstance | undefined>();
+const contentRef = ref();
 const destroyed = ref(false);
 
 const { controlled, id, open, trigger, onClose, onOpen, onShow, onHide, onBeforeShow, onBeforeHide } = inject(TOOLTIP_INJECTION_KEY, undefined)!;
