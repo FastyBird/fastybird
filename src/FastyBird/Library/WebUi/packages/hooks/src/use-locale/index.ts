@@ -1,7 +1,7 @@
 import { computed, inject, isRef, ref, unref } from 'vue';
 import { get } from 'lodash';
 
-import English from '@fastybird/web-ui-locale/lang/en';
+import { en } from '@fastybird/web-ui-locale';
 
 import type { MaybeRef } from '@vueuse/core';
 import type { InjectionKey, Ref } from 'vue';
@@ -37,5 +37,5 @@ export const localeContextKey: InjectionKey<Ref<Language | undefined>> = Symbol(
 
 export const useLocale = (localeOverrides?: Ref<Language | undefined>): LocaleContext => {
 	const locale = localeOverrides || inject(localeContextKey, ref())!;
-	return buildLocaleContext(computed(() => locale.value || English));
+	return buildLocaleContext(computed(() => locale.value || en));
 };

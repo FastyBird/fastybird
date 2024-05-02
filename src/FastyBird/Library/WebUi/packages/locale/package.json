@@ -16,6 +16,9 @@
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
   "main": "./src/index.ts",
+  "files": [
+    "src/*"
+  ],
   "engines": {
     "node": ">=20"
   }
