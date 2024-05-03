@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn build:generate && yarn build:build && pretty:write",
+    "build": "yarn build:generate && yarn build:build && yarn pretty:write",
     "build:generate": "tsx build/generate.ts",
     "build:build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
     "lint:js": "eslint src",
