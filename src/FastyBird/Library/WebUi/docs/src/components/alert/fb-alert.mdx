@@ -1,0 +1,119 @@
+import { Canvas, Meta, Controls } from '@storybook/blocks';
+import * as AlertStories from './fb-alert.stories';
+
+<Meta of={AlertStories} />
+
+# Alert
+
+Displays important alert messages.
+
+<Canvas of={AlertStories.Component} />
+
+## Playground
+
+<Controls of={AlertStories.Component} />
+
+## Basic Usage
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.BasicUsage}
+/>
+
+## Theme
+
+Alert provide two different themes, `light` and `dark`.
+
+Set `effect` to change theme, default is `light`.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.Dark}
+/>
+
+## Customizable Close Button
+
+Customize the close button as texts or other symbols.
+
+Alert allows you to configure if it's closable. The close button text and closing callbacks are also customizable. `closable` property decides if the component
+can be closed or not. It accepts `boolean`, and the default is `false`. You can set `close-text` property to replace the default cross symbol as the close button.
+Be careful that `close-text` must be a string. `close` event fires when the component is closed.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.CloseButton}
+/>
+
+## With Icon
+
+Displaying an icon improves readability.
+
+Setting the `show-icon` property displays an icon that corresponds with the current Alert type.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.Icon}
+/>
+
+## Centered Text
+
+Use the `center` property to center the text.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.Center}
+/>
+
+## With Description
+
+Description includes a message with more detailed information.
+
+Besides the required `title` slot, you can add a `description` slot to help you describe the alert with more details. Description can only store text string,
+and it will word wrap automatically.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.Title}
+/>
+
+## With Icon and Description
+
+At last, this is an example with both icon and description.
+
+<Canvas
+	withToolbar={true}
+	of={AlertStories.TitleIcon}
+/>
+
+---
+
+## Alert API
+
+<div style={{ marginTop: '30px' }}>
+	### Attributes
+
+    | Name        | Description                             | Type                                                     | Default  |
+    | ----------- | --------------------------------------- |----------------------------------------------------------| -------- |
+    | variant     | alert variant                           | `default` \| `info` \| `success` \| `warning` \| `error` | `default`|
+    | effect      | alert theme style                       | `light` \| `dark`                                        | `light`  |
+    | center      | whether content is placed in the center | `boolean`                                                | false    |
+    | closable    | whether alert can be dismissed          | `boolean`                                                | true     |
+    | close-text  | customized close button text            | `string`                                                 | —        |
+    | icon        | whether a type icon is displayed        | `boolean`                                                | false    |
+
+    ### Events
+
+    | Name  | Description                   | Type        |
+    | ----- | ----------------------------- | ----------- |
+    | close | trigger when alert is closed. | `Function`  |
+
+    ### Slots
+
+    | Name          | Description                                                                                |
+    | ------------- |------------------------------------------------------------------------------------------- |
+    | title         | content of the alert title                                                                 |
+    | description   | content of the alert description                                                           |
+    | icon          | slot for inserting custom icon. this slot will override default component icon             |
+    | default       | slot for inserting custom content. This slot will override `title` and `description` slots |
+
+</div>

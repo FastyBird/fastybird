@@ -1,0 +1,60 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as BreadcrumbStories from './fb-breadcrumb.stories';
+
+<Meta of={BreadcrumbStories} />
+
+# Breadcrumb
+
+Displays the location of the current page, making it easier to browser back.
+
+## Basic Usage
+
+In `fb-breadcrumb`, each `fb-breadcrumb-item` is a tag that stands for every level starting from homepage. This component has a `String` attribute `separator`,
+and it determines the separator. Its default value is `/`.
+
+<Canvas of={BreadcrumbStories.BasicUsage} />
+
+## Icon Separator
+
+Set `separator-icon` property to use custom icon as the separator，it will cover separator
+
+<Canvas of={BreadcrumbStories.IconSeparator} />
+
+---
+
+## Breadcrumb API
+
+<div style={{ marginTop: '30px' }}>
+	### Attributes
+
+    | Name           | Description                      | Type                   | Default |
+    | -------------- | -------------------------------- | ---------------------- | ------- |
+    | separator      | separator character              | `string`               | `/`     |
+    | separator-icon | icon component of icon separator | `string` \| `Component` | —       |
+
+    ### Slots
+
+    | Name    | Description               | Subtags         |
+    | ------- | ------------------------- | --------------- |
+    | default | customize default content | Breadcrumb Item |
+
+</div>
+
+## Breadcrumb Item API
+
+<div style={{ marginTop: '30px' }}>
+
+    ### Attributes
+
+    | Name    | Description                                               | Type                             | Default |
+    | ------- | --------------------------------------------------------- | -------------------------------- | ------- |
+    | to      | target route of the link, same as `to` of `vue-router`    | `string` \| `RouteLocationRaw`   | —       |
+    | replace | if `true`, the navigation will not leave a history record | `boolean`                        | false   |
+
+    ### Slots
+
+    | Name    | Description               |
+    | ------- | ------------------------- |
+    | default | customize default content |
+
+</div>

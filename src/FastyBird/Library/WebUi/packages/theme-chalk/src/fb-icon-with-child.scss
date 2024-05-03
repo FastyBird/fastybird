@@ -1,0 +1,36 @@
+@use 'sass:color';
+@use 'sass:math';
+
+@use 'common/var' as *;
+@use 'mixins/mixins' as *;
+
+@include b(icon-with-child) {
+	display: inline-block;
+	position: relative;
+
+	@include e(icon) {
+		display: block;
+	}
+
+	@include e(child-icon) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		bottom: 0;
+		right: -5px;
+		z-index: 2;
+		border-radius: 50%;
+		text-align: center;
+		padding: 4px;
+	}
+
+	@each $variant in (primary, default, info, success, warning, danger) {
+		@include m(variant-#{$variant}) {
+			@include e(child-icon) {
+				background-color: getCssVar('color', $variant);
+				color: getCssVar('color', 'white');
+			}
+		}
+	}
+}

@@ -1,0 +1,27 @@
+.fb-switch-story-block {
+	.fb-switch-story-block__item {
+		margin-bottom: 20px;
+	}
+
+	.fb-switch-story-block__item:last-child {
+		margin-bottom: 0;
+	}
+
+	.fb-switch-story-block__row-item {
+		margin-right: 20px;
+		display: inline-block;
+	}
+
+	.fb-switch-story-block__row-item:last-child {
+		margin-right: 0;
+	}
+
+	.fb-col {
+		margin-bottom: 20px;
+	}
+
+	.switch-colors {
+		--fb-switch-on-color: #13ce66;
+		--fb-switch-off-color: #ff4949;
+	}
+}

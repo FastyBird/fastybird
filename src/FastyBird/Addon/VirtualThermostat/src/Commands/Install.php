@@ -3667,7 +3667,7 @@ class Install extends Console\Command\Command
 					<=> ($b->getConnector()->getName() ?? $b->getConnector()->getIdentifier())
 				) * 100 +
 				(($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier()))
-			)
+			),
 		);
 
 		foreach ($systemDevices as $device) {

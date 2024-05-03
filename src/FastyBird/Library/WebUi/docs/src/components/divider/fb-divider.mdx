@@ -1,0 +1,52 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as DividerStories from './fb-divider.stories';
+
+<Meta of={DividerStories} />
+
+# Divider
+
+The dividing line that separates the content.
+
+## Basic Usage
+
+Divide the text of different paragraphs.
+
+<Canvas of={DividerStories.BasicUsage} />
+
+## Custom Content
+
+You can customize the content on the divider line.
+
+<Canvas of={DividerStories.CustomContent} />
+
+## Line Styles
+
+You can set the style of divider.
+
+<Canvas of={DividerStories.DashedLine} />
+
+## Vertical divider
+
+<Canvas of={DividerStories.VerticalDivider} />
+
+---
+
+## Divider API
+
+<div style={{ marginTop: '30px' }}>
+	### Attributes
+
+    | Name             | Description                                                | Type                                                                                                                                 | Default    |
+    | ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+    | direction        | set divider's direction                                    | `horizontal` \| `vertical`                                                                                                           | horizontal |
+    | border-style     | set the style of divider                                   | `none` \| `solid` \| `hidden` \| `dashed` \| ... [css/border-style](https://developer.mozilla.org/en-US/docs/Web/CSS/border-style)   | solid      |
+    | content-position | the position of the customized content on the divider line | `left` \| `right` \| `center`                                                                                                        | center     |
+    | gradient         | determine whether show divider with gradient effect        | `boolean`                                                                                                                            | false      |
+
+    ### Slots
+
+    | Name    | Description                            |
+    | ------- | -------------------------------------- |
+    | default | customized content on the divider line |
+
+</div>

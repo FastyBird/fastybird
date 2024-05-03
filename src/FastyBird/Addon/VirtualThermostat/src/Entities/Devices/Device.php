@@ -85,7 +85,7 @@ class Device extends VirtualEntities\Devices\Device
 		$channels = $this->channels
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION->value
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::CONFIGURATION->value,
 			);
 
 		if ($channels->count() !== 1) {
@@ -105,7 +105,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE->value
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::STATE->value,
 			);
 
 		if ($channels->count() !== 1) {
@@ -125,7 +125,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === $preset->value
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === $preset->value,
 			);
 
 		if ($channels->count() !== 1) {
@@ -325,7 +325,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value,
 			);
 
 		if ($channels->count() !== 1) {
@@ -356,7 +356,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -367,7 +367,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($actor): bool => Utils\Strings::startsWith(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -378,7 +378,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		$channels = $this->channels
 			->filter(
-				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value
+				static fn (DevicesEntities\Channels\Channel $channel): bool => $channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value,
 			);
 
 		if ($channels->count() !== 1) {
@@ -417,7 +417,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -428,7 +428,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -439,7 +439,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 
@@ -450,7 +450,7 @@ class Device extends VirtualEntities\Devices\Device
 			static fn ($sensor): bool => Utils\Strings::startsWith(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
-			)
+			),
 		) !== [];
 	}
 

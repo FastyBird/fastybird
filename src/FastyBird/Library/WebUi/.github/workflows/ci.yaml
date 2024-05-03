@@ -122,10 +122,10 @@ jobs:
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
+        run: "yarn workspace @fastybird/web-ui-docs build"
 
       - name: "Test build"
-        run: 'yarn storybook:build'
+        run: "yarn storybook:build"
 
   publish-npmjs:
     name: "Build library and publish it to NPM"
@@ -152,7 +152,7 @@ jobs:
         id: "get_version"
 
       - name: "Install package dependencies"
-        run: yarn install
+        run: "yarn install"
 
       - name: "Set up git since we will later push to the repo"
         run: |
@@ -161,35 +161,95 @@ jobs:
 
       - name: "Upgrade npm version in package.json to the tag used in the release"
         if: contains(github.ref, 'refs/tags/')
-        run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
+        run: "npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version"
 
       - name: "Build the project"
-        run: yarn build
+        run: "yarn build"
 
-      - name: "Publish to NPM"
+      - name: "Publish WebUI library to NPM"
         uses: "JS-DevTools/npm-publish@v3"
-        id: "npm_publish"
+        id: "npm_library_publish"
         if: contains(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.NPMJS_TOKEN }}
           access: "public"
+          package: "./web-ui-library"
 
-      - name: "Publish to NPM result"
-        if: contains(github.ref, 'refs/tags/') && steps.npm_publish.outputs.type != 'none'
+      - name: "Publish WebUI library to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_library_publish.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
-      - name: "Publish to NPM"
+      - name: "Publish WebUI library to NPM"
         uses: "JS-DevTools/npm-publish@v3"
-        id: "npm_publish_dev"
+        id: "npm_library_publish_dev"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.NPMJS_TOKEN }}
           access: "public"
           tag: "dev"
+          package: "./web-ui-library"
 
-      - name: "Publish to NPM result"
-        if: contains(github.ref, 'refs/tags/') == false && steps.npm_publish_dev.outputs.type != 'none'
+      - name: "Publish WebUI library to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_library_publish_dev.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Icons to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_icons_publish"
+        if: contains(github.ref, 'refs/tags/')
+        with:
+          token: ${{ secrets.NPMJS_TOKEN }}
+          access: "public"
+          package: "./packages/icons"
+
+      - name: "Publish WebUI Icons to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_icons_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Icons to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_icons_publish_dev"
+        if: contains(github.ref, 'refs/tags/') == false
+        with:
+          token: ${{ secrets.NPMJS_TOKEN }}
+          access: "public"
+          tag: "dev"
+          package: "./packages/icons"
+
+      - name: "Publish WebUI Icons to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_icons_publish_dev.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Theme Chalk to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_theme_chalk_publish"
+        if: contains(github.ref, 'refs/tags/')
+        with:
+          token: ${{ secrets.NPMJS_TOKEN }}
+          access: "public"
+          package: "./packages/theme-chalk"
+
+      - name: "Publish WebUI Theme Chalk to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_theme_chalk_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Theme Chalk to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_theme_chalk_publish_dev"
+        if: contains(github.ref, 'refs/tags/') == false
+        with:
+          token: ${{ secrets.NPMJS_TOKEN }}
+          access: "public"
+          tag: "dev"
+          package: "./packages/theme-chalk"
+
+      - name: "Publish WebUI Theme Chalk to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_theme_chalk_publish_dev.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
@@ -220,7 +280,7 @@ jobs:
       - name: "Install package dependencies"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn install
+        run: "yarn install"
 
       - name: "Set up git since we will later push to the repo"
         run: |
@@ -229,37 +289,101 @@ jobs:
 
       - name: "Upgrade npm version in package.json to the tag used in the release"
         if: contains(github.ref, 'refs/tags/')
-        run: npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version
+        run: "npm version ${{ steps.get_version.outputs.version-without-v }} --allow-same-version"
 
       - name: "Build the project"
-        run: yarn build
+        run: "yarn build"
 
-      - name: "Publish to NPM"
+      - name: "Publish WebUI library to NPM"
         uses: "JS-DevTools/npm-publish@v3"
-        id: "npm_publish"
+        id: "npm_library_publish"
         if: contains(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           access: "public"
+          package: "./web-ui-library"
           registry: "https://npm.pkg.github.com"
 
-      - name: "Publish to NPM result"
-        if: contains(github.ref, 'refs/tags/') && steps.npm_publish.outputs.type != 'none'
+      - name: "Publish WebUI library to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_library_publish.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
-      - name: "Publish to NPM"
+      - name: "Publish WebUI library to NPM"
         uses: "JS-DevTools/npm-publish@v3"
-        id: "npm_publish_dev"
+        id: "npm_library_publish_dev"
         if: contains(github.ref, 'refs/tags/') == false
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           access: "public"
           tag: "dev"
+          package: "./web-ui-library"
           registry: "https://npm.pkg.github.com"
 
-      - name: "Publish to NPM result"
-        if: contains(github.ref, 'refs/tags/') == false && steps.npm_publish_dev.outputs.type != 'none'
+      - name: "Publish WebUI library to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_library_publish_dev.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Icons to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_icons_publish"
+        if: contains(github.ref, 'refs/tags/')
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          package: "./packages/icons"
+          registry: "https://npm.pkg.github.com"
+
+      - name: "Publish WebUI Icons to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_icons_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Icons to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_icons_publish_dev"
+        if: contains(github.ref, 'refs/tags/') == false
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
+          package: "./packages/icons"
+          registry: "https://npm.pkg.github.com"
+
+      - name: "Publish WebUI Icons to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_icons_publish_dev.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Theme Chalk to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_theme_chalk_publish"
+        if: contains(github.ref, 'refs/tags/')
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          package: "./packages/theme-chalk"
+          registry: "https://npm.pkg.github.com"
+
+      - name: "Publish WebUI Theme Chalk to NPM result"
+        if: contains(github.ref, 'refs/tags/') && steps.npm_theme_chalk_publish.outputs.type != 'none'
+        run: |
+          echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
+
+      - name: "Publish WebUI Theme Chalk to NPM"
+        uses: "JS-DevTools/npm-publish@v3"
+        id: "npm_theme_chalk_publish_dev"
+        if: contains(github.ref, 'refs/tags/') == false
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          access: "public"
+          tag: "dev"
+          package: "./packages/theme-chalk"
+          registry: "https://npm.pkg.github.com"
+
+      - name: "Publish WebUI Theme Chalk to NPM result"
+        if: contains(github.ref, 'refs/tags/') == false && steps.npm_theme_chalk_publish_dev.outputs.type != 'none'
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
@@ -294,21 +418,21 @@ jobs:
         uses: "actions/cache@v3"
         with:
           path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles("yarn.lock") }}"
           restore-keys: "${{ runner.os }}-node-modules-"
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: 'yarn install'
+        run: "yarn install"
 
       - name: "Build"
-        run: yarn storybook:build
+        run: "yarn workspace @fastybird/web-ui-docs build"
 
       - name: "Deploy"
         uses: "JamesIves/github-pages-deploy-action@3.6.2"
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: main
-          FOLDER: storybook-static
+          BRANCH: "main"
+          FOLDER: "./docs/storybook-static"
           CLEAN: true
-          TARGET_FOLDER: docs
+          TARGET_FOLDER: "docs"

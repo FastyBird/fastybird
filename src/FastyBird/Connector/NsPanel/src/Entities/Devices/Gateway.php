@@ -54,7 +54,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::IP_ADDRESS->value,
 			)
 			->first();
 
@@ -79,7 +79,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DOMAIN->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::DOMAIN->value,
 			)
 			->first();
 
@@ -104,7 +104,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ACCESS_TOKEN->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::ACCESS_TOKEN->value,
 			)
 			->first();
 
@@ -129,7 +129,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::MAC_ADDRESS->value,
 			)
 			->first();
 
@@ -154,7 +154,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::FIRMWARE_VERSION->value,
 			)
 			->first();
 
@@ -179,7 +179,7 @@ class Gateway extends Entities\Devices\Device
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY->value
+				static fn (DevicesEntities\Devices\Properties\Property $property): bool => $property->getIdentifier() === Types\DevicePropertyIdentifier::STATE_READING_DELAY->value,
 			)
 			->first();
 

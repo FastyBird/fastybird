@@ -4127,7 +4127,7 @@ class Install extends Console\Command\Command
 						if (in_array($answer, $remappedOptions, true) && $answer !== null) {
 							$options = array_values(array_filter(
 								$options,
-								static fn ($item): bool => is_array($item) ? $item[1] === $answer : $item === $answer
+								static fn ($item): bool => is_array($item) ? $item[1] === $answer : $item === $answer,
 							));
 
 							if (count($options) === 1 && $options[0] !== null) {

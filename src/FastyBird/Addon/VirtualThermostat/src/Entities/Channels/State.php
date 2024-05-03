@@ -64,7 +64,7 @@ class State extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::HVAC_MODE->value,
 			)
 			->first();
 
@@ -80,7 +80,7 @@ class State extends VirtualEntities\Channels\Channel
 		$property = $this->properties
 			->filter(
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE->value
+				static fn (DevicesEntities\Channels\Properties\Property $property): bool => $property->getIdentifier() === Types\ChannelPropertyIdentifier::PRESET_MODE->value,
 			)
 			->first();
 

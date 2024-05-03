@@ -1,0 +1,69 @@
+{
+  "name": "@fastybird/web-ui-docs",
+  "version": "1.0.0-dev.20",
+  "description": "Documentation for FastyBird IoT application theme",
+  "bugs": "https://github.com/FastyBird/fastybird#issues",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "FastyBird s.r.o.",
+    "email": "code@fastybird.com",
+    "url": "https://www.fastybird.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FastyBird/web-ui-library.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "dev:doc": "storybook dev -p 6006 --docs",
+    "build": "storybook build",
+    "build:doc": "storybook build --docs",
+    "deploy": "storybook-to-ghpages",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier src --check",
+    "pretty:write": "prettier src --write"
+  },
+  "dependencies": {
+    "@fastybird/web-ui-components": "1.0.0-dev.20",
+    "@fastybird/web-ui-constants": "1.0.0-dev.20",
+    "@fastybird/web-ui-icons": "1.0.0-dev.20",
+    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.20"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.2",
+    "@eslint/js": "^9.1",
+    "@storybook/addon-a11y": "^8.0",
+    "@storybook/addon-actions": "^8.0",
+    "@storybook/addon-docs": "^8.0",
+    "@storybook/addon-essentials": "^8.0",
+    "@storybook/addon-interactions": "^8.0",
+    "@storybook/addon-links": "^8.0",
+    "@storybook/blocks": "^8.0",
+    "@storybook/storybook-deployer": "^2.8",
+    "@storybook/manager-api": "^8.0",
+    "@storybook/test": "^8.0",
+    "@storybook/vue3": "^8.0",
+    "@storybook/vue3-vite": "^8.0",
+    "@typescript-eslint/eslint-plugin": "^7.8",
+    "@typescript-eslint/parser": "^7.8",
+    "@vitejs/plugin-vue": "^5.0",
+    "@vue/eslint-config-prettier": "^9.0",
+    "@vue/eslint-config-typescript": "^13.0",
+    "eslint": "^9.1",
+    "eslint-config-prettier": "^9.1",
+    "eslint-plugin-prettier": "^5.1",
+    "eslint-plugin-vue": "^9.25",
+    "prettier": "^3.2",
+    "remark-gfm": "^4.0",
+    "rimraf": "^5.0",
+    "storybook": "^8.0",
+    "storybook-dark-mode": "^4.0",
+    "typescript": "^5.4",
+    "typescript-eslint": "^7.8",
+    "vite": "^5.2",
+    "vue-component-meta": "^2.0",
+    "vue-tsc": "^2.0",
+    "vite-svg-loader": "^5.1"
+  }
+}

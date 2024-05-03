@@ -1,0 +1,130 @@
+import { Canvas, Meta, Controls } from '@storybook/blocks';
+import * as SwitchStories from './fb-switch.stories';
+
+<Meta of={SwitchStories} />
+
+# Switch
+
+Switch is used for switching between two opposing states.
+
+<Canvas of={SwitchStories.Component} />
+
+## Playground
+
+<Controls of={SwitchStories.Component} />
+
+## Basic Usage
+
+Bind `v-model` to a `Boolean` typed variable. The `--fb-switch-on-color` and `--fb-switch-off-color` CSS variables decides the background color in two states.
+
+<Canvas of={SwitchStories.Basic} />
+
+## Sizes
+
+<Canvas of={SwitchStories.Sizes} />
+
+## Variants
+
+<Canvas of={SwitchStories.Variants} />
+
+## Text description
+
+You can add `active-text` and `inactive-text` property to show texts. use `inline-prompt` property to control text is displayed inside dot.
+
+You can add `active-text` and `inactive-text` property to show texts.
+
+<Canvas of={SwitchStories.TextDescription} />
+
+## Custom Icons
+
+You can add `active-icon` and `inactive-icon` property to show icons. use `inline-prompt` property to control icon is displayed inside dot.
+
+<Canvas of={SwitchStories.CustomIcons} />
+
+## Custom Action Icon
+
+You can add `active-action-icon` and `inactive-active-icon` property to show icons.
+
+<Canvas of={SwitchStories.CustomActionIcons} />
+
+## Extended Value Types
+
+You can set `active-value` and `inactive-value` propertys. They both receive a `Boolean`, `String` or `Number` typed value.
+
+<Canvas of={SwitchStories.ValueTypes} />
+
+## Disabled
+
+Adding the `disabled` property disables switch.
+
+<Canvas of={SwitchStories.Disabled} />
+
+## Loading
+
+Setting the `loading` property to `true` indicates a loading state on the switch.
+
+<Canvas of={SwitchStories.Loading} />
+
+## Prevent Switching
+
+Set the `before-change` property. If `false` is returned or a `Promise` is returned and then is `rejected`, will stop switching.
+
+<Canvas of={SwitchStories.PreventSwitching} />
+
+## Custom Action Slot
+
+You can use `active-action` and `inactive-action` slot to customize action.
+
+<Canvas of={SwitchStories.CustomActionSlot} />
+
+---
+
+## Switch API
+
+<div style={{ marginTop: '30px' }}>
+
+    ### Attributes
+
+    | Name                          | Description                                                                                                                                     | Type                                            | Default   |
+    | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | --------- |
+    | model-value / v-model         | binding value, it should be equivalent to either `active-value` or `inactive-value`, by default it's `boolean` type                             | `boolean` / `string` / `number`                 | false     |
+    | disabled                      | whether switch is disabled                                                                                                                      | `boolean`                                       | false     |
+    | loading                       | whether switch is in loading state                                                                                                              | `boolean`                                       | false     |
+    | size                          | size of switch                                                                                                                                  | `large` \| `default` \| `small`                 | `default` |
+    | width                         | width of switch                                                                                                                                 | `number` / `string`                             | —         |
+    | inline-prompt                 | whether icon or text is displayed inside dot, only the first character will be rendered for text                                                | `boolean`                                       | false     |
+    | active-icon                   | component of the icon displayed when in `on` state, overrides `active-text`                                                                     | `string` / `Component`                          | —         |
+    | inactive-icon                 | component of the icon displayed when in `off` state, overrides `inactive-text`                                                                  | `string` / `Component`                          | —         |
+    | active-action-icon            | component of the icon displayed in action when in `on` state                                                                                    | `string` / `Component`                          | —         |
+    | inactive-action-icon          | component of the icon displayed in action when in `off` state                                                                                   | `string` / `Component`                          | —         |
+    | active-text                   | text displayed when in `on` state                                                                                                               | `string`                                        | —         |
+    | inactive-text                 | text displayed when in `off` state                                                                                                              | `string`                                        | —         |
+    | active-value                  | switch value when in `on` state                                                                                                                 | `boolean` / `string` / `number`                 | true      |
+    | inactive-value                | switch value when in `off` state                                                                                                                | `boolean` / `string` / `number`                 | false     |
+    | name                          | input name of switch                                                                                                                            | `string`                                        | —         |
+    | validate-event                | whether to trigger form validation                                                                                                              | `boolean`                                       | true      |
+    | before-change                 | before-change hook before the switch state changes. If `false` is returned or a `Promise` is returned and then is rejected, will stop switching | `boolean` / `() => Promise<boolean>`            | —         |
+    | id                            | id for input                                                                                                                                    | `string`                                        | —         |
+    | tabindex                      | tabindex for input                                                                                                                              | `string` / `number`                             | —         |
+    | label `a11y`                  | same as `aria-label` in native input                                                                                                            | `string`                                        | —         |
+
+    ### Events
+
+    | Name   | Description                 | Type                                                    |
+    | ------ | --------------------------- | ------------------------------------------------------- |
+    | change | triggers when value changes | `(val: boolean \| string \| number) => void`            |
+
+    ### Slots
+
+    | Name                     | Description               |
+    | ------------------------ | ------------------------- |
+    | active-action            | customize active action   |
+    | inactive-action          | customize inactive action |
+
+    ### Exposes
+
+    | Method | Description                          | Type           |
+    | ------ | ------------------------------------ | -------------- |
+    | focus  | manual focus to the switch component | `() => void`   |
+
+</div>

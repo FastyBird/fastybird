@@ -30,7 +30,10 @@
     "src/FastyBird/Connector/*",
     "src/FastyBird/Library/*",
     "src/FastyBird/Module/*",
-    "src/FastyBird/Plugin/*"
+    "src/FastyBird/Plugin/*",
+    "src/FastyBird/Library/WebUi/docs",
+    "src/FastyBird/Library/WebUi/packages/*",
+    "src/FastyBird/Library/WebUi/web-ui-library"
   ],
   "scripts": {
     "dev": "lerna run dev --stream",

@@ -1,0 +1,70 @@
+@use 'sass:map';
+@use 'sass:math';
+
+@use 'common/var' as *;
+@use 'mixins/button' as *;
+@use 'mixins/mixins' as *;
+@use 'mixins/utils' as *;
+@use 'mixins/var' as *;
+
+@include b(loading-box) {
+	@include set-component-css-var('loading-box', $loading-box);
+	@include set-component-css-var('loading-box-font-size', $loading-box-font-size);
+}
+
+@include b(loading-box) {
+	font-size: getCssVar('loading-box', 'font-size');
+	text-align: center;
+	padding: getCssVar('loading-box', 'padding');
+
+	@include when(fullscreen) {
+		position: fixed;
+		inset: 0;
+		background: #fff;
+		z-index: 1080;
+		height: 100%;
+		width: 100%;
+	}
+
+	@include e(icon) {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: center;
+		margin: getCssVar('loading-box', 'icon-margin');
+	}
+
+	@include e(content) {
+		margin: getCssVar('loading-box', 'content-margin');
+	}
+
+	@each $size in (large, small) {
+		@include m(size-#{$size}) {
+			@include set-css-var-value(('loading-box', 'font-size'), map.get($loading-box-font-size, $size));
+
+			font-size: getCssVar('loading-box', 'font-size', $size);
+		}
+	}
+}
+
+.#{$namespace}-loading-box-bounce-enter-active {
+	animation: #{$namespace}-bounce-in 0.25s;
+}
+
+.#{$namespace}-loading-box-bounce-leave-active {
+	animation: #{$namespace}-bounce-in 0.25s reverse;
+}
+
+@keyframes #{$namespace}-bounce-in {
+	0% {
+		transform: scale(0);
+	}
+
+	50% {
+		transform: scale(1.2);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}

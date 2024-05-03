@@ -44,16 +44,7 @@
     "assets/components/**/*.scss"
   ],
   "scripts": {
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
-    "build:dev": "vue-tsc --noEmit --composite false && vite build --watch --mode development",
-    "build:only": "yarn clean && vite build",
-    "types": "vue-tsc --noEmit --composite false",
-    "lint:js": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets",
-    "lint:js:fix": "eslint --ext .js,.ts,.vue --ignore-path .gitignore assets --fix",
-    "pretty": "yarn pretty:write && yarn pretty:check",
-    "pretty:check": "prettier assets --check",
-    "pretty:write": "prettier assets --write"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@fastybird/metadata-library": "1.0.0-dev.20",

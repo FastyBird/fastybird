@@ -1,0 +1,26 @@
+.fb-card-story-block {
+	&-–flex {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 20px;
+	}
+
+	.fb-card-story-block__item {
+		max-width: 480px;
+		margin-bottom: 20px;
+
+		.fb-card-story-block__item-actions {
+			display: flex;
+
+			.fb-card-story-block__item-actions-button {
+				flex: 1;
+			}
+		}
+	}
+
+	.fb-card-story-block__in-column-item {
+		width: 100%;
+		margin: 10px 0;
+	}
+}

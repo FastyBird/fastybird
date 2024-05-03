@@ -1,0 +1,24 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as MessageBoxStories from './fb-message-box.stories';
+
+<Meta of={MessageBoxStories} />
+
+<Canvas
+	withToolbar={true}
+	of={MessageBoxStories.Alert}
+/>
+
+<Canvas
+	withToolbar={true}
+	of={MessageBoxStories.Confirm}
+/>
+
+<Canvas
+	withToolbar={true}
+	of={MessageBoxStories.Prompt}
+/>
+
+<Canvas
+	withToolbar={true}
+	of={MessageBoxStories.Customization}
+/>

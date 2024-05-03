@@ -1,0 +1,324 @@
+@use 'sass:map';
+
+@use 'mixins/mixins' as *;
+@use 'mixins/utils' as *;
+@use 'mixins/var' as *;
+@use 'common/var' as *;
+@use 'common/popup' as *;
+
+@include b(modal) {
+	@include css-var-from-global(('modal', 'header', 'bg-color'), ('color', 'primary'));
+	@include css-var-from-global(('modal', 'header', 'color'), ('color', 'white'));
+	@include set-css-var-value(('modal', 'header', 'heading'), '50px');
+	@include set-css-var-value(('modal', 'header', 'font-size'), '20px');
+	@include set-css-var-value(('modal', 'header', 'font-weight'), 500);
+	@include set-css-var-value(('modal', 'header', 'line-height'), 1.1);
+	@include set-css-var-value(('modal', 'header', 'padding'), '0 12px');
+	@include set-css-var-value(('modal', 'header', 'margin'), 0);
+	@include set-css-var-value(('modal', 'header', 'icon-size'), '35px');
+	@include set-css-var-value(('modal', 'header', 'icon-font-size'), '20px');
+	@include set-css-var-value(('modal', 'header', 'icon-size', 'large'), '55px');
+	@include set-css-var-value(('modal', 'header', 'icon-font-size', 'large'), '40px');
+	@include set-css-var-value(('modal', 'header', 'icon-margin'), '10px');
+}
+
+@include b(modal) {
+	@include set-component-css-var('modal', $modal);
+
+	position: relative;
+	margin: var(#{getCssVarName('modal-margin-top')}, 15vh) auto 50px;
+	background: getCssVar('modal', 'bg-color');
+	border-radius: getCssVar('modal', 'border-radius');
+	box-shadow: getCssVar('modal', 'box-shadow');
+	box-sizing: border-box;
+	width: var(#{getCssVarName('modal-width')}, 50%);
+	overflow-wrap: break-word;
+
+	&:focus {
+		outline: none !important;
+	}
+
+	@include when(align-center) {
+		margin: auto;
+	}
+
+	@include when(fullscreen) {
+		@include set-css-var-value('modal-width', 100%);
+		@include set-css-var-value('modal-margin-top', 0);
+
+		margin-bottom: 0;
+		height: 100%;
+		overflow: auto;
+	}
+
+	@include e(wrapper) {
+		position: fixed;
+		inset: 0;
+		overflow: auto;
+		margin: 0;
+	}
+
+	@include when(draggable) {
+		@include e(header) {
+			cursor: move;
+			user-select: none;
+		}
+	}
+
+	@include e(body) {
+		color: getCssVar('text-color', 'regular');
+		font-size: getCssVar('modal-content-font-size');
+		padding: getCssVar('modal', 'padding-primary');
+	}
+
+	@include m(center) {
+		text-align: center;
+
+		@include e(body) {
+			text-align: initial;
+		}
+
+		.#{$namespace}-modal-footer {
+			justify-content: center;
+		}
+	}
+
+	@include m(layout-tablet) {
+		margin: 1.8vh auto 0;
+		height: 98vh;
+	}
+
+	@include m(layout-phone) {
+		margin: 1.8vh auto 0;
+		height: 98vh;
+		width: 99vw;
+	}
+}
+
+@include b(modal-header) {
+	color: getCssVar('modal', 'header', 'color');
+	background-color: getCssVar('modal', 'header', 'bg-color');
+
+	@include e(inner) {
+		display: flex;
+		flex-flow: row nowrap;
+		padding: getCssVar('modal', 'header', 'padding');
+		min-height: getCssVar('modal', 'header', 'heading');
+	}
+
+	@include e(heading) {
+		flex-grow: 1;
+		align-items: center;
+		display: flex;
+		flex-flow: row nowrap;
+	}
+
+	@include e(title) {
+		flex-grow: 2;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		font-size: getCssVar('modal', 'header', 'font-size');
+		font-weight: getCssVar('modal', 'header', 'font-weight');
+		line-height: getCssVar('modal', 'header', 'line-height');
+		margin: getCssVar('modal', 'header', 'margin');
+	}
+
+	@include e(subtitle) {
+		display: block;
+		font-size: 65%;
+		font-weight: normal;
+	}
+
+	@include e(icon) {
+		color: getCssVar('modal', 'header', 'bg-color');
+		background-color: getCssVar('modal', 'header', 'color');
+		border-radius: 50%;
+		height: getCssVar('modal', 'header', 'icon-size');
+		width: getCssVar('modal', 'header', 'icon-size');
+		line-height: getCssVar('modal', 'header', 'icon-size');
+		font-size: getCssVar('modal', 'header', 'icon-font-size');
+		text-align: center;
+		margin-right: getCssVar('modal', 'header', 'icon-margin');
+	}
+
+	@include e(close) {
+		position: absolute;
+		right: 15px;
+		top: 15px;
+		padding: 0;
+		cursor: pointer;
+		background: transparent;
+		border: 0;
+		color: getCssVar('modal', 'header', 'color');
+	}
+
+	@include e(description) {
+		display: flex;
+		flex-direction: column;
+		text-align: center;
+		align-items: center;
+
+		.#{$namespace}-modal-header__icon {
+			background-color: getCssVar('modal', 'header', 'bg-color');
+			color: getCssVar('modal', 'header', 'color');
+			margin-bottom: 15px;
+			height: getCssVar('modal', 'header', 'icon-size', 'large');
+			width: getCssVar('modal', 'header', 'icon-size', 'large');
+			line-height: getCssVar('modal', 'header', 'icon-size', 'large');
+			font-size: getCssVar('modal', 'header', 'icon-font-size', 'large');
+		}
+
+		@include e(content) {
+			padding: 10px;
+		}
+	}
+
+	@each $variant in (primary, success, warning, danger, error, info, default) {
+		@include m(variant-#{$variant}) {
+			@include css-var-from-global(('modal', 'header', 'bg-color'), ('color', $variant));
+			@include css-var-from-global(('modal', 'header', 'color'), ('color', 'white'));
+		}
+	}
+
+	@each $layout in (tablet, phone) {
+		@include m(layout-#{$layout}) {
+			@include e(inner) {
+				padding: 0;
+			}
+
+			@include e(heading) {
+				text-align: center;
+				order: 2;
+				flex-grow: 2;
+			}
+
+			@include e(left-button) {
+				flex-grow: 1;
+				flex-basis: 10%;
+				text-align: left;
+				order: 1;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: flex-start;
+				padding-left: 15px;
+
+				.#{$namespace}-button {
+					color: getCssVar('modal', 'header', 'color');
+
+					&:hover,
+					&:focus,
+					&:active {
+						color: getCssVar('modal', 'header', 'color');
+						background-color: rgba(map.get($colors, 'white'), 0.3);
+					}
+				}
+			}
+
+			@include e(right-button) {
+				flex-grow: 1;
+				flex-basis: 10%;
+				text-align: right;
+				order: 3;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: flex-end;
+				padding-right: 15px;
+
+				.#{$namespace}-button {
+					color: getCssVar('modal', 'header', 'color');
+
+					&:hover,
+					&:focus,
+					&:active {
+						color: getCssVar('modal', 'header', 'color');
+						background-color: rgba(map.get($colors, 'white'), 0.3);
+					}
+				}
+			}
+		}
+	}
+}
+
+@include b(modal-footer) {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-end;
+	padding: getCssVar('modal', 'padding-primary');
+	border-top: 1px solid getCssVar('border-color', 'dark');
+
+	@include e(left-button) {
+		margin-right: 5px;
+	}
+
+	@include e(right-button) {
+		margin-left: 5px;
+	}
+}
+
+.#{$namespace}-overlay-modal {
+	position: fixed;
+	inset: 0;
+	overflow: auto;
+}
+
+.modal-fade-enter-active {
+	animation: modal-fade-in getCssVar('transition-duration');
+	.#{$namespace}-overlay-modal {
+		animation: modal-fade-in getCssVar('transition-duration');
+	}
+}
+
+.modal-fade-leave-active {
+	animation: modal-fade-out getCssVar('transition-duration');
+	.#{$namespace}-overlay-modal {
+		animation: modal-fade-out getCssVar('transition-duration');
+	}
+}
+
+@keyframes modal-fade-in {
+	0% {
+		transform: translate3d(0, -20px, 0);
+		opacity: 0;
+	}
+
+	100% {
+		transform: translate3d(0, 0, 0);
+		opacity: 1;
+	}
+}
+
+@keyframes modal-fade-out {
+	0% {
+		transform: translate3d(0, 0, 0);
+		opacity: 1;
+	}
+
+	100% {
+		transform: translate3d(0, -20px, 0);
+		opacity: 0;
+	}
+}
+
+@keyframes modal-fade-in {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes modal-fade-out {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}

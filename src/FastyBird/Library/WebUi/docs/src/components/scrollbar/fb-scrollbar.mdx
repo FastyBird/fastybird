@@ -1,0 +1,90 @@
+import { Canvas, Meta } from '@storybook/blocks';
+import * as ScrollbarStories from './fb-scrollbar.stories';
+
+<Meta of={ScrollbarStories} />
+
+# Scrollbar
+
+Used to replace the browser's native scrollbar.
+
+## Basic Usage
+
+Use `height` property to set the height of the scrollbar, or if not set, it adapts according to the parent container height.
+
+<Canvas of={ScrollbarStories.BasicUsage} />
+
+## With Shadow
+
+Provide user feedback that can scroll vertically or horizontally. With property `shadow` you could enable shadow effect on side where scrolling is available.
+
+<Canvas of={ScrollbarStories.WithShadow} />
+
+## Horizontal Scroll
+
+When the element width is greater than the scrollbar width, the horizontal scrollbar is displayed.
+
+<Canvas of={ScrollbarStories.Horizontal} />
+
+## Max Height
+
+The scrollbar is displayed only when the element height exceeds the max height.
+
+<Canvas of={ScrollbarStories.MaxHeight} />
+
+## Manual Scroll
+
+Use `setScrollTop` and `setScrollLeft` methods can control scrollbar manually.
+
+<Canvas of={ScrollbarStories.Manual} />
+
+---
+
+## Vertical Scroll Shadow API
+
+<div style={{ marginTop: '30px' }}>
+
+    ### Attributes
+
+    | Name                    | Description                                                                                                                     | Type                                                               | Default |
+    | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------- |
+    | height                  | height of scrollbar                                                                                                             | `string` \| `number`                                               | —       |
+    | max-height              | max height of scrollbar                                                                                                         | `string` \| `number`                                               | —       |
+    | native                  | whether to use the native scrollbar style                                                                                       | `boolean`                                                          | false   |
+    | wrap-style              | style of wrap container                                                                                                         | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
+    | wrap-class              | class of wrap container                                                                                                         | `string`                                                           | —       |
+    | view-style              | style of view                                                                                                                   | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
+    | view-class              | class of view                                                                                                                   | `string`                                                           | —       |
+    | noresize                | do not respond to container size changes, if the container size does not change, it is better to set it to optimize performance | `boolean`                                                          | false   |
+    | tag                     | element tag of the view                                                                                                         | `string`                                                           | div     |
+    | always                  | always show scrollbar                                                                                                           | `boolean`                                                          | false   |
+    | min-size                | minimum size of scrollbar                                                                                                       | `number`                                                           | 20      |
+    | id                      | id of view                                                                                                                      | `string`                                                           | —       |
+    | shadow                  | set the darkness of the scroll shadow                                                                                           | `dark` \| `light`                                                  | —       |
+    | role `a11y`             | role of view                                                                                                                    | `string`                                                           | —       |
+    | aria-label `a11y`       | aria-label of view                                                                                                              | `string`                                                           | —       |
+    | aria-orientation `a11y` | aria-orientation of view                                                                                                        | `horizontal` \| `vertical`                                         | —       |
+
+    ### Events
+
+    | Name   | Description                                           | Type                                                  |
+    | ------ | ----------------------------------------------------- | ----------------------------------------------------- |
+    | scroll | triggers when scrolling, return distance of scrolling | `({ scrollLeft: number, scrollTop: number }) => void` |
+
+    ### Slots
+
+    | Name    | Description               |
+    | ------- | ------------------------- |
+    | default | customize default content |
+
+    ### Exposes
+
+    | Name          | Description                                | Type                                                            |
+    | ------------- | ------------------------------------------ | --------------------------------------------------------------- |
+    | handleScroll  | handle scroll event                        | `() => void`                                                    |
+    | scrollTo      | scrolls to a particular set of coordinates | `(options: ScrollToOptions \| number, yCoord?: number) => void` |
+    | setScrollTop  | Set distance to scroll top                 | `(scrollTop: number) => void`                                   |
+    | setScrollLeft | Set distance to scroll left                | `(scrollLeft: number) => void`                                  |
+    | update        | update scrollbar state manually            | `() => void`                                                    |
+    | wrapRef       | scrollbar wrap ref                         | `Ref<HTMLDivElement>`                                           |
+
+</div>
