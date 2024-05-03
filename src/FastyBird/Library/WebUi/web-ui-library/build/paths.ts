@@ -5,7 +5,7 @@ const dir = dirname(fileURLToPath(import.meta.url));
 
 export const pathRoot = resolve(dir, '..');
 export const pathSrc = resolve(pathRoot, 'src');
-export const packagesPathRoot = resolve(pathRoot, '..');
+export const packagesPathRoot = resolve(pathRoot, '..', 'packages');
 
 export const packages: { [key: string]: { name: string; src: string; dest: string; relativeDest: string } } = {
 	components: {

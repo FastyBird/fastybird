@@ -15,11 +15,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "storybook:serve": "storybook dev -p 6006",
-    "storybook:serve:doc": "storybook dev -p 6006 --docs",
-    "storybook:build": "storybook build",
-    "storybook:build:doc": "storybook build --docs",
-    "storybook:deploy": "storybook-to-ghpages"
+    "dev": "storybook dev -p 6006",
+    "dev:doc": "storybook dev -p 6006 --docs",
+    "build": "storybook build",
+    "build:doc": "storybook build --docs",
+    "deploy": "storybook-to-ghpages"
   },
   "dependencies": {
     "@fastybird/web-ui-components": "1.0.0-dev.20",
@@ -36,6 +36,7 @@
     "@storybook/addon-interactions": "^8.0",
     "@storybook/addon-links": "^8.0",
     "@storybook/blocks": "^8.0",
+    "@storybook/storybook-deployer": "^2.8",
     "@storybook/manager-api": "^8.0",
     "@storybook/test": "^8.0",
     "@storybook/vue3": "^8.0",

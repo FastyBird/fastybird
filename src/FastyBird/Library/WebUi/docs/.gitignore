@@ -1,5 +1,5 @@
-/dist
 /node_modules
+/storybook-static
 yarn.lock
 tsconfig.tsbuildinfo
 
