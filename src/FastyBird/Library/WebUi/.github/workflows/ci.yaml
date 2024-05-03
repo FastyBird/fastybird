@@ -418,7 +418,7 @@ jobs:
         uses: "actions/cache@v3"
         with:
           path: "${{ steps.yarn-cache-dir-path.outputs.dir }}"
-          key: "${{ runner.os }}-node-modules-${{ hashFiles("yarn.lock") }}"
+          key: "${{ runner.os }}-node-modules-${{ hashFiles('yarn.lock') }}"
           restore-keys: "${{ runner.os }}-node-modules-"
 
       - name: "Install dependencies"
