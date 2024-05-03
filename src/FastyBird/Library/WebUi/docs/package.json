@@ -20,8 +20,6 @@
     "build": "storybook build",
     "build:doc": "storybook build --docs",
     "deploy": "storybook-to-ghpages",
-    "lint:js": "eslint src",
-    "lint:js:fix": "eslint src --fix",
     "pretty": "yarn pretty:write && yarn pretty:check",
     "pretty:check": "prettier src --check",
     "pretty:write": "prettier src --write"
