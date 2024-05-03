@@ -15,6 +15,10 @@ export default [
 			parserOptions: {
 				parser: '@typescript-eslint/parser'
 			},
+			globals: {
+				'GlobalEventHandlers': 'readonly',
+				'ScrollToOptions': 'readonly'
+			},
 		},
 		rules: {
 			'lines-between-class-members': [
