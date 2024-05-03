@@ -17,34 +17,41 @@ Show animation while loading data.
 
 You can customize loading text, loading spinner or even use your own icon.
 
-<Canvas withToolbar={true} of={LoadingBoxStories.WithIcon} />
+<Canvas
+	withToolbar={true}
+	of={LoadingBoxStories.WithIcon}
+/>
 
 ## Custom logo
 
 And you could also use your own logo
 
-<Canvas withToolbar={true} of={LoadingBoxStories.CustomLogo} />
+<Canvas
+	withToolbar={true}
+	of={LoadingBoxStories.CustomLogo}
+/>
 
-***
+---
 
 ## Loading Box API
 
 <div style={{ marginTop: '30px' }}>
 	### Attributes
 
-	| Name              | Description                                                             | Type                                                                     | Default       |
-	| ----------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------- |
-	| size              | loading box size                                                        | `large` \| `default` \| `small`                                          | `default`     |
-	| variant           | loading box variant                                                     | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`   | `default`     |
-	| show              | determine whether loading box is shown                                  | `boolean`                                                                | false         |
-	| full-screen       | determine whether loading box is stretched to full screen               | `boolean`                                                                | false         |
-	| animation         | determine whether loading box is shown with animation effect            | `boolean`                                                                | false         |
-	| spinner           | customize loading box spinner component                                 | `string` \| `boolean` \| `Component`                                     | true          |
+    | Name              | Description                                                             | Type                                                                     | Default       |
+    | ----------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------- |
+    | size              | loading box size                                                        | `large` \| `default` \| `small`                                          | `default`     |
+    | variant           | loading box variant                                                     | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`   | `default`     |
+    | show              | determine whether loading box is shown                                  | `boolean`                                                                | false         |
+    | full-screen       | determine whether loading box is stretched to full screen               | `boolean`                                                                | false         |
+    | animation         | determine whether loading box is shown with animation effect            | `boolean`                                                                | false         |
+    | spinner           | customize loading box spinner component                                 | `string` \| `boolean` \| `Component`                                     | true          |
 
-	### Slots
+    ### Slots
 
-	| Name    | Description                                      |
-	| ------- | ------------------------------------------------ |
-	| default | optional slot representing loading box content   |
-	| icon    | customize icon component                         |
+    | Name    | Description                                      |
+    | ------- | ------------------------------------------------ |
+    | default | optional slot representing loading box content   |
+    | icon    | customize icon component                         |
+
 </div>

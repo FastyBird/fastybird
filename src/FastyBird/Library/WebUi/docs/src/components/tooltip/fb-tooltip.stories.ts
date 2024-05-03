@@ -5,6 +5,8 @@ import { FbButton, FbTooltip } from '@fastybird/web-ui-components';
 
 import './fb-tooltip.stories.scss';
 
+import type { Ref } from 'vue';
+
 const meta: Meta<typeof FbTooltip> = {
 	component: FbTooltip,
 	title: 'Components/Feedback/Tooltip',
@@ -315,7 +317,9 @@ const disabled = ref(false);
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTooltip, FbButton },
-		setup: () => {
+		setup: (): {
+			disabled: Ref<boolean>;
+		} => {
 			const disabled = ref(false);
 
 			return {
@@ -425,7 +429,16 @@ onUnmounted(() => {
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTooltip, FbButton },
-		setup: () => {
+		setup: (): {
+			visible: Ref<boolean>;
+			triggerRef: Ref<{ getBoundingClientRect: () => { top: number; left: number; bottom: number; right: number } }>;
+			position: Ref<{
+				top: number;
+				left: number;
+				bottom: number;
+				right: number;
+			}>;
+		} => {
 			const visible = ref(false);
 
 			const triggerRef = ref({
@@ -441,7 +454,7 @@ onUnmounted(() => {
 				right: 0,
 			});
 
-			const mousemoveHandler = (e) => {
+			const mousemoveHandler = (e): void => {
 				position.value = DOMRect.fromRect({
 					width: 0,
 					height: 0,
@@ -532,7 +545,11 @@ const visible = ref(false);
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTooltip, FbButton },
-		setup: () => {
+		setup: (): {
+			buttonRef: Ref<HTMLElement | undefined>;
+			tooltipRef: Ref<HTMLElement | undefined>;
+			visible: Ref<boolean>;
+		} => {
 			const buttonRef = ref();
 			const tooltipRef = ref();
 
@@ -607,7 +624,9 @@ const visible = ref(false);
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTooltip, FbButton },
-		setup: () => {
+		setup: (): {
+			visible: Ref<boolean>;
+		} => {
 			const visible = ref(false);
 
 			return {

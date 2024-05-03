@@ -20,12 +20,15 @@ The modal component displays a customizable modal dialog box.
 To show the modal, set the `model-value` or use `v-model` with a `Boolean` value. The modal consists of three sections: `header`, `body`, and `footer`.
 You can optionally define a title using the `title` property, which is empty by default.
 
-<Canvas of={ModalStories.BasicUsage} class={'test'} />
+<Canvas
+	of={ModalStories.BasicUsage}
+	class={'test'}
+/>
 
 > **TIP:**
-The `before-close` event handler triggers only when the user clicks the close icon or the backdrop. If you have buttons in the footer slot that close
-the modal, you can achieve the same behavior by implementing the desired actions within the click event handlers of those buttons, rather than
-relying on the before-close event.
+> The `before-close` event handler triggers only when the user clicks the close icon or the backdrop. If you have buttons in the footer slot that close
+> the modal, you can achieve the same behavior by implementing the desired actions within the click event handlers of those buttons, rather than
+> relying on the before-close event.
 
 ## Custom Content
 
@@ -79,76 +82,77 @@ The modal header can be extended with additional descriptions, which can be usef
 
 <Canvas of={ModalStories.WithDescription} />
 
-***
+---
 
 ## Modal API
 
 <div style={{ marginTop: '30px' }}>
 
-	### Attributes
+    ### Attributes
 
-	| Name                       | Description                                                                                          | Type                                                                     | Default   |
-	| -------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------- |
-	| model-value / v-model      | visibility of modal                                                                                  | `boolean`                                                                | —         |
-	| variant                    | modal header and button variant                                                                      | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`    | `primary` |
-	| layout                     | modal layout                                                                                         | `default` \| `tablet` \| `phone`                                         | `default` |
-	| title                      | title of modal. Can also be passed with a named slot (see the following table)                       | `string`                                                                 | —         |
-	| subtitle                   | subtitle of modal. Can also be passed with a named slot (see the following table)                    | `string`                                                                 | —         |
-	| icon                       | icon of modal. Can also be passed with a named slot (see the following table)                        | `string` \| `Component`                                                  | —         |
-	| width                      | width of modal, default is 50%                                                                       | `string` \| `number`                                                     | —         |
-	| fullscreen                 | whether the modal takes up full screen                                                               | `boolean`                                                                | false     |
-	| top                        | value for `margin-top` of modal CSS, default is 15vh                                                 | `string`                                                                 | —         |
-	| show-header                | whether a modal header is displayed                                                                  | `boolean`                                                                | true      |
-	| show-footer                | whether a modal footer is displayed                                                                  | `boolean`                                                                | true      |
-	| backdrop                   | whether a mask is displayed                                                                          | `boolean`                                                                | true      |
-	| custom-class               | custom class names for backdrop                                                                      | `string`                                                                 | —         |
-	| append-to-body             | whether to append modal itself to body. A nested modal should have this property set to `true`       | `boolean`                                                                | false     |
-	| append-to                  | which element the modal appends to. Will override `append-to-body`                                   | `string`                                                                 | `body`    |
-	| lock-scroll                | whether scroll of body is disabled while modal is displayed                                          | `boolean`                                                                | true      |
-	| open-delay                 | the time in milliseconds before open                                                                 | `number`                                                                 | 0         |
-	| close-delay                | the time in milliseconds before close                                                                | `number`                                                                 | 0         |
-	| close-on-click-backdrop    | whether the modal can be closed by clicking the backdrop                                             | `boolean`                                                                | true      |
-	| close-on-press-escape      | whether the modal can be closed by pressing ESC                                                      | `boolean`                                                                | true      |
-	| show-close                 | whether to show a close button                                                                       | `boolean`                                                                | true      |
-	| before-close               | callback before modal closes, and it will prevent modal from closing, use done to close the modal    | `(done: DoneFn) => void`                                                 | —         |
-	| show-left-btn              | whether to show a left action button                                                                 | `boolean`                                                                | true      |
-	| left-btn-label             | left action button label                                                                             | `string`                                                                 | `Close`   |
-	| show-right-btn             | whether to show a right action button                                                                | `boolean`                                                                | true      |
-	| right-btn-label            | right action button label                                                                            | `string`                                                                 | `Ok`      |
-	| draggable                  | enable dragging feature for modal                                                                    | `boolean`                                                                | false     |
-	| overflow                   | draggable modal can overflow the viewport                                                            | `boolean`                                                                | false     |
-	| center                     | whether to align the header and footer in center                                                     | `boolean`                                                                | false     |
-	| align-center               | whether to align the modal both horizontally and vertically                                          | `boolean`                                                                | false     |
-	| closable                   | whether enable or disable modal close action                                                         | `boolean`                                                                | true      |
-	| destroy-on-close           | destroy elements in modal when closed                                                                | `boolean`                                                                | false     |
-	| close-icon                 | custom close icon, default is Close                                                                  | `string` \| `Component`                                                  | —         |
-	| z-index                    | same as z-index in native CSS, z-order of modal                                                      | `number`                                                                 | —         |
-	| header-aria-level `a11y`   | header's `aria-level` attribute                                                                      | `string`                                                                 | 2         |
+    | Name                       | Description                                                                                          | Type                                                                     | Default   |
+    | -------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | --------- |
+    | model-value / v-model      | visibility of modal                                                                                  | `boolean`                                                                | —         |
+    | variant                    | modal header and button variant                                                                      | `primary` \| `default` \| `info` \| `success` \| `warning` \| `danger`    | `primary` |
+    | layout                     | modal layout                                                                                         | `default` \| `tablet` \| `phone`                                         | `default` |
+    | title                      | title of modal. Can also be passed with a named slot (see the following table)                       | `string`                                                                 | —         |
+    | subtitle                   | subtitle of modal. Can also be passed with a named slot (see the following table)                    | `string`                                                                 | —         |
+    | icon                       | icon of modal. Can also be passed with a named slot (see the following table)                        | `string` \| `Component`                                                  | —         |
+    | width                      | width of modal, default is 50%                                                                       | `string` \| `number`                                                     | —         |
+    | fullscreen                 | whether the modal takes up full screen                                                               | `boolean`                                                                | false     |
+    | top                        | value for `margin-top` of modal CSS, default is 15vh                                                 | `string`                                                                 | —         |
+    | show-header                | whether a modal header is displayed                                                                  | `boolean`                                                                | true      |
+    | show-footer                | whether a modal footer is displayed                                                                  | `boolean`                                                                | true      |
+    | backdrop                   | whether a mask is displayed                                                                          | `boolean`                                                                | true      |
+    | custom-class               | custom class names for backdrop                                                                      | `string`                                                                 | —         |
+    | append-to-body             | whether to append modal itself to body. A nested modal should have this property set to `true`       | `boolean`                                                                | false     |
+    | append-to                  | which element the modal appends to. Will override `append-to-body`                                   | `string`                                                                 | `body`    |
+    | lock-scroll                | whether scroll of body is disabled while modal is displayed                                          | `boolean`                                                                | true      |
+    | open-delay                 | the time in milliseconds before open                                                                 | `number`                                                                 | 0         |
+    | close-delay                | the time in milliseconds before close                                                                | `number`                                                                 | 0         |
+    | close-on-click-backdrop    | whether the modal can be closed by clicking the backdrop                                             | `boolean`                                                                | true      |
+    | close-on-press-escape      | whether the modal can be closed by pressing ESC                                                      | `boolean`                                                                | true      |
+    | show-close                 | whether to show a close button                                                                       | `boolean`                                                                | true      |
+    | before-close               | callback before modal closes, and it will prevent modal from closing, use done to close the modal    | `(done: DoneFn) => void`                                                 | —         |
+    | show-left-btn              | whether to show a left action button                                                                 | `boolean`                                                                | true      |
+    | left-btn-label             | left action button label                                                                             | `string`                                                                 | `Close`   |
+    | show-right-btn             | whether to show a right action button                                                                | `boolean`                                                                | true      |
+    | right-btn-label            | right action button label                                                                            | `string`                                                                 | `Ok`      |
+    | draggable                  | enable dragging feature for modal                                                                    | `boolean`                                                                | false     |
+    | overflow                   | draggable modal can overflow the viewport                                                            | `boolean`                                                                | false     |
+    | center                     | whether to align the header and footer in center                                                     | `boolean`                                                                | false     |
+    | align-center               | whether to align the modal both horizontally and vertically                                          | `boolean`                                                                | false     |
+    | closable                   | whether enable or disable modal close action                                                         | `boolean`                                                                | true      |
+    | destroy-on-close           | destroy elements in modal when closed                                                                | `boolean`                                                                | false     |
+    | close-icon                 | custom close icon, default is Close                                                                  | `string` \| `Component`                                                  | —         |
+    | z-index                    | same as z-index in native CSS, z-order of modal                                                      | `number`                                                                 | —         |
+    | header-aria-level `a11y`   | header's `aria-level` attribute                                                                      | `string`                                                                 | 2         |
 
-	### Slots
+    ### Slots
 
-	| Name                | Description                                                                                           |
-	| ------------------- | ----------------------------------------------------------------------------------------------------- |
-	| —                   | content of modal                                                                                      |
-	| header              | content of the modal header for replacing whole modal header content with custom one                  |
-	| footer              | content of the modal footer for replacing whole modal footer content with custom one                  |
-	| content             | content of the modal footer for replacing whole modal content with custom one                         |
-	| title               | title of the modal                                                                                    |
-	| subtitle            | subtitle of the modal                                                                                 |
-	| icon                | modal header icon                                                                                     |
-	| left-button         | slot for using custom left button used as `Close` action                                              |
-	| right-button        | slot for using custom right button used as `Ok` action                                                |
+    | Name                | Description                                                                                           |
+    | ------------------- | ----------------------------------------------------------------------------------------------------- |
+    | —                   | content of modal                                                                                      |
+    | header              | content of the modal header for replacing whole modal header content with custom one                  |
+    | footer              | content of the modal footer for replacing whole modal footer content with custom one                  |
+    | content             | content of the modal footer for replacing whole modal content with custom one                         |
+    | title               | title of the modal                                                                                    |
+    | subtitle            | subtitle of the modal                                                                                 |
+    | icon                | modal header icon                                                                                     |
+    | left-button         | slot for using custom left button used as `Close` action                                              |
+    | right-button        | slot for using custom right button used as `Ok` action                                                |
 
-	### Events
+    ### Events
 
-	| Name             | Description                                       | Type         |
-	| ---------------- | ------------------------------------------------- | ------------ |
-	| open             | triggers when the modal opens                     | `() => void` |
-	| opened           | triggers when the modal opening animation ends    | `() => void` |
-	| close            | triggers when the modal closes                    | `() => void` |
-	| closed           | triggers when the modal closing animation ends    | `() => void` |
-	| open-auto-focus  | triggers after modal opens and content focused    | `() => void` |
-	| close-auto-focus | triggers after modal closed and content focused   | `() => void` |
-	| left-clicked     | triggers when the modal left button is triggered  | `() => void` |
-	| right-clicked    | triggers when the modal right button is triggered | `() => void` |
+    | Name             | Description                                       | Type         |
+    | ---------------- | ------------------------------------------------- | ------------ |
+    | open             | triggers when the modal opens                     | `() => void` |
+    | opened           | triggers when the modal opening animation ends    | `() => void` |
+    | close            | triggers when the modal closes                    | `() => void` |
+    | closed           | triggers when the modal closing animation ends    | `() => void` |
+    | open-auto-focus  | triggers after modal opens and content focused    | `() => void` |
+    | close-auto-focus | triggers after modal closed and content focused   | `() => void` |
+    | left-clicked     | triggers when the modal left button is triggered  | `() => void` |
+    | right-clicked    | triggers when the modal right button is triggered | `() => void` |
+
 </div>

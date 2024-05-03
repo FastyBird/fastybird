@@ -72,7 +72,7 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		setup: () => {
 			const activeName = ref('first');
 
-			const handleClick = (tab: TabsPaneContext, event: Event) => {
+			const handleClick = (tab: TabsPaneContext, event: Event): void => {
 				console.log(tab, event);
 			};
 
@@ -142,7 +142,7 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		setup: () => {
 			const activeName = ref('first');
 
-			const handleClick = (tab: TabsPaneContext, event: Event) => {
+			const handleClick = (tab: TabsPaneContext, event: Event): void => {
 				console.log(tab, event);
 			};
 
@@ -216,7 +216,7 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		setup: () => {
 			const activeName = ref('first');
 
-			const handleClick = (tab: TabsPaneContext, event: Event) => {
+			const handleClick = (tab: TabsPaneContext, event: Event): void => {
 				console.log(tab, event);
 			};
 
@@ -502,7 +502,7 @@ const handleTabsEdit = (
 				},
 			]);
 
-			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add') => {
+			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add'): void => {
 				if (action === 'add') {
 					const newTabName = `${++tabIndex}`;
 
@@ -519,7 +519,7 @@ const handleTabsEdit = (
 					let activeName = editableTabsValue.value;
 
 					if (activeName === targetName) {
-						tabs.forEach((tab, index) => {
+						tabs.forEach((tab, index): void => {
 							if (tab.name === targetName) {
 								const nextTab = tabs[index + 1] || tabs[index - 1];
 
@@ -531,7 +531,7 @@ const handleTabsEdit = (
 					}
 
 					editableTabsValue.value = activeName;
-					editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
+					editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
 				}
 			};
 
@@ -681,7 +681,7 @@ const handleTabsEdit = (
 				},
 			]);
 
-			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add') => {
+			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add'): void => {
 				if (action === 'add') {
 					const newTabName = `${++tabIndex}`;
 
@@ -698,7 +698,7 @@ const handleTabsEdit = (
 					let activeName = editableTabsValue.value;
 
 					if (activeName === targetName) {
-						tabs.forEach((tab, index) => {
+						tabs.forEach((tab, index): void => {
 							if (tab.name === targetName) {
 								const nextTab = tabs[index + 1] || tabs[index - 1];
 
@@ -710,7 +710,7 @@ const handleTabsEdit = (
 					}
 
 					editableTabsValue.value = activeName;
-					editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
+					editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
 				}
 			};
 
@@ -859,7 +859,7 @@ const removeTab = (targetName: string) => {
 				},
 			]);
 
-			const addTab = (targetName: string) => {
+			const addTab = (): void => {
 				const newTabName = `${++tabIndex}`;
 
 				editableTabs.value.push({
@@ -870,13 +870,13 @@ const removeTab = (targetName: string) => {
 				editableTabsValue.value = newTabName;
 			};
 
-			const removeTab = (targetName: string) => {
+			const removeTab = (targetName: string): void => {
 				const tabs = editableTabs.value;
 
 				let activeName = editableTabsValue.value;
 
 				if (activeName === targetName) {
-					tabs.forEach((tab, index) => {
+					tabs.forEach((tab, index): void => {
 						if (tab.name === targetName) {
 							const nextTab = tabs[index + 1] || tabs[index - 1];
 
@@ -888,7 +888,7 @@ const removeTab = (targetName: string) => {
 				}
 
 				editableTabsValue.value = activeName;
-				editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
+				editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
 			};
 
 			return {
@@ -902,7 +902,7 @@ const removeTab = (targetName: string) => {
 		template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__controls">
-		<fb-button size="small" @click="addTab(editableTabsValue)">
+		<fb-button size="small" @click="addTab">
 			Add new tab
 		</fb-button>
 	</div>

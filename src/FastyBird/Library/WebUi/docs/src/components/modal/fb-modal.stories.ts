@@ -3,7 +3,7 @@ import { reactive, ref } from 'vue';
 import { Meta, StoryObj } from '@storybook/vue3';
 import { action } from '@storybook/addon-actions';
 import { FasCircleXmark, FasImage, FasKeyboard } from '@fastybird/web-ui-icons';
-import { FbModal, FbButton, FbIcon, FbForm, FbFormItem, FbInput, FbSelect, FbOption } from '@fastybird/web-ui-components';
+import { FbModal, FbButton, FbIcon, FbForm, FbFormItem, FbInput } from '@fastybird/web-ui-components';
 import { VariantTypes, LayoutTypes } from '@fastybird/web-ui-constants';
 
 import './fb-modal.stories.scss';

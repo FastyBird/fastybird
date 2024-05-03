@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/vue3';
 import { action } from '@storybook/addon-actions';
-import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from '@fastybird/web-ui-icons';
-import { FbBottomNavigation, FbBottomNavigationHeading, FbButton, FbIcon } from '@fastybird/web-ui-components';
+import { FbBottomNavigation, FbBottomNavigationHeading, FbButton } from '@fastybird/web-ui-components';
 
 import './fb-bottom-navigation.stories.scss';
 import { ref } from 'vue';

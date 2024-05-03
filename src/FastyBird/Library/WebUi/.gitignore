@@ -1,8 +1,5 @@
-/dist
 /node_modules
-/storybook-static
 .DS_Store
-composer.lock
 yarn.lock
 tsconfig.tsbuildinfo
 

@@ -15,7 +15,10 @@ The setup of Message is very similar to notification, so parts of the options wo
 combined with notification doc to understand it. FastyBird UI library has registered a `$message` method for invoking. Message can take a string or a VNode as parameter,
 and it will be shown as the main body.
 
-<Canvas withToolbar={true} of={MessageStories.BasicUsage} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.BasicUsage}
+/>
 
 ## Types
 
@@ -25,7 +28,10 @@ When you need more customizations, Message component can also take an object as 
 and its default is `info`. In such cases the main body is passed in as the value of message. Also, we have registered methods for different types, so you
 can directly call it without passing a type like `open4`.
 
-<Canvas withToolbar={true} of={MessageStories.Types} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.Types}
+/>
 
 ## Closable
 
@@ -34,13 +40,19 @@ A close button can be added.
 A default Message cannot be closed manually. If you need a closable message, you can set `show-close` field. Besides, same as notification, message
 has a controllable `duration`. Default duration is 3000 ms, and it won't disappear when set to 0.
 
-<Canvas withToolbar={true} of={MessageStories.Closable} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.Closable}
+/>
 
 ## Centered Text
 
 Use the `center` property to center the text.
 
-<Canvas withToolbar={true} of={MessageStories.CenteredText} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.CenteredText}
+/>
 
 ## Use HTML String
 
@@ -49,9 +61,12 @@ Use the `center` property to center the text.
 Set `dangerouslyUseHTMLString` to `true` and `message` will be treated as an HTML string.
 
 > **WARNING:**
-Although `message` property supports HTML strings, dynamically rendering arbitrary HTML on your website can be very dangerous because it can easily lead to [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). So when `dangerouslyUseHTMLString` is on, please make sure the content of `message` is trusted, and **never** assign `message` to user-provided content.
+> Although `message` property supports HTML strings, dynamically rendering arbitrary HTML on your website can be very dangerous because it can easily lead to [XSS attacks](https://en.wikipedia.org/wiki/Cross-site_scripting). So when `dangerouslyUseHTMLString` is on, please make sure the content of `message` is trusted, and **never** assign `message` to user-provided content.
 
-<Canvas withToolbar={true} of={MessageStories.HtmlContent} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.HtmlContent}
+/>
 
 ## Grouping
 
@@ -59,7 +74,10 @@ Merge messages with the same content.
 
 Set `grouping` to true and the same content of `message` will be merged.
 
-<Canvas withToolbar={true} of={MessageStories.Grouping} />
+<Canvas
+	withToolbar={true}
+	of={MessageStories.Grouping}
+/>
 
 ## Global method
 
@@ -68,7 +86,7 @@ FastyBird UI library has added a global method `$message` for `app.config.global
 ## Local import
 
 ```ts
-import { FbMessage } from '@fastybird/web-ui-library'
+import { FbMessage } from '@fastybird/web-ui-library';
 ```
 
 In this case you should call `FbMessage(options)`. We have also registered methods for different types, e.g. `FbMessage.success(options)`. You can call `FbMessage.closeAll()` to manually close all the instances.
@@ -80,46 +98,47 @@ Message accepts a `context` as second parameter of the message constructor which
 You can use it like this:
 
 > **TIP:**
-If you globally registered FbMessage component, it will automatically inherit your app context.
+> If you globally registered FbMessage component, it will automatically inherit your app context.
 
 ```ts
-import { getCurrentInstance } from 'vue'
-import { FbMessage } from '@fastybird/web-ui-library'
+import { getCurrentInstance } from 'vue';
+import { FbMessage } from '@fastybird/web-ui-library';
 
 // in your setup method
-const { appContext } = getCurrentInstance()!
+const { appContext } = getCurrentInstance()!;
 
-FbMessage({}, appContext)
+FbMessage({}, appContext);
 ```
 
-***
+---
 
 ## Message API
 
 <div style={{ marginTop: '30px' }}>
 	### Options
 
-	| Name                     | Description                                                                                          | Type                                                 | Default |
-	| ------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------- |
-	| message                  | message text                                                                                         | `string` \| `VNode` \| `() => VNode`                 | —       |
-	| type                     | message type                                                                                         | `info` \| `success` \| `warning` \| `error`          | `info`  |
-	| icon                     | custom icon component, overrides `type`                                                              | `string` \| `Component`                              | —       |
-	| dangerouslyUseHTMLString | whether `message` is treated as HTML string                                                          | `boolean`                                            | false   |
-	| customClass              | custom class name for Message                                                                        | `string`                                             | —       |
-	| duration                 | display duration, millisecond. If set to 0, it will not turn off automatically                       | `number`                                             | 3000    |
-	| showClose                | whether to show a close button                                                                       | `boolean`                                            | false   |
-	| center                   | whether to center the text                                                                           | `boolean`                                            | false   |
-	| onClose                  | callback function when closed with the message instance as the parameter                             | `() => void`                                         | —       |
-	| offset                   | set the distance to the top of viewport                                                              | `number`                                             | 16      |
-	| appendTo                 | set the root element for the message, default to `document.body`                                     | `string` \| `HTMLElement`                            | —       |
-	| grouping                 | merge messages with the same content, type of VNode message is not supported                         | `boolean`                                            | false   |
-	| repeatNum                | the number of repetitions, similar to badge, is used as the initial number when used with `grouping` | `number`                                             | 1       |
+    | Name                     | Description                                                                                          | Type                                                 | Default |
+    | ------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------- |
+    | message                  | message text                                                                                         | `string` \| `VNode` \| `() => VNode`                 | —       |
+    | type                     | message type                                                                                         | `info` \| `success` \| `warning` \| `error`          | `info`  |
+    | icon                     | custom icon component, overrides `type`                                                              | `string` \| `Component`                              | —       |
+    | dangerouslyUseHTMLString | whether `message` is treated as HTML string                                                          | `boolean`                                            | false   |
+    | customClass              | custom class name for Message                                                                        | `string`                                             | —       |
+    | duration                 | display duration, millisecond. If set to 0, it will not turn off automatically                       | `number`                                             | 3000    |
+    | showClose                | whether to show a close button                                                                       | `boolean`                                            | false   |
+    | center                   | whether to center the text                                                                           | `boolean`                                            | false   |
+    | onClose                  | callback function when closed with the message instance as the parameter                             | `() => void`                                         | —       |
+    | offset                   | set the distance to the top of viewport                                                              | `number`                                             | 16      |
+    | appendTo                 | set the root element for the message, default to `document.body`                                     | `string` \| `HTMLElement`                            | —       |
+    | grouping                 | merge messages with the same content, type of VNode message is not supported                         | `boolean`                                            | false   |
+    | repeatNum                | the number of repetitions, similar to badge, is used as the initial number when used with `grouping` | `number`                                             | 1       |
 
-	### Methods
+    ### Methods
 
-	`Message` and `this.$message` returns the current Message instance. To manually close the instance, you can call `close` on it.
+    `Message` and `this.$message` returns the current Message instance. To manually close the instance, you can call `close` on it.
 
-	| Name  | Description       | Type           |
-	| ----- | ----------------- | -------------- |
-	| close | close the Message | `() => void`   |
+    | Name  | Description       | Type           |
+    | ----- | ----------------- | -------------- |
+    | close | close the Message | `() => void`   |
+
 </div>

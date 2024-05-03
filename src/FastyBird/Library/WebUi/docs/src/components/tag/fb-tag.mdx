@@ -54,36 +54,37 @@ where the check-tag component comes into play. You can use the `type` property t
 
 <Canvas of={TagStories.Checkable} />
 
-***
+---
 
 ## Tag API
 
 <div style={{ marginTop: '30px' }}>
 	### Attributes
 
-	| Name                | Description                          | Type                                                          | Default   |
-	| ------------------- | ------------------------------------ | ------------------------------------------------------------- | --------- |
-	| type                | type of Tag                          | `primary` \| `success` \| `info` \| `warning` \| `danger`     | `primary` |
-	| closable            | whether Tag can be removed           | `boolean`                                                     | false     |
-	| disable-transitions | whether to disable animations        | `boolean`                                                     | false     |
-	| hit                 | whether Tag has a highlighted border | `boolean`                                                     | false     |
-	| color               | background color of the Tag          | `string`                                                      | —         |
-	| size                | size of Tag                          | `large` \| `default` \| `small`                               | —         |
-	| effect              | theme of Tag                         | `dark` \| `light` \| `plain`                                  | `light`   |
-	| round               | whether Tag is rounded               | `boolean`                                                     | false     |
+    | Name                | Description                          | Type                                                          | Default   |
+    | ------------------- | ------------------------------------ | ------------------------------------------------------------- | --------- |
+    | type                | type of Tag                          | `primary` \| `success` \| `info` \| `warning` \| `danger`     | `primary` |
+    | closable            | whether Tag can be removed           | `boolean`                                                     | false     |
+    | disable-transitions | whether to disable animations        | `boolean`                                                     | false     |
+    | hit                 | whether Tag has a highlighted border | `boolean`                                                     | false     |
+    | color               | background color of the Tag          | `string`                                                      | —         |
+    | size                | size of Tag                          | `large` \| `default` \| `small`                               | —         |
+    | effect              | theme of Tag                         | `dark` \| `light` \| `plain`                                  | `light`   |
+    | round               | whether Tag is rounded               | `boolean`                                                     | false     |
 
-	### Events
+    ### Events
 
-	| Name  | Description                  | Type                     |
-	| ----- | ---------------------------- | ------------------------ |
-	| click | triggers when Tag is clicked | `(evt: UiEvent) => void` |
-	| close | triggers when Tag is removed | `(evt: UiEvent) => void` |
+    | Name  | Description                  | Type                     |
+    | ----- | ---------------------------- | ------------------------ |
+    | click | triggers when Tag is clicked | `(evt: UiEvent) => void` |
+    | close | triggers when Tag is removed | `(evt: UiEvent) => void` |
 
-	### Slots
+    ### Slots
 
-	| Name    | Description               |
-	| ------- | ------------------------- |
-	| default | customize default content |
+    | Name    | Description               |
+    | ------- | ------------------------- |
+    | default | customize default content |
+
 </div>
 
 ## Check Tag API
@@ -91,20 +92,21 @@ where the check-tag component comes into play. You can use the `type` property t
 <div style={{ marginTop: '30px' }}>
 	### Attributes
 
-	| Name                      | Description      | Type                                                        | Default   |
-	| ------------------------- | ---------------- | ----------------------------------------------------------- | --------- |
-	| checked / v-model:checked | is checked       | `boolean`                                                   | false     |
-	| type                      | type of CheckTag | `primary` \| `success` \| `info` \| `warning` \| `danger`   | `primary` |
+    | Name                      | Description      | Type                                                        | Default   |
+    | ------------------------- | ---------------- | ----------------------------------------------------------- | --------- |
+    | checked / v-model:checked | is checked       | `boolean`                                                   | false     |
+    | type                      | type of CheckTag | `primary` \| `success` \| `info` \| `warning` \| `danger`   | `primary` |
 
-	### Events
+    ### Events
 
-	| Name   | Description                        | Type                       |
-	| ------ | ---------------------------------- | -------------------------- |
-	| change | triggers when Check Tag is clicked | `(value: boolean) => void` |
+    | Name   | Description                        | Type                       |
+    | ------ | ---------------------------------- | -------------------------- |
+    | change | triggers when Check Tag is clicked | `(value: boolean) => void` |
 
-	### Slots
+    ### Slots
 
-	| Name    | Description               |
-	| ------- | ------------------------- |
-	| default | customize default content |
+    | Name    | Description               |
+    | ------- | ------------------------- |
+    | default | customize default content |
+
 </div>

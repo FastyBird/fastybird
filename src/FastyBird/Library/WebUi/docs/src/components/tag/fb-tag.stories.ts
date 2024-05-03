@@ -6,6 +6,8 @@ import { ComponentSizeTypes, EffectTypes, VariantTypes } from '@fastybird/web-ui
 
 import './fb-tag.stories.scss';
 
+import type { Ref } from 'vue';
+
 const meta: Meta<typeof FbTag> = {
 	component: FbTag,
 	title: 'Components/Data/Tag',
@@ -148,17 +150,25 @@ const handleInputConfirm = () => {
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTag, FbButton, FbInput },
-		setup: () => {
+		setup: (): {
+			inputValue: Ref<string>;
+			dynamicTags: Ref<string[]>;
+			inputVisible: Ref<boolean>;
+			InputRef: Ref<InstanceType<typeof FbInput>>;
+			handleClose: () => void;
+			showInput: () => void;
+			handleInputConfirm: () => void;
+		} => {
 			const inputValue = ref('');
 			const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3']);
 			const inputVisible = ref(false);
 			const InputRef = ref<InstanceType<typeof FbInput>>();
 
-			const handleClose = (tag: string) => {
+			const handleClose = (tag: string): void => {
 				dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
 			};
 
-			const showInput = async () => {
+			const showInput = async (): Promise<void> => {
 				inputVisible.value = true;
 
 				await nextTick();
@@ -166,7 +176,7 @@ const handleInputConfirm = () => {
 				InputRef.value!.input!.focus();
 			};
 
-			const handleInputConfirm = () => {
+			const handleInputConfirm = (): void => {
 				if (inputValue.value) {
 					dynamicTags.value.push(inputValue.value);
 				}
@@ -303,7 +313,9 @@ const items = ref<Array<Item>>([
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTag, FbButton, FbInput },
-		setup: () => {
+		setup: (): {
+			items: Ref<Array<{ variant: TagProps['variant']; label: string }>>;
+		} => {
 			type Item = { variant: TagProps['variant']; label: string };
 
 			const items = ref<Array<Item>>([
@@ -418,7 +430,9 @@ const items = ref<Array<Item>>([
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbTag },
-		setup: () => {
+		setup: (): {
+			items: Ref<Array<{ variant: TagProps['variant']; label: string }>>;
+		} => {
 			type Item = { variant: TagProps['variant']; label: string };
 
 			const items = ref<Array<Item>>([
@@ -541,7 +555,20 @@ const onChange5 = (status: boolean): void => {
 	tags: ['hideInSidebar'],
 	render: () => ({
 		components: { FbCheckTag },
-		setup: () => {
+		setup: (): {
+			checked: Ref<boolean>;
+			checked1: Ref<boolean>;
+			checked2: Ref<boolean>;
+			checked3: Ref<boolean>;
+			checked4: Ref<boolean>;
+			checked5: Ref<boolean>;
+			onChange: (status: boolean) => void;
+			onChange1: (status: boolean) => void;
+			onChange2: (status: boolean) => void;
+			onChange3: (status: boolean) => void;
+			onChange4: (status: boolean) => void;
+			onChange5: (status: boolean) => void;
+		} => {
 			const checked = ref(false);
 			const checked1 = ref(true);
 			const checked2 = ref(true);

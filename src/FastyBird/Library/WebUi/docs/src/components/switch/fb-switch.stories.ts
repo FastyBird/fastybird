@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
 import { Meta, StoryObj } from '@storybook/vue3';
-import { FbMessage, FbSwitch, FbTooltip, FbRow, FbCol, RowAlign } from '@fastybird/web-ui-components';
+import { FbMessage, FbSwitch, FbTooltip, FbRow, FbCol } from '@fastybird/web-ui-components';
 import { FasXmark, FasCheck, FasEye, FasEyeSlash } from '@fastybird/web-ui-icons';
 import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
 

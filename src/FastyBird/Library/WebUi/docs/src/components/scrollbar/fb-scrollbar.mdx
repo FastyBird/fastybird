@@ -37,53 +37,54 @@ Use `setScrollTop` and `setScrollLeft` methods can control scrollbar manually.
 
 <Canvas of={ScrollbarStories.Manual} />
 
-***
+---
 
 ## Vertical Scroll Shadow API
 
 <div style={{ marginTop: '30px' }}>
 
-	### Attributes
+    ### Attributes
 
-	| Name                    | Description                                                                                                                     | Type                                                               | Default |
-	| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------- |
-	| height                  | height of scrollbar                                                                                                             | `string` \| `number`                                               | —       |
-	| max-height              | max height of scrollbar                                                                                                         | `string` \| `number`                                               | —       |
-	| native                  | whether to use the native scrollbar style                                                                                       | `boolean`                                                          | false   |
-	| wrap-style              | style of wrap container                                                                                                         | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
-	| wrap-class              | class of wrap container                                                                                                         | `string`                                                           | —       |
-	| view-style              | style of view                                                                                                                   | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
-	| view-class              | class of view                                                                                                                   | `string`                                                           | —       |
-	| noresize                | do not respond to container size changes, if the container size does not change, it is better to set it to optimize performance | `boolean`                                                          | false   |
-	| tag                     | element tag of the view                                                                                                         | `string`                                                           | div     |
-	| always                  | always show scrollbar                                                                                                           | `boolean`                                                          | false   |
-	| min-size                | minimum size of scrollbar                                                                                                       | `number`                                                           | 20      |
-	| id                      | id of view                                                                                                                      | `string`                                                           | —       |
-	| shadow                  | set the darkness of the scroll shadow                                                                                           | `dark` \| `light`                                                  | —       |
-	| role `a11y`             | role of view                                                                                                                    | `string`                                                           | —       |
-	| aria-label `a11y`       | aria-label of view                                                                                                              | `string`                                                           | —       |
-	| aria-orientation `a11y` | aria-orientation of view                                                                                                        | `horizontal` \| `vertical`                                         | —       |
+    | Name                    | Description                                                                                                                     | Type                                                               | Default |
+    | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------- |
+    | height                  | height of scrollbar                                                                                                             | `string` \| `number`                                               | —       |
+    | max-height              | max height of scrollbar                                                                                                         | `string` \| `number`                                               | —       |
+    | native                  | whether to use the native scrollbar style                                                                                       | `boolean`                                                          | false   |
+    | wrap-style              | style of wrap container                                                                                                         | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
+    | wrap-class              | class of wrap container                                                                                                         | `string`                                                           | —       |
+    | view-style              | style of view                                                                                                                   | `string` \| `CSSProperties` \| `CSSProperties[]` \| `string[]`     | —       |
+    | view-class              | class of view                                                                                                                   | `string`                                                           | —       |
+    | noresize                | do not respond to container size changes, if the container size does not change, it is better to set it to optimize performance | `boolean`                                                          | false   |
+    | tag                     | element tag of the view                                                                                                         | `string`                                                           | div     |
+    | always                  | always show scrollbar                                                                                                           | `boolean`                                                          | false   |
+    | min-size                | minimum size of scrollbar                                                                                                       | `number`                                                           | 20      |
+    | id                      | id of view                                                                                                                      | `string`                                                           | —       |
+    | shadow                  | set the darkness of the scroll shadow                                                                                           | `dark` \| `light`                                                  | —       |
+    | role `a11y`             | role of view                                                                                                                    | `string`                                                           | —       |
+    | aria-label `a11y`       | aria-label of view                                                                                                              | `string`                                                           | —       |
+    | aria-orientation `a11y` | aria-orientation of view                                                                                                        | `horizontal` \| `vertical`                                         | —       |
 
-	### Events
+    ### Events
 
-	| Name   | Description                                           | Type                                                  |
-	| ------ | ----------------------------------------------------- | ----------------------------------------------------- |
-	| scroll | triggers when scrolling, return distance of scrolling | `({ scrollLeft: number, scrollTop: number }) => void` |
+    | Name   | Description                                           | Type                                                  |
+    | ------ | ----------------------------------------------------- | ----------------------------------------------------- |
+    | scroll | triggers when scrolling, return distance of scrolling | `({ scrollLeft: number, scrollTop: number }) => void` |
 
-	### Slots
+    ### Slots
 
-	| Name    | Description               |
-	| ------- | ------------------------- |
-	| default | customize default content |
+    | Name    | Description               |
+    | ------- | ------------------------- |
+    | default | customize default content |
 
-	### Exposes
+    ### Exposes
 
-	| Name          | Description                                | Type                                                            |
-	| ------------- | ------------------------------------------ | --------------------------------------------------------------- |
-	| handleScroll  | handle scroll event                        | `() => void`                                                    |
-	| scrollTo      | scrolls to a particular set of coordinates | `(options: ScrollToOptions \| number, yCoord?: number) => void` |
-	| setScrollTop  | Set distance to scroll top                 | `(scrollTop: number) => void`                                   |
-	| setScrollLeft | Set distance to scroll left                | `(scrollLeft: number) => void`                                  |
-	| update        | update scrollbar state manually            | `() => void`                                                    |
-	| wrapRef       | scrollbar wrap ref                         | `Ref<HTMLDivElement>`                                           |
+    | Name          | Description                                | Type                                                            |
+    | ------------- | ------------------------------------------ | --------------------------------------------------------------- |
+    | handleScroll  | handle scroll event                        | `() => void`                                                    |
+    | scrollTo      | scrolls to a particular set of coordinates | `(options: ScrollToOptions \| number, yCoord?: number) => void` |
+    | setScrollTop  | Set distance to scroll top                 | `(scrollTop: number) => void`                                   |
+    | setScrollLeft | Set distance to scroll left                | `(scrollLeft: number) => void`                                  |
+    | update        | update scrollbar state manually            | `() => void`                                                    |
+    | wrapRef       | scrollbar wrap ref                         | `Ref<HTMLDivElement>`                                           |
+
 </div>
