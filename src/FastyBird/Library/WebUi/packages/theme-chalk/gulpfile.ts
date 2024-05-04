@@ -7,7 +7,7 @@ import autoprefixer from 'gulp-autoprefixer';
 import cleanCSS from 'gulp-clean-css';
 import consola from 'consola';
 
-const webUiLibraryOutput = resolve(resolve(resolve(__dirname, '..'), 'web-ui-library'), 'dist');
+const webUiLibraryOutput = resolve(__dirname, '..', '..', 'web-ui-library', 'dist');
 
 const distFolder = path.resolve(__dirname, 'dist');
 const distBundle = path.resolve(webUiLibraryOutput, 'theme-chalk');
