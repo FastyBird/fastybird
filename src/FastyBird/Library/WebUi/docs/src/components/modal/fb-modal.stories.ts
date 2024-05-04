@@ -1,373 +1,373 @@
-import { reactive, ref } from 'vue';
+import { reactive, ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { action } from '@storybook/addon-actions';
-import { FasCircleXmark, FasImage, FasKeyboard } from '@fastybird/web-ui-icons';
-import { FbModal, FbButton, FbIcon, FbForm, FbFormItem, FbInput } from '@fastybird/web-ui-components';
-import { VariantTypes, LayoutTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { action } from "@storybook/addon-actions";
+import { FasCircleXmark, FasImage, FasKeyboard } from "@fastybird/web-ui-icons";
+import { FbModal, FbButton, FbIcon, FbForm, FbFormItem, FbInput } from "@fastybird/web-ui-components";
+import { VariantTypes, LayoutTypes } from "@fastybird/web-ui-constants";
 
-import './fb-modal.stories.scss';
+import "./fb-modal.stories.scss";
 
 const meta: Meta<typeof FbModal> = {
-	component: FbModal,
-	title: 'Components/Feedback/Modal',
-	argTypes: {
-		content: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of the modal footer for replacing whole modal content with custom one',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		header: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of the modal header for replacing whole modal header content with custom one',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		footer: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of the modal footer for replacing whole modal footer content with custom one',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		title: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'title of the modal',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		subtitle: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'subtitle of the modal',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		icon: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'modal header icon',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		default: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of modal',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		'left-button': {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'slot for using custom left button used as `Close` action',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		'right-button': {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'slot for using custom right button used as `Ok` action',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		variant: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [VariantTypes.PRIMARY, VariantTypes.DEFAULT, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.ERROR],
-			description: 'modal header and button variant',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: VariantTypes.PRIMARY },
-			},
-		},
-		layout: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [LayoutTypes.DEFAULT, LayoutTypes.PHONE, LayoutTypes.TABLET],
-			description: 'modal layout',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: LayoutTypes.DEFAULT },
-			},
-		},
-		width: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'width of modal, default is 50%',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '50%' },
-			},
-		},
-		fullscreen: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether the modal takes up full screen',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		top: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'value for `margin-top` of modal CSS, default is 15vh',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '15vh' },
-			},
-		},
-		showHeader: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether a modal header is displayed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		showFooter: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether a modal footer is displayed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		backdrop: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether a mask is displayed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		customClass: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'custom class names for backdrop',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		appendToBody: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to append modal itself to body. A nested modal should have this attribute set to `true`',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		appendTo: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'which element the modal appends to. Will override `append-to-body`',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: 'body' },
-			},
-		},
-		lockScroll: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether scroll of body is disabled while modal is displayed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		openDelay: {
-			type: { name: 'number', required: false },
-			control: { type: 'text' },
-			description: 'the time in milliseconds before open',
-			table: {
-				type: { summary: 'number' },
-				defaultValue: { summary: 0 },
-			},
-		},
-		closeDelay: {
-			type: { name: 'number', required: false },
-			control: { type: 'text' },
-			description: 'the time in milliseconds before close',
-			table: {
-				type: { summary: 'number' },
-				defaultValue: { summary: 0 },
-			},
-		},
-		closeOnClickBackdrop: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether the modal can be closed by clicking the backdrop',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		closeOnPressEscape: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether the modal can be closed by pressing ESC',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		showClose: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to show a close button',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		showLeftBtn: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to show a left action button',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		leftBtnLabel: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'left action button label',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: 'Close' },
-			},
-		},
-		showRightBtn: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to show a right action button',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		rightBtnLabel: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'right action button label',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: 'Ok' },
-			},
-		},
-		draggable: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'enable dragging feature for modal',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		overflow: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'draggable modal can overflow the viewport',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		center: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to align the header and footer in center',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		alignCenter: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether to align the modal both horizontally and vertically',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		closable: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether enable or disable modal close action',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: true },
-			},
-		},
-		destroyOnClose: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'destroy elements in modal when closed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-	},
-	args: {
-		variant: VariantTypes.PRIMARY,
-		layout: LayoutTypes.DEFAULT,
-		width: '50%',
-		fullscreen: false,
-		top: '15vh',
-		showHeader: true,
-		showFooter: true,
-		backdrop: true,
-		appendToBody: false,
-		appendTo: 'body',
-		lockScroll: false,
-		openDelay: 0,
-		closeDelay: 0,
-		closeOnClickBackdrop: true,
-		closeOnPressEscape: true,
-		showClose: true,
-		showLeftBtn: true,
-		leftBtnLabel: 'Close',
-		showRightBtn: true,
-		rightBtnLabel: 'Ok',
-		draggable: false,
-		overflow: false,
-		center: false,
-		alignCenter: false,
-		closable: true,
-		destroyOnClose: false,
-	},
-	excludeStories: /.*Data$/,
+    component: FbModal,
+    title: "Components/Feedback/Modal",
+    argTypes: {
+        content: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of the modal footer for replacing whole modal content with custom one",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        header: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of the modal header for replacing whole modal header content with custom one",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        footer: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of the modal footer for replacing whole modal footer content with custom one",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        title: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "title of the modal",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        subtitle: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "subtitle of the modal",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        icon: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "modal header icon",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        default: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of modal",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        "left-button": {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "slot for using custom left button used as `Close` action",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        "right-button": {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "slot for using custom right button used as `Ok` action",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        variant: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [VariantTypes.PRIMARY, VariantTypes.DEFAULT, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.ERROR],
+            description: "modal header and button variant",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: VariantTypes.PRIMARY },
+            },
+        },
+        layout: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [LayoutTypes.DEFAULT, LayoutTypes.PHONE, LayoutTypes.TABLET],
+            description: "modal layout",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: LayoutTypes.DEFAULT },
+            },
+        },
+        width: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "width of modal, default is 50%",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "50%" },
+            },
+        },
+        fullscreen: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether the modal takes up full screen",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        top: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "value for `margin-top` of modal CSS, default is 15vh",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "15vh" },
+            },
+        },
+        showHeader: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether a modal header is displayed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        showFooter: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether a modal footer is displayed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        backdrop: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether a mask is displayed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        customClass: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "custom class names for backdrop",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        appendToBody: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to append modal itself to body. A nested modal should have this attribute set to `true`",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        appendTo: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "which element the modal appends to. Will override `append-to-body`",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "body" },
+            },
+        },
+        lockScroll: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether scroll of body is disabled while modal is displayed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        openDelay: {
+            type: { name: "number", required: false },
+            control: { type: "text" },
+            description: "the time in milliseconds before open",
+            table: {
+                type: { summary: "number" },
+                defaultValue: { summary: 0 },
+            },
+        },
+        closeDelay: {
+            type: { name: "number", required: false },
+            control: { type: "text" },
+            description: "the time in milliseconds before close",
+            table: {
+                type: { summary: "number" },
+                defaultValue: { summary: 0 },
+            },
+        },
+        closeOnClickBackdrop: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether the modal can be closed by clicking the backdrop",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        closeOnPressEscape: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether the modal can be closed by pressing ESC",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        showClose: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to show a close button",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        showLeftBtn: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to show a left action button",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        leftBtnLabel: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "left action button label",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "Close" },
+            },
+        },
+        showRightBtn: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to show a right action button",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        rightBtnLabel: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "right action button label",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "Ok" },
+            },
+        },
+        draggable: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "enable dragging feature for modal",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        overflow: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "draggable modal can overflow the viewport",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        center: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to align the header and footer in center",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        alignCenter: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether to align the modal both horizontally and vertically",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        closable: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether enable or disable modal close action",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: true },
+            },
+        },
+        destroyOnClose: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "destroy elements in modal when closed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+    },
+    args: {
+        variant: VariantTypes.PRIMARY,
+        layout: LayoutTypes.DEFAULT,
+        width: "50%",
+        fullscreen: false,
+        top: "15vh",
+        showHeader: true,
+        showFooter: true,
+        backdrop: true,
+        appendToBody: false,
+        appendTo: "body",
+        lockScroll: false,
+        openDelay: 0,
+        closeDelay: 0,
+        closeOnClickBackdrop: true,
+        closeOnPressEscape: true,
+        showClose: true,
+        showLeftBtn: true,
+        leftBtnLabel: "Close",
+        showRightBtn: true,
+        rightBtnLabel: "Ok",
+        draggable: false,
+        overflow: false,
+        center: false,
+        alignCenter: false,
+        closable: true,
+        destroyOnClose: false,
+    },
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -375,10 +375,10 @@ export default meta;
 type Story = StoryObj<typeof FbModal>;
 
 export const Playground: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Click to open the Modal
@@ -394,24 +394,24 @@ import { ref } from 'vue';
 
 const modalVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: (args) => ({
-		components: { FbModal, FbButton },
-		setup() {
-			const modalVisible = ref<boolean>(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: (args) => ({
+        components: { FbModal, FbButton },
+        setup() {
+            const modalVisible = ref<boolean>(false);
 
-			return { args, modalVisible };
-		},
-		methods: {
-			onClick: action('button-clicked'),
-			onClose: action('modal-close-action-triggered'),
-			onLeftClick: action('modal-left-button-clicked'),
-			onRightClick: action('modal-right-button-clicked'),
-		},
-		template: `
+            return { args, modalVisible };
+        },
+        methods: {
+            onClick: action("button-clicked"),
+            onClose: action("modal-close-action-triggered"),
+            onLeftClick: action("modal-left-button-clicked"),
+            onRightClick: action("modal-right-button-clicked"),
+        },
+        template: `
 <fb-button @click.prevent="() => { modalVisible = true }">Open modal</fb-button>
 
 <fb-modal
@@ -422,85 +422,85 @@ const modalVisible = ref(false);
 	@rightClick="(e) => { modalVisible = false; onRightClick(e) }"
 >
 	<template
-		v-if="${args.content !== null && typeof args.content !== 'undefined'}"
+		v-if="${args.content !== null && typeof args.content !== "undefined"}"
 		#content
 	>
 		${args.content}
 	</template>
 
 	<template
-		v-if="${args.header !== null && typeof args.header !== 'undefined'}"
+		v-if="${args.header !== null && typeof args.header !== "undefined"}"
 		#header
 	>
 		${args.header}
 	</template>
 
 	<template
-		v-if="${args.title !== null && typeof args.title !== 'undefined'}"
+		v-if="${args.title !== null && typeof args.title !== "undefined"}"
 		#title
 	>
 		${args.title}
 	</template>
 
 	<template
-		v-if="${args.subtitle !== null && typeof args.subtitle !== 'undefined'}"
+		v-if="${args.subtitle !== null && typeof args.subtitle !== "undefined"}"
 		#subtitle
 	>
 		${args.subtitle}
 	</template>
 
 	<template
-		v-if="${args.icon !== null && typeof args.icon !== 'undefined'}"
+		v-if="${args.icon !== null && typeof args.icon !== "undefined"}"
 		#icon
 	>
 		${args.icon}
 	</template>
 
 	<template
-		v-if="${args.default !== null && typeof args.default !== 'undefined'}"
+		v-if="${args.default !== null && typeof args.default !== "undefined"}"
 		#default
 	>
 		${args.default}
 	</template>
 
 	<template
-		v-if="${args.footer !== null && typeof args.footer !== 'undefined'}"
+		v-if="${args.footer !== null && typeof args.footer !== "undefined"}"
 		#footer
 	>
 		${args.footer}
 	</template>
 
 	<template
-		v-if="${args['left-button'] !== null && typeof args['left-button'] !== 'undefined'}"
+		v-if="${args["left-button"] !== null && typeof args["left-button"] !== "undefined"}"
 		#left-button
 	>
-		${args['left-button']}
+		${args["left-button"]}
 	</template>
 
 	<template
-		v-if="${args['right-button'] !== null && typeof args['right-button'] !== 'undefined'}"
+		v-if="${args["right-button"] !== null && typeof args["right-button"] !== "undefined"}"
 		#right-button
 	>
-		${args['right-button']}
+		${args["right-button"]}
 	</template>
 </fb-modal>`,
-	}),
-	args: {
-		title: 'Modal window header',
-		default: `
+    }),
+    args: {
+        title: "Modal window header",
+        default: `
 			<div>
 				<p>Phasellus sapien felis, vulputate a nibh eu, tempor dictum turpis. Pellentesque non ex condimentum, dictum mauris non, ullamcorper nisi. Nunc sodales vel libero ac gravida. Maecenas malesuada viverra odio at molestie.</p>
 				<p>Donec ultrices vel nibh a iaculis. Morbi dapibus sollicitudin libero facilisis dapibus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
 				<p>Phasellus sapien felis, vulputate a nibh eu, tempor dictum turpis. Pellentesque non ex condimentum, dictum mauris non, ullamcorper nisi. Nunc sodales vel libero ac gravida. Maecenas malesuada viverra odio at molestie.</p>
 			</div>`,
-	},
+    },
 };
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Click to open the Modal
@@ -522,18 +522,18 @@ import { ref } from 'vue';
 
 const modalVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FasImage },
-		setup() {
-			const modalVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FasImage },
+        setup() {
+            const modalVisible = ref(false);
 
-			return { FasImage, modalVisible };
-		},
-		template: `
+            return { FasImage, modalVisible };
+        },
+        template: `
 <fb-button plain @click="modalVisible = true">
 	Click to open the Modal
 </fb-button>
@@ -549,14 +549,14 @@ const modalVisible = ref(false);
 	<span>Phasellus sapien felis, vulputate a nibh eu, tempor dictum turpis. Pellentesque non ex condimentum, dictum mauris non, ullamcorper nisi.</span>
 	<template #icon><fas-image /></template>
 </fb-modal>`,
-	}),
+    }),
 };
 
 export const CustomContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalTableVisible = true">
 		Open a Table nested Modal
@@ -638,54 +638,54 @@ const gridData = [
   },
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FbForm, FbFormItem, FbInput, FasKeyboard },
-		setup() {
-			const modalTableVisible = ref(false);
-			const modalFormVisible = ref(false);
-			const formLabelWidth = '140px';
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FbForm, FbFormItem, FbInput, FasKeyboard },
+        setup() {
+            const modalTableVisible = ref(false);
+            const modalFormVisible = ref(false);
+            const formLabelWidth = "140px";
 
-			const form = reactive({
-				name: '',
-				region: '',
-				date1: '',
-				date2: '',
-				delivery: false,
-				type: [],
-				resource: '',
-				desc: '',
-			});
+            const form = reactive({
+                name: "",
+                region: "",
+                date1: "",
+                date2: "",
+                delivery: false,
+                type: [],
+                resource: "",
+                desc: "",
+            });
 
-			const gridData = [
-				{
-					date: '2016-05-02',
-					name: 'John Smith',
-					address: 'No.1518,  Jinshajiang Road, Putuo District',
-				},
-				{
-					date: '2016-05-04',
-					name: 'John Smith',
-					address: 'No.1518,  Jinshajiang Road, Putuo District',
-				},
-				{
-					date: '2016-05-01',
-					name: 'John Smith',
-					address: 'No.1518,  Jinshajiang Road, Putuo District',
-				},
-				{
-					date: '2016-05-03',
-					name: 'John Smith',
-					address: 'No.1518,  Jinshajiang Road, Putuo District',
-				},
-			];
+            const gridData = [
+                {
+                    date: "2016-05-02",
+                    name: "John Smith",
+                    address: "No.1518,  Jinshajiang Road, Putuo District",
+                },
+                {
+                    date: "2016-05-04",
+                    name: "John Smith",
+                    address: "No.1518,  Jinshajiang Road, Putuo District",
+                },
+                {
+                    date: "2016-05-01",
+                    name: "John Smith",
+                    address: "No.1518,  Jinshajiang Road, Putuo District",
+                },
+                {
+                    date: "2016-05-03",
+                    name: "John Smith",
+                    address: "No.1518,  Jinshajiang Road, Putuo District",
+                },
+            ];
 
-			return { modalTableVisible, modalFormVisible, formLabelWidth, form, gridData, FasKeyboard };
-		},
-		template: `
+            return { modalTableVisible, modalFormVisible, formLabelWidth, form, gridData, FasKeyboard };
+        },
+        template: `
 <fb-button plain @click="modalTableVisible = true">
 	Open a Table nested Modal
 </fb-button>
@@ -733,14 +733,14 @@ const gridData = [
 		</div>
 	</template>
 </fb-modal>`,
-	}),
+    }),
 };
 
 export const CustomHeader: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Open Modal with customized header
@@ -776,18 +776,18 @@ const modalVisible = ref(false);
   gap: 16px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FbIcon, FasCircleXmark },
-		setup() {
-			const modalVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FbIcon, FasCircleXmark },
+        setup() {
+            const modalVisible = ref(false);
 
-			return { FasCircleXmark, modalVisible };
-		},
-		template: `
+            return { FasCircleXmark, modalVisible };
+        },
+        template: `
 <div class="fb-modal-story-block">
 	<fb-button plain @click="modalVisible = true">
 		Open Modal with customized header
@@ -814,14 +814,14 @@ const modalVisible = ref(false);
 		This is modal content.
 	</fb-modal>
 </div>`,
-	}),
+    }),
 };
 
 export const NestedModal: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="outerVisible = true">
 		Open the outer Modal
@@ -854,19 +854,19 @@ import { ref } from 'vue';
 const outerVisible = ref(false);
 const innerVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton },
-		setup() {
-			const outerVisible = ref(false);
-			const innerVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton },
+        setup() {
+            const outerVisible = ref(false);
+            const innerVisible = ref(false);
 
-			return { outerVisible, innerVisible };
-		},
-		template: `
+            return { outerVisible, innerVisible };
+        },
+        template: `
 <div>
 	<fb-button plain @click="outerVisible = true">
 		Open the outer Modal
@@ -894,14 +894,14 @@ const innerVisible = ref(false);
 		</template>
 	</fb-modal>
 </div>`,
-	}),
+    }),
 };
 
 export const CentredContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Click to open the Modal
@@ -923,18 +923,18 @@ import { ref } from 'vue';
 
 const modalVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FasImage },
-		setup() {
-			const modalVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FasImage },
+        setup() {
+            const modalVisible = ref(false);
 
-			return { FasImage, modalVisible };
-		},
-		template: `
+            return { FasImage, modalVisible };
+        },
+        template: `
 <fb-button plain @click="modalVisible = true">
 	Click to open the Modal
 </fb-button>
@@ -950,14 +950,14 @@ const modalVisible = ref(false);
 >
 	<span>It should be noted that the content will not be aligned in center by default</span>
 </fb-modal>`,
-	}),
+    }),
 };
 
 export const AlignCentred: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Click to open the Modal
@@ -979,18 +979,18 @@ import { ref } from 'vue';
 
 const modalVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FasImage },
-		setup() {
-			const modalVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FasImage },
+        setup() {
+            const modalVisible = ref(false);
 
-			return { FasImage, modalVisible };
-		},
-		template: `
+            return { FasImage, modalVisible };
+        },
+        template: `
 <fb-button plain @click="modalVisible = true">
 	Click to open the Modal
 </fb-button>
@@ -1006,14 +1006,14 @@ const modalVisible = ref(false);
 >
 	<span>It should be noted that the content will not be aligned in center by default</span>
 </fb-modal>`,
-	}),
+    }),
 };
 
 export const Draggable: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
     Open a draggable Modal
@@ -1051,19 +1051,19 @@ import { ref } from 'vue';
 const modalVisible = ref(false);
 const modalVisiblemodalOverflowVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FasImage },
-		setup() {
-			const modalVisible = ref(false);
-			const modalOverflowVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FasImage },
+        setup() {
+            const modalVisible = ref(false);
+            const modalOverflowVisible = ref(false);
 
-			return { FasImage, modalVisible, modalOverflowVisible };
-		},
-		template: `
+            return { FasImage, modalVisible, modalOverflowVisible };
+        },
+        template: `
 <fb-button plain @click="modalVisible = true">
 	Open a draggable Modal
 </fb-button>
@@ -1092,14 +1092,14 @@ const modalVisiblemodalOverflowVisible = ref(false);
 >
 	<span>It's a overflow draggable Dialog</span>
 </fb-modal>`,
-	}),
+    }),
 };
 
 export const WithDescription: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button plain @click="modalVisible = true">
 		Click to open the Modal
@@ -1124,18 +1124,18 @@ import { ref } from 'vue';
 
 const modalVisible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbModal, FbButton, FasImage },
-		setup() {
-			const modalVisible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbModal, FbButton, FasImage },
+        setup() {
+            const modalVisible = ref(false);
 
-			return { FasImage, modalVisible };
-		},
-		template: `
+            return { FasImage, modalVisible };
+        },
+        template: `
 <fb-button plain @click="modalVisible = true">
 	Click to open the Modal
 </fb-button>
@@ -1154,5 +1154,5 @@ const modalVisible = ref(false);
 	</template>
 	<template #icon><fas-image /></template>
 </fb-modal>`,
-	}),
+    }),
 };

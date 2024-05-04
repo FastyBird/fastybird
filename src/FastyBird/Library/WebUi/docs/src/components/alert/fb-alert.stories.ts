@@ -1,118 +1,118 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { action } from '@storybook/addon-actions';
-import { fn } from '@storybook/test';
-import { FbAlert } from '@fastybird/web-ui-components';
-import { VariantTypes, EffectTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { action } from "@storybook/addon-actions";
+import { fn } from "@storybook/test";
+import { FbAlert } from "@fastybird/web-ui-components";
+import { VariantTypes, EffectTypes } from "@fastybird/web-ui-constants";
 
-import './fb-alert.stories.scss';
+import "./fb-alert.stories.scss";
 
 const meta: Meta<typeof FbAlert> = {
-	component: FbAlert,
-	title: 'Components/Feedback/Alert',
-	argTypes: {
-		title: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of the alert title',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		description: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'content of the alert description',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		icon: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'slot for inserting custom icon. this slot will override default component icon',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		default: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'slot for inserting custom content. This slot will override `title` and `description` slots',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		variant: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.ERROR],
-			description: 'alert variant',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: VariantTypes.DEFAULT },
-			},
-		},
-		effect: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [EffectTypes.LIGHT, EffectTypes.DARK],
-			description: 'alert theme style',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: EffectTypes.LIGHT },
-			},
-		},
-		center: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether content is placed in the center',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		closable: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'whether alert can be dismissed',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		closeText: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			description: 'customized close button text',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: undefined },
-			},
-		},
-		onClose: {
-			table: {
-				disable: true,
-			},
-		},
-	},
-	args: {
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nunc massa, sollicitudin eget ex eget, pellentesque ultrices felis.',
-		variant: VariantTypes.DEFAULT,
-		effect: EffectTypes.LIGHT,
-		center: false,
-		closable: false,
-		onClose: fn(),
-	},
-	excludeStories: /.*Data$/,
+    component: FbAlert,
+    title: "Components/Feedback/Alert",
+    argTypes: {
+        title: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of the alert title",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        description: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "content of the alert description",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        icon: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "slot for inserting custom icon. this slot will override default component icon",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        default: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "slot for inserting custom content. This slot will override `title` and `description` slots",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        variant: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.ERROR],
+            description: "alert variant",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: VariantTypes.DEFAULT },
+            },
+        },
+        effect: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [EffectTypes.LIGHT, EffectTypes.DARK],
+            description: "alert theme style",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: EffectTypes.LIGHT },
+            },
+        },
+        center: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether content is placed in the center",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        closable: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "whether alert can be dismissed",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        closeText: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            description: "customized close button text",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: undefined },
+            },
+        },
+        onClose: {
+            table: {
+                disable: true,
+            },
+        },
+    },
+    args: {
+        description:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nunc massa, sollicitudin eget ex eget, pellentesque ultrices felis.",
+        variant: VariantTypes.DEFAULT,
+        effect: EffectTypes.LIGHT,
+        center: false,
+        closable: false,
+        onClose: fn(),
+    },
+    excludeStories: /.*Data$/,
 };
 
 export const actionsData = {
-	onClose: action('close'),
+    onClose: action("close"),
 };
 
 export default meta;
@@ -120,17 +120,17 @@ export default meta;
 type Story = StoryObj<typeof FbAlert>;
 
 export const Component: Story = {
-	tags: ['hideInSidebar'],
-	args: {
-		description: 'A simple default alert — check it out!',
-	},
+    tags: ["hideInSidebar"],
+    args: {
+        description: "A simple default alert — check it out!",
+    },
 };
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert>
 		<template #description>A simple default alert — check it out!</template>
@@ -148,13 +148,13 @@ export const BasicUsage: Story = {
 		<template #description>A simple error alert — check it out!</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert>
@@ -182,14 +182,14 @@ export const BasicUsage: Story = {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Dark: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert effect="${EffectTypes.DARK}">
 		<template #description>A simple default alert — check it out!</template>
@@ -207,13 +207,13 @@ export const Dark: Story = {
 		<template #description>A simple error alert — check it out!</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert effect="${EffectTypes.DARK}">
@@ -241,14 +241,14 @@ export const Dark: Story = {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CloseButton: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert :closable="false">
 		<template #description>Unclosable alert</template>
@@ -266,18 +266,18 @@ const hello = (): void => {
 	alert("Hi! I'm on close callback");
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		methods: {
-			hello: () => {
-				alert("Hi! I'm on close callback");
-			},
-		},
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        methods: {
+            hello: () => {
+                alert("Hi! I'm on close callback");
+            },
+        },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert :closable="false">
@@ -295,14 +295,14 @@ const hello = (): void => {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Icon: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert variant="${VariantTypes.INFO}" icon>
 		<template #description>A simple info alert — check it out!</template>
@@ -317,13 +317,13 @@ export const Icon: Story = {
 		<template #description>A simple error alert — check it out!</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert variant="${VariantTypes.INFO}">
@@ -346,14 +346,14 @@ export const Icon: Story = {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Center: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert center>
 		<template #description>A simple default alert — check it out!</template>
@@ -371,13 +371,13 @@ export const Center: Story = {
 		<template #description>A simple error alert — check it out!</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert center icon>
@@ -405,41 +405,41 @@ export const Center: Story = {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Title: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert variant="${VariantTypes.INFO}">
 		<template #title>With title</template>
 		<template #description>This is a description.</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<fb-alert variant="${VariantTypes.INFO}">
 		<template #title>With title</template>
 		<template #description>This is a description.</template>
 	</fb-alert>
 </div>`,
-	}),
+    }),
 };
 
 export const TitleIcon: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-alert variant="${VariantTypes.INFO}" icon>
 		<template #title>Info alert</template>
@@ -458,13 +458,13 @@ export const TitleIcon: Story = {
 		<template #description>More text description</template>
 	</fb-alert>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAlert },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbAlert },
+        template: `
 <div class="fb-alert-story-block">
 	<div class="fb-alert-story-block__item">
 		<fb-alert variant="${VariantTypes.INFO}" icon>
@@ -491,5 +491,5 @@ export const TitleIcon: Story = {
 		</fb-alert>
 	</div>
 </div>`,
-	}),
+    }),
 };

@@ -1,16 +1,16 @@
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbButton, FbTooltip } from '@fastybird/web-ui-components';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbButton, FbTooltip } from "@fastybird/web-ui-components";
 
-import './fb-tooltip.stories.scss';
+import "./fb-tooltip.stories.scss";
 
-import type { Ref } from 'vue';
+import type { Ref } from "vue";
 
 const meta: Meta<typeof FbTooltip> = {
-	component: FbTooltip,
-	title: 'Components/Feedback/Tooltip',
-	excludeStories: /.*Data$/,
+    component: FbTooltip,
+    title: "Components/Feedback/Tooltip",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -18,10 +18,10 @@ export default meta;
 type Story = StoryObj<typeof FbTooltip>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-tooltip
@@ -118,13 +118,13 @@ export const BasicUsage: Story = {
 		</fb-tooltip>
 	</div>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        template: `
 <div class="fb-tooltip-story-block">
 	<div class="fb-tooltip-story-block__layout-row-1">
 		<fb-tooltip
@@ -221,14 +221,14 @@ export const BasicUsage: Story = {
 		</fb-tooltip>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Theme: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip content="Top center" placement="top">
 		<fb-button>Dark</fb-button>
@@ -242,13 +242,13 @@ export const Theme: Story = {
 		<fb-button>Customized theme</fb-button>
 	</fb-tooltip>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        template: `
 <fb-tooltip content="Top center" placement="top">
 	<fb-button>Dark</fb-button>
 </fb-tooltip>
@@ -260,39 +260,39 @@ export const Theme: Story = {
 <fb-tooltip content="Bottom center" effect="customized-tooltip">
 	<fb-button>Customized theme</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const MoreContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip placement="top">
 		<template #content> multiple lines<br />second line </template>
 		<fb-button>Top center</fb-button>
 	</fb-tooltip>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        template: `
 <fb-tooltip placement="top">
 	<template #content> multiple lines<br />second line </template>
 	<fb-button>Top center</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const Advanced: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip
 		:disabled="disabled"
@@ -311,22 +311,22 @@ import { ref } from 'vue';
 
 const disabled = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		setup: (): {
-			disabled: Ref<boolean>;
-		} => {
-			const disabled = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        setup: (): {
+            disabled: Ref<boolean>;
+        } => {
+            const disabled = ref(false);
 
-			return {
-				disabled,
-			};
-		},
-		template: `
+            return {
+                disabled,
+            };
+        },
+        template: `
 <fb-tooltip
 	:disabled="disabled"
 	content="click to close tooltip function"
@@ -337,14 +337,14 @@ const disabled = ref(false);
 		click to {{ disabled ? 'active' : 'close' }} tooltip function
 	</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const HtmlContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip
 		content="<span>The content can be <strong>HTML</strong></span>"
@@ -353,27 +353,27 @@ export const HtmlContent: Story = {
 		<fb-button>hover me</fb-button>
 	</fb-tooltip>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        template: `
 <fb-tooltip
 	content="<span>The content can be <strong>HTML</strong></span>"
 	raw-content
 >
 	<fb-button>hover me</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const VirtualTrigger: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip
 		v-model:visible="visible"
@@ -423,61 +423,61 @@ onUnmounted(() => {
 	document.removeEventListener('mousemove', mousemoveHandler);
 });
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		setup: (): {
-			visible: Ref<boolean>;
-			triggerRef: Ref<{ getBoundingClientRect: () => { top: number; left: number; bottom: number; right: number } }>;
-			position: Ref<{
-				top: number;
-				left: number;
-				bottom: number;
-				right: number;
-			}>;
-		} => {
-			const visible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        setup: (): {
+            visible: Ref<boolean>;
+            triggerRef: Ref<{ getBoundingClientRect: () => { top: number; left: number; bottom: number; right: number } }>;
+            position: Ref<{
+                top: number;
+                left: number;
+                bottom: number;
+                right: number;
+            }>;
+        } => {
+            const visible = ref(false);
 
-			const triggerRef = ref({
-				getBoundingClientRect() {
-					return position.value;
-				},
-			});
+            const triggerRef = ref({
+                getBoundingClientRect() {
+                    return position.value;
+                },
+            });
 
-			const position = ref({
-				top: 0,
-				left: 0,
-				bottom: 0,
-				right: 0,
-			});
+            const position = ref({
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+            });
 
-			const mousemoveHandler = (e): void => {
-				position.value = DOMRect.fromRect({
-					width: 0,
-					height: 0,
-					x: e.clientX,
-					y: e.clientY,
-				});
-			};
+            const mousemoveHandler = (e): void => {
+                position.value = DOMRect.fromRect({
+                    width: 0,
+                    height: 0,
+                    x: e.clientX,
+                    y: e.clientY,
+                });
+            };
 
-			onMounted(() => {
-				document.addEventListener('mousemove', mousemoveHandler);
-			});
+            onMounted(() => {
+                document.addEventListener("mousemove", mousemoveHandler);
+            });
 
-			onUnmounted(() => {
-				document.removeEventListener('mousemove', mousemoveHandler);
-			});
+            onUnmounted(() => {
+                document.removeEventListener("mousemove", mousemoveHandler);
+            });
 
-			return {
-				visible,
-				triggerRef,
-				position,
-			};
-		},
-		template: `
+            return {
+                visible,
+                triggerRef,
+                position,
+            };
+        },
+        template: `
 <fb-tooltip
 	v-model:visible="visible"
 	content="Bottom center"
@@ -489,14 +489,14 @@ onUnmounted(() => {
 />
 
 <fb-button @click="visible = !visible">Trigger me</fb-button>`,
-	}),
+    }),
 };
 
 export const Singleton: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button
 		v-for="i in 3"
@@ -539,29 +539,29 @@ const tooltipRef = ref();
 
 const visible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		setup: (): {
-			buttonRef: Ref<HTMLElement | undefined>;
-			tooltipRef: Ref<HTMLElement | undefined>;
-			visible: Ref<boolean>;
-		} => {
-			const buttonRef = ref();
-			const tooltipRef = ref();
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        setup: (): {
+            buttonRef: Ref<HTMLElement | undefined>;
+            tooltipRef: Ref<HTMLElement | undefined>;
+            visible: Ref<boolean>;
+        } => {
+            const buttonRef = ref();
+            const tooltipRef = ref();
 
-			const visible = ref(false);
+            const visible = ref(false);
 
-			return {
-				buttonRef,
-				tooltipRef,
-				visible,
-			};
-		},
-		template: `
+            return {
+                buttonRef,
+                tooltipRef,
+                visible,
+            };
+        },
+        template: `
 <fb-button
 	v-for="i in 3"
 	:key="i"
@@ -593,14 +593,14 @@ const visible = ref(false);
 		<span> Some content </span>
 	</template>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const Controlled: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip :visible="visible">
 		<template #content>
@@ -618,22 +618,22 @@ import { ref } from 'vue';
 
 const visible = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		setup: (): {
-			visible: Ref<boolean>;
-		} => {
-			const visible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        setup: (): {
+            visible: Ref<boolean>;
+        } => {
+            const visible = ref(false);
 
-			return {
-				visible,
-			};
-		},
-		template: `
+            return {
+                visible,
+            };
+        },
+        template: `
 <fb-tooltip :visible="visible">
 	<template #content>
 		<span>Content</span>
@@ -643,28 +643,28 @@ const visible = ref(false);
 		Hover me
 	</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };
 
 export const Animations: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tooltip content="I am an fb-tooltip">
 		<fb-button>Trigger me</fb-button>
 	</fb-tooltip>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTooltip, FbButton },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTooltip, FbButton },
+        template: `
 <fb-tooltip content="I am an fb-tooltip">
 	<fb-button>Trigger me</fb-button>
 </fb-tooltip>`,
-	}),
+    }),
 };

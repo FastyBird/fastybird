@@ -1,14 +1,14 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FasMagnifyingGlass, FasPenToSquare } from '@fastybird/web-ui-icons';
-import { FbAppBar, FbAppBarHeading, FbAppBarButton, FbAppBarIcon, FbAppBarContent, FbButton, FbIcon } from '@fastybird/web-ui-components';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FasMagnifyingGlass, FasPenToSquare } from "@fastybird/web-ui-icons";
+import { FbAppBar, FbAppBarHeading, FbAppBarButton, FbAppBarIcon, FbAppBarContent, FbButton, FbIcon } from "@fastybird/web-ui-components";
 
-import './fb-app-bar.stories.scss';
-import { ref } from 'vue';
+import "./fb-app-bar.stories.scss";
+import { ref } from "vue";
 
 const meta: Meta<typeof FbAppBar> = {
-	component: FbAppBar,
-	title: 'Components/Navigation/App bar',
-	excludeStories: /.*Data$/,
+    component: FbAppBar,
+    title: "Components/Navigation/App bar",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -16,10 +16,10 @@ export default meta;
 type Story = StoryObj<typeof FbAppBar>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 </template>
 
@@ -28,22 +28,32 @@ export const BasicUsage: Story = {
 
 <style scoped>
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbAppBar, FbAppBarHeading, FbAppBarButton, FbAppBarIcon, FbAppBarContent, FbButton, FbIcon, FasMagnifyingGlass, FasPenToSquare },
-		setup: () => {
-			const menuCollapsed = ref<boolean>(true);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: {
+            FbAppBar,
+            FbAppBarHeading,
+            FbAppBarButton,
+            FbAppBarIcon,
+            FbAppBarContent,
+            FbButton,
+            FbIcon,
+            FasMagnifyingGlass,
+            FasPenToSquare,
+        },
+        setup: () => {
+            const menuCollapsed = ref<boolean>(true);
 
-			return {
-				menuCollapsed,
-				FasMagnifyingGlass,
-				FasPenToSquare,
-			};
-		},
-		template: `
+            return {
+                menuCollapsed,
+                FasMagnifyingGlass,
+                FasPenToSquare,
+            };
+        },
+        template: `
 <div class="fb-app-bar-story-block">
 	<fb-app-bar
 		:menuCollapsed="menuCollapsed"
@@ -92,5 +102,5 @@ export const BasicUsage: Story = {
 		</template>
 	</fb-app-bar>
 </div>`,
-	}),
+    }),
 };

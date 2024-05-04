@@ -1,13 +1,13 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from '@fastybird/web-ui-icons';
-import { FbSwipe, FbIcon } from '@fastybird/web-ui-components';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from "@fastybird/web-ui-icons";
+import { FbSwipe, FbIcon } from "@fastybird/web-ui-components";
 
-import './fb-swipe.stories.scss';
+import "./fb-swipe.stories.scss";
 
 const meta: Meta<typeof FbSwipe> = {
-	component: FbSwipe,
-	title: 'Components/Data/Swipe actions',
-	excludeStories: /.*Data$/,
+    component: FbSwipe,
+    title: "Components/Data/Swipe actions",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -15,10 +15,10 @@ export default meta;
 type Story = StoryObj<typeof FbSwipe>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-swipe
 		:items="items"
@@ -141,43 +141,43 @@ const items = [
 	background-color: rgb(76, 217, 100);
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSwipe, FbIcon, FasTrash, FasXmark, FasHeart, FasPenToSquare },
-		setup: () => {
-			const items = [
-				{
-					id: 'a',
-					title: 'Some title',
-					description: 'some description',
-					disabled: false,
-				},
-				{
-					id: 'b',
-					title: 'Some title',
-					description: 'some description',
-					disabled: false,
-				},
-				{
-					id: 'c',
-					title: 'Some title',
-					description: 'some description',
-					disabled: false,
-				},
-			];
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSwipe, FbIcon, FasTrash, FasXmark, FasHeart, FasPenToSquare },
+        setup: () => {
+            const items = [
+                {
+                    id: "a",
+                    title: "Some title",
+                    description: "some description",
+                    disabled: false,
+                },
+                {
+                    id: "b",
+                    title: "Some title",
+                    description: "some description",
+                    disabled: false,
+                },
+                {
+                    id: "c",
+                    title: "Some title",
+                    description: "some description",
+                    disabled: false,
+                },
+            ];
 
-			return {
-				items,
-				FasTrash,
-				FasXmark,
-				FasHeart,
-				FasPenToSquare,
-			};
-		},
-		template: `
+            return {
+                items,
+                FasTrash,
+                FasXmark,
+                FasHeart,
+                FasPenToSquare,
+            };
+        },
+        template: `
 <div class="fb-swipe-story-block">
 	<fb-swipe
 		:items="items"
@@ -226,5 +226,5 @@ const items = [
 		</template>
 	</fb-swipe>
 </div>`,
-	}),
+    }),
 };

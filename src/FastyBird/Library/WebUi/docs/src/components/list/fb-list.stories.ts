@@ -1,18 +1,18 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { action } from '@storybook/addon-actions';
-import { FasGear, FasPlug } from '@fastybird/web-ui-icons';
-import { FbList, FbListItem, FbButton, FbSwitch, FbIcon, ItemVariantTypes } from '@fastybird/web-ui-components';
-import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { action } from "@storybook/addon-actions";
+import { FasGear, FasPlug } from "@fastybird/web-ui-icons";
+import { FbList, FbListItem, FbButton, FbSwitch, FbIcon, ItemVariantTypes } from "@fastybird/web-ui-components";
+import { ComponentSizeTypes, VariantTypes } from "@fastybird/web-ui-constants";
 
-import './fb-list.stories.scss';
+import "./fb-list.stories.scss";
 
 const meta: Meta<typeof FbList> = {
-	component: FbList,
-	subcomponents: { FbListItem },
-	title: 'Components/Data/List',
-	excludeStories: /.*Data$/,
+    component: FbList,
+    subcomponents: { FbListItem },
+    title: "Components/Data/List",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -20,10 +20,10 @@ export default meta;
 type Story = StoryObj<typeof FbList>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-list>
 		<template #heading>List of awesome items</template>
@@ -76,24 +76,24 @@ const onClick = () => {
 	console.log('clicked')
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
-		setup: () => {
-			const switchState = ref(true);
-			const onClick = action('button-clicked');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
+        setup: () => {
+            const switchState = ref(true);
+            const onClick = action("button-clicked");
 
-			return {
-				switchState,
-				onClick,
-				FasGear,
-				FasPlug,
-			};
-		},
-		template: `
+            return {
+                switchState,
+                onClick,
+                FasGear,
+                FasPlug,
+            };
+        },
+        template: `
 <fb-list>
 	<template #heading>List of awesome items</template>
 	<template #subheading>Subheading of awesome items</template>
@@ -134,14 +134,14 @@ const onClick = () => {
 		</template>
 	</fb-list-item>
 </fb-list>`,
-	}),
+    }),
 };
 
 export const ListStyle: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-list>
 		<template #heading>List of awesome items</template>
@@ -194,24 +194,24 @@ const onClick = () => {
 	console.log('clicked')
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
-		setup: () => {
-			const switchState = ref(true);
-			const onClick = action('button-clicked');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
+        setup: () => {
+            const switchState = ref(true);
+            const onClick = action("button-clicked");
 
-			return {
-				switchState,
-				onClick,
-				FasGear,
-				FasPlug,
-			};
-		},
-		template: `
+            return {
+                switchState,
+                onClick,
+                FasGear,
+                FasPlug,
+            };
+        },
+        template: `
 <fb-list>
 	<template #heading>List of awesome items</template>
 	<template #subheading>Subheading of awesome items</template>
@@ -252,5 +252,5 @@ const onClick = () => {
 		</template>
 	</fb-list-item>
 </fb-list>`,
-	}),
+    }),
 };

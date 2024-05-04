@@ -1,14 +1,14 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbMenu, FbMenuItem, FbMenuItemGroup, FbSubMenu, FbRow, FbCol, FbIcon, FbRadioGroup, FbRadioButton } from '@fastybird/web-ui-components';
-import { FasLocationDot, FasBars, FarFileLines, FasGear } from '@fastybird/web-ui-icons';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbMenu, FbMenuItem, FbMenuItemGroup, FbSubMenu, FbRow, FbCol, FbIcon, FbRadioGroup, FbRadioButton } from "@fastybird/web-ui-components";
+import { FasLocationDot, FasBars, FarFileLines, FasGear } from "@fastybird/web-ui-icons";
 
-import './fb-menu.stories.scss';
-import { ref } from 'vue';
+import "./fb-menu.stories.scss";
+import { ref } from "vue";
 
 const meta: Meta<typeof FbMenu> = {
-	component: FbMenu,
-	title: 'Components/Navigation/Menu',
-	excludeStories: /.*Data$/,
+    component: FbMenu,
+    title: "Components/Navigation/Menu",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -16,10 +16,10 @@ export default meta;
 type Story = StoryObj<typeof FbMenu>;
 
 export const TopBar: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-menu
 		:default-active="activeIndex1"
@@ -79,27 +79,27 @@ const handleSelect = (key: string, keyPath: string[]): void => {
 	console.log(key, keyPath);
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbMenu, FbSubMenu, FbMenuItem },
-		setup: () => {
-			const activeIndex1 = ref('1');
-			const activeIndex2 = ref('1');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbMenu, FbSubMenu, FbMenuItem },
+        setup: () => {
+            const activeIndex1 = ref("1");
+            const activeIndex2 = ref("1");
 
-			const handleSelect = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            const handleSelect = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			return {
-				activeIndex1,
-				activeIndex2,
-				handleSelect,
-			};
-		},
-		template: `
+            return {
+                activeIndex1,
+                activeIndex2,
+                handleSelect,
+            };
+        },
+        template: `
 <div class="fb-menu-story-block">
 	<div class="fb-menu-story-block__item">
 		<fb-menu
@@ -152,14 +152,14 @@ const handleSelect = (key: string, keyPath: string[]): void => {
 		</fb-menu>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const LeftRight: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-menu
 		:default-active="activeIndex"
@@ -219,25 +219,25 @@ const handleSelect = (key: string, keyPath: string[]): void => {
   flex-grow: 1;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbMenu, FbSubMenu, FbMenuItem },
-		setup: () => {
-			const activeIndex = ref('1');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbMenu, FbSubMenu, FbMenuItem },
+        setup: () => {
+            const activeIndex = ref("1");
 
-			const handleSelect = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            const handleSelect = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			return {
-				activeIndex,
-				handleSelect,
-			};
-		},
-		template: `
+            return {
+                activeIndex,
+                handleSelect,
+            };
+        },
+        template: `
 <div class="fb-menu-story-block">
 	<div class="fb-menu-story-block__item">
 		<fb-menu
@@ -283,14 +283,14 @@ const handleSelect = (key: string, keyPath: string[]): void => {
 		</fb-menu>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const SideBar: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-row>
 		<fb-col :span="12">
@@ -389,27 +389,27 @@ const handleClose = (key: string, keyPath: string[]): void => {
 	console.log(key, keyPath);
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbMenu, FbSubMenu, FbMenuItem, FbMenuItemGroup, FbRow, FbCol, FbIcon, FasLocationDot, FasBars, FarFileLines, FasGear },
-		setup: () => {
-			const handleOpen = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbMenu, FbSubMenu, FbMenuItem, FbMenuItemGroup, FbRow, FbCol, FbIcon, FasLocationDot, FasBars, FarFileLines, FasGear },
+        setup: () => {
+            const handleOpen = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			const handleClose = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            const handleClose = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			return {
-				handleOpen,
-				handleClose,
-			};
-		},
-		template: `
+            return {
+                handleOpen,
+                handleClose,
+            };
+        },
+        template: `
 <div class="fb-menu-story-block">
 	<div class="fb-menu-story-block__item">
 		<fb-row>
@@ -498,14 +498,14 @@ const handleClose = (key: string, keyPath: string[]): void => {
 		</fb-row>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Collapse: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-radio-group v-model="isCollapse" style="margin-bottom: 20px">
 		<fb-radio-button :value="false">expand</fb-radio-button>
@@ -573,42 +573,42 @@ const handleClose = (key: string, keyPath: string[]): void => {
   min-height: 400px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: {
-			FbMenu,
-			FbSubMenu,
-			FbMenuItem,
-			FbMenuItemGroup,
-			FbIcon,
-			FbRadioGroup,
-			FbRadioButton,
-			FasLocationDot,
-			FasBars,
-			FarFileLines,
-			FasGear,
-		},
-		setup: () => {
-			const isCollapse = ref(true);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: {
+            FbMenu,
+            FbSubMenu,
+            FbMenuItem,
+            FbMenuItemGroup,
+            FbIcon,
+            FbRadioGroup,
+            FbRadioButton,
+            FasLocationDot,
+            FasBars,
+            FarFileLines,
+            FasGear,
+        },
+        setup: () => {
+            const isCollapse = ref(true);
 
-			const handleOpen = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            const handleOpen = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			const handleClose = (key: string, keyPath: string[]): void => {
-				console.log(key, keyPath);
-			};
+            const handleClose = (key: string, keyPath: string[]): void => {
+                console.log(key, keyPath);
+            };
 
-			return {
-				isCollapse,
-				handleOpen,
-				handleClose,
-			};
-		},
-		template: `
+            return {
+                isCollapse,
+                handleOpen,
+                handleClose,
+            };
+        },
+        template: `
 <div class="fb-menu-story-block">
 	<fb-radio-group v-model="isCollapse" style="margin-bottom: 20px">
 		<fb-radio-button :value="false">expand</fb-radio-button>
@@ -656,14 +656,14 @@ const handleClose = (key: string, keyPath: string[]): void => {
 		</fb-menu>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const PopperOffset: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-menu
 		ellipsis
@@ -700,13 +700,13 @@ export const PopperOffset: Story = {
 		<fb-menu-item index="5">Orders</fb-menu-item>
 	</fb-menu>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbMenu, FbSubMenu, FbMenuItem },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbMenu, FbSubMenu, FbMenuItem },
+        template: `
 <div class="fb-menu-story-block">
 	<div class="fb-menu-story-block__item">
 		<fb-menu
@@ -745,5 +745,5 @@ export const PopperOffset: Story = {
 		</fb-menu>
 	</div>
 </div>`,
-	}),
+    }),
 };

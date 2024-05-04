@@ -1,14 +1,14 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { action } from '@storybook/addon-actions';
-import { FbBottomNavigation, FbBottomNavigationHeading, FbButton } from '@fastybird/web-ui-components';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { action } from "@storybook/addon-actions";
+import { FbBottomNavigation, FbBottomNavigationHeading, FbButton } from "@fastybird/web-ui-components";
 
-import './fb-bottom-navigation.stories.scss';
-import { ref } from 'vue';
+import "./fb-bottom-navigation.stories.scss";
+import { ref } from "vue";
 
 const meta: Meta<typeof FbBottomNavigation> = {
-	component: FbBottomNavigation,
-	title: 'Components/Navigation/Bottom navigation',
-	excludeStories: /.*Data$/,
+    component: FbBottomNavigation,
+    title: "Components/Navigation/Bottom navigation",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -16,10 +16,10 @@ export default meta;
 type Story = StoryObj<typeof FbBottomNavigation>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 </template>
 
@@ -28,22 +28,22 @@ export const BasicUsage: Story = {
 
 <style scoped>
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbBottomNavigation, FbBottomNavigationHeading, FbButton },
-		setup: () => {
-			const show = ref<boolean>(false);
-			const onClick = action('button-clicked');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbBottomNavigation, FbBottomNavigationHeading, FbButton },
+        setup: () => {
+            const show = ref<boolean>(false);
+            const onClick = action("button-clicked");
 
-			return {
-				show,
-				onClick,
-			};
-		},
-		template: `
+            return {
+                show,
+                onClick,
+            };
+        },
+        template: `
 <div class="fb-bottom-navigation-story-block">
 	<fb-button @click="show = true">Open menu</fb-button>
 
@@ -91,5 +91,5 @@ export const BasicUsage: Story = {
 		</fb-bottom-navigation-content>
 	</fb-bottom-navigation>
 </div>`,
-	}),
+    }),
 };

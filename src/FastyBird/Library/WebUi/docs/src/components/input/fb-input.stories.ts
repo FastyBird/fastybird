@@ -1,15 +1,15 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbInput, FbSelect, FbOption, FbIcon, FbButton } from '@fastybird/web-ui-components';
-import { FasCalendar, FasMagnifyingGlass } from '@fastybird/web-ui-icons';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbInput, FbSelect, FbOption, FbIcon, FbButton } from "@fastybird/web-ui-components";
+import { FasCalendar, FasMagnifyingGlass } from "@fastybird/web-ui-icons";
 
-import './fb-input.stories.scss';
+import "./fb-input.stories.scss";
 
 const meta: Meta<typeof FbInput> = {
-	component: FbInput,
-	title: 'Components/Form/Input',
-	excludeStories: /.*Data$/,
+    component: FbInput,
+    title: "Components/Form/Input",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -17,10 +17,10 @@ export default meta;
 type Story = StoryObj<typeof FbInput>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input v-model="input" placeholder="Please input" />
 </template>
@@ -30,31 +30,31 @@ import { ref } from 'vue';
 
 const input = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const input = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const input = ref("");
 
-			return {
-				input,
-			};
-		},
-		template: `
+            return {
+                input,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input v-model="input" placeholder="Please input" />
 </div>`,
-	}),
+    }),
 };
 
 export const Disabled: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input v-model="input" disabled placeholder="Please input" />
 </template>
@@ -64,31 +64,31 @@ import { ref } from 'vue';
 
 const input = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const input = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const input = ref("");
 
-			return {
-				input,
-			};
-		},
-		template: `
+            return {
+                input,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input v-model="input" disabled placeholder="Please input" />
 </div>`,
-	}),
+    }),
 };
 
 export const Clearable: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input v-model="input" placeholder="Please input" clearable />
 </template>
@@ -98,31 +98,31 @@ import { ref } from 'vue';
 
 const input = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const input = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const input = ref("");
 
-			return {
-				input,
-			};
-		},
-		template: `
+            return {
+                input,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input v-model="input" placeholder="Please input" clearable />
 </div>`,
-	}),
+    }),
 };
 
 export const Formatter: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input
 		v-model="input"
@@ -137,20 +137,20 @@ import { ref } from 'vue';
 
 const input = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const input = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const input = ref("");
 
-			return {
-				input,
-			};
-		},
-		template: `
+            return {
+                input,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input
 		v-model="input"
@@ -159,14 +159,14 @@ const input = ref('');
 		:parser="(value) => value.replace(/\\$\\s?|(,*)/g, '')"
 	/>
 </div>`,
-	}),
+    }),
 };
 
 export const Password: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input v-model="input" type="password" placeholder="Please input password" show-password />
 </template>
@@ -176,31 +176,31 @@ import { ref } from 'vue';
 
 const input = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const input = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const input = ref("");
 
-			return {
-				input,
-			};
-		},
-		template: `
+            return {
+                input,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input v-model="input" type="password" placeholder="Please input password" show-password />
 </div>`,
-	}),
+    }),
 };
 
 export const WithIcon: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<span>Using attributes</span>
@@ -239,28 +239,28 @@ const input2 = ref('');
 const input3 = ref('');
 const input4 = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput, FbIcon, FasCalendar, FasMagnifyingGlass },
-		setup: () => {
-			const input1 = ref('');
-			const input2 = ref('');
-			const input3 = ref('');
-			const input4 = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput, FbIcon, FasCalendar, FasMagnifyingGlass },
+        setup: () => {
+            const input1 = ref("");
+            const input2 = ref("");
+            const input3 = ref("");
+            const input4 = ref("");
 
-			return {
-				input1,
-				input2,
-				input3,
-				input4,
-				FasCalendar,
-				FasMagnifyingGlass,
-			};
-		},
-		template: `
+            return {
+                input1,
+                input2,
+                input3,
+                input4,
+                FasCalendar,
+                FasMagnifyingGlass,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<div class="fb-input-story-block__form-row">
 		<span>Using attributes</span>
@@ -289,14 +289,14 @@ const input4 = ref('');
 		</fb-input>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Textarea: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input
 		v-model="textarea"
@@ -311,20 +311,20 @@ import { ref } from 'vue';
 
 const textarea = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const textarea = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const textarea = ref("");
 
-			return {
-				textarea,
-			};
-		},
-		template: `
+            return {
+                textarea,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input
 		v-model="textarea"
@@ -333,14 +333,14 @@ const textarea = ref('');
 		placeholder="Please input"
 	/>
 </div>`,
-	}),
+    }),
 };
 
 export const AutosizeTextarea: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input
 		v-model="textarea1"
@@ -363,22 +363,22 @@ import { ref } from 'vue';
 const textarea1 = ref('');
 const textarea2 = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const textarea1 = ref('');
-			const textarea2 = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const textarea1 = ref("");
+            const textarea2 = ref("");
 
-			return {
-				textarea1,
-				textarea2,
-			};
-		},
-		template: `
+            return {
+                textarea1,
+                textarea2,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input
 		v-model="textarea1"
@@ -396,14 +396,14 @@ const textarea2 = ref('');
 		placeholder="Please input"
 	/>
 </div>`,
-	}),
+    }),
 };
 
 export const Mixed: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-input v-model="input1" placeholder="Please input">
@@ -454,27 +454,27 @@ const input2 = ref('');
 const input3 = ref('');
 const select = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput, FbSelect, FbOption, FbButton, FasMagnifyingGlass },
-		setup: () => {
-			const input1 = ref('');
-			const input2 = ref('');
-			const input3 = ref('');
-			const select = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput, FbSelect, FbOption, FbButton, FasMagnifyingGlass },
+        setup: () => {
+            const input1 = ref("");
+            const input2 = ref("");
+            const input3 = ref("");
+            const select = ref("");
 
-			return {
-				input1,
-				input2,
-				input3,
-				select,
-				FasMagnifyingGlass,
-			};
-		},
-		template: `
+            return {
+                input1,
+                input2,
+                input3,
+                select,
+                FasMagnifyingGlass,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<div class="fb-input-story-block__item">
 		<fb-input
@@ -531,14 +531,14 @@ const select = ref('');
 		</fb-input>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Sizes: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-input
@@ -604,25 +604,25 @@ const input1 = ref('');
 const input2 = ref('');
 const input3 = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput, FasMagnifyingGlass },
-		setup: () => {
-			const input1 = ref('');
-			const input2 = ref('');
-			const input3 = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput, FasMagnifyingGlass },
+        setup: () => {
+            const input1 = ref("");
+            const input2 = ref("");
+            const input3 = ref("");
 
-			return {
-				input1,
-				input2,
-				input3,
-				FasMagnifyingGlass,
-			};
-		},
-		template: `
+            return {
+                input1,
+                input2,
+                input3,
+                FasMagnifyingGlass,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<div class="fb-input-story-block__form-row">
 		<fb-input
@@ -679,14 +679,14 @@ const input3 = ref('');
 		/>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const LimitLength: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input
 		v-model="text"
@@ -711,22 +711,22 @@ import { ref } from 'vue';
 const text = ref('');
 const textarea = ref('');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInput },
-		setup: () => {
-			const text = ref('');
-			const textarea = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInput },
+        setup: () => {
+            const text = ref("");
+            const textarea = ref("");
 
-			return {
-				text,
-				textarea,
-			};
-		},
-		template: `
+            return {
+                text,
+                textarea,
+            };
+        },
+        template: `
 <div class="fb-input-story-block">
 	<fb-input
 		v-model="text"
@@ -746,5 +746,5 @@ const textarea = ref('');
 		type="textarea"
 	/>
 </div>`,
-	}),
+    }),
 };

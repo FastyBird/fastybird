@@ -1,5 +1,5 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as SliderStories from './fb-slider.stories';
+import { Canvas, Meta } from "@storybook/blocks";
+import * as SliderStories from "./fb-slider.stories";
 
 <Meta of={SliderStories} />
 
@@ -11,10 +11,7 @@ You can drag the slider within a fixed range.
 
 The current value is displayed while dragging the slider. You can customize the initial value of the slider by setting the binding value.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={SliderStories.BasicUsage} />
 
 ## Discrete Values
 
@@ -22,10 +19,7 @@ The options can be discrete.
 
 Define the step size using the `step` property. You can choose to display breakpoints by setting the `show-stops` property.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Discrete}
-/>
+<Canvas withToolbar={true} of={SliderStories.Discrete} />
 
 ## With Input Box
 
@@ -33,61 +27,40 @@ Set value via an input box.
 
 Enable the input box by setting the `show-input` property to display it on the right side.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.WithInput}
-/>
+<Canvas withToolbar={true} of={SliderStories.WithInput} />
 
 ## Sizes
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Sizes}
-/>
+<Canvas withToolbar={true} of={SliderStories.Sizes} />
 
 ## Variants
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Variants}
-/>
+<Canvas withToolbar={true} of={SliderStories.Variants} />
 
 ## Placement
 
 You can customize the tooltip placement.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Placement}
-/>
+<Canvas withToolbar={true} of={SliderStories.Placement} />
 
 ## Range Selection
 
 Support for selecting a range of values is available. When you set the `range` property, it activates range mode. In this mode, the binding value
 becomes an array consisting of two boundary values.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.RangeSelection}
-/>
+<Canvas withToolbar={true} of={SliderStories.RangeSelection} />
 
 ## Vertical Mode
 
 When you set the `vertical` property to `true`, it enables vertical mode. In this mode, you need to specify the `height` property.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Vertical}
-/>
+<Canvas withToolbar={true} of={SliderStories.Vertical} />
 
 ## Show Marks
 
 By setting the `marks` property, you can display marks on the slider.
 
-<Canvas
-	withToolbar={true}
-	of={SliderStories.Marks}
-/>
+<Canvas withToolbar={true} of={SliderStories.Marks} />
 
 ---
 

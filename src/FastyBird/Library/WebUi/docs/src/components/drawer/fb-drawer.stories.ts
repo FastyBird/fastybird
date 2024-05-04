@@ -1,29 +1,29 @@
-import { Meta, StoryObj } from '@storybook/vue3';
+import { Meta, StoryObj } from "@storybook/vue3";
 import {
-	FbDrawer,
-	FbButton,
-	FbRadio,
-	FbRadioGroup,
-	FbForm,
-	FbFormItem,
-	FbInput,
-	FbSelect,
-	FbOption,
-	FbIcon,
-	FbMessageBox,
-	MessageBoxAction,
-	MessageBoxActionTypes,
-} from '@fastybird/web-ui-components';
-import { VariantTypes } from '@fastybird/web-ui-constants';
-import { FasCircleXmark, FasImage, FasKeyboard } from '@fastybird/web-ui-icons';
+    FbDrawer,
+    FbButton,
+    FbRadio,
+    FbRadioGroup,
+    FbForm,
+    FbFormItem,
+    FbInput,
+    FbSelect,
+    FbOption,
+    FbIcon,
+    FbMessageBox,
+    MessageBoxAction,
+    MessageBoxActionTypes,
+} from "@fastybird/web-ui-components";
+import { VariantTypes } from "@fastybird/web-ui-constants";
+import { FasCircleXmark, FasImage, FasKeyboard } from "@fastybird/web-ui-icons";
 
-import './fb-drawer.stories.scss';
-import { reactive, ref } from 'vue';
+import "./fb-drawer.stories.scss";
+import { reactive, ref } from "vue";
 
 const meta: Meta<typeof FbDrawer> = {
-	component: FbDrawer,
-	title: 'Components/Feedback/Drawer',
-	excludeStories: /.*Data$/,
+    component: FbDrawer,
+    title: "Components/Feedback/Drawer",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -31,10 +31,10 @@ export default meta;
 type Story = StoryObj<typeof FbDrawer>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-radio-group v-model="direction">
 		<fb-radio value="ltr">left to right</fb-radio>
@@ -114,49 +114,49 @@ const confirmClick = () => {
 	});
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton, FbRadio, FbRadioGroup },
-		setup: () => {
-			const drawer1 = ref(false);
-			const drawer2 = ref(false);
-			const direction = ref('rtl');
-			const radio1 = ref('Option 1');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton, FbRadio, FbRadioGroup },
+        setup: () => {
+            const drawer1 = ref(false);
+            const drawer2 = ref(false);
+            const direction = ref("rtl");
+            const radio1 = ref("Option 1");
 
-			const handleClose = (done: () => void) => {
-				FbMessageBox.confirm('Are you sure you want to close this?', {
-					onAction: () => {
-						done();
-					},
-				});
-			};
+            const handleClose = (done: () => void) => {
+                FbMessageBox.confirm("Are you sure you want to close this?", {
+                    onAction: () => {
+                        done();
+                    },
+                });
+            };
 
-			const cancelClick = (): void => {
-				drawer2.value = false;
-			};
+            const cancelClick = (): void => {
+                drawer2.value = false;
+            };
 
-			const confirmClick = (): void => {
-				FbMessageBox.confirm(`Are you confirm to chose ${radio1.value} ?`, {
-					onAction: () => {
-						drawer2.value = false;
-					},
-				});
-			};
+            const confirmClick = (): void => {
+                FbMessageBox.confirm(`Are you confirm to chose ${radio1.value} ?`, {
+                    onAction: () => {
+                        drawer2.value = false;
+                    },
+                });
+            };
 
-			return {
-				drawer1,
-				drawer2,
-				direction,
-				radio1,
-				handleClose,
-				cancelClick,
-				confirmClick,
-			};
-		},
-		template: `
+            return {
+                drawer1,
+                drawer2,
+                direction,
+                radio1,
+                handleClose,
+                cancelClick,
+                confirmClick,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-radio-group v-model="direction">
@@ -208,14 +208,14 @@ const confirmClick = () => {
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const NoTitle: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button @click="drawer = true">
 		Open drawer without header
@@ -231,20 +231,20 @@ import { ref } from 'vue';
 
 const drawer = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton },
-		setup: () => {
-			const drawer = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton },
+        setup: () => {
+            const drawer = ref(false);
 
-			return {
-				drawer,
-			};
-		},
-		template: `
+            return {
+                drawer,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-button @click="drawer = true">
@@ -256,14 +256,14 @@ const drawer = ref(false);
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomizedContent: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button @click="dialog = true">
 		Open drawer with form
@@ -366,80 +366,80 @@ const cancelForm = () => {
 	clearTimeout(timer);
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton, FbForm, FbFormItem, FbInput, FbSelect, FbOption, FasKeyboard },
-		setup: () => {
-			const formLabelWidth = '80px';
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton, FbForm, FbFormItem, FbInput, FbSelect, FbOption, FasKeyboard },
+        setup: () => {
+            const formLabelWidth = "80px";
 
-			let timer;
+            let timer;
 
-			const dialog = ref(false);
-			const loading = ref(false);
+            const dialog = ref(false);
+            const loading = ref(false);
 
-			const form = reactive({
-				name: '',
-				region: '',
-				date1: '',
-				date2: '',
-				delivery: false,
-				type: [],
-				resource: '',
-				desc: '',
-			});
+            const form = reactive({
+                name: "",
+                region: "",
+                date1: "",
+                date2: "",
+                delivery: false,
+                type: [],
+                resource: "",
+                desc: "",
+            });
 
-			const drawerRef = ref<InstanceType<typeof FbDrawer>>();
+            const drawerRef = ref<InstanceType<typeof FbDrawer>>();
 
-			const onClick = () => {
-				drawerRef.value!.handleClose();
-			};
+            const onClick = () => {
+                drawerRef.value!.handleClose();
+            };
 
-			const handleClose = (done) => {
-				if (loading.value) {
-					return;
-				}
+            const handleClose = (done) => {
+                if (loading.value) {
+                    return;
+                }
 
-				FbMessageBox.confirm('Do you want to submit?', {
-					onAction: (action: MessageBoxAction) => {
-						if (action === MessageBoxActionTypes.CONFIRM) {
-							loading.value = true;
+                FbMessageBox.confirm("Do you want to submit?", {
+                    onAction: (action: MessageBoxAction) => {
+                        if (action === MessageBoxActionTypes.CONFIRM) {
+                            loading.value = true;
 
-							timer = setTimeout(() => {
-								done();
-								setTimeout(() => {
-									loading.value = false;
-								}, 400);
-							}, 2000);
-						} else {
-							done();
-						}
-					},
-				});
-			};
+                            timer = setTimeout(() => {
+                                done();
+                                setTimeout(() => {
+                                    loading.value = false;
+                                }, 400);
+                            }, 2000);
+                        } else {
+                            done();
+                        }
+                    },
+                });
+            };
 
-			const cancelForm = () => {
-				loading.value = false;
-				dialog.value = false;
+            const cancelForm = () => {
+                loading.value = false;
+                dialog.value = false;
 
-				clearTimeout(timer);
-			};
+                clearTimeout(timer);
+            };
 
-			return {
-				formLabelWidth,
-				dialog,
-				loading,
-				form,
-				drawerRef,
-				onClick,
-				handleClose,
-				cancelForm,
-				FasKeyboard,
-			};
-		},
-		template: `
+            return {
+                formLabelWidth,
+                dialog,
+                loading,
+                form,
+                drawerRef,
+                onClick,
+                handleClose,
+                cancelForm,
+                FasKeyboard,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-button @click="dialog = true">
@@ -484,14 +484,14 @@ const cancelForm = () => {
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomizedHeader: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button @click="visible = true">
 		Open drawer with customized header
@@ -527,21 +527,21 @@ const visible = ref(false);
 	padding: 10px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton, FbIcon, FasCircleXmark },
-		setup: () => {
-			const visible = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton, FbIcon, FasCircleXmark },
+        setup: () => {
+            const visible = ref(false);
 
-			return {
-				visible,
-				FasCircleXmark,
-			};
-		},
-		template: `
+            return {
+                visible,
+                FasCircleXmark,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-button @click="visible = true">
@@ -563,14 +563,14 @@ const visible = ref(false);
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const NestedDrawer: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button @click="drawer = true">
 		Open nested drawers
@@ -607,31 +607,31 @@ const handleClose = (done: () => void) => {
 	});
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton },
-		setup: () => {
-			const drawer = ref(false);
-			const innerDrawer = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton },
+        setup: () => {
+            const drawer = ref(false);
+            const innerDrawer = ref(false);
 
-			const handleClose = (done: () => void) => {
-				FbMessageBox.confirm('You still have unsaved data, proceed?', {
-					onAction: () => {
-						done();
-					},
-				});
-			};
+            const handleClose = (done: () => void) => {
+                FbMessageBox.confirm("You still have unsaved data, proceed?", {
+                    onAction: () => {
+                        done();
+                    },
+                });
+            };
 
-			return {
-				drawer,
-				innerDrawer,
-				handleClose,
-			};
-		},
-		template: `
+            return {
+                drawer,
+                innerDrawer,
+                handleClose,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-button @click="drawer = true">
@@ -654,14 +654,14 @@ const handleClose = (done: () => void) => {
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const WithDescription: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button @click="drawer = true">
 		Open nested drawers
@@ -699,32 +699,32 @@ const handleClose = (done: () => void) => {
 	});
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbDrawer, FbButton, FasImage },
-		setup: () => {
-			const drawer = ref(false);
-			const innerDrawer = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbDrawer, FbButton, FasImage },
+        setup: () => {
+            const drawer = ref(false);
+            const innerDrawer = ref(false);
 
-			const handleClose = (done: () => void) => {
-				FbMessageBox.confirm('You still have unsaved data, proceed?', {
-					onAction: () => {
-						done();
-					},
-				});
-			};
+            const handleClose = (done: () => void) => {
+                FbMessageBox.confirm("You still have unsaved data, proceed?", {
+                    onAction: () => {
+                        done();
+                    },
+                });
+            };
 
-			return {
-				drawer,
-				innerDrawer,
-				handleClose,
-				FasImage,
-			};
-		},
-		template: `
+            return {
+                drawer,
+                innerDrawer,
+                handleClose,
+                FasImage,
+            };
+        },
+        template: `
 <div class="fb-drawer-story-block">
 	<div class="fb-drawer-story-block__item">
 		<fb-button @click="drawer = true">
@@ -747,5 +747,5 @@ const handleClose = (done: () => void) => {
 		</fb-drawer>
 	</div>
 </div>`,
-	}),
+    }),
 };

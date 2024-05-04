@@ -1,5 +1,5 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as RadioStories from './fb-radio.stories';
+import { Canvas, Meta } from "@storybook/blocks";
+import * as RadioStories from "./fb-radio.stories";
 
 <Meta of={RadioStories} />
 
@@ -12,19 +12,13 @@ This component allows for single selection from multiple options.
 It's recommended not to use Radios for too many options; instead, consider using the Select component. To create a Radio component, simply bind a variable
 to the `v-model` of the Radio component. This variable will hold the value of the selected Radio button, which can be of type `String`, `Number`, or `Boolean`.
 
-<Canvas
-	withToolbar={true}
-	of={RadioStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={RadioStories.BasicUsage} />
 
 ## Disabled
 
 To disable a Radio button, simply add the `disabled` property to it.
 
-<Canvas
-	withToolbar={true}
-	of={RadioStories.Disabled}
-/>
+<Canvas withToolbar={true} of={RadioStories.Disabled} />
 
 ## Radio Group
 
@@ -32,29 +26,20 @@ To create a group of mutually exclusive options, you can use the `fb-radio-group
 to the `v-model` of the `fb-radio-group` element to track the selected option. Each `fb-radio` component should specify its label value. Additionally,
 you can listen for the `change` event on the `fb-radio-group` component to handle changes in selection, with the current value provided as a parameter.
 
-<Canvas
-	withToolbar={true}
-	of={RadioStories.RadioGroup}
-/>
+<Canvas withToolbar={true} of={RadioStories.RadioGroup} />
 
 ## Button Style
 
 To style Radio buttons as buttons, simply replace the `fb-radio` element with the `fb-radio-button` element. Additionally, you can use the `size` property
 to adjust the button size as needed.
 
-<Canvas
-	withToolbar={true}
-	of={RadioStories.Button}
-/>
+<Canvas withToolbar={true} of={RadioStories.Button} />
 
 ## With Borders
 
 The `border` property adds a border around the Radio buttons. You can use this property to enhance the visual appearance of the Radio buttons with borders.
 
-<Canvas
-	withToolbar={true}
-	of={RadioStories.Bordered}
-/>
+<Canvas withToolbar={true} of={RadioStories.Bordered} />
 
 ---
 

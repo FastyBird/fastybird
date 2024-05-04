@@ -1,5 +1,5 @@
-import { Canvas, Meta, Controls } from '@storybook/blocks';
-import * as ButtonStories from './fb-button.stories';
+import { Canvas, Meta, Controls } from "@storybook/blocks";
+import * as ButtonStories from "./fb-button.stories";
 
 <Meta of={ButtonStories} />
 
@@ -17,10 +17,7 @@ Commonly used button.
 
 Use `variant`, `plain`, `round` and `circle` to define Button's style.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={ButtonStories.BasicUsage} />
 
 ## Disabled Button
 
@@ -28,26 +25,17 @@ The `disabled` property determines if the button is disabled.
 
 Use `disabled` property to determine whether a button is disabled. It accepts a `Boolean` value.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Disabled}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Disabled} />
 
 ## Link Button
 
 ### Basic link button
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Link}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Link} />
 
 ### Disabled link button
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.LinkDisabled}
-/>
+<Canvas withToolbar={true} of={ButtonStories.LinkDisabled} />
 
 ## Text Button
 
@@ -55,24 +43,15 @@ Buttons without border and background.
 
 ### Basic text button
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Text}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Text} />
 
 ### Background color always on
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.TextBg}
-/>
+<Canvas withToolbar={true} of={ButtonStories.TextBg} />
 
 ### Disabled text button
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.TextDisabled}
-/>
+<Canvas withToolbar={true} of={ButtonStories.TextDisabled} />
 
 ## Icon Button
 
@@ -81,10 +60,7 @@ Use icons to add more meaning to Button. You can use icon alone to save some spa
 Use the `icon` property to add icon. We are using [FontAwesome icons](https://fontawesome.com/icons/). Adding icons to the right side of the text is
 achievable with an `<i>` tag. Custom icons can be used as well.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Icon}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Icon} />
 
 ## Loading Button
 
@@ -92,10 +68,7 @@ Click the button to load data, then the button displays a loading state.
 
 Set `loading` property to `true` to display loading state.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Loading}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Loading} />
 
 ## Sizes
 
@@ -103,19 +76,13 @@ Besides default size, Button component provides four additional sizes for you to
 
 Use property `size` to set additional sizes with `large` or `small`.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Sizes}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Sizes} />
 
 ## Tag
 
 You can custom element tag, For example button, div, a, router-link, nuxt-link.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.Tag}
-/>
+<Canvas withToolbar={true} of={ButtonStories.Tag} />
 
 ## Custom Color
 
@@ -123,10 +90,7 @@ You can custom button color.
 
 We will calculate hover color & active color automatically.
 
-<Canvas
-	withToolbar={true}
-	of={ButtonStories.CustomColor}
-/>
+<Canvas withToolbar={true} of={ButtonStories.CustomColor} />
 
 ---
 

@@ -1,5 +1,5 @@
-import { Canvas, Controls, Meta } from '@storybook/blocks';
-import * as ModalStories from './fb-modal.stories';
+import { Canvas, Controls, Meta } from "@storybook/blocks";
+import * as ModalStories from "./fb-modal.stories";
 
 <Meta of={ModalStories} />
 
@@ -20,10 +20,7 @@ The modal component displays a customizable modal dialog box.
 To show the modal, set the `model-value` or use `v-model` with a `Boolean` value. The modal consists of three sections: `header`, `body`, and `footer`.
 You can optionally define a title using the `title` property, which is empty by default.
 
-<Canvas
-	of={ModalStories.BasicUsage}
-	class={'test'}
-/>
+<Canvas of={ModalStories.BasicUsage} class={"test"} />
 
 > **TIP:**
 > The `before-close` event handler triggers only when the user clicks the close icon or the backdrop. If you have buttons in the footer slot that close
