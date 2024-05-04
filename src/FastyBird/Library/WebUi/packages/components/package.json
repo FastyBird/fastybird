@@ -1,7 +1,8 @@
 {
   "name": "@fastybird/web-ui-components",
   "version": "1.0.0-dev.20",
-  "description": "FastyBird IoT application components",
+  "type": "module",
+  "description": "FastyBird IoT application UI components",
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird#issues",
   "license": "Apache-2.0",
