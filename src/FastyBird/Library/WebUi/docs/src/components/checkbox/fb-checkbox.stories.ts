@@ -1,15 +1,15 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbCheckbox, FbCheckboxGroup, FbCheckboxButton } from '@fastybird/web-ui-components';
-import { ComponentSizeTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbCheckbox, FbCheckboxGroup, FbCheckboxButton } from "@fastybird/web-ui-components";
+import { ComponentSizeTypes } from "@fastybird/web-ui-constants";
 
-import './fb-checkbox.stories.scss';
+import "./fb-checkbox.stories.scss";
 
 const meta: Meta<typeof FbCheckbox> = {
-	component: FbCheckbox,
-	title: 'Components/Form/Checkbox',
-	excludeStories: /.*Data$/,
+    component: FbCheckbox,
+    title: "Components/Form/Checkbox",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -17,10 +17,10 @@ export default meta;
 type Story = StoryObj<typeof FbCheckbox>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-checkbox v-model="checked1" label="Option 1" size="${ComponentSizeTypes.LARGE}" />
@@ -52,34 +52,34 @@ const checked6 = ref(false);
 const checked7 = ref(false);
 const checked8 = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox },
-		setup: () => {
-			const checked1 = ref(true);
-			const checked2 = ref(false);
-			const checked3 = ref(false);
-			const checked4 = ref(false);
-			const checked5 = ref(false);
-			const checked6 = ref(false);
-			const checked7 = ref(false);
-			const checked8 = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox },
+        setup: () => {
+            const checked1 = ref(true);
+            const checked2 = ref(false);
+            const checked3 = ref(false);
+            const checked4 = ref(false);
+            const checked5 = ref(false);
+            const checked6 = ref(false);
+            const checked7 = ref(false);
+            const checked8 = ref(false);
 
-			return {
-				checked1,
-				checked2,
-				checked3,
-				checked4,
-				checked5,
-				checked6,
-				checked7,
-				checked8,
-			};
-		},
-		template: `
+            return {
+                checked1,
+                checked2,
+                checked3,
+                checked4,
+                checked5,
+                checked6,
+                checked7,
+                checked8,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<div class="fb-checkbox-story-block__item">
 		<fb-checkbox v-model="checked1" label="Option 1" size="${ComponentSizeTypes.LARGE}" />
@@ -98,14 +98,14 @@ const checked8 = ref(false);
 		<fb-checkbox v-model="checked8" label="Option 2" size="${ComponentSizeTypes.SMALL}" disabled />
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Disabled: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-checkbox v-model="checked1" disabled>Disabled</fb-checkbox>
 	<fb-checkbox v-model="checked2">Not disabled</fb-checkbox>
@@ -117,34 +117,34 @@ import { ref } from 'vue';
 const checked1 = ref(true);
 const checked2 = ref(false);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox },
-		setup: () => {
-			const checked1 = ref(true);
-			const checked2 = ref(false);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox },
+        setup: () => {
+            const checked1 = ref(true);
+            const checked2 = ref(false);
 
-			return {
-				checked1,
-				checked2,
-			};
-		},
-		template: `
+            return {
+                checked1,
+                checked2,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<fb-checkbox v-model="checked1" disabled>Disabled</fb-checkbox>
 	<fb-checkbox v-model="checked2">Not disabled</fb-checkbox>
 </div>`,
-	}),
+    }),
 };
 
 export const CheckboxGroup: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-checkbox-group v-model="checkList">
 		<fb-checkbox label="Option A" value="Value A" />
@@ -164,20 +164,20 @@ import { ref } from 'vue';
 
 const checkList = ref(['Value selected and disabled', 'Value A']);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox, FbCheckboxGroup },
-		setup: () => {
-			const checkList = ref(['Value selected and disabled', 'Value A']);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox, FbCheckboxGroup },
+        setup: () => {
+            const checkList = ref(["Value selected and disabled", "Value A"]);
 
-			return {
-				checkList,
-			};
-		},
-		template: `
+            return {
+                checkList,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<fb-checkbox-group v-model="checkList">
 		<fb-checkbox label="Option A" value="Value A" />
@@ -191,14 +191,14 @@ const checkList = ref(['Value selected and disabled', 'Value A']);
 		/>
 	</fb-checkbox-group>
 </div>`,
-	}),
+    }),
 };
 
 export const Indeterminate: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-checkbox
 		v-model="checkAll"
@@ -241,39 +241,39 @@ const handleCheckedCitiesChange = (value: string[]) => {
 	isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length;
 };
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox, FbCheckboxGroup },
-		setup: () => {
-			const checkAll = ref(false);
-			const isIndeterminate = ref(true);
-			const checkedCities = ref(['New York', 'Washington']);
-			const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox, FbCheckboxGroup },
+        setup: () => {
+            const checkAll = ref(false);
+            const isIndeterminate = ref(true);
+            const checkedCities = ref(["New York", "Washington"]);
+            const cities = ["New York", "Washington", "Los Angeles", "Chicago"];
 
-			const handleCheckAllChange = (val: boolean) => {
-				checkedCities.value = val ? cities : [];
-				isIndeterminate.value = false;
-			};
+            const handleCheckAllChange = (val: boolean) => {
+                checkedCities.value = val ? cities : [];
+                isIndeterminate.value = false;
+            };
 
-			const handleCheckedCitiesChange = (value: string[]) => {
-				const checkedCount = value.length;
-				checkAll.value = checkedCount === cities.length;
-				isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length;
-			};
+            const handleCheckedCitiesChange = (value: string[]) => {
+                const checkedCount = value.length;
+                checkAll.value = checkedCount === cities.length;
+                isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length;
+            };
 
-			return {
-				checkAll,
-				isIndeterminate,
-				checkedCities,
-				cities,
-				handleCheckAllChange,
-				handleCheckedCitiesChange,
-			};
-		},
-		template: `
+            return {
+                checkAll,
+                isIndeterminate,
+                checkedCities,
+                cities,
+                handleCheckAllChange,
+                handleCheckedCitiesChange,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<fb-checkbox
 		v-model="checkAll"
@@ -296,14 +296,14 @@ const handleCheckedCitiesChange = (value: string[]) => {
 		</fb-checkbox>
 	</fb-checkbox-group>
 </div>`,
-	}),
+    }),
 };
 
 export const MinMax: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-checkbox-group v-model="checkedCities" :min="1" :max="2">
 		<fb-checkbox
@@ -323,22 +323,22 @@ import { ref } from 'vue';
 const checkedCities = ref(['New York', 'Washington']);
 const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox, FbCheckboxGroup },
-		setup: () => {
-			const checkedCities = ref(['New York', 'Washington']);
-			const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox, FbCheckboxGroup },
+        setup: () => {
+            const checkedCities = ref(["New York", "Washington"]);
+            const cities = ["New York", "Washington", "Los Angeles", "Chicago"];
 
-			return {
-				checkedCities,
-				cities,
-			};
-		},
-		template: `
+            return {
+                checkedCities,
+                cities,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<fb-checkbox-group v-model="checkedCities" :min="1" :max="2">
 		<fb-checkbox
@@ -351,14 +351,14 @@ const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
 		</fb-checkbox>
 	</fb-checkbox-group>
 </div>`,
-	}),
+    }),
 };
 
 export const Button: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-checkbox-group v-model="checkboxGroup1" size="${ComponentSizeTypes.LARGE}">
@@ -404,28 +404,28 @@ const checkboxGroup3 = ref(['Los Angeles']);
 const checkboxGroup4 = ref(['Chicago']);
 const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox, FbCheckboxGroup, FbCheckboxButton },
-		setup: () => {
-			const checkboxGroup1 = ref(['New York']);
-			const checkboxGroup2 = ref(['Washington']);
-			const checkboxGroup3 = ref(['Los Angeles']);
-			const checkboxGroup4 = ref(['Chicago']);
-			const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox, FbCheckboxGroup, FbCheckboxButton },
+        setup: () => {
+            const checkboxGroup1 = ref(["New York"]);
+            const checkboxGroup2 = ref(["Washington"]);
+            const checkboxGroup3 = ref(["Los Angeles"]);
+            const checkboxGroup4 = ref(["Chicago"]);
+            const cities = ["New York", "Washington", "Los Angeles", "Chicago"];
 
-			return {
-				checkboxGroup1,
-				checkboxGroup2,
-				checkboxGroup3,
-				checkboxGroup4,
-				cities,
-			};
-		},
-		template: `
+            return {
+                checkboxGroup1,
+                checkboxGroup2,
+                checkboxGroup3,
+                checkboxGroup4,
+                cities,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<div class="fb-checkbox-story-block__item">
 		<fb-checkbox-group v-model="checkboxGroup1" size="${ComponentSizeTypes.LARGE}">
@@ -461,14 +461,14 @@ const cities = ['New York', 'Washington', 'Los Angeles', 'Chicago'];
 		</fb-checkbox-group>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Bordered: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-checkbox v-model="checked1" label="Option1" size="${ComponentSizeTypes.LARGE}" border />
@@ -501,28 +501,28 @@ const checked3 = ref(false);
 const checked4 = ref(true);
 const checkboxGroup1 = ref(['Value1']);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbCheckbox, FbCheckboxGroup },
-		setup: () => {
-			const checked1 = ref(true);
-			const checked2 = ref(false);
-			const checked3 = ref(false);
-			const checked4 = ref(true);
-			const checkboxGroup1 = ref(['Value1']);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbCheckbox, FbCheckboxGroup },
+        setup: () => {
+            const checked1 = ref(true);
+            const checked2 = ref(false);
+            const checked3 = ref(false);
+            const checked4 = ref(true);
+            const checkboxGroup1 = ref(["Value1"]);
 
-			return {
-				checked1,
-				checked2,
-				checked3,
-				checked4,
-				checkboxGroup1,
-			};
-		},
-		template: `
+            return {
+                checked1,
+                checked2,
+                checked3,
+                checked4,
+                checkboxGroup1,
+            };
+        },
+        template: `
 <div class="fb-checkbox-story-block">
 	<div class="fb-checkbox-story-block__item">
 		<fb-checkbox v-model="checked1" label="Option1" size="${ComponentSizeTypes.LARGE}" border />
@@ -545,5 +545,5 @@ const checkboxGroup1 = ref(['Value1']);
 		</fb-checkbox-group>
 	</div>
 </div>`,
-	}),
+    }),
 };

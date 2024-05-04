@@ -1,5 +1,5 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as SelectStories from './fb-select.stories';
+import { Canvas, Meta } from "@storybook/blocks";
+import * as SelectStories from "./fb-select.stories";
 
 <Meta of={SelectStories} />
 
@@ -11,19 +11,13 @@ When there are plenty of options, use a drop-down menu to display and select des
 
 `v-model` is the value of `fb-option` that is currently selected.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={SelectStories.BasicUsage} />
 
 ## Disabled Option
 
 Set the value of `disabled` property of the `fb-option` to `true` to disable this option.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.DisabledOption}
-/>
+<Canvas withToolbar={true} of={SelectStories.DisabledOption} />
 
 ## Disabled Select
 
@@ -31,10 +25,7 @@ Disable the whole component.
 
 Set `disabled` property of `fb-select` to make it disabled.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.DisabledSelect}
-/>
+<Canvas withToolbar={true} of={SelectStories.DisabledSelect} />
 
 ## Clearable Single Select
 
@@ -42,10 +33,7 @@ You can clear Select using a clear icon.
 
 Set `clearable` property for `fb-select` and a clear icon will appear. Note that `clearable` is only for single select.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.Clearable}
-/>
+<Canvas withToolbar={true} of={SelectStories.Clearable} />
 
 ## Multiple select
 
@@ -55,10 +43,7 @@ Set `multiple` property for `fb-select` to enable multiple mode. In this case, t
 the selected options will be displayed as Tags. You can collapse them to a text by using `collapse-tags` property. You can check them when mouse hover
 collapse text by using `collapse-tags-tooltip` property.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.MultipleSelect}
-/>
+<Canvas withToolbar={true} of={SelectStories.MultipleSelect} />
 
 ## Custom Template
 
@@ -66,10 +51,7 @@ You can customize HTML templates for options.
 
 Insert customized HTML templates into the slot of `fb-option`.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.CustomTemplate}
-/>
+<Canvas withToolbar={true} of={SelectStories.CustomTemplate} />
 
 ## Header Of The Dropdown
 
@@ -77,10 +59,7 @@ You can customize the header of the dropdown.
 
 Use slot to customize the content.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.DropdownHeader}
-/>
+<Canvas withToolbar={true} of={SelectStories.DropdownHeader} />
 
 ## Footer Of The Dropdown
 
@@ -88,10 +67,7 @@ You can customize the footer of the dropdown.
 
 Use slot to customize the content.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.DropdownFooter}
-/>
+<Canvas withToolbar={true} of={SelectStories.DropdownFooter} />
 
 ## Grouping
 
@@ -99,10 +75,7 @@ Display options in groups.
 
 Use `fb-option-group` to group the options, and its `label` property stands for the name of the group.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.Grouping}
-/>
+<Canvas withToolbar={true} of={SelectStories.Grouping} />
 
 ## Option Filtering
 
@@ -112,10 +85,7 @@ Adding `filterable` to `fb-select` enables filtering. By default, Select will fi
 prefer other filtering strategies, you can pass the `filter-method`. `filter-method` is a Function that gets called when the input value changes, and its
 parameter is the current input value.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.OptionFilter}
-/>
+<Canvas withToolbar={true} of={SelectStories.OptionFilter} />
 
 ## Remote Search
 
@@ -125,10 +95,7 @@ Set the value of `filterable` and `remote` property with `true` to enable remote
 that gets called when the input value changes, and its parameter is the current input value. Note that if `fb-option` is rendered with the v-for directive,
 you should add the key attribute for `fb-option`. Its value needs to be unique, such as `item.value` in the following example.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.RemoteSearch}
-/>
+<Canvas withToolbar={true} of={SelectStories.RemoteSearch} />
 
 ## Create New Items
 
@@ -138,10 +105,7 @@ By using the `allow-create` property, users can create new items by typing in th
 This example also demonstrates `default-first-option`. When this attribute is set to true, you can select the first option in the current option list
 by hitting enter without having to navigate with mouse or arrow keys.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.CreateNewItems}
-/>
+<Canvas withToolbar={true} of={SelectStories.CreateNewItems} />
 
 ## Use Value-Key Attribute
 
@@ -150,10 +114,7 @@ If the binding value of Select is an object, make sure to assign `value-key` as 
 By using the `value-key` property, data with duplicate labels can be properly handled. The value of the `label` property is duplicated, but the option
 can be identified through the id.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.ValueKeyAttribute}
-/>
+<Canvas withToolbar={true} of={SelectStories.ValueKeyAttribute} />
 
 ## Custom Tag
 
@@ -161,19 +122,13 @@ You can customize tags.
 
 Insert customized tags into the slot of `fb-select`. `collapse-tags`, `collapse-tags-tooltip`, `max-collapse-tags` will not work.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.CustomTag}
-/>
+<Canvas withToolbar={true} of={SelectStories.CustomTag} />
 
 ## Custom Loading
 
 Override loading content.
 
-<Canvas
-	withToolbar={true}
-	of={SelectStories.CustomLoading}
-/>
+<Canvas withToolbar={true} of={SelectStories.CustomLoading} />
 
 ---
 

@@ -1,27 +1,27 @@
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
+import { Meta, StoryObj } from "@storybook/vue3";
 import {
-	FbSelect,
-	FbOption,
-	FbOptionGroup,
-	FbCheckbox,
-	FbInput,
-	FbIcon,
-	FbButton,
-	FbRow,
-	FbCol,
-	FbTag,
-	CheckboxValueType,
-} from '@fastybird/web-ui-components';
-import { VariantTypes, ComponentSizeTypes } from '@fastybird/web-ui-constants';
+    FbSelect,
+    FbOption,
+    FbOptionGroup,
+    FbCheckbox,
+    FbInput,
+    FbIcon,
+    FbButton,
+    FbRow,
+    FbCol,
+    FbTag,
+    CheckboxValueType,
+} from "@fastybird/web-ui-components";
+import { VariantTypes, ComponentSizeTypes } from "@fastybird/web-ui-constants";
 
-import './fb-select.stories.scss';
+import "./fb-select.stories.scss";
 
 const meta: Meta<typeof FbSelect> = {
-	component: FbSelect,
-	title: 'Components/Form/Select',
-	excludeStories: /.*Data$/,
+    component: FbSelect,
+    title: "Components/Form/Select",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -29,10 +29,10 @@ export default meta;
 type Story = StoryObj<typeof FbSelect>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -101,44 +101,44 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					value: 'Option1',
-					label: 'Option1',
-				},
-				{
-					value: 'Option2',
-					label: 'Option2',
-				},
-				{
-					value: 'Option3',
-					label: 'Option3',
-				},
-				{
-					value: 'Option4',
-					label: 'Option4',
-				},
-				{
-					value: 'Option5',
-					label: 'Option5',
-				},
-			];
+            const options = [
+                {
+                    value: "Option1",
+                    label: "Option1",
+                },
+                {
+                    value: "Option2",
+                    label: "Option2",
+                },
+                {
+                    value: "Option3",
+                    label: "Option3",
+                },
+                {
+                    value: "Option4",
+                    label: "Option4",
+                },
+                {
+                    value: "Option5",
+                    label: "Option5",
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__form-row">
 		<fb-select
@@ -177,14 +177,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const DisabledOption: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -229,49 +229,49 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					value: 'Option1',
-					label: 'Option1',
-					disabled: false,
-				},
-				{
-					value: 'Option2',
-					label: 'Option2',
-					disabled: true,
-				},
-				{
-					value: 'Option3',
-					label: 'Option3',
-					disabled: false,
-				},
-				{
-					value: 'Option4',
-					label: 'Option4',
-					disabled: false,
-				},
-				{
-					value: 'Option5',
-					label: 'Option5',
-					disabled: false,
-				},
-			];
+            const options = [
+                {
+                    value: "Option1",
+                    label: "Option1",
+                    disabled: false,
+                },
+                {
+                    value: "Option2",
+                    label: "Option2",
+                    disabled: true,
+                },
+                {
+                    value: "Option3",
+                    label: "Option3",
+                    disabled: false,
+                },
+                {
+                    value: "Option4",
+                    label: "Option4",
+                    disabled: false,
+                },
+                {
+                    value: "Option5",
+                    label: "Option5",
+                    disabled: false,
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -288,14 +288,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const DisabledSelect: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -339,44 +339,44 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					value: 'Option1',
-					label: 'Option1',
-				},
-				{
-					value: 'Option2',
-					label: 'Option2',
-				},
-				{
-					value: 'Option3',
-					label: 'Option3',
-				},
-				{
-					value: 'Option4',
-					label: 'Option4',
-				},
-				{
-					value: 'Option5',
-					label: 'Option5',
-				},
-			];
+            const options = [
+                {
+                    value: "Option1",
+                    label: "Option1",
+                },
+                {
+                    value: "Option2",
+                    label: "Option2",
+                },
+                {
+                    value: "Option3",
+                    label: "Option3",
+                },
+                {
+                    value: "Option4",
+                    label: "Option4",
+                },
+                {
+                    value: "Option5",
+                    label: "Option5",
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -393,14 +393,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Clearable: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -444,44 +444,44 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					value: 'Option1',
-					label: 'Option1',
-				},
-				{
-					value: 'Option2',
-					label: 'Option2',
-				},
-				{
-					value: 'Option3',
-					label: 'Option3',
-				},
-				{
-					value: 'Option4',
-					label: 'Option4',
-				},
-				{
-					value: 'Option5',
-					label: 'Option5',
-				},
-			];
+            const options = [
+                {
+                    value: "Option1",
+                    label: "Option1",
+                },
+                {
+                    value: "Option2",
+                    label: "Option2",
+                },
+                {
+                    value: "Option3",
+                    label: "Option3",
+                },
+                {
+                    value: "Option4",
+                    label: "Option4",
+                },
+                {
+                    value: "Option5",
+                    label: "Option5",
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -498,14 +498,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const MultipleSelect: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-row :gutter="20" align="middle">
 		<fb-col :sm="12" :md="5">
@@ -628,50 +628,50 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbRow, FbCol },
-		setup: () => {
-			const value1 = ref([]);
-			const value2 = ref([]);
-			const value3 = ref([]);
-			const value4 = ref([]);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbRow, FbCol },
+        setup: () => {
+            const value1 = ref([]);
+            const value2 = ref([]);
+            const value3 = ref([]);
+            const value4 = ref([]);
 
-			const options = [
-				{
-					value: 'Option1',
-					label: 'Option1',
-				},
-				{
-					value: 'Option2',
-					label: 'Option2',
-				},
-				{
-					value: 'Option3',
-					label: 'Option3',
-				},
-				{
-					value: 'Option4',
-					label: 'Option4',
-				},
-				{
-					value: 'Option5',
-					label: 'Option5',
-				},
-			];
+            const options = [
+                {
+                    value: "Option1",
+                    label: "Option1",
+                },
+                {
+                    value: "Option2",
+                    label: "Option2",
+                },
+                {
+                    value: "Option3",
+                    label: "Option3",
+                },
+                {
+                    value: "Option4",
+                    label: "Option4",
+                },
+                {
+                    value: "Option5",
+                    label: "Option5",
+                },
+            ];
 
-			return {
-				value1,
-				value2,
-				value3,
-				value4,
-				options,
-			};
-		},
-		template: `
+            return {
+                value1,
+                value2,
+                value3,
+                value4,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<fb-row :gutter="20" align="middle" class="fb-select-story-block__item">
 		<fb-col :sm="12" :md="5">
@@ -762,14 +762,14 @@ const options = [
 		</fb-col>
 	</fb-row>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomTemplate: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select v-model="value" placeholder="Select">
 		<fb-option
@@ -838,54 +838,54 @@ const cities = [
 	font-size: 13px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const cities = [
-				{
-					value: 'Vienna',
-					label: 'Vienna',
-					country: 'Austria',
-				},
-				{
-					value: 'Sofia',
-					label: 'Sofia',
-					country: 'Bulgaria',
-				},
-				{
-					value: 'Helsinki',
-					label: 'Helsinki',
-					country: 'Finland',
-				},
-				{
-					value: 'Rome',
-					label: 'Rome',
-					country: 'Italy',
-				},
-				{
-					value: 'Monaco',
-					label: 'Monaco',
-					country: 'Monaco',
-				},
-				{
-					value: 'Lisbon',
-					label: 'Lisbon',
-					country: 'Portugal',
-				},
-			];
+            const cities = [
+                {
+                    value: "Vienna",
+                    label: "Vienna",
+                    country: "Austria",
+                },
+                {
+                    value: "Sofia",
+                    label: "Sofia",
+                    country: "Bulgaria",
+                },
+                {
+                    value: "Helsinki",
+                    label: "Helsinki",
+                    country: "Finland",
+                },
+                {
+                    value: "Rome",
+                    label: "Rome",
+                    country: "Italy",
+                },
+                {
+                    value: "Monaco",
+                    label: "Monaco",
+                    country: "Monaco",
+                },
+                {
+                    value: "Lisbon",
+                    label: "Lisbon",
+                    country: "Portugal",
+                },
+            ];
 
-			return {
-				value,
-				cities,
-			};
-		},
-		template: `
+            return {
+                value,
+                cities,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select v-model="value" placeholder="Select">
@@ -905,14 +905,14 @@ const cities = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const DropdownHeader: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -1000,74 +1000,74 @@ const handleCheckAll = (val: CheckboxValueType) => {
 	}
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbCheckbox },
-		setup: () => {
-			const checkAll = ref(false);
-			const indeterminate = ref(false);
-			const value = ref<CheckboxValueType[]>([]);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbCheckbox },
+        setup: () => {
+            const checkAll = ref(false);
+            const indeterminate = ref(false);
+            const value = ref<CheckboxValueType[]>([]);
 
-			const cities = ref([
-				{
-					value: 'Vienna',
-					label: 'Vienna',
-				},
-				{
-					value: 'Sofia',
-					label: 'Sofia',
-				},
-				{
-					value: 'Helsinki',
-					label: 'Helsinki',
-				},
-				{
-					value: 'Rome',
-					label: 'Rome',
-				},
-				{
-					value: 'Monaco',
-					label: 'Monaco',
-				},
-				{
-					value: 'Lisbon',
-					label: 'Lisbon',
-				},
-			]);
+            const cities = ref([
+                {
+                    value: "Vienna",
+                    label: "Vienna",
+                },
+                {
+                    value: "Sofia",
+                    label: "Sofia",
+                },
+                {
+                    value: "Helsinki",
+                    label: "Helsinki",
+                },
+                {
+                    value: "Rome",
+                    label: "Rome",
+                },
+                {
+                    value: "Monaco",
+                    label: "Monaco",
+                },
+                {
+                    value: "Lisbon",
+                    label: "Lisbon",
+                },
+            ]);
 
-			watch(value, (val) => {
-				if (val.length === 0) {
-					checkAll.value = false;
-					indeterminate.value = false;
-				} else if (val.length === cities.value.length) {
-					checkAll.value = true;
-					indeterminate.value = false;
-				} else {
-					indeterminate.value = true;
-				}
-			});
+            watch(value, (val) => {
+                if (val.length === 0) {
+                    checkAll.value = false;
+                    indeterminate.value = false;
+                } else if (val.length === cities.value.length) {
+                    checkAll.value = true;
+                    indeterminate.value = false;
+                } else {
+                    indeterminate.value = true;
+                }
+            });
 
-			const handleCheckAll = (val: CheckboxValueType) => {
-				indeterminate.value = false;
-				if (val) {
-					value.value = cities.value.map((_) => _.value);
-				} else {
-					value.value = [];
-				}
-			};
+            const handleCheckAll = (val: CheckboxValueType) => {
+                indeterminate.value = false;
+                if (val) {
+                    value.value = cities.value.map((_) => _.value);
+                } else {
+                    value.value = [];
+                }
+            };
 
-			return {
-				checkAll,
-				indeterminate,
-				value,
-				cities,
-				handleCheckAll,
-			};
-		},
-		template: `
+            return {
+                checkAll,
+                indeterminate,
+                value,
+                cities,
+                handleCheckAll,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -1098,14 +1098,14 @@ const handleCheckAll = (val: CheckboxValueType) => {
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const DropdownFooter: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select v-model="value" placeholder="Select">
 		<fb-option
@@ -1200,74 +1200,74 @@ const clear = () => {
 	margin-bottom: 8px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbButton, FbInput },
-		setup: () => {
-			const isAdding = ref(false);
-			const value = ref<CheckboxValueType[]>([]);
-			const optionName = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbButton, FbInput },
+        setup: () => {
+            const isAdding = ref(false);
+            const value = ref<CheckboxValueType[]>([]);
+            const optionName = ref("");
 
-			const cities = ref([
-				{
-					value: 'Vienna',
-					label: 'Vienna',
-				},
-				{
-					value: 'Sofia',
-					label: 'Sofia',
-				},
-				{
-					value: 'Helsinki',
-					label: 'Helsinki',
-				},
-				{
-					value: 'Rome',
-					label: 'Rome',
-				},
-				{
-					value: 'Monaco',
-					label: 'Monaco',
-				},
-				{
-					value: 'Lisbon',
-					label: 'Lisbon',
-				},
-			]);
+            const cities = ref([
+                {
+                    value: "Vienna",
+                    label: "Vienna",
+                },
+                {
+                    value: "Sofia",
+                    label: "Sofia",
+                },
+                {
+                    value: "Helsinki",
+                    label: "Helsinki",
+                },
+                {
+                    value: "Rome",
+                    label: "Rome",
+                },
+                {
+                    value: "Monaco",
+                    label: "Monaco",
+                },
+                {
+                    value: "Lisbon",
+                    label: "Lisbon",
+                },
+            ]);
 
-			const onAddOption = () => {
-				isAdding.value = true;
-			};
+            const onAddOption = () => {
+                isAdding.value = true;
+            };
 
-			const onConfirm = () => {
-				if (optionName.value) {
-					cities.value.push({
-						label: optionName.value,
-						value: optionName.value,
-					});
-					clear();
-				}
-			};
+            const onConfirm = () => {
+                if (optionName.value) {
+                    cities.value.push({
+                        label: optionName.value,
+                        value: optionName.value,
+                    });
+                    clear();
+                }
+            };
 
-			const clear = () => {
-				optionName.value = '';
-				isAdding.value = false;
-			};
+            const clear = () => {
+                optionName.value = "";
+                isAdding.value = false;
+            };
 
-			return {
-				isAdding,
-				value,
-				optionName,
-				cities,
-				onAddOption,
-				onConfirm,
-				clear,
-			};
-		},
-		template: `
+            return {
+                isAdding,
+                value,
+                optionName,
+                cities,
+                onAddOption,
+                onConfirm,
+                clear,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select v-model="value" placeholder="Select">
@@ -1300,14 +1300,14 @@ const clear = () => {
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Grouping: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select v-model="value" placeholder="Select">
 		<fb-option-group
@@ -1367,58 +1367,58 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOptionGroup, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOptionGroup, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					label: 'Popular cities',
-					options: [
-						{
-							value: 'Rome',
-							label: 'Rome',
-						},
-						{
-							value: 'Vienna',
-							label: 'Vienna',
-						},
-					],
-				},
-				{
-					label: 'City name',
-					options: [
-						{
-							value: 'Sofia',
-							label: 'Sofia',
-						},
-						{
-							value: 'Helsinki',
-							label: 'Helsinki',
-						},
-						{
-							value: 'Monaco',
-							label: 'Monaco',
-						},
-						{
-							value: 'Lisbon',
-							label: 'Lisbon',
-						},
-					],
-				},
-			];
+            const options = [
+                {
+                    label: "Popular cities",
+                    options: [
+                        {
+                            value: "Rome",
+                            label: "Rome",
+                        },
+                        {
+                            value: "Vienna",
+                            label: "Vienna",
+                        },
+                    ],
+                },
+                {
+                    label: "City name",
+                    options: [
+                        {
+                            value: "Sofia",
+                            label: "Sofia",
+                        },
+                        {
+                            value: "Helsinki",
+                            label: "Helsinki",
+                        },
+                        {
+                            value: "Monaco",
+                            label: "Monaco",
+                        },
+                        {
+                            value: "Lisbon",
+                            label: "Lisbon",
+                        },
+                    ],
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select v-model="value" placeholder="Select">
@@ -1437,14 +1437,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const OptionFilter: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -1492,48 +1492,48 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref('');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref("");
 
-			const options = [
-				{
-					value: 'Vienna',
-					label: 'Vienna',
-				},
-				{
-					value: 'Sofia',
-					label: 'Sofia',
-				},
-				{
-					value: 'Helsinki',
-					label: 'Helsinki',
-				},
-				{
-					value: 'Rome',
-					label: 'Rome',
-				},
-				{
-					value: 'Monaco',
-					label: 'Monaco',
-				},
-				{
-					value: 'Lisbon',
-					label: 'Lisbon',
-				},
-			];
+            const options = [
+                {
+                    value: "Vienna",
+                    label: "Vienna",
+                },
+                {
+                    value: "Sofia",
+                    label: "Sofia",
+                },
+                {
+                    value: "Helsinki",
+                    label: "Helsinki",
+                },
+                {
+                    value: "Rome",
+                    label: "Rome",
+                },
+                {
+                    value: "Monaco",
+                    label: "Monaco",
+                },
+                {
+                    value: "Lisbon",
+                    label: "Lisbon",
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -1550,14 +1550,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const RemoteSearch: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-row :gutter="20" align="middle" class="fb-select-story-block__item">
 		<fb-col :sm="12" :md="5">
@@ -1700,106 +1700,106 @@ const states = [
 	'Wyoming',
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbRow, FbCol },
-		setup: () => {
-			interface ListItem {
-				value: string;
-				label: string;
-			}
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbRow, FbCol },
+        setup: () => {
+            interface ListItem {
+                value: string;
+                label: string;
+            }
 
-			const list = ref<ListItem[]>([]);
-			const options = ref<ListItem[]>([]);
-			const value = ref<string[]>([]);
-			const loading = ref(false);
+            const list = ref<ListItem[]>([]);
+            const options = ref<ListItem[]>([]);
+            const value = ref<string[]>([]);
+            const loading = ref(false);
 
-			onMounted(() => {
-				list.value = states.map((item) => {
-					return { value: `value:${item}`, label: item };
-				});
-			});
+            onMounted(() => {
+                list.value = states.map((item) => {
+                    return { value: `value:${item}`, label: item };
+                });
+            });
 
-			const remoteMethod = (query: string) => {
-				if (query) {
-					loading.value = true;
-					setTimeout(() => {
-						loading.value = false;
-						options.value = list.value.filter((item) => {
-							return item.label.toLowerCase().includes(query.toLowerCase());
-						});
-					}, 200);
-				} else {
-					options.value = [];
-				}
-			};
+            const remoteMethod = (query: string) => {
+                if (query) {
+                    loading.value = true;
+                    setTimeout(() => {
+                        loading.value = false;
+                        options.value = list.value.filter((item) => {
+                            return item.label.toLowerCase().includes(query.toLowerCase());
+                        });
+                    }, 200);
+                } else {
+                    options.value = [];
+                }
+            };
 
-			const states = [
-				'Alabama',
-				'Alaska',
-				'Arizona',
-				'Arkansas',
-				'California',
-				'Colorado',
-				'Connecticut',
-				'Delaware',
-				'Florida',
-				'Georgia',
-				'Hawaii',
-				'Idaho',
-				'Illinois',
-				'Indiana',
-				'Iowa',
-				'Kansas',
-				'Kentucky',
-				'Louisiana',
-				'Maine',
-				'Maryland',
-				'Massachusetts',
-				'Michigan',
-				'Minnesota',
-				'Mississippi',
-				'Missouri',
-				'Montana',
-				'Nebraska',
-				'Nevada',
-				'New Hampshire',
-				'New Jersey',
-				'New Mexico',
-				'New York',
-				'North Carolina',
-				'North Dakota',
-				'Ohio',
-				'Oklahoma',
-				'Oregon',
-				'Pennsylvania',
-				'Rhode Island',
-				'South Carolina',
-				'South Dakota',
-				'Tennessee',
-				'Texas',
-				'Utah',
-				'Vermont',
-				'Virginia',
-				'Washington',
-				'West Virginia',
-				'Wisconsin',
-				'Wyoming',
-			];
+            const states = [
+                "Alabama",
+                "Alaska",
+                "Arizona",
+                "Arkansas",
+                "California",
+                "Colorado",
+                "Connecticut",
+                "Delaware",
+                "Florida",
+                "Georgia",
+                "Hawaii",
+                "Idaho",
+                "Illinois",
+                "Indiana",
+                "Iowa",
+                "Kansas",
+                "Kentucky",
+                "Louisiana",
+                "Maine",
+                "Maryland",
+                "Massachusetts",
+                "Michigan",
+                "Minnesota",
+                "Mississippi",
+                "Missouri",
+                "Montana",
+                "Nebraska",
+                "Nevada",
+                "New Hampshire",
+                "New Jersey",
+                "New Mexico",
+                "New York",
+                "North Carolina",
+                "North Dakota",
+                "Ohio",
+                "Oklahoma",
+                "Oregon",
+                "Pennsylvania",
+                "Rhode Island",
+                "South Carolina",
+                "South Dakota",
+                "Tennessee",
+                "Texas",
+                "Utah",
+                "Vermont",
+                "Virginia",
+                "Washington",
+                "West Virginia",
+                "Wisconsin",
+                "Wyoming",
+            ];
 
-			return {
-				list,
-				options,
-				value,
-				loading,
-				states,
-				remoteMethod,
-			};
-		},
-		template: `
+            return {
+                list,
+                options,
+                value,
+                loading,
+                states,
+                remoteMethod,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<fb-row :gutter="20" align="middle" class="fb-select-story-block__item">
 		<fb-col :sm="12" :md="5">
@@ -1854,14 +1854,14 @@ const states = [
 		</fb-col>
 	</fb-row>
 </div>`,
-	}),
+    }),
 };
 
 export const CreateNewItems: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -1901,36 +1901,36 @@ const options = [
 	},
 ];
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			const value = ref<string[]>([]);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            const value = ref<string[]>([]);
 
-			const options = [
-				{
-					value: 'HTML',
-					label: 'HTML',
-				},
-				{
-					value: 'CSS',
-					label: 'CSS',
-				},
-				{
-					value: 'JavaScript',
-					label: 'JavaScript',
-				},
-			];
+            const options = [
+                {
+                    value: "HTML",
+                    label: "HTML",
+                },
+                {
+                    value: "CSS",
+                    label: "CSS",
+                },
+                {
+                    value: "JavaScript",
+                    label: "JavaScript",
+                },
+            ];
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -1951,14 +1951,14 @@ const options = [
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const ValueKeyAttribute: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -1997,34 +1997,34 @@ const options = ref([
 	{ id: 4, label: 'Option A', desc: 'Option A - 230507' },
 ]);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption },
-		setup: () => {
-			type Option = {
-				id: number;
-				label: string;
-				desc: string;
-			};
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption },
+        setup: () => {
+            type Option = {
+                id: number;
+                label: string;
+                desc: string;
+            };
 
-			const value = ref<Option>();
+            const value = ref<Option>();
 
-			const options = ref([
-				{ id: 1, label: 'Option A', desc: 'Option A - 230506' },
-				{ id: 2, label: 'Option B', desc: 'Option B - 230506' },
-				{ id: 3, label: 'Option C', desc: 'Option C - 230506' },
-				{ id: 4, label: 'Option A', desc: 'Option A - 230507' },
-			]);
+            const options = ref([
+                { id: 1, label: "Option A", desc: "Option A - 230506" },
+                { id: 2, label: "Option B", desc: "Option B - 230506" },
+                { id: 3, label: "Option C", desc: "Option C - 230506" },
+                { id: 4, label: "Option A", desc: "Option A - 230507" },
+            ]);
 
-			return {
-				value,
-				options,
-			};
-		},
-		template: `
+            return {
+                value,
+                options,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -2046,14 +2046,14 @@ const options = ref([
 		<strong>{{ value ? value.desc : 'nothing selected' }}</strong>
 	</p>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomTag: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-select
 		v-model="value"
@@ -2122,56 +2122,56 @@ colors.forEach((color) => {
 	aspect-ratio: 1;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbTag },
-		setup: () => {
-			const value = ref([]);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbTag },
+        setup: () => {
+            const value = ref([]);
 
-			const colors = [
-				{
-					value: '#E63415',
-					label: 'red',
-				},
-				{
-					value: '#FF6600',
-					label: 'orange',
-				},
-				{
-					value: '#FFDE0A',
-					label: 'yellow',
-				},
-				{
-					value: '#1EC79D',
-					label: 'green',
-				},
-				{
-					value: '#14CCCC',
-					label: 'cyan',
-				},
-				{
-					value: '#4167F0',
-					label: 'blue',
-				},
-				{
-					value: '#6222C9',
-					label: 'purple',
-				},
-			];
+            const colors = [
+                {
+                    value: "#E63415",
+                    label: "red",
+                },
+                {
+                    value: "#FF6600",
+                    label: "orange",
+                },
+                {
+                    value: "#FFDE0A",
+                    label: "yellow",
+                },
+                {
+                    value: "#1EC79D",
+                    label: "green",
+                },
+                {
+                    value: "#14CCCC",
+                    label: "cyan",
+                },
+                {
+                    value: "#4167F0",
+                    label: "blue",
+                },
+                {
+                    value: "#6222C9",
+                    label: "purple",
+                },
+            ];
 
-			colors.forEach((color) => {
-				value.value.push(color.value);
-			});
+            colors.forEach((color) => {
+                value.value.push(color.value);
+            });
 
-			return {
-				value,
-				colors,
-			};
-		},
-		template: `
+            return {
+                value,
+                colors,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<div class="fb-select-story-block__item">
 		<fb-select
@@ -2194,14 +2194,14 @@ colors.forEach((color) => {
 		</fb-select>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomLoading: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-row :gutter="20" align="middle">
 		<fb-col :sm="12" :md="5">
@@ -2435,107 +2435,107 @@ const states = [
   }
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbSelect, FbOption, FbIcon, FbRow, FbCol },
-		setup: () => {
-			interface ListItem {
-				value: string;
-				label: string;
-			}
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbSelect, FbOption, FbIcon, FbRow, FbCol },
+        setup: () => {
+            interface ListItem {
+                value: string;
+                label: string;
+            }
 
-			const list = ref<ListItem[]>([]);
-			const options = ref<ListItem[]>([]);
-			const value = ref<string[]>([]);
-			const loading = ref(false);
+            const list = ref<ListItem[]>([]);
+            const options = ref<ListItem[]>([]);
+            const value = ref<string[]>([]);
+            const loading = ref(false);
 
-			onMounted(() => {
-				list.value = states.map((item) => {
-					return { value: `value:${item}`, label: item };
-				});
-			});
+            onMounted(() => {
+                list.value = states.map((item) => {
+                    return { value: `value:${item}`, label: item };
+                });
+            });
 
-			const remoteMethod = (query: string): void => {
-				if (query) {
-					loading.value = true;
+            const remoteMethod = (query: string): void => {
+                if (query) {
+                    loading.value = true;
 
-					setTimeout(() => {
-						loading.value = false;
-						options.value = list.value.filter((item) => {
-							return item.label.toLowerCase().includes(query.toLowerCase());
-						});
-					}, 3000);
-				} else {
-					options.value = [];
-				}
-			};
+                    setTimeout(() => {
+                        loading.value = false;
+                        options.value = list.value.filter((item) => {
+                            return item.label.toLowerCase().includes(query.toLowerCase());
+                        });
+                    }, 3000);
+                } else {
+                    options.value = [];
+                }
+            };
 
-			const states = [
-				'Alabama',
-				'Alaska',
-				'Arizona',
-				'Arkansas',
-				'California',
-				'Colorado',
-				'Connecticut',
-				'Delaware',
-				'Florida',
-				'Georgia',
-				'Hawaii',
-				'Idaho',
-				'Illinois',
-				'Indiana',
-				'Iowa',
-				'Kansas',
-				'Kentucky',
-				'Louisiana',
-				'Maine',
-				'Maryland',
-				'Massachusetts',
-				'Michigan',
-				'Minnesota',
-				'Mississippi',
-				'Missouri',
-				'Montana',
-				'Nebraska',
-				'Nevada',
-				'New Hampshire',
-				'New Jersey',
-				'New Mexico',
-				'New York',
-				'North Carolina',
-				'North Dakota',
-				'Ohio',
-				'Oklahoma',
-				'Oregon',
-				'Pennsylvania',
-				'Rhode Island',
-				'South Carolina',
-				'South Dakota',
-				'Tennessee',
-				'Texas',
-				'Utah',
-				'Vermont',
-				'Virginia',
-				'Washington',
-				'West Virginia',
-				'Wisconsin',
-				'Wyoming',
-			];
+            const states = [
+                "Alabama",
+                "Alaska",
+                "Arizona",
+                "Arkansas",
+                "California",
+                "Colorado",
+                "Connecticut",
+                "Delaware",
+                "Florida",
+                "Georgia",
+                "Hawaii",
+                "Idaho",
+                "Illinois",
+                "Indiana",
+                "Iowa",
+                "Kansas",
+                "Kentucky",
+                "Louisiana",
+                "Maine",
+                "Maryland",
+                "Massachusetts",
+                "Michigan",
+                "Minnesota",
+                "Mississippi",
+                "Missouri",
+                "Montana",
+                "Nebraska",
+                "Nevada",
+                "New Hampshire",
+                "New Jersey",
+                "New Mexico",
+                "New York",
+                "North Carolina",
+                "North Dakota",
+                "Ohio",
+                "Oklahoma",
+                "Oregon",
+                "Pennsylvania",
+                "Rhode Island",
+                "South Carolina",
+                "South Dakota",
+                "Tennessee",
+                "Texas",
+                "Utah",
+                "Vermont",
+                "Virginia",
+                "Washington",
+                "West Virginia",
+                "Wisconsin",
+                "Wyoming",
+            ];
 
-			return {
-				list,
-				options,
-				value,
-				loading,
-				remoteMethod,
-				states,
-			};
-		},
-		template: `
+            return {
+                list,
+                options,
+                value,
+                loading,
+                remoteMethod,
+                states,
+            };
+        },
+        template: `
 <div class="fb-select-story-block">
 	<fb-row :gutter="20" align="middle" class="fb-select-story-block__item">
 		<fb-col :sm="12" :md="5">
@@ -2609,5 +2609,5 @@ const states = [
 		</fb-col>
 	</fb-row>
 </div>`,
-	}),
+    }),
 };

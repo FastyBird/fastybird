@@ -1,100 +1,100 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FasUserSecret } from '@fastybird/web-ui-icons';
-import { FbLoadingBox, FbIcon } from '@fastybird/web-ui-components';
-import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FasUserSecret } from "@fastybird/web-ui-icons";
+import { FbLoadingBox, FbIcon } from "@fastybird/web-ui-components";
+import { ComponentSizeTypes, VariantTypes } from "@fastybird/web-ui-constants";
 
-import './fb-loading-box.stories.scss';
+import "./fb-loading-box.stories.scss";
 
 const meta: Meta<typeof FbLoadingBox> = {
-	component: FbLoadingBox,
-	title: 'Components/Feedback/Loading box',
-	argTypes: {
-		default: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			defaultValue: 'Loading & preparing content...',
-			description: 'Loading box info text slot',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		icon: {
-			type: { name: 'string', required: false },
-			control: { type: 'text' },
-			defaultValue: null,
-			description: 'Optional loading box icon slot',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: '-' },
-			},
-		},
-		size: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [ComponentSizeTypes.LARGE, ComponentSizeTypes.DEFAULT, ComponentSizeTypes.SMALL],
-			description: 'loading box size',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: ComponentSizeTypes.DEFAULT },
-			},
-		},
-		variant: {
-			type: { name: 'string', required: false },
-			control: { type: 'select' },
-			options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
-			description: 'loading box variant',
-			table: {
-				type: { summary: 'string' },
-				defaultValue: { summary: VariantTypes.DEFAULT },
-			},
-		},
-		show: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'determine whether loading box is shown',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		fullScreen: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'determine whether loading box is stretched to full screen',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		animation: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'determine whether loading box is shown with animation effect',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-		spinner: {
-			type: { name: 'boolean', required: false },
-			control: { type: 'boolean' },
-			description: 'customize loading box spinner component',
-			table: {
-				type: { summary: 'boolean' },
-				defaultValue: { summary: false },
-			},
-		},
-	},
-	args: {
-		default: 'Loading & preparing content...',
-		size: ComponentSizeTypes.DEFAULT,
-		variant: VariantTypes.PRIMARY,
-		show: true,
-		fullScreen: false,
-		animation: false,
-	},
-	excludeStories: /.*Data$/,
+    component: FbLoadingBox,
+    title: "Components/Feedback/Loading box",
+    argTypes: {
+        default: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            defaultValue: "Loading & preparing content...",
+            description: "Loading box info text slot",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        icon: {
+            type: { name: "string", required: false },
+            control: { type: "text" },
+            defaultValue: null,
+            description: "Optional loading box icon slot",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: "-" },
+            },
+        },
+        size: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [ComponentSizeTypes.LARGE, ComponentSizeTypes.DEFAULT, ComponentSizeTypes.SMALL],
+            description: "loading box size",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: ComponentSizeTypes.DEFAULT },
+            },
+        },
+        variant: {
+            type: { name: "string", required: false },
+            control: { type: "select" },
+            options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
+            description: "loading box variant",
+            table: {
+                type: { summary: "string" },
+                defaultValue: { summary: VariantTypes.DEFAULT },
+            },
+        },
+        show: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "determine whether loading box is shown",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        fullScreen: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "determine whether loading box is stretched to full screen",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        animation: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "determine whether loading box is shown with animation effect",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+        spinner: {
+            type: { name: "boolean", required: false },
+            control: { type: "boolean" },
+            description: "customize loading box spinner component",
+            table: {
+                type: { summary: "boolean" },
+                defaultValue: { summary: false },
+            },
+        },
+    },
+    args: {
+        default: "Loading & preparing content...",
+        size: ComponentSizeTypes.DEFAULT,
+        variant: VariantTypes.PRIMARY,
+        show: true,
+        fullScreen: false,
+        animation: false,
+    },
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -102,14 +102,14 @@ export default meta;
 type Story = StoryObj<typeof FbLoadingBox>;
 
 export const Component: Story = {
-	tags: ['hideInSidebar'],
+    tags: ["hideInSidebar"],
 };
 
 export const WithIcon: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-loading-box
 		:animation="true"
@@ -121,13 +121,13 @@ export const WithIcon: Story = {
 		<p>Loading you user account<br />Please stand by...</p>
 	</fb-loading-box>
 </template>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbLoadingBox, FbIcon, FasUserSecret },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbLoadingBox, FbIcon, FasUserSecret },
+        template: `
 <fb-loading-box
 	:animation="true"
 	:show="true"
@@ -137,14 +137,14 @@ export const WithIcon: Story = {
 	<template #icon><fb-icon :size="100" class="is-fade"><fas-user-secret /></fb-icon></template>
 	<p>Loading you user account<br />Please stand by...</p>
 </fb-loading-box>`,
-	}),
+    }),
 };
 
 export const CustomLogo: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-loading-box
 		:show="true"
@@ -193,13 +193,13 @@ export const CustomLogo: Story = {
 	fill: #444;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbLoadingBox },
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbLoadingBox },
+        template: `
 <div class="fb-loading-box-story-block">
 	<fb-loading-box
 		:show="true"
@@ -238,5 +238,5 @@ export const CustomLogo: Story = {
 		Preparing application, please wait a moment...
 	</fb-loading-box>
 </div>`,
-	}),
+    }),
 };

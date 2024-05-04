@@ -1,25 +1,25 @@
-import { Meta, StoryObj } from '@storybook/vue3';
+import { Meta, StoryObj } from "@storybook/vue3";
 import {
-	FbTabs,
-	FbTabPane,
-	FbRadioGroup,
-	FbRadioButton,
-	FbIcon,
-	FbButton,
-	TabsPaneContext,
-	TabPaneName,
-	TabNavTypeTypes,
-	TabPositionTypes,
-} from '@fastybird/web-ui-components';
-import { FasCalendar, FasCheck } from '@fastybird/web-ui-icons';
+    FbTabs,
+    FbTabPane,
+    FbRadioGroup,
+    FbRadioButton,
+    FbIcon,
+    FbButton,
+    TabsPaneContext,
+    TabPaneName,
+    TabNavTypeTypes,
+    TabPositionTypes,
+} from "@fastybird/web-ui-components";
+import { FasCalendar, FasCheck } from "@fastybird/web-ui-icons";
 
-import './fb-tabs.stories.scss';
-import { ref } from 'vue';
+import "./fb-tabs.stories.scss";
+import { ref } from "vue";
 
 const meta: Meta<typeof FbTabs> = {
-	component: FbTabs,
-	title: 'Components/Navigation/Tabs',
-	excludeStories: /.*Data$/,
+    component: FbTabs,
+    title: "Components/Navigation/Tabs",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -27,10 +27,10 @@ export default meta;
 type Story = StoryObj<typeof FbTabs>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs
 		v-model="activeName"
@@ -63,25 +63,25 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 	font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane },
-		setup: () => {
-			const activeName = ref('first');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane },
+        setup: () => {
+            const activeName = ref("first");
 
-			const handleClick = (tab: TabsPaneContext, event: Event): void => {
-				console.log(tab, event);
-			};
+            const handleClick = (tab: TabsPaneContext, event: Event): void => {
+                console.log(tab, event);
+            };
 
-			return {
-				activeName,
-				handleClick,
-			};
-		},
-		template: `
+            return {
+                activeName,
+                handleClick,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs v-model="activeName" @tab-click="handleClick">
@@ -92,14 +92,14 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CardStyle: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs
 		v-model="activeName"
@@ -133,25 +133,25 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
   font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane },
-		setup: () => {
-			const activeName = ref('first');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane },
+        setup: () => {
+            const activeName = ref("first");
 
-			const handleClick = (tab: TabsPaneContext, event: Event): void => {
-				console.log(tab, event);
-			};
+            const handleClick = (tab: TabsPaneContext, event: Event): void => {
+                console.log(tab, event);
+            };
 
-			return {
-				activeName,
-				handleClick,
-			};
-		},
-		template: `
+            return {
+                activeName,
+                handleClick,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs
@@ -166,14 +166,14 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const BorderCard: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs
 		v-model="activeName"
@@ -207,25 +207,25 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
   font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane },
-		setup: () => {
-			const activeName = ref('first');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane },
+        setup: () => {
+            const activeName = ref("first");
 
-			const handleClick = (tab: TabsPaneContext, event: Event): void => {
-				console.log(tab, event);
-			};
+            const handleClick = (tab: TabsPaneContext, event: Event): void => {
+                console.log(tab, event);
+            };
 
-			return {
-				activeName,
-				handleClick,
-			};
-		},
-		template: `
+            return {
+                activeName,
+                handleClick,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs
@@ -240,14 +240,14 @@ const handleClick = (tab: TabsPaneContext, event: Event): void => {
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const TabPosition: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-radio-group v-model="tabPosition">
 		<fb-radio-button value="${TabPositionTypes.TOP}">top</fb-radio-button>
@@ -278,20 +278,20 @@ const tabPosition = ref('left');
   font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane, FbRadioGroup, FbRadioButton },
-		setup: () => {
-			const tabPosition = ref('left');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane, FbRadioGroup, FbRadioButton },
+        setup: () => {
+            const tabPosition = ref("left");
 
-			return {
-				tabPosition,
-			};
-		},
-		template: `
+            return {
+                tabPosition,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__controls">
 		<fb-radio-group v-model="tabPosition">
@@ -311,14 +311,14 @@ const tabPosition = ref('left');
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomTab: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs type="${TabNavTypeTypes.BORDER_CARD}" class="demo-tabs">
 		<fb-tab-pane>
@@ -356,18 +356,18 @@ import { FasCalendar } from '@fastybird/web-ui-icons';
 	margin-left: 4px;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane, FbIcon, FasCalendar },
-		setup: () => {
-			return {
-				FasCalendar,
-			};
-		},
-		template: `
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane, FbIcon, FasCalendar },
+        setup: () => {
+            return {
+                FasCalendar,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs type="${TabNavTypeTypes.BORDER_CARD}" class="fb-tabs-story-block__custom-tabs-label">
@@ -385,14 +385,14 @@ import { FasCalendar } from '@fastybird/web-ui-icons';
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const AddCloseTab: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs
 		v-model="editableTabsValue"
@@ -478,71 +478,71 @@ const handleTabsEdit = (
 	font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane },
-		setup: () => {
-			let tabIndex = 2;
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane },
+        setup: () => {
+            let tabIndex = 2;
 
-			const editableTabsValue = ref('2');
+            const editableTabsValue = ref("2");
 
-			const editableTabs = ref([
-				{
-					title: 'Tab 1',
-					name: '1',
-					content: 'Tab 1 content',
-				},
-				{
-					title: 'Tab 2',
-					name: '2',
-					content: 'Tab 2 content',
-				},
-			]);
+            const editableTabs = ref([
+                {
+                    title: "Tab 1",
+                    name: "1",
+                    content: "Tab 1 content",
+                },
+                {
+                    title: "Tab 2",
+                    name: "2",
+                    content: "Tab 2 content",
+                },
+            ]);
 
-			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add'): void => {
-				if (action === 'add') {
-					const newTabName = `${++tabIndex}`;
+            const handleTabsEdit = (targetName: TabPaneName | undefined, action: "remove" | "add"): void => {
+                if (action === "add") {
+                    const newTabName = `${++tabIndex}`;
 
-					editableTabs.value.push({
-						title: 'New Tab',
-						name: newTabName,
-						content: 'New Tab content',
-					});
+                    editableTabs.value.push({
+                        title: "New Tab",
+                        name: newTabName,
+                        content: "New Tab content",
+                    });
 
-					editableTabsValue.value = newTabName;
-				} else if (action === 'remove') {
-					const tabs = editableTabs.value;
+                    editableTabsValue.value = newTabName;
+                } else if (action === "remove") {
+                    const tabs = editableTabs.value;
 
-					let activeName = editableTabsValue.value;
+                    let activeName = editableTabsValue.value;
 
-					if (activeName === targetName) {
-						tabs.forEach((tab, index): void => {
-							if (tab.name === targetName) {
-								const nextTab = tabs[index + 1] || tabs[index - 1];
+                    if (activeName === targetName) {
+                        tabs.forEach((tab, index): void => {
+                            if (tab.name === targetName) {
+                                const nextTab = tabs[index + 1] || tabs[index - 1];
 
-								if (nextTab) {
-									activeName = nextTab.name;
-								}
-							}
-						});
-					}
+                                if (nextTab) {
+                                    activeName = nextTab.name;
+                                }
+                            }
+                        });
+                    }
 
-					editableTabsValue.value = activeName;
-					editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
-				}
-			};
+                    editableTabsValue.value = activeName;
+                    editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
+                }
+            };
 
-			return {
-				tabIndex,
-				editableTabsValue,
-				editableTabs,
-				handleTabsEdit,
-			};
-		},
-		template: `
+            return {
+                tabIndex,
+                editableTabsValue,
+                editableTabs,
+                handleTabsEdit,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs
@@ -562,14 +562,14 @@ const handleTabsEdit = (
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomAddIcon: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-tabs
 		v-model="editableTabsValue"
@@ -657,71 +657,71 @@ const handleTabsEdit = (
 	font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane, FbIcon, FasCheck },
-		setup: () => {
-			let tabIndex = 2;
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane, FbIcon, FasCheck },
+        setup: () => {
+            let tabIndex = 2;
 
-			const editableTabsValue = ref('2');
+            const editableTabsValue = ref("2");
 
-			const editableTabs = ref([
-				{
-					title: 'Tab 1',
-					name: '1',
-					content: 'Tab 1 content',
-				},
-				{
-					title: 'Tab 2',
-					name: '2',
-					content: 'Tab 2 content',
-				},
-			]);
+            const editableTabs = ref([
+                {
+                    title: "Tab 1",
+                    name: "1",
+                    content: "Tab 1 content",
+                },
+                {
+                    title: "Tab 2",
+                    name: "2",
+                    content: "Tab 2 content",
+                },
+            ]);
 
-			const handleTabsEdit = (targetName: TabPaneName | undefined, action: 'remove' | 'add'): void => {
-				if (action === 'add') {
-					const newTabName = `${++tabIndex}`;
+            const handleTabsEdit = (targetName: TabPaneName | undefined, action: "remove" | "add"): void => {
+                if (action === "add") {
+                    const newTabName = `${++tabIndex}`;
 
-					editableTabs.value.push({
-						title: 'New Tab',
-						name: newTabName,
-						content: 'New Tab content',
-					});
+                    editableTabs.value.push({
+                        title: "New Tab",
+                        name: newTabName,
+                        content: "New Tab content",
+                    });
 
-					editableTabsValue.value = newTabName;
-				} else if (action === 'remove') {
-					const tabs = editableTabs.value;
+                    editableTabsValue.value = newTabName;
+                } else if (action === "remove") {
+                    const tabs = editableTabs.value;
 
-					let activeName = editableTabsValue.value;
+                    let activeName = editableTabsValue.value;
 
-					if (activeName === targetName) {
-						tabs.forEach((tab, index): void => {
-							if (tab.name === targetName) {
-								const nextTab = tabs[index + 1] || tabs[index - 1];
+                    if (activeName === targetName) {
+                        tabs.forEach((tab, index): void => {
+                            if (tab.name === targetName) {
+                                const nextTab = tabs[index + 1] || tabs[index - 1];
 
-								if (nextTab) {
-									activeName = nextTab.name;
-								}
-							}
-						});
-					}
+                                if (nextTab) {
+                                    activeName = nextTab.name;
+                                }
+                            }
+                        });
+                    }
 
-					editableTabsValue.value = activeName;
-					editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
-				}
-			};
+                    editableTabsValue.value = activeName;
+                    editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
+                }
+            };
 
-			return {
-				tabIndex,
-				editableTabsValue,
-				editableTabs,
-				handleTabsEdit,
-			};
-		},
-		template: `
+            return {
+                tabIndex,
+                editableTabsValue,
+                editableTabs,
+                handleTabsEdit,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__item">
 		<fb-tabs
@@ -745,14 +745,14 @@ const handleTabsEdit = (
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const CustomAddTrigger: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-button size="small" @click="addTab(editableTabsValue)">
 		Add new tab
@@ -835,71 +835,71 @@ const removeTab = (targetName: string) => {
 	font-weight: 600;
 }
 </style>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbTabs, FbTabPane, FbButton },
-		setup: () => {
-			let tabIndex = 2;
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbTabs, FbTabPane, FbButton },
+        setup: () => {
+            let tabIndex = 2;
 
-			const editableTabsValue = ref('2');
+            const editableTabsValue = ref("2");
 
-			const editableTabs = ref([
-				{
-					title: 'Tab 1',
-					name: '1',
-					content: 'Tab 1 content',
-				},
-				{
-					title: 'Tab 2',
-					name: '2',
-					content: 'Tab 2 content',
-				},
-			]);
+            const editableTabs = ref([
+                {
+                    title: "Tab 1",
+                    name: "1",
+                    content: "Tab 1 content",
+                },
+                {
+                    title: "Tab 2",
+                    name: "2",
+                    content: "Tab 2 content",
+                },
+            ]);
 
-			const addTab = (): void => {
-				const newTabName = `${++tabIndex}`;
+            const addTab = (): void => {
+                const newTabName = `${++tabIndex}`;
 
-				editableTabs.value.push({
-					title: 'New Tab',
-					name: newTabName,
-					content: 'New Tab content',
-				});
-				editableTabsValue.value = newTabName;
-			};
+                editableTabs.value.push({
+                    title: "New Tab",
+                    name: newTabName,
+                    content: "New Tab content",
+                });
+                editableTabsValue.value = newTabName;
+            };
 
-			const removeTab = (targetName: string): void => {
-				const tabs = editableTabs.value;
+            const removeTab = (targetName: string): void => {
+                const tabs = editableTabs.value;
 
-				let activeName = editableTabsValue.value;
+                let activeName = editableTabsValue.value;
 
-				if (activeName === targetName) {
-					tabs.forEach((tab, index): void => {
-						if (tab.name === targetName) {
-							const nextTab = tabs[index + 1] || tabs[index - 1];
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index): void => {
+                        if (tab.name === targetName) {
+                            const nextTab = tabs[index + 1] || tabs[index - 1];
 
-							if (nextTab) {
-								activeName = nextTab.name;
-							}
-						}
-					});
-				}
+                            if (nextTab) {
+                                activeName = nextTab.name;
+                            }
+                        }
+                    });
+                }
 
-				editableTabsValue.value = activeName;
-				editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
-			};
+                editableTabsValue.value = activeName;
+                editableTabs.value = tabs.filter((tab): boolean => tab.name !== targetName);
+            };
 
-			return {
-				tabIndex,
-				editableTabsValue,
-				editableTabs,
-				addTab,
-				removeTab,
-			};
-		},
-		template: `
+            return {
+                tabIndex,
+                editableTabsValue,
+                editableTabs,
+                addTab,
+                removeTab,
+            };
+        },
+        template: `
 <div class="fb-tabs-story-block">
 	<div class="fb-tabs-story-block__controls">
 		<fb-button size="small" @click="addTab">
@@ -925,5 +925,5 @@ const removeTab = (targetName: string) => {
 		</fb-tabs>
 	</div>
 </div>`,
-	}),
+    }),
 };

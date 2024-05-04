@@ -57,6 +57,8 @@
     "prettier": "^3.2",
     "remark-gfm": "^4.0",
     "rimraf": "^5.0",
+    "sass": "^1.76",
+    "sass-loader": "^14.2",
     "storybook": "^8.0",
     "storybook-dark-mode": "^4.0",
     "typescript": "^5.4",

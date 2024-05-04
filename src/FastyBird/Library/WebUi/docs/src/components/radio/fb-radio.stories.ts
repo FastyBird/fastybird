@@ -1,15 +1,15 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbRadio, FbRadioGroup, FbRadioButton } from '@fastybird/web-ui-components';
-import { ComponentSizeTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbRadio, FbRadioGroup, FbRadioButton } from "@fastybird/web-ui-components";
+import { ComponentSizeTypes } from "@fastybird/web-ui-constants";
 
-import './fb-radio.stories.scss';
+import "./fb-radio.stories.scss";
 
 const meta: Meta<typeof FbRadio> = {
-	component: FbRadio,
-	title: 'Components/Form/Radio',
-	excludeStories: /.*Data$/,
+    component: FbRadio,
+    title: "Components/Form/Radio",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -17,10 +17,10 @@ export default meta;
 type Story = StoryObj<typeof FbRadio>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-radio-group v-model="radio1">
@@ -55,24 +55,24 @@ const radio1 = ref('1');
 const radio2 = ref('1');
 const radio3 = ref('1');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbRadio, FbRadioGroup },
-		setup: () => {
-			const radio1 = ref('1');
-			const radio2 = ref('1');
-			const radio3 = ref('1');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbRadio, FbRadioGroup },
+        setup: () => {
+            const radio1 = ref("1");
+            const radio2 = ref("1");
+            const radio3 = ref("1");
 
-			return {
-				radio1,
-				radio2,
-				radio3,
-			};
-		},
-		template: `
+            return {
+                radio1,
+                radio2,
+                radio3,
+            };
+        },
+        template: `
 <div class="fb-radio-story-block">
 	<div class="fb-radio-story-block__item">
 		<fb-radio-group v-model="radio1">
@@ -99,14 +99,14 @@ const radio3 = ref('1');
 		</fb-radio-group>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Disabled: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-radio v-model="radio" disabled value="disabled">Option A</fb-radio>
 	<fb-radio v-model="radio" disabled value="selected and disabled">Option B</fb-radio>
@@ -117,32 +117,32 @@ import { ref } from 'vue';
 
 const radio = ref('selected and disabled');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbRadio },
-		setup: () => {
-			const radio = ref('selected and disabled');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbRadio },
+        setup: () => {
+            const radio = ref("selected and disabled");
 
-			return {
-				radio,
-			};
-		},
-		template: `
+            return {
+                radio,
+            };
+        },
+        template: `
 <div class="fb-radio-story-block">
 	<fb-radio v-model="radio" disabled value="disabled">Option A</fb-radio>
 	<fb-radio v-model="radio" disabled value="selected and disabled">Option B</fb-radio>
 </div>`,
-	}),
+    }),
 };
 
 export const RadioGroup: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-radio-group v-model="radio">
 		<fb-radio :value="3">Option A</fb-radio>
@@ -156,20 +156,20 @@ import { ref } from 'vue';
 
 const radio = ref(3)
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbRadio, FbRadioGroup },
-		setup: () => {
-			const radio = ref(3);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbRadio, FbRadioGroup },
+        setup: () => {
+            const radio = ref(3);
 
-			return {
-				radio,
-			};
-		},
-		template: `
+            return {
+                radio,
+            };
+        },
+        template: `
 <div class="fb-radio-story-block">
 	<fb-radio-group v-model="radio">
 		<fb-radio :value="3">Option A</fb-radio>
@@ -177,14 +177,14 @@ const radio = ref(3)
 		<fb-radio :value="9">Option C</fb-radio>
 	</fb-radio-group>
 </div>`,
-	}),
+    }),
 };
 
 export const Button: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-radio-group v-model="radio1" size="${ComponentSizeTypes.LARGE}">
@@ -219,24 +219,24 @@ const radio1 = ref('New York');
 const radio2 = ref('New York');
 const radio3 = ref('New York');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbRadio, FbRadioGroup, FbRadioButton },
-		setup: () => {
-			const radio1 = ref('New York');
-			const radio2 = ref('New York');
-			const radio3 = ref('New York');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbRadio, FbRadioGroup, FbRadioButton },
+        setup: () => {
+            const radio1 = ref("New York");
+            const radio2 = ref("New York");
+            const radio3 = ref("New York");
 
-			return {
-				radio1,
-				radio2,
-				radio3,
-			};
-		},
-		template: `
+            return {
+                radio1,
+                radio2,
+                radio3,
+            };
+        },
+        template: `
 <div class="fb-radio-story-block">
 	<div class="fb-radio-story-block__item">
 		<fb-radio-group v-model="radio1" size="${ComponentSizeTypes.LARGE}">
@@ -263,14 +263,14 @@ const radio3 = ref('New York');
 		</fb-radio-group>
 	</div>
 </div>`,
-	}),
+    }),
 };
 
 export const Bordered: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<div>
 		<fb-radio-group v-model="radio1">
@@ -306,26 +306,26 @@ const radio2 = ref('1');
 const radio3 = ref('1');
 const radio4 = ref('1');
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbRadio, FbRadioGroup },
-		setup: () => {
-			const radio1 = ref('1');
-			const radio2 = ref('1');
-			const radio3 = ref('1');
-			const radio4 = ref('1');
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbRadio, FbRadioGroup },
+        setup: () => {
+            const radio1 = ref("1");
+            const radio2 = ref("1");
+            const radio3 = ref("1");
+            const radio4 = ref("1");
 
-			return {
-				radio1,
-				radio2,
-				radio3,
-				radio4,
-			};
-		},
-		template: `
+            return {
+                radio1,
+                radio2,
+                radio3,
+                radio4,
+            };
+        },
+        template: `
 <div class="fb-radio-story-block">
 	<div class="fb-radio-story-block__item">
 		<fb-radio-group v-model="radio1">
@@ -352,5 +352,5 @@ const radio4 = ref('1');
 		</fb-radio-group>
 	</div>
 </div>`,
-	}),
+    }),
 };

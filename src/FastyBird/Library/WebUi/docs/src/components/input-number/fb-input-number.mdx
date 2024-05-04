@@ -1,5 +1,5 @@
-import { Canvas, Meta, Controls } from '@storybook/blocks';
-import * as InputNumberStories from './fb-input-number.stories';
+import { Canvas, Meta, Controls } from "@storybook/blocks";
+import * as InputNumberStories from "./fb-input-number.stories";
 
 <Meta of={InputNumberStories} />
 
@@ -13,38 +13,26 @@ the minimum and maximum values allowed for input, enabling users to specify valu
 > **TIP:**
 > If an invalid string is entered into the input box, the input value will emit `NaN` to the upper layer as a result of the error.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.BasicUsage} />
 
 ## Disabled
 
 The `disabled` property accepts a `boolean`. If set to `true`, the component is disabled. To control the value within a range, you can use the `min`
 property to set the minimum value and `max` to set the maximum value. By default, the minimum value is `0`.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.Disabled}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.Disabled} />
 
 ## Steps
 
 You can define incremental steps by adding the `step` property and setting the desired step value.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.Steps}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.Steps} />
 
 ## Step Strictly
 
 The `step-strictly` property accepts a boolean value. When set to true, the input value can only be a multiple of the step value.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.StrictlyStep}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.StrictlyStep} />
 
 ## Precision
 
@@ -53,28 +41,19 @@ The `precision` property allows you to specify the precision of the input value.
 > **TIP:**
 > The value of precision must be a non-negative integer and should not be less than the number of decimal places in the step.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.Precision}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.Precision} />
 
 ## Size
 
 You can use the `size` property to adjust the size of the input field. Possible values include `large` or `small`.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.Size}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.Size} />
 
 ## Controls Position
 
 You can specify the position of control buttons using the `controls-position` property.
 
-<Canvas
-	withToolbar={true}
-	of={InputNumberStories.ControlsPosition}
-/>
+<Canvas withToolbar={true} of={InputNumberStories.ControlsPosition} />
 
 ---
 

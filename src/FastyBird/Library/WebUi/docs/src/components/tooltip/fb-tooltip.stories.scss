@@ -1,58 +1,58 @@
 .fb-tooltip-story-block {
-	max-width: 600px;
+    max-width: 600px;
 
-	.fb-tooltip-story-block__layout-row-1 {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+    .fb-tooltip-story-block__layout-row-1 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-	.fb-tooltip-story-block__layout-row-2 {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 10px;
-		margin-bottom: 10px;
-	}
+    .fb-tooltip-story-block__layout-row-2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 
-	.fb-tooltip-story-block__layout-row-3 {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
+    .fb-tooltip-story-block__layout-row-3 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-	.fb-tooltip-story-block__layout-row-4 {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 10px;
-		margin-bottom: 10px;
-	}
+    .fb-tooltip-story-block__layout-row-4 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
 
-	.fb-tooltip-story-block__layout-row-5 {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+    .fb-tooltip-story-block__layout-row-5 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-	.fb-tooltip-story-block__layout-row-1,
-	.fb-tooltip-story-block__layout-row-2,
-	.fb-tooltip-story-block__layout-row-3,
-	.fb-tooltip-story-block__layout-row-4,
-	.fb-tooltip-story-block__layout-row-5 {
-		.fb-tooltip {
-			width: 110px;
-		}
-	}
+    .fb-tooltip-story-block__layout-row-1,
+    .fb-tooltip-story-block__layout-row-2,
+    .fb-tooltip-story-block__layout-row-3,
+    .fb-tooltip-story-block__layout-row-4,
+    .fb-tooltip-story-block__layout-row-5 {
+        .fb-tooltip {
+            width: 110px;
+        }
+    }
 }
 
 .fb-popper.is-customized-tooltip {
-	/* Set padding to ensure the height is 32px */
-	padding: 6px 12px;
-	background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
+    /* Set padding to ensure the height is 32px */
+    padding: 6px 12px;
+    background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
 }
 
 .fb-popper.is-customized-tooltip .fb-popper__arrow::before {
-	background: linear-gradient(45deg, #b2e68d, #bce689);
-	right: 0;
+    background: linear-gradient(45deg, #b2e68d, #bce689);
+    right: 0;
 }

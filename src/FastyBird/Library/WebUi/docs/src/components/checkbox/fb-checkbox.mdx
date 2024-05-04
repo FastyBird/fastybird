@@ -1,5 +1,5 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as CheckboxStories from './fb-checkbox.stories';
+import { Canvas, Meta } from "@storybook/blocks";
+import * as CheckboxStories from "./fb-checkbox.stories";
 
 <Meta of={CheckboxStories} />
 
@@ -14,19 +14,13 @@ Checkbox can be used alone to switch between two states.
 To define a bound variable using `v-model` in `fb-checkbox`, set the default value as a `Boolean` for a single `checkbox`. When selected, it defaults
 to `true`. Content within the `fb-checkbox` tag becomes the description displayed alongside the Checkbox button.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.BasicUsage} />
 
 ## Disabled
 
 To disable a Checkbox, simply add the `disabled` property.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.Disabled}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.Disabled} />
 
 ## Checkbox Group
 
@@ -34,47 +28,32 @@ The `fb-checkbox-group` component manages multiple Checkboxes bound to an array 
 has a `value` property representing its value. If no content is provided within the tag, the `label` property serves as the Checkbox description.
 The Checkbox is considered selected if its value exists in the array bound to `v-model`, and vice versa.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.CheckboxGroup}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.CheckboxGroup} />
 
 ## Indeterminate
 
 The `indeterminate` property enables you to achieve a "check all" effect.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.Indeterminate}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.Indeterminate} />
 
 ## Minimum & Maximum Items Checked
 
 The `min` and `max` properties can be used to restrict the number of checked items.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.MinMax}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.MinMax} />
 
 ## Button Style
 
 To style a Checkbox like a button, replace the `fb-checkbox` element with the `fb-checkbox-button` element. Additionally, you can use the `size` property
 for customization.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.Button}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.Button} />
 
 ## With Borders
 
 The `border` property adds a border to Checkboxes.
 
-<Canvas
-	withToolbar={true}
-	of={CheckboxStories.Bordered}
-/>
+<Canvas withToolbar={true} of={CheckboxStories.Bordered} />
 
 ---
 

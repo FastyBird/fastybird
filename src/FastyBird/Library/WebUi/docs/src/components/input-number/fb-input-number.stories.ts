@@ -1,15 +1,15 @@
-import { ref } from 'vue';
+import { ref } from "vue";
 
-import { Meta, StoryObj } from '@storybook/vue3';
-import { FbInputNumber, InputNumberControlPositionTypes } from '@fastybird/web-ui-components';
-import { ComponentSizeTypes } from '@fastybird/web-ui-constants';
+import { Meta, StoryObj } from "@storybook/vue3";
+import { FbInputNumber, InputNumberControlPositionTypes } from "@fastybird/web-ui-components";
+import { ComponentSizeTypes } from "@fastybird/web-ui-constants";
 
-import './fb-input-number.stories.scss';
+import "./fb-input-number.stories.scss";
 
 const meta: Meta<typeof FbInputNumber> = {
-	component: FbInputNumber,
-	title: 'Components/Form/Input number',
-	excludeStories: /.*Data$/,
+    component: FbInputNumber,
+    title: "Components/Form/Input number",
+    excludeStories: /.*Data$/,
 };
 
 export default meta;
@@ -17,10 +17,10 @@ export default meta;
 type Story = StoryObj<typeof FbInputNumber>;
 
 export const BasicUsage: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num" :min="1" :max="10" @change="handleChange" />
 </template>
@@ -34,33 +34,33 @@ const handleChange = (value: number) => {
 	console.log(value);
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(1);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(1);
 
-			const handleChange = (value: number): void => {
-				console.log(value);
-			};
+            const handleChange = (value: number): void => {
+                console.log(value);
+            };
 
-			return {
-				num,
-				handleChange,
-			};
-		},
-		template: `<fb-input-number v-model="num" :min="1" :max="10" @change="handleChange" />`,
-	}),
+            return {
+                num,
+                handleChange,
+            };
+        },
+        template: `<fb-input-number v-model="num" :min="1" :max="10" @change="handleChange" />`,
+    }),
 };
 
 export const Disabled: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num" :disabled="true" />
 </template>
@@ -70,28 +70,28 @@ import { ref } from 'vue';
 
 const num = ref(1);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(1);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(1);
 
-			return {
-				num,
-			};
-		},
-		template: `<fb-input-number v-model="num" :disabled="true" />`,
-	}),
+            return {
+                num,
+            };
+        },
+        template: `<fb-input-number v-model="num" :disabled="true" />`,
+    }),
 };
 
 export const Steps: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num" :step="2" />
 </template>
@@ -101,28 +101,28 @@ import { ref } from 'vue';
 
 const num = ref(5);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(5);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(5);
 
-			return {
-				num,
-			};
-		},
-		template: `<fb-input-number v-model="num" :step="2" />`,
-	}),
+            return {
+                num,
+            };
+        },
+        template: `<fb-input-number v-model="num" :step="2" />`,
+    }),
 };
 
 export const StrictlyStep: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num" :step="2" step-strictly />
 </template>
@@ -132,28 +132,28 @@ import { ref } from 'vue';
 
 const num = ref(2);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(2);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(2);
 
-			return {
-				num,
-			};
-		},
-		template: `<fb-input-number v-model="num" :step="2" step-strictly />`,
-	}),
+            return {
+                num,
+            };
+        },
+        template: `<fb-input-number v-model="num" :step="2" step-strictly />`,
+    }),
 };
 
 export const Precision: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num" :precision="2" :step="0.1" :max="10" />
 </template>
@@ -163,28 +163,28 @@ import { ref } from 'vue';
 
 const num = ref(1);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(1);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(1);
 
-			return {
-				num,
-			};
-		},
-		template: `<fb-input-number v-model="num" :precision="2" :step="0.1" :max="10" />`,
-	}),
+            return {
+                num,
+            };
+        },
+        template: `<fb-input-number v-model="num" :precision="2" :step="0.1" :max="10" />`,
+    }),
 };
 
 export const Size: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number v-model="num1" size="${ComponentSizeTypes.LARGE}" />
 	<fb-input-number v-model="num2" />
@@ -198,37 +198,37 @@ const num1 = ref(1);
 const num2 = ref(2);
 const num3 = ref(3);
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num1 = ref(1);
-			const num2 = ref(2);
-			const num3 = ref(3);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num1 = ref(1);
+            const num2 = ref(2);
+            const num3 = ref(3);
 
-			return {
-				num1,
-				num2,
-				num3,
-			};
-		},
-		template: `
+            return {
+                num1,
+                num2,
+                num3,
+            };
+        },
+        template: `
 <div class="fb-input-number-story-block">
 	<fb-input-number v-model="num1" size="${ComponentSizeTypes.LARGE}" />
 	<fb-input-number v-model="num2" />
 	<fb-input-number v-model="num3" size="${ComponentSizeTypes.SMALL}" />
 </div>`,
-	}),
+    }),
 };
 
 export const ControlsPosition: Story = {
-	parameters: {
-		docs: {
-			source: {
-				code: `
+    parameters: {
+        docs: {
+            source: {
+                code: `
 <template>
 	<fb-input-number
 		v-model="num"
@@ -264,25 +264,25 @@ const handleChange = (value: number) => {
 	console.log(value);
 }
 </script>`,
-			},
-		},
-	},
-	tags: ['hideInSidebar'],
-	render: () => ({
-		components: { FbInputNumber },
-		setup: () => {
-			const num = ref(1);
+            },
+        },
+    },
+    tags: ["hideInSidebar"],
+    render: () => ({
+        components: { FbInputNumber },
+        setup: () => {
+            const num = ref(1);
 
-			const handleChange = (value: number) => {
-				console.log(value);
-			};
+            const handleChange = (value: number) => {
+                console.log(value);
+            };
 
-			return {
-				num,
-				handleChange,
-			};
-		},
-		template: `
+            return {
+                num,
+                handleChange,
+            };
+        },
+        template: `
 <div class="fb-input-number-story-block">
 	<fb-input-number
 		v-model="num"
@@ -308,5 +308,5 @@ const handleChange = (value: number) => {
 		@change="handleChange"
 	/>
 </div>`,
-	}),
+    }),
 };

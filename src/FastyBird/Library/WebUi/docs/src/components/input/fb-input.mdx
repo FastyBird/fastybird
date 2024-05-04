@@ -1,5 +1,5 @@
-import { Canvas, Meta } from '@storybook/blocks';
-import * as InputStories from './fb-input.stories';
+import { Canvas, Meta } from "@storybook/blocks";
+import * as InputStories from "./fb-input.stories";
 
 <Meta of={InputStories} />
 
@@ -13,97 +13,67 @@ Enter data using either mouse or keyboard inputs.
 
 ## Basic usage
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.BasicUsage}
-/>
+<Canvas withToolbar={true} of={InputStories.BasicUsage} />
 
 ## Disabled
 
 To disable the Input, simply set the `disabled` property to `true`. This will prevent users from interacting with the input field.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Disabled}
-/>
+<Canvas withToolbar={true} of={InputStories.Disabled} />
 
 ## Clearable
 
 You can make the Input clearable by setting the `clearable` property to `true`. This adds a clear icon to the input field, allowing users to easily
 clear the input value with a click.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Clearable}
-/>
+<Canvas withToolbar={true} of={InputStories.Clearable} />
 
 ## Formatter
 
 You can customize the display value of the Input component using the `formatter` property. Additionally, you can define a `parser` function to parse
 the user input value into the desired format. This combination allows you to control both the displayed value and the parsed value of the Input component.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Formatter}
-/>
+<Canvas withToolbar={true} of={InputStories.Formatter} />
 
 ## Password Box
 
 You can create a toggle-able password Input by using the `show-password` property. When this property is set to `true`, the Input will display the password
 in plain text, allowing users to view the entered text.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Password}
-/>
+<Canvas withToolbar={true} of={InputStories.Password} />
 
 ## Input With Icon
 
 To indicate the input type with an icon, you can utilize the `prefix-icon` and `suffix-icon` properties. Additionally, you can use the `prefix` and `suffix`
 named slots to achieve the same effect.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.WithIcon}
-/>
+<Canvas withToolbar={true} of={InputStories.WithIcon} />
 
 ## Textarea
 
 To enable users to input multiple lines of text, you can set the `type` attribute to "textarea" and control the height using the `rows` property. This makes
 the input resizable for entering larger amounts of text.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Textarea}
-/>
+<Canvas withToolbar={true} of={InputStories.Textarea} />
 
 ## Autosize Textarea
 
 When using a textarea type of Input, you can set the `autosize` property to automatically adjust the height based on the content. You can provide an options
 object to `autosize` to specify the minimum and maximum number of lines the textarea can automatically adjust to.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.AutosizeTextarea}
-/>
+<Canvas withToolbar={true} of={InputStories.AutosizeTextarea} />
 
 ## Mixed Input
 
 You can use slots to distribute elements that you want to prepend or append to the Input component.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Mixed}
-/>
+<Canvas withToolbar={true} of={InputStories.Mixed} />
 
 ## Sizes
 
 You can use the `size` property to adjust the size of the Input component. It supports three options: `default`, `large`, and `small`.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.Sizes}
-/>
+<Canvas withToolbar={true} of={InputStories.Sizes} />
 
 ## Limit Length
 
@@ -111,10 +81,7 @@ The `maxlength` and `minlength` properties of the input allow you to set limits 
 for a text or textarea type of Input, it restricts the length of the input value. Additionally, you can display the word count by setting the `show-word-limit`
 property to true. The "number of characters" is measured using JavaScript string length.
 
-<Canvas
-	withToolbar={true}
-	of={InputStories.LimitLength}
-/>
+<Canvas withToolbar={true} of={InputStories.LimitLength} />
 
 ---
 
