@@ -2,7 +2,7 @@
   "name": "@fastybird/web-ui-icons",
   "version": "1.0.0-dev.20",
   "type": "module",
-  "description": "Fontawesome Icons implemented for FastyBird IoT application",
+  "description": "FontAwesome icons for FastyBird IoT application theme",
   "keywords": [
     "icon",
     "svg",

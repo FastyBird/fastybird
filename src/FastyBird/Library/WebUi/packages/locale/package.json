@@ -1,8 +1,8 @@
 {
   "name": "@fastybird/web-ui-locale",
-  "private": true,
   "version": "1.0.0-dev.20",
-  "description": "FastyBird IoT application localization",
+  "type": "module",
+  "description": "FastyBird IoT application UI localization",
   "homepage": "https://www.fastybird.com",
   "bugs": "https://github.com/FastyBird/fastybird#issues",
   "license": "Apache-2.0",

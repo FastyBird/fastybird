@@ -90,7 +90,7 @@ jobs:
       - name: "Check styles linter"
         run: "yarn lint:styles"
 
-  build-storybook:
+  build-docs:
     name: "Test build Storybook"
     runs-on: "${{ matrix.operating-system }}"
 
@@ -125,12 +125,12 @@ jobs:
         run: "yarn workspace @fastybird/web-ui-docs build"
 
       - name: "Test build"
-        run: "yarn storybook:build"
+        run: "yarn workspace @fastybird/web-ui-docs build"
 
   publish-npmjs:
     name: "Build library and publish it to NPM"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-docs" ]
 
     strategy:
       matrix:
@@ -256,7 +256,7 @@ jobs:
   publish-github:
     name: "Build library and publish it to Github packages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-docs" ]
 
     strategy:
       matrix:
@@ -387,10 +387,10 @@ jobs:
         run: |
           echo "Version changed: ${{ steps.publish.outputs.old-version }} => ${{ steps.publish.outputs.version }}"
 
-  publish-storybook:
+  publish-docs:
     name: "Build Storybook and publish it to Github pages"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "qa", "lint", "build-storybook" ]
+    needs: [ "qa", "lint", "build-docs" ]
 
     strategy:
       matrix:
