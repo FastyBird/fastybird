@@ -125,7 +125,7 @@ jobs:
         run: "yarn install"
 
       - name: "Test build"
-        run: "yarn workspace @fastybird/web-ui-docs build"
+        run: "yarn build"
 
   publish-npmjs:
     name: "Build library and publish it to NPM"
@@ -426,7 +426,7 @@ jobs:
         run: "yarn install"
 
       - name: "Build"
-        run: "yarn workspace @fastybird/web-ui-docs build"
+        run: "yarn build"
 
       - name: "Deploy"
         uses: "JamesIves/github-pages-deploy-action@3.6.2"
