@@ -39,14 +39,14 @@
     "clean": "lerna clean && rm -rf node_modules",
     "fix": "lerna run fix",
     "graph": "nx graph",
-    "types": "lerna run types --stream --parallel --ignore '@fastybird/web-ui'",
-    "lint:js": "lerna run lint:js --stream --parallel --ignore '@fastybird/web-ui'",
-    "lint:js:fix": "lerna run lint:js:fix --stream --parallel --ignore '@fastybird/web-ui'",
-    "lint:styles": "lerna run lint:styles --stream --parallel --ignore '@fastybird/web-ui'",
+    "types": "lerna run types --stream --ignore '@fastybird/web-ui'",
+    "lint:js": "lerna run lint:js --stream --ignore '@fastybird/web-ui'",
+    "lint:js:fix": "lerna run lint:js:fix --stream --ignore '@fastybird/web-ui'",
+    "lint:styles": "lerna run lint:styles --stream --ignore '@fastybird/web-ui'",
     "pretty": "yarn pretty:write && yarn pretty:check --ignore '@fastybird/web-ui'",
     "pretty:check": "lerna run pretty:check --ignore '@fastybird/web-ui'",
     "pretty:write": "lerna run pretty:write --ignore '@fastybird/web-ui'",
-    "test": "lerna run test --stream --parallel --ignore '@fastybird/web-ui'"
+    "test": "lerna run test --stream --ignore '@fastybird/web-ui'"
   },
   "devDependencies": {
     "lerna": "^8.1"
