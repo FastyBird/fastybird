@@ -122,7 +122,7 @@ jobs:
 
       - name: "Install dependencies"
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: "yarn workspace @fastybird/web-ui-docs build"
+        run: "yarn install"
 
       - name: "Test build"
         run: "yarn workspace @fastybird/web-ui-docs build"
