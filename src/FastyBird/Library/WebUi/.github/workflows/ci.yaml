@@ -433,6 +433,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: "main"
-          FOLDER: "./docs/storybook-static"
+          FOLDER: "docs/storybook-static"
           CLEAN: true
           TARGET_FOLDER: "docs"
