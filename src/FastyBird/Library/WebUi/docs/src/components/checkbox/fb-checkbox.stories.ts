@@ -40,7 +40,7 @@ export const BasicUsage: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checked1 = ref(true);
@@ -111,7 +111,7 @@ export const Disabled: Story = {
 	<fb-checkbox v-model="checked2">Not disabled</fb-checkbox>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checked1 = ref(true);
@@ -159,7 +159,7 @@ export const CheckboxGroup: Story = {
 	</fb-checkbox-group>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checkList = ref(['Value selected and disabled', 'Value A']);
@@ -222,7 +222,7 @@ export const Indeterminate: Story = {
 	</fb-checkbox-group>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checkAll = ref(false);
@@ -317,7 +317,7 @@ export const MinMax: Story = {
 	</fb-checkbox-group>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checkedCities = ref(['New York', 'Washington']);
@@ -395,7 +395,7 @@ export const Button: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checkboxGroup1 = ref(['New York']);
@@ -492,7 +492,7 @@ export const Bordered: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const checked1 = ref(true);

@@ -65,7 +65,7 @@ export const IconSeparator: Story = {
 	</fb-breadcrumb>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasChevronRight } from '@fastybird/web-ui-icons';
 </script>`,
             },

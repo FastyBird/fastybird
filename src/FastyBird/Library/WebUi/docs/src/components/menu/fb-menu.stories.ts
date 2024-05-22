@@ -69,7 +69,7 @@ export const TopBar: Story = {
 	</fb-menu>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const activeIndex1 = ref('1');
@@ -204,7 +204,7 @@ export const LeftRight: Story = {
 	</fb-menu>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const activeIndex = ref('1');
@@ -378,7 +378,7 @@ export const SideBar: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasLocationDot, FasBars, FarFileLines, FasGear } from '@fastybird/web-ui-icons';
 
 const handleOpen = (key: string, keyPath: string[]): void => {
@@ -552,7 +552,7 @@ export const Collapse: Story = {
 		</fb-menu>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasLocationDot, FasBars, FarFileLines, FasGear } from '@fastybird/web-ui-icons';
 

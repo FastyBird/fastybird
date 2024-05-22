@@ -1,4 +1,4 @@
-@use 'mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
 
 @include b(swipe) {
 	display: flex;

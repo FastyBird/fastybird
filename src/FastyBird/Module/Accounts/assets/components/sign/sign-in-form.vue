@@ -1,58 +1,77 @@
 <template>
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-input
-			v-model="uid"
-			:error="uidError"
+	<el-form
+		ref="signFormEl"
+		:model="signForm"
+		:rules="rules"
+		label-position="top"
+		status-icon
+		class="px-5"
+		@submit.prevent="onSubmit"
+	>
+		<el-form-item
 			:label="t('fields.identity.uid.title')"
-			:required="true"
-			name="uid"
-		/>
-	</fb-ui-content>
-
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-input
-			v-model="password"
-			:error="passwordError"
-			:label="t('fields.identity.password.title')"
-			:required="true"
-			:type="FbFormInputTypeTypes.PASSWORD"
-			name="password"
-		/>
-	</fb-ui-content>
-
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-checkbox
-			v-model="persistent"
-			:option="true"
-			name="persistent"
+			prop="uid"
+			class="mb-5"
 		>
-			{{ t('fields.persistent.title') }}
-		</fb-form-checkbox>
-	</fb-ui-content>
+			<el-input
+				v-model="signForm.uid"
+				name="uid"
+			/>
+		</el-form-item>
+
+		<el-form-item
+			:label="t('fields.identity.password.title')"
+			prop="password"
+			class="mb-5"
+		>
+			<el-input
+				v-model="signForm.password"
+				type="password"
+				name="password"
+				show-password
+			/>
+		</el-form-item>
+
+		<el-checkbox
+			v-model="signForm.persistent"
+			:label="t('fields.persistent.title')"
+			name="persistent"
+			class="mb-10"
+		/>
+
+		<el-button
+			type="primary"
+			size="large"
+			class="block w-full"
+			@click="onSubmit(signFormEl)"
+		>
+			{{ t('buttons.signIn.title') }}
+		</el-button>
+	</el-form>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useForm, useField } from 'vee-validate';
-import { object as yObject, string as yString, boolean as yBoolean } from 'yup';
 import get from 'lodash/get';
-
-import { FbUiContent, FbFormInput, FbFormCheckbox, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
+import { ElInput, ElCheckbox, ElForm, ElFormItem, ElButton, FormInstance, FormRules } from 'element-plus';
 
 import { useSession } from '../../models';
 import { useFlashMessage } from '../../composables';
+import { FormResultTypes } from '../../types';
 import { ISignInForm, ISignInProps } from './sign-in-form.types';
 
+defineOptions({
+	name: 'SignInForm',
+});
+
 const props = withDefaults(defineProps<ISignInProps>(), {
-	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
@@ -61,50 +80,46 @@ const flashMessage = useFlashMessage();
 
 const sessionStore = useSession();
 
-const { validate } = useForm<ISignInForm>({
-	validationSchema: yObject({
-		uid: yString().required(t('fields.identity.uid.validation.required')),
-		password: yString().required(t('fields.identity.password.validation.required')),
-		persistent: yBoolean().default(false),
-	}),
+const signFormEl = ref<FormInstance | undefined>(undefined);
+
+const rules = reactive<FormRules<ISignInForm>>({
+	uid: [{ required: true, message: t('fields.identity.uid.validation.required'), trigger: 'change' }],
+	password: [{ required: true, message: t('fields.identity.password.validation.required'), trigger: 'change' }],
 });
 
-const { value: uid, errorMessage: uidError, setValue: setUid } = useField<string>('uid');
-const { value: password, errorMessage: passwordError, setValue: setPassword } = useField<string>('password');
-const { value: persistent, setValue: setPersistent } = useField<boolean>('persistent');
+const signForm = reactive<ISignInForm>({
+	uid: '',
+	password: '',
+	persistent: false,
+});
 
-watch(
-	(): boolean => props.remoteFormSubmit,
-	async (val): Promise<void> => {
-		if (val) {
-			emit('update:remoteFormSubmit', false);
+const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
+	if (!formEl) return;
 
-			const validationResult = await validate();
+	await formEl.validate(async (valid: boolean): Promise<void> => {
+		if (valid) {
+			emit('update:remoteFormResult', FormResultTypes.WORKING);
 
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+			try {
+				await sessionStore.create({ uid: signForm.uid, password: signForm.password });
 
-				try {
-					await sessionStore.create({ uid: uid.value, password: password.value });
+				emit('update:remoteFormResult', FormResultTypes.OK);
+			} catch (e: any) {
+				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-					emit('update:remoteFormResult', FbFormResultTypes.OK);
-				} catch (e: any) {
-					emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+				const errorMessage = t('messages.requestError');
 
-					const errorMessage = t('messages.requestError');
-
-					if (get(e, 'exception', null) !== null) {
-						flashMessage.exception(e.exception, errorMessage);
-					} else if (get(e, 'response', null) !== null) {
-						flashMessage.requestError(e.response, errorMessage);
-					} else {
-						flashMessage.error(errorMessage);
-					}
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(e.exception, errorMessage);
+				} else if (get(e, 'response', null) !== null) {
+					flashMessage.requestError(e.response, errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
 				}
 			}
 		}
-	}
-);
+	});
+};
 
 watch(
 	(): boolean => props.remoteFormReset,
@@ -112,9 +127,9 @@ watch(
 		emit('update:remoteFormReset', false);
 
 		if (val) {
-			setUid('');
-			setPassword('');
-			setPersistent(false);
+			if (!signFormEl.value) return;
+
+			signFormEl.value.resetFields();
 		}
 	}
 );

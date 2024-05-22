@@ -1,6 +1,7 @@
+@use 'element-plus/theme-chalk/src/common/var' as *;
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/mixins/var' as *;
 @use 'common/var' as *;
-@use 'mixins/mixins' as *;
-@use 'mixins/var' as *;
 
 @include b(media-item) {
 	@include set-component-css-var('media-item', $media-item);

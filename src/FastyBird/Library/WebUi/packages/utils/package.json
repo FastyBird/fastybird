@@ -40,8 +40,6 @@
     "pretty:write": "prettier src --write"
   },
   "dependencies": {
-    "@fastybird/web-ui-constants": "1.0.0-dev.20",
-    "@fastybird/web-ui-icons": "1.0.0-dev.20",
     "@vueuse/core": "^10.9",
     "lodash": "^4.17"
   },

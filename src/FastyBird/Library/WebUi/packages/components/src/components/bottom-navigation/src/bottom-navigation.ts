@@ -1,5 +1,4 @@
 import { buildProps, definePropType } from '@fastybird/web-ui-utils';
-import { Variant, VariantTypes } from '@fastybird/web-ui-constants';
 
 import type { ExtractPropTypes } from 'vue';
 
@@ -7,10 +6,10 @@ export const bottomNavigationProps = buildProps({
 	/**
 	 * @description bottomNavigation variant
 	 */
-	variant: {
-		type: definePropType<Variant>(String),
-		values: [VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
-		default: VariantTypes.PRIMARY,
+	type: {
+		type: definePropType<'primary' | 'info' | 'success' | 'waring' | 'danger'>(String),
+		values: ['primary', 'info', 'success', 'waring', 'danger'],
+		default: 'primary',
 	},
 	/**
 	 * @description

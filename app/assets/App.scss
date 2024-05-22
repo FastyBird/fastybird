@@ -1,0 +1,37 @@
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/mixins/var' as *;
+
+@include b(app) {
+  @include e(aside) {
+    @include set-css-var-value(('aside', 'width'), '220px');
+
+    transition: all getCssVar('transition-duration');
+
+    @include m(collapsed) {
+      @include set-css-var-value(('aside', 'width'), '64px');
+    }
+  }
+
+  @include b(header) {
+    @include set-css-var-value(('header', 'padding'), '0px');
+    @include set-css-var-value(('header', 'height'), 'auto');
+  }
+
+  @include e(mobile-menu) {
+    @include b(drawer) {
+      @include e(header) {
+        @include set-css-var-value(('drawer', 'padding', 'primary'), '0px');
+
+        position: absolute;
+        top: 0.75rem;
+        right: 0.5rem;
+        z-index: 1;
+        margin: 0;
+      }
+
+      @include e(body) {
+        @include set-css-var-value(('drawer', 'padding', 'primary'), '0px');
+      }
+    }
+  }
+}

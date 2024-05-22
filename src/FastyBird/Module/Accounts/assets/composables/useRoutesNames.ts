@@ -7,6 +7,7 @@ export function useRoutesNames(): { routeNames: IRoutes } {
 		signUp: 'accounts_module-sign_up',
 		signOut: 'accounts_module-sign_out',
 		resetPassword: 'accounts_module-reset_password',
+		account: 'accounts_module-account',
 		accountProfile: 'accounts_module-account_profile',
 		accountPassword: 'accounts_module-account_password',
 	};

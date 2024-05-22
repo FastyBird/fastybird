@@ -2,91 +2,64 @@
 	<layout-sign-box>
 		<layout-sign-header :heading="t('headings.signIn')" />
 
-		<form @submit.prevent="onSubmit">
-			<sign-in-form
-				v-model:remote-form-submit="remoteFormSubmit"
-				v-model:remote-form-result="remoteFormResult"
-			/>
+		<sign-in-form v-model:remote-form-result="remoteFormResult" />
 
-			<fb-ui-button
-				:variant="FbUiButtonVariantTypes.PRIMARY"
-				:type="FbUiButtonButtonTypes.SUBMIT"
-				block
-				uppercase
-				@click="onSubmit"
+		<div class="mt-5 text-center">
+			<el-button
+				link
+				@click="router.push({ name: routeNames.resetPassword })"
 			>
-				{{ t('buttons.signIn.title') }}
-			</fb-ui-button>
-
-			<fb-ui-content
-				:mt="FbSizeTypes.MEDIUM"
-				class="fb-accounts-module-view-sign-in__reset-password"
-			>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.LINK"
-					:action-type="FbUiButtonActionsTypes.VUE_LINK"
-					:action="{ name: routeNames.resetPassword }"
-				>
-					{{ t('buttons.forgotPassword.title') }}
-				</fb-ui-button>
-			</fb-ui-content>
-		</form>
+				{{ t('buttons.forgotPassword.title') }}
+			</el-button>
+		</div>
 	</layout-sign-box>
 </template>
 
 <script setup lang="ts">
 import { inject, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { useMeta } from 'vue-meta';
 import { Emitter } from 'mitt';
-
-import {
-	FbFormResultTypes,
-	FbSizeTypes,
-	FbUiButton,
-	FbUiButtonActionsTypes,
-	FbUiButtonVariantTypes,
-	FbUiButtonButtonTypes,
-	FbUiContent,
-} from '@fastybird/web-ui-library';
+import { ElButton } from 'element-plus';
 
 import { configurationKey } from '../configuration';
-import { EventBusEventsType } from '../types';
+import { EventBusEventsType, FormResultTypes } from '../types';
 import { useRoutesNames } from '../composables';
 import { LayoutSignBox, LayoutSignHeader, SignInForm } from '../components';
+
+defineOptions({
+	name: 'ViewSignIn',
+});
 
 const configuration = inject(configurationKey);
 
 const { t } = useI18n();
 const { routeNames } = useRoutesNames();
+const router = useRouter();
 
 const eventsBus = inject<Emitter<EventBusEventsType>>(configuration?.injectionKeys.eventBusInjectionKey ?? 'eventBus');
 
-const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
-
-// Submit form
-const onSubmit = (): void => {
-	remoteFormSubmit.value = true;
-};
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
 
 watch(
-	(): FbFormResultTypes => remoteFormResult.value,
-	(state: FbFormResultTypes): void => {
-		if (state === FbFormResultTypes.WORKING) {
+	(): FormResultTypes => remoteFormResult.value,
+	(state: FormResultTypes): void => {
+		if (state === FormResultTypes.WORKING) {
 			eventsBus?.emit('loadingOverlay', 10);
 		} else {
 			eventsBus?.emit('loadingOverlay', false);
 
-			if (state === FbFormResultTypes.OK) {
+			if (state === FormResultTypes.OK) {
 				eventsBus?.emit('userSigned', 'in');
 			}
 		}
 	}
 );
-</script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'view-sign-in';
-</style>
+useMeta({
+	title: t('meta.sign.in.title'),
+});
+</script>
 
 <i18n src="../locales/locales.json" />

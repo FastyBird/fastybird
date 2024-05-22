@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/FastyBird/web-ui-library.git"
   },
-  "main": "./src/entry.ts",
+  "main": "dist/web-ui-components.umd.js",
   "module": "dist/web-ui-components.es.js",
   "types": "dist/web-ui-components.d.ts",
   "exports": {
@@ -41,17 +41,15 @@
   },
   "dependencies": {
     "@ctrl/tinycolor": "^4.0",
-    "@fastybird/web-ui-constants": "1.0.0-dev.20",
-    "@fastybird/web-ui-directives": "1.0.0-dev.20",
-    "@fastybird/web-ui-hooks": "1.0.0-dev.20",
+    "@element-plus/icons-vue": "^2.3",
     "@fastybird/web-ui-icons": "1.0.0-dev.20",
-    "@fastybird/web-ui-locale": "1.0.0-dev.20",
     "@fastybird/web-ui-theme-chalk": "1.0.0-dev.20",
     "@fastybird/web-ui-utils": "1.0.0-dev.20",
     "@popperjs/core": "^2.11",
     "@vueuse/core": "^10.9",
     "async-validator": "^4.2",
     "csstype": "^3.1",
+    "element-plus": "^2.7",
     "lodash": "^4.17",
     "vue-router": "^4.3"
   },

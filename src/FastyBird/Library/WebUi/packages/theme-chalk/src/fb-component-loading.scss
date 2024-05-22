@@ -1,9 +1,10 @@
 @use 'sass:map';
 
+@use 'element-plus/theme-chalk/src/common/var' as *;
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/mixins/utils' as *;
+@use 'element-plus/theme-chalk/src/mixins/var' as *;
 @use 'common/var' as *;
-@use 'mixins/mixins' as *;
-@use 'mixins/utils' as *;
-@use 'mixins/var' as *;
 
 @include b(component-loading) {
 	@include set-component-css-var('component-loading', $component-loading);

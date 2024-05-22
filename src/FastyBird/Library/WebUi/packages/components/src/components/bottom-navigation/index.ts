@@ -11,4 +11,4 @@ export default FbBottomNavigation;
 export * from './src/bottom-navigation';
 export * from './src/heading';
 
-export type { FbBottomNavigationInstance, FbBottomNavigationHeadingInstance } from './src/instance';
+export type { BottomNavigationInstance, BottomNavigationHeadingInstance } from './src/instance';

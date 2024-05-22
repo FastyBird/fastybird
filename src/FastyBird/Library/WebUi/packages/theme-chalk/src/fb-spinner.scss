@@ -1,10 +1,11 @@
 @use 'sass:map';
 @use 'sass:math';
 
+@use 'element-plus/theme-chalk/src/common/var' as *;
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/mixins/utils' as *;
+@use 'element-plus/theme-chalk/src/mixins/var' as *;
 @use 'common/var' as *;
-@use 'mixins/mixins' as *;
-@use 'mixins/utils' as *;
-@use 'mixins/var' as *;
 
 @include b(spinner) {
 	@include set-component-css-var('spinner-size', $spinner-size);
@@ -48,9 +49,9 @@
 		}
 	}
 
-	@each $variant in (primary, default, info, success, warning, danger) {
-		@include m(variant-#{$variant}) {
-			@include css-var-from-global(('spinner', 'color'), ('color', $variant));
+	@each $type in (primary, default, info, success, warning, danger) {
+		@include m(type-#{$type}) {
+			@include css-var-from-global(('spinner', 'color'), ('color', $type));
 		}
 	}
 

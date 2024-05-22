@@ -25,7 +25,7 @@ export const BasicUsage: Story = {
 	<fb-input-number v-model="num" :min="1" :max="10" @change="handleChange" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(1);
@@ -65,7 +65,7 @@ export const Disabled: Story = {
 	<fb-input-number v-model="num" :disabled="true" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(1);
@@ -96,7 +96,7 @@ export const Steps: Story = {
 	<fb-input-number v-model="num" :step="2" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(5);
@@ -127,7 +127,7 @@ export const StrictlyStep: Story = {
 	<fb-input-number v-model="num" :step="2" step-strictly />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(2);
@@ -158,7 +158,7 @@ export const Precision: Story = {
 	<fb-input-number v-model="num" :precision="2" :step="0.1" :max="10" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(1);
@@ -191,7 +191,7 @@ export const Size: Story = {
 	<fb-input-number v-model="num3" size="${ComponentSizeTypes.SMALL}" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num1 = ref(1);
@@ -255,7 +255,7 @@ export const ControlsPosition: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const num = ref(1);

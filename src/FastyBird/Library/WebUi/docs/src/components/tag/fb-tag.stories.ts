@@ -114,7 +114,7 @@ export const Dynamical: Story = {
 	</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import { FbButton, FbInput } from '@fastybird/web-ui-components';
 
@@ -293,7 +293,7 @@ export const Theme: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import type { TagProps } from '@fastybird/web-ui-components'
 
@@ -410,7 +410,7 @@ export const Rounded: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import type { TagProps } from '@fastybird/web-ui-components'
 
@@ -515,7 +515,7 @@ export const Checkable: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { nextTick, ref } from 'vue';
 
 const checked = ref(false);

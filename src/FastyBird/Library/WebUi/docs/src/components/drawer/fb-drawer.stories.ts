@@ -85,7 +85,7 @@ export const BasicUsage: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { FbMessageBox } from '@fastybird/web-ui-components';
 
@@ -226,7 +226,7 @@ export const NoTitle: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const drawer = ref(false);
@@ -307,7 +307,7 @@ export const CustomizedContent: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FbMessageBox } from '@fastybird/web-ui-components';
 import { FasKeyboard } from '@fastybird/web-ui-icons';
@@ -512,7 +512,7 @@ export const CustomizedHeader: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const visible = ref(false);
@@ -592,7 +592,7 @@ export const NestedDrawer: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FbMessageBox } from '@fastybird/web-ui-components';
 
@@ -683,7 +683,7 @@ export const WithDescription: Story = {
 	</fb-drawer>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { FbMessageBox } from '@fastybird/web-ui-components';
 import { FasImage } from '@fastybird/web-ui-icons';

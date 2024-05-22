@@ -132,7 +132,7 @@ export const Basic: Story = {
 	<fb-switch v-model="value2" class="switch-colors" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -191,7 +191,7 @@ export const Sizes: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(true);
@@ -290,7 +290,7 @@ export const Variants: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(true);
@@ -413,7 +413,7 @@ export const TextDescription: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -509,7 +509,7 @@ export const CustomIcons: Story = {
 	<fb-switch v-model="value2" inline-prompt :active-icon="FasCheck" :inactive-icon="FasXmark" class="fb-switch-story-block__row-item" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -557,7 +557,7 @@ export const CustomActionIcons: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasEye, FasEyeSlash } from '@fastybird/web-ui-icons';
 
@@ -603,7 +603,7 @@ export const ValueTypes: Story = {
 	</fb-tooltip>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('100');
@@ -645,7 +645,7 @@ export const Disabled: Story = {
 	<fb-switch v-model="value2" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -684,7 +684,7 @@ export const Loading: Story = {
 	<fb-switch v-model="value2" loading />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -732,7 +732,7 @@ export const PreventSwitching: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(true);
@@ -851,7 +851,7 @@ export const CustomActionSlot: Story = {
 	</fb-switch>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(true);

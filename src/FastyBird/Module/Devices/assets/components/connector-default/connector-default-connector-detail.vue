@@ -39,7 +39,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { orderBy } from 'natural-orderby';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiContent, FbUiNoResults, FbUiScrollShadow, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '../../composables';

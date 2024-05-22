@@ -1,4 +1,4 @@
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
+import { FormResultTypes } from '../../types';
 
 export interface ISignUpForm {
 	emailAddress: string;
@@ -9,6 +9,6 @@ export interface ISignUpForm {
 
 export interface ISignUpProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 	remoteFormReset?: boolean;
 }

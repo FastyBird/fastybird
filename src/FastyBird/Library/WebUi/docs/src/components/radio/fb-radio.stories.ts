@@ -48,7 +48,7 @@ export const BasicUsage: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const radio1 = ref('1');
@@ -112,7 +112,7 @@ export const Disabled: Story = {
 	<fb-radio v-model="radio" disabled value="selected and disabled">Option B</fb-radio>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const radio = ref('selected and disabled');
@@ -151,7 +151,7 @@ export const RadioGroup: Story = {
 	</fb-radio-group>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const radio = ref(3)
@@ -212,7 +212,7 @@ export const Button: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const radio1 = ref('New York');
@@ -298,7 +298,7 @@ export const Bordered: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const radio1 = ref('1');

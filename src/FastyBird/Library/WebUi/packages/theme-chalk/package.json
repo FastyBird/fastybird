@@ -34,6 +34,9 @@
     "pretty:write": "prettier src --write",
     "build": "yarn clean && gulp --require @esbuild-kit/cjs-loader"
   },
+  "dependencies": {
+    "element-plus": "^2.7"
+  },
   "devDependencies": {
     "@esbuild-kit/cjs-loader": "^2.4",
     "@types/gulp-autoprefixer": "^0.0.37",

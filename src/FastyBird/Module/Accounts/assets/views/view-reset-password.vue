@@ -9,46 +9,20 @@
 			:heading="t('headings.passwordReset')"
 		/>
 
-		<div
-			v-if="makingRequest"
-			class="fb-accounts-module-view-reset-password__processing"
-		>
-			<fb-ui-spinner :size="FbSizeTypes.LARGE" />
-
-			<strong>{{ t('texts.processing') }}</strong>
-		</div>
-
-		<div v-if="!makingRequest">
-			<p
+		<div ref="signBoxEl">
+			<el-text
 				v-if="isSubmitted"
-				class="fb-accounts-module-view-reset-password__info"
+				size="small"
+				tag="p"
+				class="text-center"
 			>
-				<small>{{ t('texts.resetPasswordInstructionsEmailed') }}</small>
-			</p>
+				{{ t('texts.resetPasswordInstructionsEmailed') }}
+			</el-text>
 
-			<form
+			<reset-password-form
 				v-if="!isSubmitted"
-				@submit.prevent="onSubmit"
-			>
-				<reset-password-form
-					v-model:remote-form-submit="remoteFormSubmit"
-					v-model:remote-form-result="remoteFormResult"
-				/>
-
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.PRIMARY"
-					:type="FbUiButtonButtonTypes.SUBMIT"
-					block
-					uppercase
-					@click="onSubmit"
-				>
-					{{ t('buttons.resetPassword.title') }}
-				</fb-ui-button>
-
-				<p class="fb-accounts-module-view-reset-password__info">
-					<small>{{ t('texts.resetPasswordInfo') }}</small>
-				</p>
-			</form>
+				v-model:remote-form-result="remoteFormResult"
+			/>
 		</div>
 	</layout-sign-box>
 </template>
@@ -56,42 +30,48 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import { FbUiButton, FbUiSpinner, FbSizeTypes, FbUiButtonVariantTypes, FbUiButtonButtonTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
+import { useMeta } from 'vue-meta';
+import { ElLoading, ElText } from 'element-plus';
 
 import { LayoutSignHeader, LayoutSignBox, ResetPasswordForm } from '../components';
+import { FormResultTypes } from '../types';
+
+defineOptions({
+	name: 'ViewResetPassword',
+});
 
 const { t } = useI18n();
 
-const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
+const signBoxEl = ref<HTMLElement>();
 
-const makingRequest = ref<boolean>(false);
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+
 const isSubmitted = ref<boolean>(false);
 
-// Submit form
-const onSubmit = (): void => {
-	remoteFormSubmit.value = true;
-};
+const loader = ref<{ close: () => void } | null>(null);
 
 watch(
-	(): FbFormResultTypes => remoteFormResult.value,
-	(state: FbFormResultTypes): void => {
-		if (state === FbFormResultTypes.WORKING) {
-			makingRequest.value = true;
-			isSubmitted.value = false;
-		} else if (state === FbFormResultTypes.OK) {
+	(): FormResultTypes => remoteFormResult.value,
+	(state: FormResultTypes): void => {
+		if (state === FormResultTypes.WORKING) {
+			loader.value = ElLoading.service({
+				target: signBoxEl.value,
+				lock: true,
+				text: t('texts.processing'),
+			});
+		} else if (state === FormResultTypes.OK) {
+			loader.value?.close();
+
 			isSubmitted.value = true;
-			makingRequest.value = false;
-		} else if (state === FbFormResultTypes.ERROR) {
-			makingRequest.value = false;
+		} else if (state === FormResultTypes.ERROR) {
+			loader.value?.close();
 		}
 	}
 );
-</script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'view-reset-password';
-</style>
+useMeta({
+	title: t('meta.sign.passwordReset.title'),
+});
+</script>
 
 <i18n src="../locales/locales.json" />

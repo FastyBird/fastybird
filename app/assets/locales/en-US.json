@@ -16,6 +16,7 @@
 		"userMenu": {
 			"accountSettings": "Account settings",
 			"passwordChange": "Password change",
+			"lockScreen": "Lock screen",
 			"signOut": "Sign out"
 		}
 	}

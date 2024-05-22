@@ -30,7 +30,6 @@
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useEntityTitle, useFlashMessage } from '../../composables';

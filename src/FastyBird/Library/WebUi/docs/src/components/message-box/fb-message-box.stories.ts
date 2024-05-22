@@ -27,7 +27,7 @@ export const Alert: Story = {
 	<fb-button plain @click="openInfo">Click to open the info Alert message</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, FbMessageBox } from '@fastybird/web-ui-library'
 import type { MessageBoxAction } from '@fastybird/web-ui-library'
 
@@ -105,7 +105,7 @@ export const Confirm: Story = {
 	<fb-button plain @click="open">Click to open the Confirmation message</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, FbMessageBox, MessageBoxActionTypes } from '@fastybird/web-ui-library'
 import type { MessageBoxAction } from '@fastybird/web-ui-library'
 
@@ -175,7 +175,7 @@ export const Prompt: Story = {
 	<fb-button plain @click="open">Click to open the Confirmation message</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, FbMessageBox, MessageBoxActionTypes } from '@fastybird/web-ui-library'
 import type { MessageBoxAction } from '@fastybird/web-ui-library'
 
@@ -244,7 +244,7 @@ export const Vnode: Story = {
 	<fb-button plain @click="openTwo">Dynamic props</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { h, ref } from 'vue';
 import { FbMessage, FbMessageBox, MessageBoxActionTypes, FbSwitch } from '@fastybird/web-ui-library'
 import type { MessageBoxAction } from '@fastybird/web-ui-library'
@@ -316,7 +316,7 @@ export const Customization: Story = {
 	<fb-button plain @click="open">Click to open the Confirmation message</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, FbMessageBox, MessageBoxActionTypes } from '@fastybird/web-ui-library'
 
 const open = () => {

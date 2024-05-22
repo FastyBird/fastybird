@@ -1,8 +1,8 @@
 @use 'sass:color';
 @use 'sass:math';
 
-@use 'common/var' as *;
-@use 'mixins/mixins' as *;
+@use 'element-plus/theme-chalk/src/common/var' as *;
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
 
 @include b(icon-with-child) {
 	display: inline-block;
@@ -25,10 +25,10 @@
 		padding: 4px;
 	}
 
-	@each $variant in (primary, default, info, success, warning, danger) {
-		@include m(variant-#{$variant}) {
+	@each $type in (primary, default, info, success, warning, danger) {
+		@include m(type-#{$type}) {
 			@include e(child-icon) {
-				background-color: getCssVar('color', $variant);
+				background-color: getCssVar('color', $type);
 				color: getCssVar('color', 'white');
 			}
 		}

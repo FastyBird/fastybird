@@ -307,7 +307,7 @@ export const BasicUsage: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import {
   FasMagnifyingGlass,
   FasCheck,
@@ -589,7 +589,7 @@ export const Icon: Story = {
 	</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import {
   FasPenToSquare,
   FasShareNodes,
@@ -734,7 +734,7 @@ export const Sizes: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasMagnifyingGlass } from '@fastybird/web-ui-icons';
 </script>`,
             },

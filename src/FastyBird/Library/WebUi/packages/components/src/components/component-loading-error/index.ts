@@ -8,4 +8,4 @@ export default FbComponentLoadingError;
 
 export * from './src/component-loading-error';
 
-export type { FbComponentLoadingErrorInstance } from './src/instance';
+export type { ComponentLoadingErrorInstance } from './src/instance';

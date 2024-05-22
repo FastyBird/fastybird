@@ -1,5 +1,5 @@
 import { buildProps, definePropType } from '@fastybird/web-ui-utils';
-import { TypeComponentsMap } from '@fastybird/web-ui-utils';
+import { CircleCloseFilled, InfoFilled, SuccessFilled, WarningFilled } from '@element-plus/icons-vue';
 
 import { NotAllowed, NotFound, ServerError } from './icons';
 
@@ -45,10 +45,10 @@ export const IconMap = {
 } as const;
 
 export const IconComponentMap: Record<(typeof IconMap)[keyof typeof IconMap], Component> = {
-	[IconMap.success]: TypeComponentsMap.success,
-	[IconMap.warning]: TypeComponentsMap.warning,
-	[IconMap.error]: TypeComponentsMap.error,
-	[IconMap.info]: TypeComponentsMap.info,
+	[IconMap.success]: SuccessFilled,
+	[IconMap.warning]: WarningFilled,
+	[IconMap.error]: CircleCloseFilled,
+	[IconMap.info]: InfoFilled,
 	[IconMap['403']]: NotAllowed,
 	[IconMap['404']]: NotFound,
 	[IconMap['500']]: ServerError,

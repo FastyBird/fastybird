@@ -1,85 +1,118 @@
 <template>
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-input
-			v-model="uid"
-			:error="uidError"
+	<el-form
+		ref="resetPasswordFormEl"
+		:model="resetPasswordForm"
+		:rules="rules"
+		label-position="top"
+		status-icon
+		class="px-5"
+		@submit.prevent="onSubmit"
+	>
+		<el-form-item
 			:label="t('fields.identity.uid.title')"
-			:required="true"
-			name="uid"
-		/>
-	</fb-ui-content>
+			prop="uid"
+			class="mb-10"
+		>
+			<el-input
+				v-model="resetPasswordForm.uid"
+				name="uid"
+			/>
+		</el-form-item>
+
+		<el-button
+			type="primary"
+			size="large"
+			class="block w-full"
+			@click="onSubmit(resetPasswordFormEl)"
+		>
+			{{ t('buttons.resetPassword.title') }}
+		</el-button>
+	</el-form>
+
+	<div class="mt-5 px-5">
+		<el-button
+			class="block w-full"
+			@click="onBackToSignIn()"
+		>
+			{{ t('buttons.backToSignIn.title') }}
+		</el-button>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useField, useForm } from 'vee-validate';
-import { object as yObject, string as yString } from 'yup';
 import get from 'lodash/get';
-
-import { FbFormInput, FbFormResultTypes, FbSizeTypes, FbUiContent } from '@fastybird/web-ui-library';
+import { ElButton, ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
 
 import { useAccount } from '../../models';
-import { useFlashMessage } from '../../composables';
+import { useFlashMessage, useRoutesNames } from '../../composables';
+import { FormResultTypes } from '../../types';
 import { IResetPasswordForm, IResetPasswordProps } from './reset-password-form.types';
 
+defineOptions({
+	name: 'ResetPasswordForm',
+});
+
 const props = withDefaults(defineProps<IResetPasswordProps>(), {
-	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
+const router = useRouter();
 
 const accountStore = useAccount();
+const { routeNames } = useRoutesNames();
 
-const { validate } = useForm<IResetPasswordForm>({
-	validationSchema: yObject({
-		uid: yString().required(t('fields.identity.uid.validation.required')),
-	}),
+const resetPasswordFormEl = ref<FormInstance | undefined>(undefined);
+
+const rules = reactive<FormRules<IResetPasswordForm>>({
+	uid: [{ required: true, message: t('fields.identity.uid.validation.required'), trigger: 'change' }],
 });
 
-const { value: uid, errorMessage: uidError, setValue: setUid } = useField<string>('uid');
+const resetPasswordForm = reactive<IResetPasswordForm>({
+	uid: '',
+});
 
-watch(
-	(): boolean => props.remoteFormSubmit,
-	async (val): Promise<void> => {
-		if (val) {
-			emit('update:remoteFormSubmit', false);
+const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
+	if (!formEl) return;
 
-			const validationResult = await validate();
+	await formEl.validate(async (valid: boolean): Promise<void> => {
+		if (valid) {
+			emit('update:remoteFormResult', FormResultTypes.WORKING);
 
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+			try {
+				await accountStore.requestReset({ uid: resetPasswordForm.uid });
 
-				try {
-					await accountStore.requestReset({ uid: uid.value });
+				emit('update:remoteFormResult', FormResultTypes.OK);
+			} catch (e: any) {
+				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-					emit('update:remoteFormResult', FbFormResultTypes.OK);
-				} catch (e: any) {
-					emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+				const errorMessage = t('messages.requestError');
 
-					const errorMessage = t('messages.passwordRequestFail');
-
-					if (get(e, 'exception', null) !== null) {
-						flashMessage.exception(e.exception, errorMessage);
-					} else if (get(e, 'response', null) !== null) {
-						flashMessage.requestError(e.response, errorMessage);
-					} else {
-						flashMessage.error(errorMessage);
-					}
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(e.exception, errorMessage);
+				} else if (get(e, 'response', null) !== null) {
+					flashMessage.requestError(e.response, errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
 				}
 			}
 		}
-	}
-);
+	});
+};
+
+const onBackToSignIn = (): void => {
+	router.push({ name: routeNames.signIn });
+};
 
 watch(
 	(): boolean => props.remoteFormReset,
@@ -87,7 +120,9 @@ watch(
 		emit('update:remoteFormReset', false);
 
 		if (val) {
-			setUid('');
+			if (!resetPasswordFormEl.value) return;
+
+			resetPasswordFormEl.value.resetFields();
 		}
 	}
 );

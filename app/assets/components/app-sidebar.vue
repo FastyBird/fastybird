@@ -1,235 +1,52 @@
 <template>
-	<fb-layout-sidebar
-		:collapsed="menuCollapsed"
-		@collapse="onCollapseMenu"
+	<div
+		:class="ns.b()"
+		class="flex flex-col h-full"
 	>
-		<template #header>
+		<div
+			:class="ns.e('logo')"
+			class="p-1 dark:bg-menu-background bg-brand-primary h-[50px] flex flex-row justify-center"
+		>
 			<router-link
 				:to="{ name: 'root' }"
-				class="fb-app-component-application-sidebar__logo"
+				class="flex flex-row justify-center items-center overflow-hidden"
 			>
-				<logo-small v-if="!breakpointXl" />
+				<logo-bird class="fill-white dark:fill-brand-primary w-[55px]" />
 
-				<logo v-else />
+				<logo-fasty-bird
+					v-if="!props.menuCollapsed"
+					class="fill-white dark:fill-brand-primary w-[125px] ml-2 mt-2"
+				/>
 			</router-link>
-		</template>
+		</div>
 
-		<template #content>
-			<fb-layout-navigation :name="t('application.menu.root')">
-				<fb-layout-navigation-item
-					:action="{ name: 'root' }"
-					:label="t('application.menu.dashboard')"
-					:action-type="FbMenuItemTypes.VUE_LINK"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.TACHOMETER_ALT" />
-					</template>
-				</fb-layout-navigation-item>
-
-				<fb-layout-navigation-item
-					:action="{ name: devicesModuleRouteNames.devices }"
-					:label="t('application.menu.devices')"
-					:action-type="FbMenuItemTypes.VUE_LINK"
-					@click="onCollapseMenu"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.PLUG" />
-					</template>
-				</fb-layout-navigation-item>
-
-				<fb-layout-navigation-item
-					:action="{ name: devicesModuleRouteNames.connectors }"
-					:label="t('application.menu.connectors')"
-					:action-type="FbMenuItemTypes.VUE_LINK"
-					@click="onCollapseMenu"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.ETHERNET" />
-					</template>
-				</fb-layout-navigation-item>
-
-				<fb-layout-navigation-item
-					:action="{ name: 'root' }"
-					:label="t('application.menu.triggers')"
-					:action-type="FbMenuItemTypes.VUE_LINK"
-					@click="onCollapseMenu"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.PROJECT_DIAGRAM" />
-					</template>
-				</fb-layout-navigation-item>
-			</fb-layout-navigation>
-
-			<fb-layout-navigation
-				:name="t('application.menu.user')"
-				class="fb-app-component-application-sidebar__user-navigation"
-			>
-				<fb-layout-navigation-item
-					:label="t('application.userMenu.accountSettings')"
-					:action-type="FbMenuItemTypes.BUTTON"
-					@click="onAccountEdit"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.USER" />
-					</template>
-				</fb-layout-navigation-item>
-
-				<fb-layout-navigation-item
-					:label="t('application.userMenu.passwordChange')"
-					:action-type="FbMenuItemTypes.BUTTON"
-					@click="onPasswordChange"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.LOCK" />
-					</template>
-				</fb-layout-navigation-item>
-
-				<fb-layout-navigation-divider />
-
-				<fb-layout-navigation-item
-					:label="t('application.userMenu.signOut')"
-					:action-type="FbMenuItemTypes.BUTTON"
-					@click="onSignOut"
-				>
-					<template #icon>
-						<app-icon :icon="AppIconType.SIGN_OUT_ALT" />
-					</template>
-				</fb-layout-navigation-item>
-			</fb-layout-navigation>
-		</template>
-
-		<template #footer>
-			<fb-layout-user-menu
-				v-if="sessionStore.account !== null"
-				:name="sessionStore.account.name"
-				class="fb-app-component-application-sidebar__user-menu"
-			>
-				<template #avatar>
-					<app-gravatar
-						v-if="sessionStore.account.email"
-						:email="sessionStore.account.email?.address"
-						:size="36"
-						:default-img="'mm'"
-						:alt="sessionStore.account.name"
-					/>
-				</template>
-
-				<template #items>
-					<fb-layout-user-menu-item
-						:label="`Version: ${version}`"
-						:action-type="FbMenuItemTypes.TEXT"
-					/>
-					<fb-layout-user-menu-divider />
-
-					<fb-layout-user-menu-item
-						:label="t('application.userMenu.accountSettings')"
-						:action-type="FbMenuItemTypes.BUTTON"
-						@click="onAccountEdit"
-					>
-						<template #icon>
-							<app-icon :icon="AppIconType.USER" />
-						</template>
-					</fb-layout-user-menu-item>
-
-					<fb-layout-user-menu-item
-						:label="t('application.userMenu.passwordChange')"
-						:action-type="FbMenuItemTypes.BUTTON"
-						@click="onPasswordChange"
-					>
-						<template #icon>
-							<app-icon :icon="AppIconType.LOCK" />
-						</template>
-					</fb-layout-user-menu-item>
-
-					<fb-layout-user-menu-divider />
-
-					<fb-layout-user-menu-item
-						:label="t('application.userMenu.signOut')"
-						:action-type="FbMenuItemTypes.BUTTON"
-						@click="onSignOut"
-					>
-						<template #icon>
-							<app-icon :icon="AppIconType.SIGN_OUT_ALT" />
-						</template>
-					</fb-layout-user-menu-item>
-				</template>
-			</fb-layout-user-menu>
-		</template>
-	</fb-layout-sidebar>
+		<app-navigation :collapsed="props.menuCollapsed" />
+	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useNamespace } from 'element-plus';
 
-import {
-	FbLayoutSidebar,
-	FbLayoutNavigation,
-	FbLayoutNavigationItem,
-	FbLayoutNavigationDivider,
-	FbLayoutUserMenu,
-	FbLayoutUserMenuItem,
-	FbLayoutUserMenuDivider,
-	FbMenuItemTypes,
-} from '@fastybird/web-ui-library';
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
+import LogoBird from '../assets/images/fb_bird.svg?component';
+import LogoFastyBird from '../assets/images/fb_fastybird.svg?component';
 
-import { useSession } from '@fastybird/accounts-module';
-import { useRoutesNames as useDevicesModuleRoutesNames } from '@fastybird/devices-module';
-
-import { AppGravatar, AppIcon } from '@/components';
-import { AppIconType } from '@/components/types';
-
-import Logo from '@/assets/images/fastybird_row.svg?component';
-import LogoSmall from '@/assets/images/fastybird_bird.svg?component';
-
-import { eventBusInjectionKey } from '@/plugins';
-
-import { version } from './../../package.json';
+import AppNavigation from './app-navigation.vue';
 
 interface IAppSidebarProps {
 	menuCollapsed: boolean;
 }
 
-withDefaults(defineProps<IAppSidebarProps>(), {
-	menuCollapsed: true,
+defineOptions({
+	name: 'AppSidebar',
 });
 
-const emit = defineEmits<{
-	(e: 'update:menuCollapsed', menuCollapsed: boolean): void;
-	(e: 'editAccount'): void;
-	(e: 'passwordChange'): void;
-}>();
+const props = withDefaults(defineProps<IAppSidebarProps>(), {
+	menuCollapsed: false,
+});
 
-const { t } = useI18n();
-const sessionStore = useSession();
-const { routeNames: devicesModuleRouteNames } = useDevicesModuleRoutesNames();
-
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
-
-const eventBus = inject(eventBusInjectionKey);
-
-const breakpointXl = computed<boolean>((): boolean => breakpoints.xl.value);
-
-const onCollapseMenu = (): void => {
-	emit('update:menuCollapsed', true);
-};
-
-const onAccountEdit = (): void => {
-	emit('update:menuCollapsed', true);
-	emit('editAccount');
-};
-
-const onPasswordChange = (): void => {
-	emit('update:menuCollapsed', true);
-	emit('passwordChange');
-};
-
-const onSignOut = (): void => {
-	eventBus?.emit('userSigned', 'out');
-};
+const ns = useNamespace('app-sidebar');
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'app-sidebar';
+@import 'app-sidebar.scss';
 </style>

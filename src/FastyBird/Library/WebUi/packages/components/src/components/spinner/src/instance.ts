@@ -1,3 +1,3 @@
-import type FbSpinner from './spinner.vue';
+import type Spinner from './spinner.vue';
 
-export type FbSpinnerInstance = InstanceType<typeof FbSpinner>;
+export type SpinnerInstance = InstanceType<typeof Spinner>;

@@ -74,7 +74,7 @@ async function transformToVueComponent(file: string): Promise<void> {
 ${content}
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 defineOptions({
   name: ${JSON.stringify(componentName)}
 })

@@ -15,15 +15,14 @@ export default defineConfig({
 			staticImport: true,
 			insertTypesEntry: true,
 			rollupTypes: true,
-			bundledPackages: [
-				'@fastybird/web-ui-constants',
-				'@fastybird/web-ui-utils',
-				'@fastybird/web-ui-directives',
-				'@fastybird/web-ui-hooks',
-				'@fastybird/web-ui-locale',
-			],
 		}),
 	],
+	resolve: {
+		dedupe: ['vue', '@vueuse/core', 'element-plus'],
+	},
+	optimizeDeps: {
+		include: ['vue', '@vueuse/core', 'element-plus'],
+	},
 	build: {
 		lib: {
 			entry: resolve(__dirname, './src/entry.ts'),
@@ -38,12 +37,13 @@ export default defineConfig({
 					hook: 'generateBundle',
 				}),
 			],
-			external: ['vue'],
+			external: ['vue', 'element-plus'],
 			output: {
 				// Provide global variables to use in the UMD build
 				// for externalized deps
 				globals: {
 					vue: 'Vue',
+					'element-plus': 'ElementPlus',
 				},
 			},
 		},

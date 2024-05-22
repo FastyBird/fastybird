@@ -68,7 +68,7 @@ export const BasicUsage: Story = {
 	</fb-swipe>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from '@fastybird/web-ui-icons';
 
 const items = [

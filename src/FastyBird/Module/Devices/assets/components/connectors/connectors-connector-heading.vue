@@ -48,7 +48,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbLayoutPreviewHeading, FbUiButton, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '../../composables';

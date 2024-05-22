@@ -73,7 +73,7 @@ export const BasicUsage: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -200,7 +200,7 @@ export const DisabledOption: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -311,7 +311,7 @@ export const DisabledSelect: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -416,7 +416,7 @@ export const Clearable: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -597,7 +597,7 @@ export const MultipleSelect: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref([]);
@@ -788,7 +788,7 @@ export const CustomTemplate: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -942,7 +942,7 @@ export const DropdownHeader: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue';
 
 import type { CheckboxValueType } from '@fastybird/web-ui-library';
@@ -1137,7 +1137,7 @@ export const DropdownFooter: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 import type { CheckboxValueType } from '@fastybird/web-ui-library';
@@ -1325,7 +1325,7 @@ export const Grouping: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -1460,7 +1460,7 @@ export const OptionFilter: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref('');
@@ -1613,7 +1613,7 @@ export const RemoteSearch: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
 interface ListItem {
@@ -1881,7 +1881,7 @@ export const CreateNewItems: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref<string[]>([]);
@@ -1979,7 +1979,7 @@ export const ValueKeyAttribute: Story = {
 	</p>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 type Option = {
@@ -2075,7 +2075,7 @@ export const CustomTag: Story = {
 	</fb-select>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref([]);
@@ -2276,7 +2276,7 @@ export const CustomLoading: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 interface ListItem {

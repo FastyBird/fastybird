@@ -1,11 +1,15 @@
 <template>
-	<transition :name="ns.b()" v-on="on">
+	<transition
+		:name="ns.b()"
+		v-on="on"
+	>
 		<slot />
 	</transition>
 </template>
 
-<script lang="ts" setup>
-import { useNamespace } from '@fastybird/web-ui-hooks';
+<script setup lang="ts">
+import { useNamespace } from 'element-plus';
+
 import type { RendererElement } from 'vue';
 
 defineOptions({

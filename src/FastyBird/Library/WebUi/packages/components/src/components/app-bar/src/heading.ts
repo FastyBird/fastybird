@@ -1,6 +1,6 @@
 import { buildProps, definePropType } from '@fastybird/web-ui-utils';
 
-import type { ExtractPropTypes } from 'vue';
+import type { Component, ExtractPropTypes } from 'vue';
 
 export enum AppBarHeadingAlignTypes {
 	LEFT = 'left',
@@ -20,6 +20,13 @@ export const appBarHeadingProps = buildProps({
 		type: definePropType<AppBarHeadingAlign>(String),
 		values: appBarHeadingAlignTypes,
 		default: AppBarHeadingAlignTypes.LEFT,
+	},
+	/**
+	 * @description icon of dialog. Can also be passed with a named slot
+	 */
+	icon: {
+		type: definePropType<string | Component | undefined>([String, Object, Function]),
+		default: undefined,
 	},
 	/**
 	 * @description

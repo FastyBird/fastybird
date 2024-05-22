@@ -8,4 +8,4 @@ export default FbComponentLoading;
 
 export * from './src/component-loading';
 
-export type { FbComponentLoadingInstance } from './src/instance';
+export type { ComponentLoadingInstance } from './src/instance';

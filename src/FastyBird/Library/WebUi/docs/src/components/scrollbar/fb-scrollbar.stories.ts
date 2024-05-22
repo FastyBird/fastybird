@@ -166,7 +166,7 @@ export const MaxHeight: Story = {
 	</fb-scrollbar>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const count = ref(3);
@@ -257,9 +257,9 @@ export const Manual: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { FbScrollbar } from 'element-plus'
+import { FbScrollbar } from '@fastybird/web-ui-library'
 
 const max = ref(0);
 const value = ref(0);

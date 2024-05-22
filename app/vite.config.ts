@@ -4,6 +4,7 @@ import { viteVConsole } from 'vite-plugin-vconsole';
 import svgLoader from 'vite-svg-loader';
 import vue from '@vitejs/plugin-vue';
 import vueI18n from '@intlify/unplugin-vue-i18n/vite';
+import UnoCSS from 'unocss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -24,17 +25,15 @@ export default defineConfig({
 			},
 		}),
 		svgLoader(),
+		UnoCSS(),
 	],
 	resolve: {
 		alias: {
 			'@fastybird/accounts-module': resolve(__dirname, './../src/FastyBird/Module/Accounts/assets/entry.ts'),
-			'@fastybird/devices-module': resolve(__dirname, './../src/FastyBird/Module/Devices/assets/entry.ts'),
-			'@fastybird/triggers-module': resolve(__dirname, './../src/FastyBird/Module/Triggers/assets/entry.ts'),
 			'@fastybird/metadata-library': resolve(__dirname, './../node_modules/@fastybird/metadata-library'),
 			'@fastybird/web-ui-library': resolve(__dirname, './../node_modules/@fastybird/web-ui-library'),
-			'@': resolve(__dirname, './assets'),
 		},
-		dedupe: ['vue', 'pinia', 'vue-router', 'vee-validate', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core'],
+		dedupe: ['vue', 'pinia', 'vue-router', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core', 'element-plus'],
 	},
 	css: {
 		modules: {
@@ -42,7 +41,7 @@ export default defineConfig({
 		},
 	},
 	optimizeDeps: {
-		include: ['vue', 'pinia', 'vue-router', 'vee-validate', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core'],
+		include: ['vue', 'pinia', 'vue-router', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core', 'element-plus'],
 	},
 	build: {
 		outDir: resolve(__dirname, './../public/dist'),

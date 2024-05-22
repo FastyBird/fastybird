@@ -1,3 +1,3 @@
-import type FbMediaItem from './media-item.vue';
+import type MediaItem from './media-item.vue';
 
-export type FbMediaItemInstance = InstanceType<typeof FbMediaItem>;
+export type MediaItemInstance = InstanceType<typeof MediaItem>;

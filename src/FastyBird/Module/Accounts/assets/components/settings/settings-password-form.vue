@@ -1,69 +1,86 @@
 <template>
-	<fb-form-input
-		v-model="currentPassword"
-		:error="currentPasswordError"
-		:label="t('fields.password.current.title')"
-		:required="true"
-		:type="FbFormInputTypeTypes.PASSWORD"
-		name="currentPassword"
-		spellcheck="false"
+	<el-form
+		ref="passwordFormEl"
+		:model="passwordForm"
+		:rules="rules"
+		:label-position="props.layout === LayoutTypes.PHONE ? 'top' : 'right'"
+		:label-width="180"
+		status-icon
+		class="sm:px-5"
 	>
-		<template #help-line>
-			{{ t('fields.password.current.help') }}
-		</template>
-	</fb-form-input>
+		<div class="mb-5">
+			<el-form-item
+				:label="t('fields.password.current.title')"
+				prop="currentPassword"
+				class="mb-2"
+			>
+				<el-input
+					v-model="passwordForm.currentPassword"
+					name="currentPassword"
+					type="password"
+					show-password
+				/>
+			</el-form-item>
+		</div>
 
-	<fb-form-input
-		v-model="newPassword"
-		:error="newPasswordError"
-		:label="t('fields.password.new.title')"
-		:required="true"
-		:type="FbFormInputTypeTypes.PASSWORD"
-		name="newPassword"
-		spellcheck="false"
-	>
-		<template #help-line>
-			{{ t('fields.password.new.help') }}
-		</template>
-	</fb-form-input>
+		<div class="mb-5">
+			<el-form-item
+				:label="t('fields.password.new.title')"
+				prop="newPassword"
+				class="mb-2"
+			>
+				<el-input
+					v-model="passwordForm.newPassword"
+					name="newPassword"
+					type="password"
+					show-password
+				/>
+			</el-form-item>
+		</div>
 
-	<fb-form-input
-		v-model="repeatPassword"
-		:error="repeatPasswordError"
-		:label="t('fields.password.repeat.title')"
-		:required="true"
-		:type="FbFormInputTypeTypes.PASSWORD"
-		name="repeatPassword"
-		spellcheck="false"
-	>
-		<template #help-line>
-			{{ t('fields.password.repeat.help') }}
-		</template>
-	</fb-form-input>
+		<div class="mb-5">
+			<el-form-item
+				:label="t('fields.password.repeat.title')"
+				prop="repeatPassword"
+				class="mb-2"
+			>
+				<el-input
+					v-model="passwordForm.repeatPassword"
+					name="repeatPassword"
+					type="password"
+					show-password
+				/>
+			</el-form-item>
+		</div>
+	</el-form>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
-import { useForm, useField } from 'vee-validate';
-import { object as yObject, string as yString } from 'yup';
+import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
-
-import { FbFormInput, FbFormInputTypeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
+import { ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
+import { InternalRuleItem, SyncValidateResult } from 'async-validator';
 
 import { useAccount } from '../../models';
 import { useFlashMessage } from '../../composables';
-import { ISettingsPasswordProps } from './settings-password-form.types';
+import { FormResultTypes, LayoutTypes } from '../../types';
+import { ISettingsPasswordProps, ISettingsPasswordForm } from './settings-password-form.types';
+
+defineOptions({
+	name: 'SettingsPasswordForm',
+});
 
 const props = withDefaults(defineProps<ISettingsPasswordProps>(), {
 	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
+	layout: LayoutTypes.DEFAULT,
 });
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
@@ -71,30 +88,35 @@ const { t } = useI18n();
 const flashMessage = useFlashMessage();
 const accountStore = useAccount();
 
-interface ISettingsPasswordForm {
-	currentPassword: string;
-	newPassword: string;
-	repeatPassword: string;
-}
+const passwordFormEl = ref<FormInstance | undefined>(undefined);
 
-const { validate } = useForm<ISettingsPasswordForm>({
-	validationSchema: yObject({
-		currentPassword: yString().required(t('fields.password.current.validation.required')),
-		newPassword: yString().required(t('fields.password.new.validation.required')),
-		repeatPassword: yString().required(t('fields.password.repeat.validation.required')),
-	}),
+const rules = reactive<FormRules<ISettingsPasswordForm>>({
+	currentPassword: [{ required: true, message: t('fields.password.current.validation.required'), trigger: 'change' }],
+	newPassword: [{ required: true, message: t('fields.password.new.validation.required'), trigger: 'change' }],
+	repeatPassword: [
+		{ required: true, message: t('fields.password.repeat.validation.required'), trigger: 'change' },
+		{
+			validator: (_rule: InternalRuleItem, value: any): SyncValidateResult | void => {
+				return value === passwordForm.newPassword;
+			},
+			message: t('fields.password.repeat.validation.different'),
+			trigger: 'change',
+		},
+	],
 });
 
-const { value: currentPassword, errorMessage: currentPasswordError, setValue: setCurrentPassword } = useField<string>('currentPassword');
-const { value: newPassword, errorMessage: newPasswordError, setValue: setNewPassword } = useField<string>('newPassword');
-const { value: repeatPassword, errorMessage: repeatPasswordError, setValue: setRepeatPassword } = useField<string>('repeatPassword');
+const passwordForm = reactive<ISettingsPasswordForm>({
+	currentPassword: '',
+	newPassword: '',
+	repeatPassword: '',
+});
 
 let timer: number;
 
 const clearResult = (): void => {
 	window.clearTimeout(timer);
 
-	emit('update:remoteFormResult', FbFormResultTypes.NONE);
+	emit('update:remoteFormResult', FormResultTypes.NONE);
 };
 
 watch(
@@ -103,10 +125,14 @@ watch(
 		if (val) {
 			emit('update:remoteFormSubmit', false);
 
-			const validationResult = await validate();
+			passwordFormEl.value!.clearValidate();
 
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+			await passwordFormEl.value!.validate(async (valid: boolean): Promise<void> => {
+				if (!valid) {
+					return;
+				}
+
+				emit('update:remoteFormResult', FormResultTypes.WORKING);
 
 				const errorMessage = t('messages.passwordNotEdited');
 
@@ -115,13 +141,15 @@ watch(
 						id: props.identity.id,
 						data: {
 							password: {
-								current: currentPassword.value,
-								new: newPassword.value,
+								current: passwordForm.currentPassword,
+								new: passwordForm.newPassword,
 							},
 						},
 					});
 
-					emit('update:remoteFormResult', FbFormResultTypes.OK);
+					emit('update:remoteFormResult', FormResultTypes.OK);
+
+					flashMessage.success('Your password has been updated successfully.');
 
 					timer = window.setTimeout(clearResult, 2000);
 				} catch (e: any) {
@@ -131,24 +159,26 @@ watch(
 						flashMessage.error(errorMessage);
 					}
 
-					emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+					emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 					timer = window.setTimeout(clearResult, 2000);
 				}
-			}
+			});
 		}
 	}
 );
 
 watch(
 	(): boolean => props.remoteFormReset,
-	(val): void => {
+	(val: boolean): void => {
 		emit('update:remoteFormReset', false);
 
 		if (val) {
-			setCurrentPassword('');
-			setNewPassword('');
-			setRepeatPassword('');
+			passwordFormEl.value?.resetFields();
+
+			passwordForm.currentPassword = '';
+			passwordForm.newPassword = '';
+			passwordForm.repeatPassword = '';
 		}
 	}
 );

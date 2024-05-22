@@ -25,7 +25,7 @@ export const BasicUsage: Story = {
 	<fb-button :plain="true" @click="openVn">VNode</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { h } from 'vue';
 import { FbMessage } from '@fastybird/web-ui-library';
 
@@ -79,7 +79,7 @@ export const Types: Story = {
 	<fb-button :plain="true" @click="open4">Error</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, VariantTypes } from '@fastybird/web-ui-library';
 
 const open1 = (): void => {
@@ -150,7 +150,7 @@ export const Closable: Story = {
 	<fb-button :plain="true" @click="open4">Error</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage, VariantTypes } from '@fastybird/web-ui-library';
 
 const open1 = (): void => {
@@ -236,7 +236,7 @@ export const CenteredText: Story = {
 	<fb-button plain @click="openCenter">Centered text</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage } from '@fastybird/web-ui-library';
 
 const openCenter = (): void => {
@@ -276,7 +276,7 @@ export const HtmlContent: Story = {
 	<fb-button :plain="true" @click="openHTML">Use HTML string</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage } from '@fastybird/web-ui-library';
 
 const openHTML = (): void => {
@@ -314,7 +314,7 @@ export const Grouping: Story = {
 	<fb-button :plain="true" @click="open">Show message</fb-button>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FbMessage } from '@fastybird/web-ui-library';
 
 const open = (): void => {

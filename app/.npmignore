@@ -1,7 +1,12 @@
 src
 .editorconfig
-.eslintrc
 .gitattributes
 .gitignore
 .npmignore export-ignore
-Makefile export-ignore
+.prettierrc
+.stylelintrc.json
+commitlint.config.mjs
+eslint.config.mjs
+jest.config.mjs
+uno.config.ts
+vite.config.ts

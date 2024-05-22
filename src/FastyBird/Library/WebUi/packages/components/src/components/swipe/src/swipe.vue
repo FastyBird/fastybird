@@ -1,6 +1,13 @@
 <template>
-	<div ref="container" :data-disabled="props.disabled" :class="ns.b()">
-		<template v-for="(item, index) in props.items" :key="index">
+	<div
+		ref="container"
+		:data-disabled="props.disabled"
+		:class="ns.b()"
+	>
+		<template
+			v-for="(item, index) in props.items"
+			:key="index"
+		>
 			<fb-swipe-item
 				ref="elements"
 				v-model:revealed="innerRevealed[index]"
@@ -27,25 +34,40 @@
 					/>
 				</template>
 
-				<template v-if="'left' in $slots" #left="{ close: closeLeft }">
-					<slot :item="item" :index="index" :close="closeLeft" name="left" />
+				<template
+					v-if="'left' in $slots"
+					#left="{ close: closeLeft }"
+				>
+					<slot
+						:item="item"
+						:index="index"
+						:close="closeLeft"
+						name="left"
+					/>
 				</template>
 
-				<template v-if="'right' in $slots" #right="{ close: closeRight }">
-					<slot :item="item" :index="index" :close="closeRight" name="right" />
+				<template
+					v-if="'right' in $slots"
+					#right="{ close: closeRight }"
+				>
+					<slot
+						:item="item"
+						:index="index"
+						:close="closeRight"
+						name="right"
+					/>
 				</template>
 			</fb-swipe-item>
 		</template>
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue';
 import isEmpty from 'lodash/isEmpty';
+import { useNamespace } from 'element-plus';
 
-import { useNamespace } from '@fastybird/web-ui-hooks';
-
-import { FbSwipeItemInstance } from './instance';
+import { SwipeItemInstance } from './instance';
 import FbSwipeItem from './item.vue';
 import { swipeEmits, swipeProps } from './swipe';
 
@@ -61,7 +83,7 @@ const emit = defineEmits(swipeEmits);
 const ns = useNamespace('swipe');
 
 const container = ref<HTMLElement | null>(null);
-const elements = ref<FbSwipeItemInstance[]>([]);
+const elements = ref<SwipeItemInstance[]>([]);
 const innerRevealed = ref<{ [key: number]: SwipeActionsOutDir }>(props.revealed || {});
 
 const revealLeft = (index: number): void => {

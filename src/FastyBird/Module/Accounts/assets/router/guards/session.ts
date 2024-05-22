@@ -22,7 +22,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 		if (new Date().getTime() / 1000 >= new Date(get(decodedRefreshToken, 'exp', 0) * 1000).getTime() / 1000) {
 			sessionStore.clear();
 
-			// eslint-disable-next-line
 			console.log('ROUTE GUARD: Refresh token is expired');
 
 			return;
@@ -38,7 +37,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 					// Session refreshing failed
 					sessionStore.clear();
 
-					// eslint-disable-next-line
 					console.log('ROUTE GUARD: Session refresh failed');
 
 					return;
@@ -50,7 +48,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 				if (import.meta.env.PROD) {
 					Sentry.captureException(e);
 				} else {
-					// eslint-disable-next-line
 					console.log('ROUTE GUARD: Session refresh failed with unknown error');
 				}
 
@@ -75,7 +72,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 					// Fetching account failed
 					sessionStore.clear();
 
-					// eslint-disable-next-line
 					console.log('ROUTE GUARD: Account fetch failed');
 
 					return;
@@ -87,7 +83,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 				if (import.meta.env.PROD) {
 					Sentry.captureException(e);
 				} else {
-					// eslint-disable-next-line
 					console.log('ROUTE GUARD: Account fetch failed with unknown error');
 				}
 			}
@@ -102,7 +97,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 				// Session refreshing failed
 				sessionStore.clear();
 
-				// eslint-disable-next-line
 				console.log('ROUTE GUARD: Session refresh failed');
 
 				return;
@@ -114,7 +108,6 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 			if (import.meta.env.PROD) {
 				Sentry.captureException(e);
 			} else {
-				// eslint-disable-next-line
 				console.log('ROUTE GUARD: Session refresh failed with unknown error');
 			}
 		}

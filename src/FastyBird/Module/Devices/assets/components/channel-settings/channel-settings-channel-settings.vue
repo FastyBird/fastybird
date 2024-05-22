@@ -154,7 +154,6 @@ import { useField, useFieldError, useForm } from 'vee-validate';
 import { object as yObject, string as yString, array as yArray } from 'yup';
 import get from 'lodash/get';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
 	FbUiItemsContainer,
 	FbUiContent,

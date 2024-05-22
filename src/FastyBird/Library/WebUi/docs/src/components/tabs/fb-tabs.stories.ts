@@ -44,7 +44,7 @@ export const BasicUsage: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import type { TabsPaneContext } from '@fastybird/web-ui-library'
 
@@ -114,7 +114,7 @@ export const CardStyle: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import type { TabsPaneContext } from '@fastybird/web-ui-library'
 
@@ -188,7 +188,7 @@ export const BorderCard: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import type { TabsPaneContext } from '@fastybird/web-ui-library'
 
@@ -264,7 +264,7 @@ export const TabPosition: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const tabPosition = ref('left');
@@ -335,7 +335,7 @@ export const CustomTab: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasCalendar } from '@fastybird/web-ui-icons';
 </script>
 
@@ -412,7 +412,7 @@ export const AddCloseTab: Story = {
 	</fb-tabs>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import type { TabPaneName } from '@fastybird/web-ui-library';
 
@@ -592,7 +592,7 @@ export const CustomAddIcon: Story = {
 		</fb-tab-pane>
 	</fb-tabs>
 </template>
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import type { TabPaneName } from '@fastybird/web-ui-library';
 
@@ -775,7 +775,7 @@ export const CustomAddTrigger: Story = {
 		</fb-tab-pane>
 	</fb-tabs>
 </template>
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 let tabIndex = 2;

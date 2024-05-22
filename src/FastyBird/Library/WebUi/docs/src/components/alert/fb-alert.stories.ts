@@ -261,7 +261,7 @@ export const CloseButton: Story = {
 	</fb-alert>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const hello = (): void => {
 	alert("Hi! I'm on close callback");
 }

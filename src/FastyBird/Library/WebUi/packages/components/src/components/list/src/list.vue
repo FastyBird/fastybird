@@ -9,7 +9,10 @@
 				</small>
 			</h3>
 
-			<div v-if="'buttons' in $slots" :class="ns.e('buttons')">
+			<div
+				v-if="'buttons' in $slots"
+				:class="ns.e('buttons')"
+			>
 				<slot name="buttons" />
 			</div>
 		</div>
@@ -18,8 +21,8 @@
 	</div>
 </template>
 
-<script lang="ts" setup>
-import { useNamespace } from '@fastybird/web-ui-hooks';
+<script setup lang="ts">
+import { useNamespace } from 'element-plus';
 
 defineOptions({
 	name: 'FbList',

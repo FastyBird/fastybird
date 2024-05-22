@@ -1,3 +1,3 @@
-import type FbComponentLoading from './component-loading.vue';
+import type ComponentLoading from './component-loading.vue';
 
-export type FbComponentLoadingInstance = InstanceType<typeof FbComponentLoading>;
+export type ComponentLoadingInstance = InstanceType<typeof ComponentLoading>;

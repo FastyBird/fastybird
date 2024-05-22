@@ -1,3 +1,3 @@
-import type FbComponentLoadingError from './component-loading-error.vue';
+import type ComponentLoadingError from './component-loading-error.vue';
 
-export type FbComponentLoadingErrorInstance = InstanceType<typeof FbComponentLoadingError>;
+export type ComponentLoadingErrorInstance = InstanceType<typeof ComponentLoadingError>;

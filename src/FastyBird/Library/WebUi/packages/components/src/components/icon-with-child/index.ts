@@ -8,4 +8,4 @@ export default FbIconWithChild;
 
 export * from './src/icon-with-child';
 
-export type { FbIconWithChildInstance } from './src/instance';
+export type { IconWithChildInstance } from './src/instance';

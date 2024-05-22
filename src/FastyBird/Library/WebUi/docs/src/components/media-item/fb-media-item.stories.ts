@@ -108,7 +108,7 @@ export const BasicUsage: Story = {
 	</fb-media-item>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 const handleClick = (): void => {
 	console.log('Button clicked');
 }

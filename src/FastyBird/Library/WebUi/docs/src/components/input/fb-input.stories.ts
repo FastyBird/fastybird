@@ -25,7 +25,7 @@ export const BasicUsage: Story = {
 	<fb-input v-model="input" placeholder="Please input" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const input = ref('');
@@ -59,7 +59,7 @@ export const Disabled: Story = {
 	<fb-input v-model="input" disabled placeholder="Please input" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const input = ref('');
@@ -93,7 +93,7 @@ export const Clearable: Story = {
 	<fb-input v-model="input" placeholder="Please input" clearable />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const input = ref('');
@@ -132,7 +132,7 @@ export const Formatter: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const input = ref('');
@@ -171,7 +171,7 @@ export const Password: Story = {
 	<fb-input v-model="input" type="password" placeholder="Please input password" show-password />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const input = ref('');
@@ -230,7 +230,7 @@ export const WithIcon: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasCalendar, FasMagnifyingGlass } from '@fastybird/web-ui-icons';
 
@@ -306,7 +306,7 @@ export const Textarea: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const textarea = ref('');
@@ -357,7 +357,7 @@ export const AutosizeTextarea: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const textarea1 = ref('');
@@ -445,7 +445,7 @@ export const Mixed: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasMagnifyingGlass } from '@fastybird/web-ui-icons';
 
@@ -596,7 +596,7 @@ export const Sizes: Story = {
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasMagnifyingGlass } from '@fastybird/web-ui-icons';
 
@@ -705,7 +705,7 @@ export const LimitLength: Story = {
 	/>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const text = ref('');

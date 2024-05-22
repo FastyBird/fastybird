@@ -1,5 +1,5 @@
-import type FbList from './list.vue';
-import type FbListItem from './item.vue';
+import type List from './list.vue';
+import type ListItem from './item.vue';
 
-export type FbListInstance = InstanceType<typeof FbList>;
-export type FbListItemInstance = InstanceType<typeof FbListItem>;
+export type ListInstance = InstanceType<typeof List>;
+export type ListItemInstance = InstanceType<typeof ListItem>;

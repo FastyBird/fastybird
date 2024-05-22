@@ -216,7 +216,7 @@ export const RedDot: Story = {
 	</fb-badge>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasShare } from '@fastybird/web-ui-icons';
 </script>`,
             },

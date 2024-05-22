@@ -66,7 +66,7 @@ export const BasicUsage: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(0);
@@ -175,7 +175,7 @@ export const Discrete: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(0);
@@ -227,7 +227,7 @@ export const WithInput: Story = {
 	<fb-slider v-model="value" show-input />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(0);
@@ -265,7 +265,7 @@ export const Sizes: Story = {
 	<fb-slider v-model="value" show-input size="${ComponentSizeTypes.SMALL}" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(0);
@@ -354,7 +354,7 @@ export const Variants: Story = {
 	</fb-row>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(0);
@@ -462,7 +462,7 @@ export const Placement: Story = {
 	<fb-slider v-model="value4" placement="left" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value1 = ref(10);
@@ -516,7 +516,7 @@ export const RangeSelection: Story = {
 	<fb-slider v-model="value" range show-stops :max="10" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref([4, 8]);
@@ -552,7 +552,7 @@ export const Vertical: Story = {
 	<fb-slider v-model="value" vertical height="200px" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const value = ref(0);
@@ -588,7 +588,7 @@ export const Marks: Story = {
 	<fb-slider v-model="value" range :marks="marks" />
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import type { CSSProperties } from 'vue';
 

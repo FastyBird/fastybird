@@ -389,7 +389,7 @@ export const Playground: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);
@@ -517,7 +517,7 @@ export const BasicUsage: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);
@@ -597,7 +597,7 @@ export const CustomContent: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { reactive, ref } from 'vue';
 
 const modalTableVisible = ref(false);
@@ -761,7 +761,7 @@ export const CustomHeader: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import { FasCircleXmark } from '@fastybird/web-ui-icons';
 
@@ -848,7 +848,7 @@ export const NestedModal: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const outerVisible = ref(false);
@@ -918,7 +918,7 @@ export const CentredContent: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);
@@ -974,7 +974,7 @@ export const AlignCentred: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);
@@ -1045,7 +1045,7 @@ export const Draggable: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);
@@ -1119,7 +1119,7 @@ export const WithDescription: Story = {
 	</fb-modal>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const modalVisible = ref(false);

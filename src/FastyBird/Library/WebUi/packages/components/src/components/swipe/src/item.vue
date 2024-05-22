@@ -1,12 +1,26 @@
 <template>
-	<div ref="element" :data-disabled="props.disabled" :class="ns.b()">
+	<div
+		ref="element"
+		:data-disabled="props.disabled"
+		:class="ns.b()"
+	>
 		<template v-if="'left' in $slots">
-			<div ref="left" :class="ns.e('left')">
-				<slot :close="close" name="left" />
+			<div
+				ref="left"
+				:class="ns.e('left')"
+			>
+				<slot
+					:close="close"
+					name="left"
+				/>
 			</div>
 		</template>
 
-		<div v-if="props.disabled" ref="content" :class="ns.e('content')">
+		<div
+			v-if="props.disabled"
+			ref="content"
+			:class="ns.e('content')"
+		>
 			<slot
 				:revealed="innerRevealed"
 				:disabled="props.disabled"
@@ -17,7 +31,12 @@
 			/>
 		</div>
 
-		<div v-else ref="content" v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan" :class="ns.e('content')">
+		<div
+			v-else
+			ref="content"
+			v-touch-pan.horizontal.mouse.prevent.mousePrevent="onPan"
+			:class="ns.e('content')"
+		>
 			<slot
 				:revealed="innerRevealed"
 				:disabled="props.disabled"
@@ -29,22 +48,28 @@
 		</div>
 
 		<template v-if="'right' in $slots">
-			<div ref="right" :class="ns.e('right')">
-				<slot :close="close" name="right" />
+			<div
+				ref="right"
+				:class="ns.e('right')"
+			>
+				<slot
+					:close="close"
+					name="right"
+				/>
 			</div>
 		</template>
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { onBeforeUnmount, ref, useSlots, watch } from 'vue';
+import { useNamespace } from 'element-plus';
 
-import { useNamespace } from '@fastybird/web-ui-hooks';
-import { TouchHorizontalPan as vTouchPan, TouchHorizontalChanges } from '@fastybird/web-ui-directives';
-
+import { TouchHorizontalPan as vTouchPan } from './directives';
 import { swipeItemEmits, swipeItemProps } from './item';
 
 import type { SwipeActionsOutDir } from './swipe';
+import type { TouchHorizontalChanges } from './directives';
 
 defineOptions({
 	name: 'FbSwipeItem',

@@ -1,4 +1,4 @@
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
+import { FormResultTypes } from '../../types';
 
 export interface IResetPasswordForm {
 	uid: string;
@@ -6,6 +6,6 @@ export interface IResetPasswordForm {
 
 export interface IResetPasswordProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 	remoteFormReset?: boolean;
 }

@@ -1,136 +1,200 @@
 <template>
-	<fb-ui-content
-		:mb="FbSizeTypes.MEDIUM"
-		class="fb-accounts-module-sign-up-form__name"
+	<el-form
+		ref="signFormEl"
+		:model="signForm"
+		:rules="rules"
+		label-position="top"
+		status-icon
+		class="px-5"
+		@submit.prevent="onSubmit"
 	>
-		<fb-form-input
-			v-model="firstName"
-			:error="firstNameError"
-			:label="t('fields.firstName.title')"
-			:required="true"
-			name="firstName"
-		>
-			<template #help-line>
-				{{ t('fields.firstName.help') }}
-			</template>
-		</fb-form-input>
+		<div class="flex flex-row flex-nowrap gap-5">
+			<div class="mb-5">
+				<el-form-item
+					ref="firstNameEl"
+					:label="t('fields.firstName.title')"
+					prop="firstName"
+					class="mb-2"
+				>
+					<el-input
+						v-model="signForm.firstName"
+						name="firstName"
+					/>
+				</el-form-item>
 
-		<fb-form-input
-			v-model="lastName"
-			:error="lastNameError"
-			:label="t('fields.lastName.title')"
-			:required="true"
-			name="lastName"
-		>
-			<template #help-line>
-				{{ t('fields.lastName.help') }}
-			</template>
-		</fb-form-input>
-	</fb-ui-content>
+				<div
+					:class="[{ 'opacity-0': firstNameEl?.validateState === 'error' }]"
+					class="text-3 pl-1"
+				>
+					{{ t('fields.firstName.help') }}
+				</div>
+			</div>
 
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-input
-			v-model="emailAddress"
-			:error="emailAddressError"
-			:label="t('fields.emailAddress.title')"
-			:required="true"
-			name="emailAddress"
-		>
-			<template #help-line>
+			<div class="mb-5">
+				<el-form-item
+					ref="lastNameEl"
+					:label="t('fields.lastName.title')"
+					prop="lastName"
+					class="mb-2"
+				>
+					<el-input
+						v-model="signForm.lastName"
+						name="lastName"
+					/>
+				</el-form-item>
+
+				<div
+					:class="[{ 'opacity-0': lastNameEl?.validateState === 'error' }]"
+					class="text-3 pl-1"
+				>
+					{{ t('fields.lastName.help') }}
+				</div>
+			</div>
+		</div>
+
+		<div class="mb-5">
+			<el-form-item
+				ref="emailAddressEl"
+				:label="t('fields.emailAddress.title')"
+				prop="emailAddress"
+				class="mb-2"
+			>
+				<el-input
+					v-model="signForm.emailAddress"
+					name="emailAddress"
+				/>
+			</el-form-item>
+
+			<div
+				:class="[{ 'opacity-0': emailAddressEl?.validateState === 'error' }]"
+				class="text-3 pl-1"
+			>
 				{{ t('fields.emailAddress.help') }}
-			</template>
-		</fb-form-input>
-	</fb-ui-content>
+			</div>
+		</div>
 
-	<fb-ui-content :mb="FbSizeTypes.MEDIUM">
-		<fb-form-input
-			v-model="password"
-			:error="passwordError"
-			:label="t('fields.password.new.title')"
-			:required="true"
-			:type="FbFormInputTypeTypes.PASSWORD"
-			name="password"
+		<div class="mb-10">
+			<el-form-item
+				ref="passwordEl"
+				:label="t('fields.password.register.title')"
+				prop="password"
+				class="mb-2"
+			>
+				<el-input
+					v-model="signForm.password"
+					show-password
+					name="password"
+					type="password"
+				/>
+			</el-form-item>
+		</div>
+
+		<el-button
+			type="primary"
+			size="large"
+			class="block w-full"
+			@click="onSubmit(signFormEl)"
 		>
-			<template #help-line>
-				{{ t('fields.password.new.help') }}
-			</template>
-		</fb-form-input>
-	</fb-ui-content>
+			{{ t('buttons.signUp.title') }}
+		</el-button>
+	</el-form>
+
+	<div class="mt-5 px-5">
+		<el-button
+			class="block w-full"
+			@click="onBackToSignIn()"
+		>
+			{{ t('buttons.backToSignIn.title') }}
+		</el-button>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useForm, useField } from 'vee-validate';
-import { object as yObject, string as yString } from 'yup';
 import get from 'lodash/get';
+import { ElInput, ElForm, ElFormItem, ElButton, FormInstance, FormItemInstance, FormRules } from 'element-plus';
 
-import { FbUiContent, FbFormInput, FbFormInputTypeTypes, FbSizeTypes, FbFormResultTypes } from '@fastybird/web-ui-library';
-
-import { useFlashMessage } from '../../composables';
+import { useFlashMessage, useRoutesNames } from '../../composables';
+import { FormResultTypes } from '../../types';
 import { ISignUpForm, ISignUpProps } from './sign-up-form.types';
+
+defineOptions({
+	name: 'SignUpForm',
+});
 
 const props = withDefaults(defineProps<ISignUpProps>(), {
 	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
+const router = useRouter();
 
-const { validate } = useForm<ISignUpForm>({
-	validationSchema: yObject({
-		emailAddress: yString().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
-		firstName: yString().required(t('fields.firstName.validation.required')),
-		lastName: yString().required(t('fields.lastName.validation.required')),
-		password: yString().required(t('fields.password.new.validation.required')),
-	}),
+const { routeNames } = useRoutesNames();
+
+const signFormEl = ref<FormInstance | undefined>(undefined);
+const firstNameEl = ref<FormItemInstance | undefined>(undefined);
+const lastNameEl = ref<FormItemInstance | undefined>(undefined);
+const emailAddressEl = ref<FormItemInstance | undefined>(undefined);
+const passwordEl = ref<FormItemInstance | undefined>(undefined);
+
+const rules = reactive<FormRules<ISignUpForm>>({
+	emailAddress: [
+		{ required: true, message: t('fields.emailAddress.validation.required'), trigger: 'change' },
+		{ type: 'email', message: t('fields.emailAddress.validation.email'), trigger: 'change' },
+	],
+	firstName: [{ required: true, message: t('fields.firstName.validation.required'), trigger: 'change' }],
+	lastName: [{ required: true, message: t('fields.lastName.validation.required'), trigger: 'change' }],
+	password: [{ required: true, message: t('fields.password.register.validation.required'), trigger: 'change' }],
 });
 
-const { value: emailAddress, errorMessage: emailAddressError, setValue: setEmailAddress } = useField<string>('emailAddress');
-const { value: firstName, errorMessage: firstNameError, setValue: setFirstName } = useField<string>('firstName');
-const { value: lastName, errorMessage: lastNameError, setValue: setLastName } = useField<string>('lastName');
-const { value: password, errorMessage: passwordError, setValue: setPassword } = useField<string>('password');
+const signForm = reactive<ISignUpForm>({
+	emailAddress: '',
+	firstName: '',
+	lastName: '',
+	password: '',
+});
 
-watch(
-	(): boolean => props.remoteFormSubmit,
-	async (val): Promise<void> => {
-		if (val) {
-			emit('update:remoteFormSubmit', false);
+const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
+	if (!formEl) return;
 
-			const validationResult = await validate();
+	await formEl.validate(async (valid: boolean): Promise<void> => {
+		if (valid) {
+			emit('update:remoteFormResult', FormResultTypes.WORKING);
 
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+			try {
+				// TODO: Implement registration
 
-				try {
-					// TODO: Implement registration
+				emit('update:remoteFormResult', FormResultTypes.OK);
+			} catch (e: any) {
+				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-					emit('update:remoteFormResult', FbFormResultTypes.OK);
-				} catch (e: any) {
-					emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+				const errorMessage = t('messages.requestError');
 
-					const errorMessage = t('messages.requestError');
-
-					if (get(e, 'exception', null) !== null) {
-						flashMessage.exception(e.exception, errorMessage);
-					} else if (get(e, 'response', null) !== null) {
-						flashMessage.requestError(e.response, errorMessage);
-					} else {
-						flashMessage.error(errorMessage);
-					}
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(e.exception, errorMessage);
+				} else if (get(e, 'response', null) !== null) {
+					flashMessage.requestError(e.response, errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
 				}
 			}
 		}
-	}
-);
+	});
+};
+
+const onBackToSignIn = (): void => {
+	router.push({ name: routeNames.signIn });
+};
 
 watch(
 	(): boolean => props.remoteFormReset,
@@ -138,17 +202,12 @@ watch(
 		emit('update:remoteFormReset', false);
 
 		if (val) {
-			setEmailAddress('');
-			setFirstName('');
-			setLastName('');
-			setPassword('');
+			if (!signFormEl.value) return;
+
+			signFormEl.value.resetFields();
 		}
 	}
 );
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'sign-up-form';
-</style>
 
 <i18n src="../../locales/locales.json" />

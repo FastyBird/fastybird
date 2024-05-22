@@ -67,7 +67,7 @@ export const BasicUsage: Story = {
 	</fb-list>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const switchState = ref(true);
@@ -185,7 +185,7 @@ export const ListStyle: Story = {
 	</fb-list>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const switchState = ref(true);

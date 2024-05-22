@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { useCookies } from 'vue3-cookies';
 import { jwtDecode } from 'jwt-decode';
@@ -274,3 +274,7 @@ export const useSession = defineStore('accounts_module_session', {
 		},
 	},
 });
+
+export const registerSessionStore = (pinia: Pinia): Store => {
+	return useSession(pinia);
+};

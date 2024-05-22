@@ -1,5 +1,4 @@
 import { buildProps, definePropType } from '@fastybird/web-ui-utils';
-import { Variant, VariantTypes } from '@fastybird/web-ui-constants';
 
 import type { ExtractPropTypes } from 'vue';
 
@@ -7,10 +6,10 @@ export const iconWithChildProps = buildProps({
 	/**
 	 * @description child icon variant
 	 */
-	variant: {
-		type: definePropType<Variant>(String),
-		values: [VariantTypes.PRIMARY, VariantTypes.DEFAULT, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
-		default: VariantTypes.PRIMARY,
+	type: {
+		type: definePropType<'primary' | 'default' | 'info' | 'success' | 'waring' | 'danger'>(String),
+		values: ['primary', 'default', 'info', 'success', 'waring', 'danger'],
+		default: 'primary',
 	},
 	/**
 	 * @description main icon size

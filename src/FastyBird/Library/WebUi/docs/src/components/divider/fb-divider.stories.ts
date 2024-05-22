@@ -116,7 +116,7 @@ export const CustomContent: Story = {
 	<fb-divider content-position="${DividerContentPositionTypes.RIGHT}">Rabindranath Tagore</fb-divider>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasStar } from '@fastybird/web-ui-icons';
 </script>`,
             },
