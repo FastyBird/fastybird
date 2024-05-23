@@ -27,6 +27,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	protected function setUp(): void
@@ -46,6 +47,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	protected function mockContainerService(
@@ -63,6 +65,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	protected function getContainer(): Nette\DI\Container
@@ -76,6 +79,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	private function createContainer(): Nette\DI\Container
@@ -109,6 +113,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	private function replaceContainerService(string $serviceName, object $service): void

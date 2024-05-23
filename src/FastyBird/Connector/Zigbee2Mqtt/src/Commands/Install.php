@@ -568,10 +568,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
-	 * @throws Exceptions\Runtime
 	 */
 	private function deleteConnector(Style\SymfonyStyle $io): void
 	{

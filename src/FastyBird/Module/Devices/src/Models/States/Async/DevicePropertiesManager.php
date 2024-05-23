@@ -23,6 +23,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
@@ -39,6 +40,8 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 use function boolval;
@@ -152,6 +155,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function write(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -200,6 +208,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function set(
 		Documents\Devices\Properties\Dynamic|Documents\Devices\Properties\Mapped $property,
@@ -250,6 +263,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function setValidState(
 		Documents\Devices\Properties\Dynamic|array $property,
@@ -298,6 +316,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function setPendingState(
 		Documents\Devices\Properties\Dynamic|array $property,
@@ -555,6 +578,11 @@ final class DevicePropertiesManager extends Models\States\PropertiesManager
 	 * @return Promise\PromiseInterface<bool>
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 *
 	 * @interal
 	 */

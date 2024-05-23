@@ -27,9 +27,6 @@ use FastyBird\Plugin\RabbitMq\Utilities;
 use Nette;
 use Nette\Utils;
 use Psr\Log;
-use React\Promise;
-use Throwable;
-use function is_bool;
 
 /**
  * RabbitMQ exchange publisher
@@ -103,71 +100,34 @@ final class Publisher implements ExchangePublisher\Publisher
 			$routingKey,
 		);
 
-		if (is_bool($result)) {
-			if ($result) {
-				$this->logger->debug(
-					'Received message was pushed into data exchange',
-					[
-						'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
-						'type' => 'messages-publisher',
-						'message' => [
-							'routingKey' => $routingKey,
-							'source' => $source->value,
-							'data' => $entity?->toArray(),
-							'body' => $body,
-						],
+		if ($result === true) {
+			$this->logger->debug(
+				'Received message was pushed into data exchange',
+				[
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
+					'type' => 'messages-publisher',
+					'message' => [
+						'routingKey' => $routingKey,
+						'source' => $source->value,
+						'data' => $entity?->toArray(),
+						'body' => $body,
 					],
-				);
-			} else {
-				$this->logger->error(
-					'Received message could not be pushed into data exchange',
-					[
-						'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
-						'type' => 'messages-publisher',
-						'message' => [
-							'routingKey' => $routingKey,
-							'source' => $source->value,
-							'data' => $entity?->toArray(),
-							'body' => $body,
-						],
+				],
+			);
+		} else {
+			$this->logger->error(
+				'Received message could not be pushed into data exchange',
+				[
+					'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
+					'type' => 'messages-publisher',
+					'message' => [
+						'routingKey' => $routingKey,
+						'source' => $source->value,
+						'data' => $entity?->toArray(),
+						'body' => $body,
 					],
-				);
-			}
-		} elseif ($result instanceof Promise\PromiseInterface) {
-			$result
-				->then(
-					function () use ($routingKey, $source, $entity, $body): void {
-						$this->logger->debug(
-							'Received message was pushed into data exchange',
-							[
-								'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
-								'type' => 'messages-publisher',
-								'message' => [
-									'routingKey' => $routingKey,
-									'source' => $source->value,
-									'data' => $entity?->toArray(),
-									'body' => $body,
-								],
-							],
-						);
-					},
-					function (Throwable $ex) use ($routingKey, $source, $entity, $body): void {
-						$this->logger->error(
-							'Received message could not be pushed into data exchange',
-							[
-								'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
-								'type' => 'messages-publisher',
-								'message' => [
-									'routingKey' => $routingKey,
-									'source' => $source->value,
-									'data' => $entity?->toArray(),
-									'body' => $body,
-								],
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-							],
-						);
-					},
-				);
+				],
+			);
 		}
 
 		return true;

@@ -22,13 +22,17 @@ use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\Connector\Virtual\Writers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Connectors as DevicesConnectors;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette;
 use React\EventLoop;
 use React\Promise;
+use TypeError;
+use ValueError;
 use function assert;
 use function React\Async\async;
 
@@ -72,8 +76,19 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
+	 * @throws TypeError
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
 	 */
 	public function execute(bool $standalone = true): Promise\PromiseInterface
 	{

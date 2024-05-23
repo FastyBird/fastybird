@@ -27,6 +27,7 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Orisai\ObjectMapper;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
@@ -70,6 +71,7 @@ final class ConnectionManager
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -103,14 +105,18 @@ final class ConnectionManager
 					function (Documents\Devices\Device $child): ValueObjects\LocalChild {
 						assert(is_string($this->deviceHelper->getNodeId($child)));
 
-						return $this->objectMapper->process(
-							[
-								'identifier' => $child->getIdentifier(),
-								'node_id' => $this->deviceHelper->getNodeId($child),
-								'type' => Types\LocalDeviceType::ZIGBEE->value,
-							],
-							ValueObjects\LocalChild::class,
-						);
+						try {
+							return $this->objectMapper->process(
+								[
+									'identifier' => $child->getIdentifier(),
+									'node_id' => $this->deviceHelper->getNodeId($child),
+									'type' => Types\LocalDeviceType::ZIGBEE->value,
+								],
+								ValueObjects\LocalChild::class,
+							);
+						} catch (Throwable $ex) {
+							throw new Exceptions\Runtime('Connection could not be configured', $ex->getCode(), $ex);
+						}
 					},
 					$children,
 				),

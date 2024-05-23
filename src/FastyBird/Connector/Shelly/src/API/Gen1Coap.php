@@ -97,11 +97,11 @@ final class Gen1Coap
 			$this->handlePacket($message, $remote);
 		});
 
-		$this->server->on('error', function (Throwable $ex): void {
+		$this->server?->on('error', function (Throwable $ex): void {
 			Utils\Arrays::invoke($this->onError, $ex);
 		});
 
-		$this->server->on('close', function (): void {
+		$this->server?->on('close', function (): void {
 			$this->logger->debug(
 				'CoAP connection was successfully closed',
 				[

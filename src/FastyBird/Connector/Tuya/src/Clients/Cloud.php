@@ -16,7 +16,6 @@
 namespace FastyBird\Connector\Tuya\Clients;
 
 use DateTimeInterface;
-use Exception;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Documents;
@@ -94,12 +93,16 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -285,13 +288,15 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -320,11 +325,15 @@ final class Cloud implements Client
 	}
 
 	/**
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -564,6 +573,20 @@ final class Cloud implements Client
 		return true;
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\OpenApiCall
+	 * @throws Exceptions\OpenApiError
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	private function registerLoopHandler(): void
 	{
 		$this->handlerTimer = $this->eventLoop->addTimer(

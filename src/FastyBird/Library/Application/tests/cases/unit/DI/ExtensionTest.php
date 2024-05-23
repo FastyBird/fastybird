@@ -15,6 +15,7 @@ final class ExtensionTest extends TestCase
 
 	/**
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 */
 	public function testCompilersServices(): void

@@ -18,6 +18,7 @@ final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Ca
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

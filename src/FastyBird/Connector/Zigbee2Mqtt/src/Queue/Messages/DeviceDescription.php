@@ -15,8 +15,11 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
 use Orisai\ObjectMapper;
+use TypeError;
+use ValueError;
 use function array_map;
 
 /**
@@ -152,6 +155,11 @@ final readonly class DeviceDescription implements Message
 		return $this->scenes;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function toArray(): array
 	{
 		return [

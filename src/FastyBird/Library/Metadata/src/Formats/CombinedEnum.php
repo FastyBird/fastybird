@@ -21,6 +21,8 @@ use FastyBird\Library\Metadata\Utilities;
 use IteratorAggregate;
 use Nette;
 use Traversable;
+use TypeError;
+use ValueError;
 use function array_map;
 use function explode;
 use function implode;
@@ -48,6 +50,10 @@ final class CombinedEnum implements IteratorAggregate
 
 	/**
 	 * @param string|array<int, array<int, string|array<int, string|int|float|bool|null>|null>> $items
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function __construct(string|array $items)
 	{
@@ -94,6 +100,11 @@ final class CombinedEnum implements IteratorAggregate
 
 	/**
 	 * @return array<int, array<int, string|array<int, string|int|float|bool>|null>>
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function toArray(): array
 	{
@@ -121,6 +132,11 @@ final class CombinedEnum implements IteratorAggregate
 
 	/**
 	 * @return array<int, array<int, string|array<int, string|int|float|bool>|null>>
+	 *
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function getValue(): array
 	{

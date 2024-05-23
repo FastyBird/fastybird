@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API\Messages\Response\Gen2;
 
+use Exception;
 use FastyBird\Connector\Shelly\API;
 use Orisai\ObjectMapper;
 use function array_map;
@@ -51,6 +52,9 @@ final readonly class DeviceEvent implements API\Messages\Message
 		return $this->events;
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function toArray(): array
 	{
 		return [

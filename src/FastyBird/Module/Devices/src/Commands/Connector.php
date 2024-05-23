@@ -17,7 +17,9 @@ namespace FastyBird\Module\Devices\Commands;
 
 use BadMethodCallException;
 use DateTimeInterface;
+use Doctrine\DBAL;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
@@ -220,9 +222,12 @@ class Connector extends Console\Command\Command
 	}
 
 	/**
-	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws BadMethodCallException
+	 * @throws Console\Exception\InvalidArgumentException
+	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
 	 */
 	private function prepare(

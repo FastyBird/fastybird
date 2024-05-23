@@ -4,6 +4,7 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Tests\Cases\Unit\Queue\Consumers;
 
 use Doctrine\DBAL;
 use Error;
+use Exception;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
@@ -29,6 +30,7 @@ final class StoreBridgeInfoTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws DBAL\Exception
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
@@ -38,6 +40,7 @@ final class StoreBridgeInfoTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
+	 * @throws Exception
 	 */
 	public function testConsumeMessage(): void
 	{

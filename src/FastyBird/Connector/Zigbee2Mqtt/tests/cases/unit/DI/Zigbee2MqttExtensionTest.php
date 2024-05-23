@@ -23,6 +23,7 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\BaseTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
 	 */

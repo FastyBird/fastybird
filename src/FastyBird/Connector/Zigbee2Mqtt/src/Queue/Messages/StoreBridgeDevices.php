@@ -15,8 +15,11 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 
@@ -55,6 +58,11 @@ final class StoreBridgeDevices extends Bridge implements Message
 		return $this->devices;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function toArray(): array
 	{
 		return array_merge(
