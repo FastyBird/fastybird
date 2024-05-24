@@ -26,9 +26,9 @@
   },
   "dependencies": {
     "@fastybird/web-ui-components": "1.0.0-dev.20",
-    "@fastybird/web-ui-constants": "1.0.0-dev.20",
     "@fastybird/web-ui-icons": "1.0.0-dev.20",
-    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.20"
+    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.20",
+    "element-plus": "^2.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.2",

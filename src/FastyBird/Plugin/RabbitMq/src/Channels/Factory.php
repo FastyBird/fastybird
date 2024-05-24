@@ -24,8 +24,6 @@ use FastyBird\Plugin\RabbitMq\Exceptions;
 use FastyBird\Plugin\RabbitMq\Handlers;
 use Nette\Utils;
 use Psr\EventDispatcher;
-use React\EventLoop;
-use React\Promise;
 use function assert;
 
 /**
@@ -45,7 +43,6 @@ final class Factory implements ExchangeExchange\Factory
 		private readonly Connections\Connection $connection,
 		private readonly Handlers\Message $messagesHandler,
 		private readonly string|null $queueName = null,
-		private readonly EventLoop\LoopInterface|null $eventLoop = null,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -53,7 +50,7 @@ final class Factory implements ExchangeExchange\Factory
 
 	public function create(): void
 	{
-		$client = new Bunny\Async\Client($this->eventLoop, [
+		$client = new Bunny\Client([
 			'host' => $this->connection->getHost(),
 			'port' => $this->connection->getPort(),
 			'vhost' => $this->connection->getVhost(),
@@ -62,99 +59,76 @@ final class Factory implements ExchangeExchange\Factory
 			'heartbeat' => 30,
 		]);
 
-		$client
-			->connect()
-			->then(static function (mixed $client): Promise\PromiseInterface {
-				assert($client instanceof Bunny\Async\Client);
+		$channel = $client->channel();
+		assert($channel instanceof Bunny\Channel);
 
-				$channel = $client->channel();
-				assert($channel instanceof Promise\PromiseInterface);
+		$channel->qos(0, 5);
 
-				return $channel;
-			})
-			->then(
-				static function (mixed $channel): Promise\PromiseInterface {
-					assert($channel instanceof Bunny\Channel);
+		$this->dispatcher?->dispatch(new Events\ChannelCreated($channel));
 
-					$qosResult = $channel->qos(0, 5);
+		$autoDeleteQueue = false;
+		$queueName = $this->queueName;
 
-					if ($qosResult instanceof Promise\PromiseInterface) {
-						return $qosResult
-							->then(static fn (): Bunny\Channel => $channel);
-					}
+		if ($queueName === null) {
+			$queueName = 'rabbit.plugin_' . Utils\Random::generate();
 
-					throw new Exceptions\InvalidState('RabbitMQ QoS could not be configured');
-				},
-			)
-			->then(
-				function (Bunny\Channel $channel): void {
-					$this->dispatcher?->dispatch(new Events\ChannelCreated($channel));
+			$autoDeleteQueue = true;
+		}
 
-					$autoDeleteQueue = false;
-					$queueName = $this->queueName;
-
-					if ($queueName === null) {
-						$queueName = 'rabbit.plugin_' . Utils\Random::generate();
-
-						$autoDeleteQueue = true;
-					}
-
-					// Create exchange
-					$channel
-						// Try to create exchange
-						->exchangeDeclare(
-							$this->exchangeName,
-							self::EXCHANGE_TYPE,
-							false,
-							true,
-						);
-
-					// Create queue to connect to...
-					$channel->queueDeclare(
-						$queueName,
-						false,
-						true,
-						false,
-						$autoDeleteQueue,
-					);
-
-					$channel->queueBind(
-						$queueName,
-						$this->exchangeName,
-						MetadataConstants::MESSAGE_BUS_PREFIX_KEY . '.#',
-					);
-
-					$channel->consume(
-						function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Async\Client $client): void {
-							$result = $this->messagesHandler->handle($message);
-
-							switch ($result) {
-								case Handlers\Message::MESSAGE_ACK:
-									$channel->ack($message); // Acknowledge message
-
-									break;
-								case Handlers\Message::MESSAGE_NACK:
-									$channel->nack($message); // Message will be re-queued
-
-									break;
-								case Handlers\Message::MESSAGE_REJECT:
-									$channel->reject($message, false); // Message will be discarded
-
-									break;
-								case Handlers\Message::MESSAGE_REJECT_AND_TERMINATE:
-									$channel->reject($message, false); // Message will be discarded
-
-									$client->stop();
-
-									break;
-								default:
-									throw new Exceptions\InvalidArgument('Unknown return value of message handler');
-							}
-						},
-						$queueName,
-					);
-				},
+		// Create exchange
+		$channel
+			// Try to create exchange
+			->exchangeDeclare(
+				$this->exchangeName,
+				self::EXCHANGE_TYPE,
+				false,
+				true,
 			);
+
+		// Create queue to connect to...
+		$channel->queueDeclare(
+			$queueName,
+			false,
+			true,
+			false,
+			$autoDeleteQueue,
+		);
+
+		$channel->queueBind(
+			$queueName,
+			$this->exchangeName,
+			MetadataConstants::MESSAGE_BUS_PREFIX_KEY . '.#',
+		);
+
+		$channel->consume(
+			function (Bunny\Message $message, Bunny\Channel $channel, Bunny\Client $client): void {
+				$result = $this->messagesHandler->handle($message);
+
+				switch ($result) {
+					case Handlers\Message::MESSAGE_ACK:
+						$channel->ack($message); // Acknowledge message
+
+						break;
+					case Handlers\Message::MESSAGE_NACK:
+						$channel->nack($message); // Message will be re-queued
+
+						break;
+					case Handlers\Message::MESSAGE_REJECT:
+						$channel->reject($message, false); // Message will be discarded
+
+						break;
+					case Handlers\Message::MESSAGE_REJECT_AND_TERMINATE:
+						$channel->reject($message, false); // Message will be discarded
+
+						$client->disconnect();
+
+						break;
+					default:
+						throw new Exceptions\InvalidArgument('Unknown return value of message handler');
+				}
+			},
+			$queueName,
+		);
 	}
 
 }

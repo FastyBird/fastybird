@@ -14,6 +14,7 @@ final class CombinedEnumFormatTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
@@ -48,6 +49,12 @@ final class CombinedEnumFormatTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertEquals('sw|switch_on:1000:s|on,sw|switch_off:2000:s|off', strval($valueObject));
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function testFromArray(): void
 	{
 		$valueObject = new Formats\CombinedEnum([

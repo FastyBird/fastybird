@@ -2,23 +2,36 @@
 	<div :class="ns.b()">
 		<div :class="[ns.e('icon'), ns.is('animation', props.animation), ns.is('status', ['403', '404', '500'].includes(props.status))]">
 			<slot name="icon">
-				<component :is="icon" v-if="icon" :class="iconClass" />
+				<component
+					:is="icon"
+					v-if="icon"
+					:class="iconClass"
+				/>
 			</slot>
 		</div>
 
-		<div v-if="'title' in $slots || props.title" :class="ns.e('title')">
+		<div
+			v-if="'title' in $slots || props.title"
+			:class="ns.e('title')"
+		>
 			<slot name="title">
 				<p>{{ props.title }}</p>
 			</slot>
 		</div>
 
-		<div v-if="'subtitle' in $slots || props.subtitle" :class="ns.e('subtitle')">
+		<div
+			v-if="'subtitle' in $slots || props.subtitle"
+			:class="ns.e('subtitle')"
+		>
 			<slot name="subtitle">
 				<p>{{ props.subtitle }}</p>
 			</slot>
 		</div>
 
-		<div v-if="'extra' in $slots" :class="ns.e('extra')">
+		<div
+			v-if="'extra' in $slots"
+			:class="ns.e('extra')"
+		>
 			<slot name="extra" />
 		</div>
 
@@ -26,10 +39,9 @@
 	</div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { computed } from 'vue';
-
-import { useNamespace } from '@fastybird/web-ui-hooks';
+import { useNamespace } from 'element-plus';
 
 import { IconComponentMap, IconMap, resultProps } from './result';
 

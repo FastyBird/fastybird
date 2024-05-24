@@ -1,10 +1,10 @@
 import { ref } from "vue";
+import { ElButton, ElSwitch, ElIcon } from "element-plus";
 
 import { Meta, StoryObj } from "@storybook/vue3";
 import { action } from "@storybook/addon-actions";
 import { FasGear, FasPlug } from "@fastybird/web-ui-icons";
-import { FbList, FbListItem, FbButton, FbSwitch, FbIcon, ItemVariantTypes } from "@fastybird/web-ui-components";
-import { ComponentSizeTypes, VariantTypes } from "@fastybird/web-ui-constants";
+import { FbList, FbListItem, ListItemVariantTypes } from "@fastybird/web-ui-components";
 
 import "./fb-list.stories.scss";
 
@@ -29,17 +29,17 @@ export const BasicUsage: Story = {
 		<template #heading>List of awesome items</template>
 		<template #subheading>Subheading of awesome items</template>
 		<template #buttons>
-			<fb-button size="${ComponentSizeTypes.SMALL}" @click.prevent="onClick">Add</fb-button>
-			<fb-button size="${ComponentSizeTypes.SMALL}" variant="${VariantTypes.WARNING}" :icon="FasGear" @click.prevent="onClick" />
+			<el-button size="small" @click.prevent="onClick">Add</el-button>
+			<el-button size="small" type="warning" :icon="FasGear" @click.prevent="onClick" />
 		</template>
 		<fb-list-item @click="onClick">
 			<template #title>Temperature</template>
 			<template #subtitle>Master room measured temperature</template>
 			<template #detail>23 °C</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
 		<fb-list-item @click="onClick">
@@ -47,27 +47,27 @@ export const BasicUsage: Story = {
 			<template #subtitle>Master room measured humidity</template>
 			<template #detail>43 %</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
 		<fb-list-item @click="onClick">
 			<template #title>Heater</template>
 			<template #subtitle>Master room heater switch</template>
 			<template #button>
-				<fb-switch v-model="switchState" />
+				<el-switch v-model="switchState" />
 			</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
 	</fb-list>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const switchState = ref(true);
@@ -81,7 +81,7 @@ const onClick = () => {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
+        components: { ElButton, ElSwitch, ElIcon, FbList, FbListItem, FasGear, FasPlug },
         setup: () => {
             const switchState = ref(true);
             const onClick = action("button-clicked");
@@ -98,17 +98,17 @@ const onClick = () => {
 	<template #heading>List of awesome items</template>
 	<template #subheading>Subheading of awesome items</template>
 	<template #buttons>
-		<fb-button size="${ComponentSizeTypes.SMALL}" @click.prevent="onClick">Add</fb-button>
-		<fb-button size="${ComponentSizeTypes.SMALL}" variant="${VariantTypes.WARNING}" :icon="FasGear" @click.prevent="onClick" />
+		<el-button size="small" @click.prevent="onClick">Add</el-button>
+		<el-button size="small" type="warning" :icon="FasGear" @click.prevent="onClick" />
 	</template>
 	<fb-list-item @click="onClick">
 		<template #title>Temperature</template>
 		<template #subtitle>Master room measured temperature</template>
 		<template #detail>23 °C</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
 	<fb-list-item @click="onClick">
@@ -116,21 +116,21 @@ const onClick = () => {
 		<template #subtitle>Master room measured humidity</template>
 		<template #detail>43 %</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
 	<fb-list-item @click="onClick">
 		<template #title>Heater</template>
 		<template #subtitle>Master room heater switch</template>
 		<template #button>
-			<fb-switch v-model="switchState" />
+			<el-switch v-model="switchState" />
 		</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
 </fb-list>`,
@@ -147,45 +147,45 @@ export const ListStyle: Story = {
 		<template #heading>List of awesome items</template>
 		<template #subheading>Subheading of awesome items</template>
 		<template #buttons>
-			<fb-button size="${ComponentSizeTypes.SMALL}" @click.prevent="onClick">Add</fb-button>
-			<fb-button size="${ComponentSizeTypes.SMALL}" variant="${VariantTypes.WARNING}" :icon="FasGear" @click.prevent="onClick" />
+			<el-button size="small" @click.prevent="onClick">Add</el-button>
+			<el-button size="small" type="warning" :icon="FasGear" @click.prevent="onClick" />
 		</template>
-		<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+		<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 			<template #title>Temperature</template>
 			<template #subtitle>Master room measured temperature</template>
 			<template #detail>23 °C</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
-		<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+		<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 			<template #title>Humidity</template>
 			<template #subtitle>Master room measured humidity</template>
 			<template #detail>43 %</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
-		<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+		<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 			<template #title>Heater</template>
 			<template #subtitle>Master room heater switch</template>
 			<template #button>
-				<fb-switch v-model="switchState" />
+				<el-switch v-model="switchState" />
 			</template>
 			<template #icon>
-				<fb-icon>
+				<el-icon>
 					<fas-plug />
-				</fb-icon>
+				</el-icon>
 			</template>
 		</fb-list-item>
 	</fb-list>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const switchState = ref(true);
@@ -199,7 +199,7 @@ const onClick = () => {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbList, FbListItem, FbButton, FbSwitch, FbIcon, FasGear, FasPlug },
+        components: { ElButton, ElSwitch, ElIcon, FbList, FbListItem, FasGear, FasPlug },
         setup: () => {
             const switchState = ref(true);
             const onClick = action("button-clicked");
@@ -216,39 +216,39 @@ const onClick = () => {
 	<template #heading>List of awesome items</template>
 	<template #subheading>Subheading of awesome items</template>
 	<template #buttons>
-		<fb-button size="${ComponentSizeTypes.SMALL}" @click.prevent="onClick">Add</fb-button>
-		<fb-button size="${ComponentSizeTypes.SMALL}" variant="${VariantTypes.WARNING}" :icon="FasGear" @click.prevent="onClick" />
+		<el-button size="small" @click.prevent="onClick">Add</el-button>
+		<el-button size="small" type="warning" :icon="FasGear" @click.prevent="onClick" />
 	</template>
-	<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+	<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 		<template #title>Temperature</template>
 		<template #subtitle>Master room measured temperature</template>
 		<template #detail>23 °C</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
-	<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+	<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 		<template #title>Humidity</template>
 		<template #subtitle>Master room measured humidity</template>
 		<template #detail>43 %</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
-	<fb-list-item @click="onClick" variant="${ItemVariantTypes.LIST}">
+	<fb-list-item @click="onClick" type="${ListItemVariantTypes.LIST}">
 		<template #title>Heater</template>
 		<template #subtitle>Master room heater switch</template>
 		<template #button>
-			<fb-switch v-model="switchState" />
+			<el-switch v-model="switchState" />
 		</template>
 		<template #icon>
-			<fb-icon>
+			<el-icon>
 				<fas-plug />
-			</fb-icon>
+			</el-icon>
 		</template>
 	</fb-list-item>
 </fb-list>`,

@@ -45,7 +45,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiSwitchElement, FbUiSpinner, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
 import { ActionRoutes, DataType, ModulePrefix, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';

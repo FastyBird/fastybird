@@ -15,7 +15,6 @@ export default defineConfig({
 			staticImport: true,
 			insertTypesEntry: true,
 			rollupTypes: true,
-			bundledPackages: ['@fastybird/web-ui-constants'],
 		}),
 	],
 	build: {

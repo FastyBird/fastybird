@@ -3,6 +3,7 @@
 namespace FastyBird\Connector\Shelly\Tests\Cases\Unit\API;
 
 use Error;
+use Exception;
 use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Services;
@@ -28,6 +29,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -99,6 +101,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -170,6 +173,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall
@@ -177,6 +181,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Utils\JsonException
 	 * @throws RuntimeException
 	 * @throws Error
+	 * @throws Exception
 	 */
 	public function testGetDeviceState(): void
 	{
@@ -241,6 +246,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DI\MissingServiceException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\HttpApiCall

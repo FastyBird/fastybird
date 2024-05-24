@@ -33,7 +33,7 @@
         "ext-sodium": "*",
         "binsoul/net-mqtt": "^0.8",
         "brick/math": "^0.10",
-        "bunny/bunny": "dev-promise-v3",
+        "bunny/bunny": "0.6.x-dev",
         "clue/multicast-react": "^1.1",
         "clue/redis-react": "^3@dev",
         "contributte/cache": "^0.6",

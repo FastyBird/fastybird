@@ -45,7 +45,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 			},
 			{
 				path: 'account',
-				name: 'accounts_module-account',
+				name: routeNames.account,
 				component: () => import('../layouts/layout-account.vue'),
 				children: [
 					{

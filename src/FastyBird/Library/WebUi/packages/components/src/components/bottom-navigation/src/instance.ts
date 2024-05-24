@@ -1,5 +1,5 @@
-import type FbBottomNavigation from './bottom-navigation.vue';
-import type FbBottomNavigationHeading from './heading.vue';
+import type BottomNavigation from './bottom-navigation.vue';
+import type BottomNavigationHeading from './heading.vue';
 
-export type FbBottomNavigationInstance = InstanceType<typeof FbBottomNavigation>;
-export type FbBottomNavigationHeadingInstance = InstanceType<typeof FbBottomNavigationHeading>;
+export type BottomNavigationInstance = InstanceType<typeof BottomNavigation>;
+export type BottomNavigationHeadingInstance = InstanceType<typeof BottomNavigationHeading>;

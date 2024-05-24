@@ -8,4 +8,4 @@ export default FbSpinner;
 
 export * from './src/spinner';
 
-export type { FbSpinnerInstance } from './src/instance';
+export type { SpinnerInstance } from './src/instance';

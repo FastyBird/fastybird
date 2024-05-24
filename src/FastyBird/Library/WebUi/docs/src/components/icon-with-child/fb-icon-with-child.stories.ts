@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from "@storybook/vue3";
 import { FasBell, FasEnvelope } from "@fastybird/web-ui-icons";
 import { FbIconWithChild } from "@fastybird/web-ui-components";
-import { VariantTypes } from "@fastybird/web-ui-constants";
 
 import "./fb-icon-with-child.stories.scss";
 
@@ -9,14 +8,14 @@ const meta: Meta<typeof FbIconWithChild> = {
     component: FbIconWithChild,
     title: "Components/Basic/Icon with child",
     argTypes: {
-        variant: {
+        type: {
             type: { name: "string", required: false },
             control: { type: "select" },
-            options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
-            description: "child icon variant",
+            options: ["default", "primary", "info", "success", "warning", "danger"],
+            description: "child icon type",
             table: {
                 type: { summary: "string" },
-                defaultValue: { summary: VariantTypes.DEFAULT },
+                defaultValue: { summary: "default" },
             },
         },
         size: {
@@ -39,7 +38,7 @@ const meta: Meta<typeof FbIconWithChild> = {
         },
     },
     args: {
-        variant: VariantTypes.DEFAULT,
+        type: "default",
     },
     excludeStories: /.*Data$/,
 };
@@ -58,23 +57,23 @@ export const BasicUsage: Story = {
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child :size="50" type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.INFO}">
+	<fb-icon-with-child :size="50" type="info">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.SUCCESS}">
+	<fb-icon-with-child :size="50" type="success">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.WARNING}">
+	<fb-icon-with-child :size="50" type="warning">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.DANGER}">
+	<fb-icon-with-child :size="50" type="danger">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
@@ -100,31 +99,31 @@ export const BasicUsage: Story = {
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child :size="50" type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.INFO}">
+		<fb-icon-with-child :size="50" type="info">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.SUCCESS}">
+		<fb-icon-with-child :size="50" type="success">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.WARNING}">
+		<fb-icon-with-child :size="50" type="warning">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.DANGER}">
+		<fb-icon-with-child :size="50" type="danger">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
@@ -139,23 +138,23 @@ export const Sizes: Story = {
             source: {
                 code: `
 <template>
-	<fb-icon-with-child :size="80" variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child :size="80" type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="50" variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child :size="50" type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="40" variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child :size="40" type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child :size="30" variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child :size="30" type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
-	<fb-icon-with-child variant="${VariantTypes.PRIMARY}">
+	<fb-icon-with-child type="primary">
 		<template #icon><fas-envelope class="icon" /></template>
 		<template #child><fas-bell /></template>
 	</fb-icon-with-child>
@@ -175,31 +174,31 @@ export const Sizes: Story = {
         template: `
 <div class="fb-icon-with-child-story-block">
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="80" variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child :size="80" type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="50" variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child :size="50" type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="40" variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child :size="40" type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child :size="30" variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child :size="30" type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
-		<fb-icon-with-child variant="${VariantTypes.PRIMARY}">
+		<fb-icon-with-child type="primary">
 			<template #icon><fas-envelope class="icon-color" /></template>
 			<template #child><fas-bell /></template>
 		</fb-icon-with-child>

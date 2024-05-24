@@ -17,6 +17,7 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws ObjectMapper\Exception\InvalidData
 	 * @throws Error

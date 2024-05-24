@@ -5,13 +5,13 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: '/',
 		name: 'root',
-		component: () => import('@/layouts/layout-default.vue'),
+		component: () => import('../layouts/layout-default.vue'),
 		redirect: () => ({ name: 'application-home' }),
 		children: [
 			{
 				path: '',
 				name: 'application-home',
-				component: () => import('@/views/view-home.vue'),
+				component: () => import('../views/view-home.vue'),
 				meta: {
 					guards: ['authenticated'],
 				},

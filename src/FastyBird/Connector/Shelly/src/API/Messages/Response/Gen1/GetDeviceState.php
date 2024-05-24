@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\API\Messages\Response\Gen1;
 
+use Exception;
 use FastyBird\Connector\Shelly\API;
 use Orisai\ObjectMapper;
 use function array_map;
@@ -127,6 +128,8 @@ final readonly class GetDeviceState implements API\Messages\Message
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws Exception
 	 */
 	public function toArray(): array
 	{

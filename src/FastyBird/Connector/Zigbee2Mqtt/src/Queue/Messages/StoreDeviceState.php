@@ -17,6 +17,8 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages;
 
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
+use TypeError;
+use ValueError;
 use function array_map;
 use function array_merge;
 
@@ -59,6 +61,10 @@ final class StoreDeviceState extends Device implements Message
 		return $this->states;
 	}
 
+	/**
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function toArray(): array
 	{
 		return array_merge(

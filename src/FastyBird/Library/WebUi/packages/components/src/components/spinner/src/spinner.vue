@@ -1,9 +1,10 @@
 <template>
-	<span :class="[ns.b(), ns.m('size-' + props.size), ns.m('variant-' + props.variant), ns.is('has-bg', props.bg)]" />
+	<span :class="[ns.b(), ns.m('size-' + props.size), ns.m('type-' + props.type), ns.is('has-bg', props.bg)]" />
 </template>
 
 <script setup lang="ts">
-import { useNamespace } from '@fastybird/web-ui-hooks';
+import { useNamespace } from 'element-plus';
+
 import { spinnerProps } from './spinner';
 
 defineOptions({

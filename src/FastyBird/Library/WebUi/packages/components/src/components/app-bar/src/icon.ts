@@ -2,20 +2,24 @@ import { buildProps, definePropType } from '@fastybird/web-ui-utils';
 
 import type { ExtractPropTypes } from 'vue';
 
+export enum AppBarIconAlignTypes {
+	LEFT = 'left',
+	RIGHT = 'right',
+	NONE = 'none',
+}
+
+export const appBarIconAlignTypes = [AppBarIconAlignTypes.LEFT, AppBarIconAlignTypes.RIGHT, AppBarIconAlignTypes.NONE] as const;
+
+export type AppBarIconAlign = AppBarIconAlignTypes.LEFT | AppBarIconAlignTypes.RIGHT | AppBarIconAlignTypes.NONE;
+
 export const appBarIconProps = buildProps({
 	/**
 	 * @description
 	 */
-	left: {
-		type: definePropType<boolean>(Boolean),
-		default: false,
-	},
-	/**
-	 * @description
-	 */
-	right: {
-		type: definePropType<boolean>(Boolean),
-		default: false,
+	align: {
+		type: definePropType<AppBarIconAlign>(String),
+		values: appBarIconAlignTypes,
+		default: AppBarIconAlignTypes.NONE,
 	},
 	/**
 	 * @description

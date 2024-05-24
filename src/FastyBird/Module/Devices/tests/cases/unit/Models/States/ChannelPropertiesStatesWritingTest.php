@@ -25,6 +25,7 @@ final class ChannelPropertiesStatesWritingTest extends Tests\Cases\Unit\BaseTest
 	 * @param class-string<Throwable>|null $exception
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
@@ -141,6 +142,7 @@ final class ChannelPropertiesStatesWritingTest extends Tests\Cases\Unit\BaseTest
 	 * @param class-string<Throwable>|null $exception
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState

@@ -1,5 +1,5 @@
-import type FbSwipeItem from './item.vue';
-import type FbSwipe from './swipe.vue';
+import type SwipeItem from './item.vue';
+import type Swipe from './swipe.vue';
 
-export type FbSwipeItemInstance = InstanceType<typeof FbSwipeItem>;
-export type FbSwipeInstance = InstanceType<typeof FbSwipe>;
+export type SwipeItemInstance = InstanceType<typeof SwipeItem>;
+export type SwipeInstance = InstanceType<typeof Swipe>;

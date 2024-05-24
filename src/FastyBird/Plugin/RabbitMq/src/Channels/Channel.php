@@ -20,8 +20,6 @@ use FastyBird\Plugin\RabbitMq\Connections;
 use Nette;
 use Throwable;
 use function assert;
-use function is_bool;
-use function is_int;
 
 /**
  * Rabbit MQ client
@@ -68,10 +66,7 @@ class Channel
 			$this->channel = $channel;
 		}
 
-		$response = $this->channel->publish($body, $headers, $exchange, $routingKey);
-		assert(is_bool($response) || is_int($response));
-
-		return $response;
+		return $this->channel->publish($body, $headers, $exchange, $routingKey);
 	}
 
 	private function getClient(): Bunny\Client

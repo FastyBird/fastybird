@@ -47,7 +47,6 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '../../composables';

@@ -319,7 +319,7 @@ final class LocalApi
 						$this->lost();
 					});
 
-					$this->connection->on('close', function (): void {
+					$this->connection?->on('close', function (): void {
 						$this->logger->debug(
 							'Connection with device was closed',
 							[

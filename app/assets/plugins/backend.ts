@@ -19,8 +19,6 @@ export const key: InjectionKey<AxiosInstance> = Symbol('backend');
 
 export default {
 	install: (app: App, options: IAxiosOptions): void => {
-		const session = useSession();
-
 		const baseUrl = options.apiTarget !== null ? options.apiTarget : options.apiPrefix;
 
 		axios.defaults.baseURL = baseUrl;
@@ -60,6 +58,8 @@ export default {
 
 		// Set basic headers
 		axios.interceptors.request.use((request): InternalAxiosRequestConfig => {
+			const session = useSession();
+
 			const accessToken = session.data.accessToken;
 
 			if (get(request, 'url', '').includes(SESSION_API_URL) && request.method === 'patch') {
@@ -95,6 +95,8 @@ export default {
 			},
 			(error): Promise<any> => {
 				const originalRequest = error.config;
+
+				const session = useSession();
 
 				// Concurrent request check only for client side
 				pendingRequests = Math.max(0, pendingRequests - 1);

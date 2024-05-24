@@ -17,25 +17,21 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": [
-      "@fastybird/metadata-library",
-      "@fastybird/web-ui-library",
       "@fastybird/accounts-module",
       "@fastybird/devices-module",
+      "@fastybird/metadata-library",
       "@fastybird/triggers-module",
+      "@fastybird/web-ui-library",
       "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash",
       "@types/md5",
+      "node",
       "vite/client",
       "vite-plugin-vue-type-imports",
       "vite-svg-loader",
       "vue-meta",
-      "node",
+      "unocss",
     ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",
@@ -51,9 +47,6 @@
     "package.json"
   ],
   "exclude": [
-    "assets/**/*.stories.ts",
-    "assets/**/stories.ts",
-    "assets/**/*.spec.ts",
     "node_modules",
     "dist"
   ]

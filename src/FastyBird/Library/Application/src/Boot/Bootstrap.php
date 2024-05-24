@@ -56,6 +56,7 @@ class Bootstrap
 
 	/**
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	public static function boot(string $envPrefix = 'FB_APP_PARAMETER_'): Configurator
 	{
@@ -201,6 +202,7 @@ class Bootstrap
 	 * @return array<mixed>
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 */
 	private static function loadEnvParameters(
 		string $prefix,

@@ -10,4 +10,4 @@ export const FbListItem = withInstall(Item);
 
 export * from './src/item';
 
-export type { FbListInstance, FbListItemInstance } from './src/instance';
+export type { ListInstance, ListItemInstance } from './src/instance';

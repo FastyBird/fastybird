@@ -20,10 +20,4 @@ export * from './src/content';
 export * from './src/heading';
 export * from './src/icon';
 
-export type {
-	FbAppBarInstance,
-	FbAppBarButtonInstance,
-	FbAppBarContentInstance,
-	FbAppBarHeadingInstance,
-	FbAppBarIconInstance,
-} from './src/instance';
+export type { AppBarInstance, AppBarButtonInstance, AppBarContentInstance, AppBarHeadingInstance, AppBarIconInstance } from './src/instance';

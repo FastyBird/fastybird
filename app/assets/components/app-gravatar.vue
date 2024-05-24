@@ -24,6 +24,10 @@ interface IAppGravatarProps {
 	hostname?: string;
 }
 
+defineOptions({
+	name: 'AppGravatar',
+});
+
 const props = withDefaults(defineProps<IAppGravatarProps>(), {
 	hash: null,
 	size: 80,

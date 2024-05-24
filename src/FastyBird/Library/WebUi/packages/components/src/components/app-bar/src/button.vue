@@ -1,30 +1,15 @@
 <template>
-	<template v-if="teleport">
-		<teleport :to="`#${teleportTarget}`">
-			<fb-button
-				v-bind="props"
-				:variant="VariantTypes.PRIMARY"
-				:size="props.small ? ComponentSizeTypes.SMALL : ComponentSizeTypes.LARGE"
-				:circle="'icon' in $slots"
-				:class="[ns.b(), ns.m(`align-${props.align}`)]"
-				@click="emit('click', $event)"
-			>
-				<template v-if="'icon' in $slots">
-					<slot name="icon" />
-				</template>
-
-				<slot />
-			</fb-button>
-		</teleport>
-	</template>
-
-	<template v-else>
-		<fb-button
+	<teleport
+		v-if="(!props.teleport || mounted) && props.align !== AppBarButtonAlignTypes.NONE"
+		:disabled="!props.teleport"
+		:to="`#${teleportTarget}`"
+	>
+		<el-button
 			v-bind="props"
-			:variant="VariantTypes.PRIMARY"
-			:size="props.small ? ComponentSizeTypes.SMALL : ComponentSizeTypes.LARGE"
+			:size="props.small ? 'small' : 'large'"
 			:circle="'icon' in $slots"
 			:class="[ns.b(), ns.m(`align-${props.align}`)]"
+			type="primary"
 			@click="emit('click', $event)"
 		>
 			<template v-if="'icon' in $slots">
@@ -32,16 +17,15 @@
 			</template>
 
 			<slot />
-		</fb-button>
-	</template>
+		</el-button>
+	</teleport>
 </template>
 
-<script lang="ts" setup>
-import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
-import { useNamespace } from '@fastybird/web-ui-hooks';
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { ElButton, useNamespace } from 'element-plus';
 
-import { FbButton } from '../../button';
-import { appBarButtonEmits, appBarButtonProps } from './button';
+import { AppBarButtonAlignTypes, appBarButtonEmits, appBarButtonProps } from './button';
 
 defineOptions({
 	name: 'FbAppBarButton',
@@ -52,6 +36,8 @@ const emit = defineEmits(appBarButtonEmits);
 
 const ns = useNamespace('app-bar-button');
 
+const mounted = ref<boolean>(false);
+
 let teleportTarget = 'fb-app-bar-button';
 
 if (props.small) {
@@ -59,4 +45,34 @@ if (props.small) {
 } else {
 	teleportTarget = `${teleportTarget}-${props.align}`;
 }
+
+onMounted((): void => {
+	if (props.teleport) {
+		const target: HTMLElement | null = document.getElementById(teleportTarget);
+
+		if (target !== null) {
+			target.childNodes.forEach((node) => {
+				if (node instanceof HTMLElement) {
+					node.style.display = 'none';
+				}
+			});
+		}
+	}
+
+	mounted.value = true;
+});
+
+onBeforeUnmount((): void => {
+	if (props.teleport) {
+		const target: HTMLElement | null = document.getElementById(teleportTarget);
+
+		if (target !== null) {
+			target.childNodes.forEach((node) => {
+				if (node instanceof HTMLElement && node.style.display === 'none') {
+					node.style.display = '';
+				}
+			});
+		}
+	}
+});
 </script>

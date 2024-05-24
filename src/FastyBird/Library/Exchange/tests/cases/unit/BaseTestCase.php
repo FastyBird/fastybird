@@ -23,6 +23,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	protected function setUp(): void
@@ -34,6 +35,7 @@ abstract class BaseTestCase extends TestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 */
 	protected function createContainer(string|null $additionalConfig = null): Nette\DI\Container

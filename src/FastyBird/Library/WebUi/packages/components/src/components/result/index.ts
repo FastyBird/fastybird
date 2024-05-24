@@ -8,4 +8,4 @@ export default FbResult;
 
 export * from './src/result';
 
-export type { FbResultInstance } from './src/instance';
+export type { ResultInstance } from './src/instance';

@@ -33,6 +33,7 @@ final class StoreBridgeDevicesTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws DBAL\Exception
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument

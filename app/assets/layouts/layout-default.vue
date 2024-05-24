@@ -1,9 +1,3 @@
 <template>
-	<RouterView @toggle-menu="onToggleMenu" />
+	<RouterView />
 </template>
-
-<script setup lang="ts">
-const onToggleMenu = (): void => {
-	console.log('toggle-menu');
-};
-</script>

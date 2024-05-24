@@ -1,159 +1,222 @@
 <template>
-	<fb-ui-content
-		:mb="FbSizeTypes.LARGE"
-		class="fb-accounts-module-settings-account-form__columns"
+	<el-form
+		ref="accountFormEl"
+		:model="accountForm"
+		:rules="rules"
+		:label-position="props.layout === LayoutTypes.PHONE ? 'top' : 'right'"
+		:label-width="180"
+		status-icon
+		class="sm:px-5"
 	>
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-input
-				v-model="emailAddress"
-				:error="emailAddressError"
+		<div class="mb-5">
+			<el-form-item
 				:label="t('fields.emailAddress.title')"
-				:required="true"
-				:type="FbFormInputTypeTypes.EMAIL"
-				name="emailAddress"
-				spellcheck="false"
+				prop="emailAddress"
+				class="mb-2"
 			>
-				<template #help-line>
-					{{ t('fields.emailAddress.help') }}
-				</template>
-			</fb-form-input>
+				<el-input
+					v-model="accountForm.emailAddress"
+					name="emailAddress"
+				/>
+			</el-form-item>
 		</div>
 
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-select
-				v-model="language"
+		<div class="mb-5">
+			<el-form-item
 				:label="t('fields.language.title')"
-				:items="languagesOptions"
-				name="language"
-			/>
+				prop="language"
+				class="mb-2"
+			>
+				<el-select
+					v-model="accountForm.language"
+					name="language"
+				>
+					<el-option
+						v-for="item in languagesOptions"
+						:key="item.value"
+						:label="item.name"
+						:value="item.value"
+					/>
+				</el-select>
+			</el-form-item>
 		</div>
-	</fb-ui-content>
 
-	<fb-ui-content
-		:mb="FbSizeTypes.LARGE"
-		class="fb-accounts-module-settings-account-form__columns"
-	>
-		<div class="fb-accounts-module-settings-account-form__name-column">
-			<fb-form-input
-				v-model="firstName"
-				:error="firstNameError"
+		<div class="mb-5">
+			<el-form-item
 				:label="t('fields.firstName.title')"
-				:required="true"
-				name="firstName"
-				spellcheck="false"
+				prop="firstName"
+				class="mb-2"
 			>
-				<template #help-line>
-					{{ t('fields.firstName.help') }}
-				</template>
-			</fb-form-input>
+				<el-input
+					v-model="accountForm.firstName"
+					name="firstName"
+				/>
+			</el-form-item>
 		</div>
 
-		<div class="fb-accounts-module-settings-account-form__name-column">
-			<fb-form-input
-				v-model="lastName"
-				:error="lastNameError"
+		<div class="mb-5">
+			<el-form-item
 				:label="t('fields.lastName.title')"
-				:required="true"
-				name="lastName"
-				spellcheck="false"
+				prop="lastName"
+				class="mb-2"
 			>
-				<template #help-line>
-					{{ t('fields.lastName.help') }}
-				</template>
-			</fb-form-input>
+				<el-input
+					v-model="accountForm.lastName"
+					name="lastName"
+				/>
+			</el-form-item>
 		</div>
 
-		<div class="fb-accounts-module-settings-account-form__name-column">
-			<fb-form-input
-				v-model="middleName"
+		<div class="mb-5">
+			<el-form-item
 				:label="t('fields.middleName.title')"
-				:required="true"
-				name="middleName"
-				spellcheck="false"
-			/>
-		</div>
-	</fb-ui-content>
-
-	<hr />
-
-	<fb-ui-content
-		:mb="FbSizeTypes.LARGE"
-		class="fb-accounts-module-settings-account-form__columns"
-	>
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-select
-				v-model="timezone"
-				:label="t('fields.datetime.timezone.title')"
-				:items="zonesOptions"
-				name="zone"
-			/>
+				prop="middleName"
+				class="mb-2"
+			>
+				<el-input
+					v-model="accountForm.middleName"
+					name="middleName"
+				/>
+			</el-form-item>
 		</div>
 
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-select
-				v-model="weekStart"
-				:label="t('fields.datetime.weekStartOn.title')"
-				:items="weekStartOptions"
-				name="weekStart"
-			/>
-		</div>
-	</fb-ui-content>
+		<el-divider class="my-10" />
 
-	<fb-ui-content
-		:mb="FbSizeTypes.LARGE"
-		class="fb-accounts-module-settings-account-form__columns"
-	>
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-select
-				v-model="dateFormat"
-				:label="t('fields.datetime.dateFormat.title')"
-				:items="dateFormatOptions"
-				name="dateFormat"
-			/>
-		</div>
+		<el-row
+			:gutter="20"
+			class="sm:mb-5"
+		>
+			<el-col
+				:sm="24"
+				:md="12"
+			>
+				<el-form-item
+					:label="t('fields.datetime.timezone.title')"
+					prop="timezone"
+					class="mb-2"
+				>
+					<el-select
+						v-model="accountForm.timezone"
+						prop="timezone"
+					>
+						<el-option-group
+							v-for="item in zonesOptions"
+							:key="item.name"
+							:label="item.name"
+						>
+							<el-option
+								v-for="subItem in item.items"
+								:key="subItem.value"
+								:label="subItem.name"
+								:value="subItem.value"
+							/>
+						</el-option-group>
+					</el-select>
+				</el-form-item>
+			</el-col>
 
-		<div class="fb-accounts-module-settings-account-form__column">
-			<fb-form-select
-				v-model="timeFormat"
-				:label="t('fields.datetime.timeFormat.title')"
-				:items="timeFormatOptions"
-				name="timeFormat"
-			/>
-		</div>
-	</fb-ui-content>
+			<el-col
+				:sm="24"
+				:md="12"
+			>
+				<el-form-item
+					:label="t('fields.datetime.weekStartOn.title')"
+					prop="weekStart"
+					class="mb-2"
+				>
+					<el-select
+						v-model="accountForm.weekStart"
+						prop="weekStart"
+					>
+						<el-option
+							v-for="item in weekStartOptions"
+							:key="item.value"
+							:label="item.name"
+							:value="item.value"
+						/>
+					</el-select>
+				</el-form-item>
+			</el-col>
+		</el-row>
+
+		<el-row
+			:gutter="20"
+			class="sm:mb-5"
+		>
+			<el-col
+				:sm="24"
+				:md="12"
+			>
+				<el-form-item
+					:label="t('fields.datetime.dateFormat.title')"
+					prop="dateFormat"
+					class="mb-2"
+				>
+					<el-select
+						v-model="accountForm.dateFormat"
+						prop="dateFormat"
+					>
+						<el-option
+							v-for="item in dateFormatOptions"
+							:key="item.value"
+							:label="item.name"
+							:value="item.value"
+						/>
+					</el-select>
+				</el-form-item>
+			</el-col>
+
+			<el-col
+				:sm="24"
+				:md="12"
+			>
+				<el-form-item
+					:label="t('fields.datetime.timeFormat.title')"
+					prop="timeFormat"
+					class="mb-2"
+				>
+					<el-select
+						v-model="accountForm.timeFormat"
+						prop="timeFormat"
+					>
+						<el-option
+							v-for="item in timeFormatOptions"
+							:key="item.value"
+							:label="item.name"
+							:value="item.value"
+						/>
+					</el-select>
+				</el-form-item>
+			</el-col>
+		</el-row>
+	</el-form>
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
-import { useForm, useField } from 'vee-validate';
-import { object as yObject, string as yString, number as yNumber } from 'yup';
+import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
-
-import {
-	FbFormInput,
-	FbFormSelect,
-	FbUiContent,
-	FbSizeTypes,
-	FbFormInputTypeTypes,
-	FbFormResultTypes,
-	IFbFormSelectItem,
-	IFbFormSelectItemGroup,
-} from '@fastybird/web-ui-library';
+import { ElForm, ElFormItem, ElInput, ElDivider, ElRow, ElCol, ElSelect, ElOption, ElOptionGroup, FormInstance, FormRules } from 'element-plus';
 
 import { useAccount } from '../../models';
 import { useFlashMessage, useTimezones } from '../../composables';
-import { ISettingsAccountProps } from './settings-account-form.types';
+import { FormResultTypes, LayoutTypes } from '../../types';
+import { ISettingsAccountFormProps, ISettingsAccountForm } from './settings-account-form.types';
 
-const props = withDefaults(defineProps<ISettingsAccountProps>(), {
+defineOptions({
+	name: 'SettingsAccountForm',
+});
+
+const props = withDefaults(defineProps<ISettingsAccountFormProps>(), {
 	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
+	layout: LayoutTypes.DEFAULT,
 });
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
@@ -164,7 +227,36 @@ const { timezones } = useTimezones();
 
 const countries: string[] = ['Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific'];
 
-const languagesOptions: IFbFormSelectItem[] = [
+const accountFormEl = ref<FormInstance | undefined>(undefined);
+
+const rules = reactive<FormRules<ISettingsAccountForm>>({
+	emailAddress: [
+		{ required: true, message: t('fields.emailAddress.validation.required'), trigger: 'change' },
+		{ type: 'email', message: t('fields.emailAddress.validation.email'), trigger: 'change' },
+	],
+	firstName: [{ required: true, message: t('fields.firstName.validation.required'), trigger: 'change' }],
+	lastName: [{ required: true, message: t('fields.lastName.validation.required'), trigger: 'change' }],
+	middleName: [{ required: false }],
+	language: [{ required: false }],
+	weekStart: [{ required: false }],
+	timezone: [{ required: false }],
+	dateFormat: [{ required: false }],
+	timeFormat: [{ required: false }],
+});
+
+const accountForm = reactive<ISettingsAccountForm>({
+	emailAddress: props.account.email?.address ?? '@',
+	firstName: props.account.details.firstName,
+	lastName: props.account.details.lastName,
+	middleName: props.account.details.middleName ?? undefined,
+	language: props.account.language,
+	weekStart: props.account.weekStart,
+	timezone: props.account.dateTime.timezone,
+	dateFormat: props.account.dateTime.dateFormat,
+	timeFormat: props.account.dateTime.timeFormat,
+});
+
+const languagesOptions: { name: string; value: string }[] = [
 	{
 		name: 'English',
 		value: 'en',
@@ -175,7 +267,7 @@ const languagesOptions: IFbFormSelectItem[] = [
 	},
 ];
 
-const weekStartOptions: IFbFormSelectItem[] = [
+const weekStartOptions: { name: string; value: number }[] = [
 	{
 		name: t('fields.datetime.weekStartOn.values.monday'),
 		value: 1,
@@ -190,7 +282,7 @@ const weekStartOptions: IFbFormSelectItem[] = [
 	},
 ];
 
-const dateFormatOptions: IFbFormSelectItem[] = [
+const dateFormatOptions: { name: string; value: string }[] = [
 	{
 		name: 'mm/dd/yyyy',
 		value: 'MM/dd/yyyy',
@@ -209,7 +301,7 @@ const dateFormatOptions: IFbFormSelectItem[] = [
 	},
 ];
 
-const timeFormatOptions: IFbFormSelectItem[] = [
+const timeFormatOptions: { name: string; value: string }[] = [
 	{
 		name: 'hh:mm',
 		value: 'HH:mm',
@@ -220,7 +312,7 @@ const timeFormatOptions: IFbFormSelectItem[] = [
 	},
 ];
 
-const zonesOptions = countries.map((country): IFbFormSelectItemGroup => {
+const zonesOptions = countries.map((country): { name: string; items: { name: string; value: string }[] } => {
 	return {
 		name: country,
 		items: timezones
@@ -248,59 +340,12 @@ const zonesOptions = countries.map((country): IFbFormSelectItemGroup => {
 	};
 });
 
-interface ISettingsAccountForm {
-	emailAddress: string;
-	firstName: string;
-	lastName: string;
-	middleName?: string;
-	language: string;
-	weekStart: number;
-	timezone: string;
-	dateFormat: string;
-	timeFormat: string;
-}
-
-const { validate } = useForm<ISettingsAccountForm>({
-	validationSchema: yObject({
-		emailAddress: yString().required(t('fields.emailAddress.validation.required')).email(t('fields.emailAddress.validation.email')),
-		firstName: yString().required(t('fields.firstName.validation.required')),
-		lastName: yString().required(t('fields.lastName.validation.required')),
-		middleName: yString().notRequired(),
-		language: yString().required(),
-		weekStart: yNumber().required(),
-		timezone: yString().required(),
-		dateFormat: yString().required(),
-		timeFormat: yString().required(),
-	}),
-	initialValues: {
-		emailAddress: props.account.email?.address ?? '@',
-		firstName: props.account.details.firstName,
-		lastName: props.account.details.lastName,
-		middleName: props.account.details.middleName ?? undefined,
-		language: props.account.language,
-		weekStart: props.account.weekStart,
-		timezone: props.account.dateTime.timezone,
-		dateFormat: props.account.dateTime.dateFormat,
-		timeFormat: props.account.dateTime.timeFormat,
-	},
-});
-
-const { value: emailAddress, errorMessage: emailAddressError, setValue: setEmailAddress } = useField<string>('emailAddress');
-const { value: firstName, errorMessage: firstNameError, setValue: setFirstName } = useField<string>('firstName');
-const { value: lastName, errorMessage: lastNameError, setValue: setLastName } = useField<string>('lastName');
-const { value: middleName, setValue: setMiddleName } = useField<string | undefined>('middleName');
-const { value: language, setValue: setLanguage } = useField<string>('language');
-const { value: weekStart, setValue: setWeekStart } = useField<number>('weekStart');
-const { value: timezone, setValue: setTimezone } = useField<string>('timezone');
-const { value: dateFormat, setValue: setDateFormat } = useField<string>('dateFormat');
-const { value: timeFormat, setValue: setTimeFormat } = useField<string>('timeFormat');
-
 let timer: number;
 
 const clearResult = (): void => {
 	window.clearTimeout(timer);
 
-	emit('update:remoteFormResult', FbFormResultTypes.NONE);
+	emit('update:remoteFormResult', FormResultTypes.NONE);
 };
 
 const updateAccount = async (): Promise<void> => {
@@ -310,21 +355,23 @@ const updateAccount = async (): Promise<void> => {
 		await accountStore.edit({
 			data: {
 				details: {
-					firstName: firstName.value,
-					lastName: lastName.value,
-					middleName: middleName.value,
+					firstName: accountForm.firstName,
+					lastName: accountForm.lastName,
+					middleName: accountForm.middleName,
 				},
-				language: language.value,
-				weekStart: weekStart.value,
+				language: accountForm.language,
+				weekStart: accountForm.weekStart,
 				dateTime: {
-					timezone: timezone.value,
-					dateFormat: dateFormat.value,
-					timeFormat: timeFormat.value,
+					timezone: accountForm.timezone,
+					dateFormat: accountForm.dateFormat,
+					timeFormat: accountForm.timeFormat,
 				},
 			},
 		});
 
-		emit('update:remoteFormResult', FbFormResultTypes.OK);
+		emit('update:remoteFormResult', FormResultTypes.OK);
+
+		flashMessage.success('Your account has been updated successfully.');
 
 		timer = window.setTimeout(clearResult, 2000);
 	} catch (e: any) {
@@ -334,7 +381,7 @@ const updateAccount = async (): Promise<void> => {
 			flashMessage.error(errorMessage);
 		}
 
-		emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+		emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 		timer = window.setTimeout(clearResult, 2000);
 	}
@@ -342,22 +389,24 @@ const updateAccount = async (): Promise<void> => {
 
 watch(
 	(): boolean => props.remoteFormSubmit,
-	async (val): Promise<void> => {
+	async (val: boolean): Promise<void> => {
 		if (val) {
 			emit('update:remoteFormSubmit', false);
 
-			const validationResult = await validate();
+			await accountFormEl.value!.validate(async (valid: boolean): Promise<void> => {
+				if (!valid) {
+					return;
+				}
 
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+				emit('update:remoteFormResult', FormResultTypes.WORKING);
 
 				// Email has been changed
-				if (emailAddress.value !== props.account.email?.address) {
-					const storedEmail = accountStore.emails.find((email) => email.address.toLowerCase() === emailAddress.value.toLowerCase());
+				if (accountForm.emailAddress !== props.account.email?.address) {
+					const storedEmail = accountStore.emails.find((email) => email.address.toLowerCase() === accountForm.emailAddress.toLowerCase());
 
 					const emailErrorMessage = t('messages.emailNotEdited');
 
-					if (storedEmail !== undefined) {
+					if (typeof storedEmail !== 'undefined') {
 						try {
 							await accountStore.editEmail({
 								id: storedEmail.id,
@@ -375,7 +424,7 @@ watch(
 								flashMessage.error(emailErrorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							timer = window.setTimeout(clearResult, 2000);
 						}
@@ -383,7 +432,7 @@ watch(
 						try {
 							await accountStore.addEmail({
 								data: {
-									address: emailAddress.value,
+									address: accountForm.emailAddress,
 									default: true,
 									private: false,
 								},
@@ -397,7 +446,7 @@ watch(
 								flashMessage.error(emailErrorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							timer = window.setTimeout(clearResult, 2000);
 						}
@@ -405,33 +454,29 @@ watch(
 				} else {
 					await updateAccount();
 				}
-			}
+			});
 		}
 	}
 );
 
 watch(
 	(): boolean => props.remoteFormReset,
-	(val): void => {
+	(val: boolean): void => {
 		emit('update:remoteFormReset', false);
 
 		if (val) {
-			setEmailAddress(props.account.email?.address ?? '@');
-			setFirstName(props.account.details.firstName);
-			setLastName(props.account.details.lastName);
-			setMiddleName(props.account.details.middleName ?? undefined);
-			setLanguage(props.account.language);
-			setWeekStart(props.account.weekStart);
-			setTimezone(props.account.dateTime.timezone);
-			setDateFormat(props.account.dateTime.dateFormat);
-			setTimeFormat(props.account.dateTime.timeFormat);
+			accountForm.emailAddress = props.account.email?.address ?? '@';
+			accountForm.firstName = props.account.details.firstName;
+			accountForm.lastName = props.account.details.lastName;
+			accountForm.middleName = props.account.details.middleName ?? undefined;
+			accountForm.language = props.account.language;
+			accountForm.weekStart = props.account.weekStart;
+			accountForm.timezone = props.account.dateTime.timezone;
+			accountForm.dateFormat = props.account.dateTime.dateFormat;
+			accountForm.timeFormat = props.account.dateTime.timeFormat;
 		}
 	}
 );
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'settings-account-form';
-</style>
 
 <i18n src="../../locales/locales.json" />

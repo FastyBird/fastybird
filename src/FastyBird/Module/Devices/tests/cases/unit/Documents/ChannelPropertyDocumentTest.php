@@ -23,6 +23,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @param array<string, mixed> $fixture
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -47,6 +48,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @param class-string<MetadataDocuments\Document> $class
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

@@ -16,6 +16,7 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -35,6 +36,7 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

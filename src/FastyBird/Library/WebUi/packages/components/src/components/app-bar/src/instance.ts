@@ -1,11 +1,11 @@
-import type FbAppBar from './app-bar.vue';
-import type FbAppBarButton from './button.vue';
-import type FbAppBarContent from './content.vue';
-import type FbAppBarHeading from './heading.vue';
-import type FbAppBarIcon from './icon.vue';
+import type AppBar from './app-bar.vue';
+import type AppBarButton from './button.vue';
+import type AppBarContent from './content.vue';
+import type AppBarHeading from './heading.vue';
+import type AppBarIcon from './icon.vue';
 
-export type FbAppBarInstance = InstanceType<typeof FbAppBar>;
-export type FbAppBarButtonInstance = InstanceType<typeof FbAppBarButton>;
-export type FbAppBarContentInstance = InstanceType<typeof FbAppBarContent>;
-export type FbAppBarHeadingInstance = InstanceType<typeof FbAppBarHeading>;
-export type FbAppBarIconInstance = InstanceType<typeof FbAppBarIcon>;
+export type AppBarInstance = InstanceType<typeof AppBar>;
+export type AppBarButtonInstance = InstanceType<typeof AppBarButton>;
+export type AppBarContentInstance = InstanceType<typeof AppBarContent>;
+export type AppBarHeadingInstance = InstanceType<typeof AppBarHeading>;
+export type AppBarIconInstance = InstanceType<typeof AppBarIcon>;

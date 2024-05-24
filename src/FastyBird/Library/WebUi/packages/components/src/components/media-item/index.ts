@@ -5,4 +5,4 @@ import MediaItem from './src/media-item.vue';
 export const FbMediaItem = withInstall(MediaItem);
 export default FbMediaItem;
 
-export type { FbMediaItemInstance } from './src/instance';
+export type { MediaItemInstance } from './src/instance';

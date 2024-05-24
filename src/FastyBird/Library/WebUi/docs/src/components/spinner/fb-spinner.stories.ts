@@ -1,6 +1,5 @@
 import { Meta, StoryObj } from "@storybook/vue3";
 import { FbSpinner } from "@fastybird/web-ui-components";
-import { ComponentSizeTypes, VariantTypes } from "@fastybird/web-ui-constants";
 
 import "./fb-spinner.stories.scss";
 
@@ -11,21 +10,21 @@ const meta: Meta<typeof FbSpinner> = {
         size: {
             type: { name: "string", required: false },
             control: { type: "select" },
-            options: [ComponentSizeTypes.LARGE, ComponentSizeTypes.DEFAULT, ComponentSizeTypes.SMALL],
+            options: ["large", "default", "small"],
             description: "spinner size",
             table: {
                 type: { summary: "string" },
-                defaultValue: { summary: ComponentSizeTypes.DEFAULT },
+                defaultValue: { summary: "default" },
             },
         },
-        variant: {
+        type: {
             type: { name: "string", required: false },
             control: { type: "select" },
-            options: [VariantTypes.DEFAULT, VariantTypes.PRIMARY, VariantTypes.INFO, VariantTypes.SUCCESS, VariantTypes.WARNING, VariantTypes.DANGER],
-            description: "spinner variant",
+            options: ["default", "primary", "info", "success", "warning", "danger"],
+            description: "spinner type",
             table: {
                 type: { summary: "string" },
-                defaultValue: { summary: VariantTypes.DEFAULT },
+                defaultValue: { summary: "default" },
             },
         },
         bg: {
@@ -34,13 +33,13 @@ const meta: Meta<typeof FbSpinner> = {
             description: "determine whether the spinner background color is always on",
             table: {
                 type: { summary: "boolean" },
-                defaultValue: { summary: false },
+                defaultValue: { summary: "false" },
             },
         },
     },
     args: {
-        size: ComponentSizeTypes.DEFAULT,
-        variant: VariantTypes.DEFAULT,
+        size: "default",
+        type: "default",
         bg: true,
     },
     excludeStories: /.*Data$/,
@@ -60,9 +59,9 @@ export const Sizes: Story = {
             source: {
                 code: `
 <template>
-	<fb-spinner size="${ComponentSizeTypes.LARGE}" />
+	<fb-spinner size="large" />
 	<fb-spinner />
-	<fb-spinner size="${ComponentSizeTypes.SMALL}" />
+	<fb-spinner size="small" />
 </template>`,
             },
         },
@@ -73,13 +72,13 @@ export const Sizes: Story = {
         template: `
 <div class="fb-spinner-story-block">
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner size="${ComponentSizeTypes.LARGE}" />
+		<fb-spinner size="large" />
 	</div>
 	<div class="fb-spinner-story-block__item">
 		<fb-spinner />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner size="${ComponentSizeTypes.SMALL}" />
+		<fb-spinner size="small" />
 	</div>
 </div>`,
     }),
@@ -91,12 +90,12 @@ export const Variants: Story = {
             source: {
                 code: `
 <template>
-	<fb-spinner variant="${VariantTypes.PRIMARY}" />
-	<fb-spinner variant="${VariantTypes.DEFAULT}" />
-	<fb-spinner variant="${VariantTypes.INFO}" />
-	<fb-spinner variant="${VariantTypes.SUCCESS}" />
-	<fb-spinner variant="${VariantTypes.WARNING}" />
-	<fb-spinner variant="${VariantTypes.DANGER}" />
+	<fb-spinner type="primary" />
+	<fb-spinner type="default" />
+	<fb-spinner type="info" />
+	<fb-spinner type="success" />
+	<fb-spinner type="warning" />
+	<fb-spinner type="danger" />
 </template>`,
             },
         },
@@ -107,22 +106,22 @@ export const Variants: Story = {
         template: `
 <div class="fb-spinner-story-block">
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.PRIMARY}" />
+		<fb-spinner type="primary" />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.DEFAULT}" />
+		<fb-spinner type="default" />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.INFO}" />
+		<fb-spinner type="info" />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.SUCCESS}" />
+		<fb-spinner type="success" />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.WARNING}" />
+		<fb-spinner type="warning" />
 	</div>
 	<div class="fb-spinner-story-block__item">
-		<fb-spinner variant="${VariantTypes.DANGER}" />
+		<fb-spinner type="danger" />
 	</div>
 </div>`,
     }),

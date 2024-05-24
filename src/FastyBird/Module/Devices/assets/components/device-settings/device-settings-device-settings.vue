@@ -203,7 +203,6 @@ import { object as yObject, string as yString, array as yArray } from 'yup';
 import { orderBy } from 'natural-orderby';
 import get from 'lodash/get';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
 	FbUiButton,
 	FbUiContent,

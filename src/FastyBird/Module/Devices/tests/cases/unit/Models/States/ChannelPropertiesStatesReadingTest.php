@@ -20,6 +20,7 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws Exceptions\InvalidState
 	 * @throws DI\MissingServiceException
@@ -74,6 +75,7 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws Exceptions\InvalidState
 	 * @throws DI\MissingServiceException

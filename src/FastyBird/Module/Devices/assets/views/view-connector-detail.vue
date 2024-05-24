@@ -122,7 +122,6 @@ import { useRoute, useRouter } from 'vue-router';
 import get from 'lodash/get';
 import { orderBy } from 'natural-orderby';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
 	FbLayoutExpandableBox,
 	FbLayoutHeader,

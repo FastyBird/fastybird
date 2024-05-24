@@ -1,6 +1,9 @@
 <template>
 	<div :class="ns.b()">
-		<div v-if="'left' in $slots" :class="ns.e('left')">
+		<div
+			v-if="'left' in $slots"
+			:class="ns.e('left')"
+		>
 			<slot name="left" />
 		</div>
 
@@ -18,14 +21,17 @@
 			</p>
 		</div>
 
-		<div v-if="'right' in $slots" :class="ns.e('right')">
+		<div
+			v-if="'right' in $slots"
+			:class="ns.e('right')"
+		>
 			<slot name="right" />
 		</div>
 	</div>
 </template>
 
-<script lang="ts" setup>
-import { useNamespace } from '@fastybird/web-ui-hooks';
+<script setup lang="ts">
+import { useNamespace } from 'element-plus';
 
 defineOptions({
 	name: 'FbMediaItem',

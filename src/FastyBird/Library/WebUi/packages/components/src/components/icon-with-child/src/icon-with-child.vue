@@ -1,21 +1,28 @@
 <template>
-	<span v-bind="$attrs" :class="[ns.b(), ns.m('variant-' + props.variant)]">
-		<fb-icon :class="ns.e('icon')" :size="props.size">
+	<span
+		v-bind="$attrs"
+		:class="[ns.b(), ns.m('type-' + props.type)]"
+	>
+		<el-icon
+			:class="ns.e('icon')"
+			:size="props.size"
+		>
 			<slot name="icon" />
-		</fb-icon>
+		</el-icon>
 
-		<fb-icon :class="ns.e('child-icon')" :size="childSize">
+		<el-icon
+			:class="ns.e('child-icon')"
+			:size="childSize"
+		>
 			<slot name="child" />
-		</fb-icon>
+		</el-icon>
 	</span>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { ElIcon, useNamespace } from 'element-plus';
 
-import { useNamespace } from '@fastybird/web-ui-hooks';
-
-import { FbIcon } from '../../icon';
 import { iconWithChildProps } from './icon-with-child';
 
 defineOptions({

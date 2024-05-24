@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
 
@@ -315,3 +315,7 @@ export const useAccount = defineStore('accounts_module_account', {
 		},
 	},
 });
+
+export const registerAccountStore = (pinia: Pinia): Store => {
+	return useAccount(pinia);
+};

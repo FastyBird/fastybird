@@ -23,6 +23,7 @@ use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Queries;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Entities as VirtualEntities;
+use FastyBird\Connector\Virtual\Exceptions as VirtualExceptions;
 use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Types as VirtualTypes;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -115,15 +116,22 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
+	 * @throws VirtualExceptions\InvalidArgument
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{
@@ -139,12 +147,13 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
-	 * @throws Exceptions\Runtime
-	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1028,14 +1037,18 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws DBAL\Exception
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
-	 * @throws Exceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
+	 * @throws VirtualExceptions\InvalidArgument
 	 */
 	private function editDevice(Style\SymfonyStyle $io): void
 	{
@@ -1691,6 +1704,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
@@ -1776,10 +1790,11 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1872,8 +1887,12 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -2091,10 +2110,9 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function createSensor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -2243,6 +2261,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function editSensor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -3252,6 +3271,7 @@ class Install extends Console\Command\Command
 	 * @param array<string> $ignoredIds
 	 * @param array<MetadataTypes\DataType>|null $allowedDataTypes
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -3373,6 +3393,7 @@ class Install extends Console\Command\Command
 	 * @param array<string> $ignoredIds
 	 * @param array<MetadataTypes\DataType>|null $allowedDataTypes
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -3639,6 +3660,7 @@ class Install extends Console\Command\Command
 	 * @param array<MetadataTypes\DataType>|null $allowedDataTypes
 	 * @param class-string<DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable> $onlyType
 	 *
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 */
@@ -4117,6 +4139,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
@@ -4127,6 +4150,7 @@ class Install extends Console\Command\Command
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
+	 * @throws VirtualExceptions\InvalidArgument
 	 */
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
@@ -4210,12 +4234,15 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState

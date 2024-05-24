@@ -1,9 +1,9 @@
 <template>
 	<div :class="[ns.b(), ns.m('size-' + props.size)]">
 		<div :class="ns.e('icon')">
-			<fb-icon>
-				<component :is="TypeComponentsMap.error" />
-			</fb-icon>
+			<el-icon>
+				<circle-close-filled />
+			</el-icon>
 		</div>
 
 		<p :class="ns.e('content')">
@@ -13,10 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import { useNamespace } from '@fastybird/web-ui-hooks';
-import { TypeComponentsMap } from '@fastybird/web-ui-utils';
+import { ElIcon, useNamespace } from 'element-plus';
 
-import { FbIcon } from '../../icon';
+import { CircleCloseFilled } from '@element-plus/icons-vue';
+
 import { componentLoadingErrorProps } from './component-loading-error';
 
 defineOptions({

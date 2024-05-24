@@ -1,6 +1,8 @@
+import { ElIcon } from "element-plus";
+
 import { Meta, StoryObj } from "@storybook/vue3";
 import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from "@fastybird/web-ui-icons";
-import { FbSwipe, FbIcon } from "@fastybird/web-ui-components";
+import { FbSwipe } from "@fastybird/web-ui-components";
 
 import "./fb-swipe.stories.scss";
 
@@ -34,29 +36,29 @@ export const BasicUsage: Story = {
 
 		<template #left="{ item, close }">
 			<div class="btn-trash">
-				<fb-icon>
+				<el-icon>
 					<fas-trash />
-				</fb-icon>
+				</el-icon>
 			</div>
 
 			<div class="btn-close">
-				<fb-icon>
+				<el-icon>
 					<fas-xmark />
-				</fb-icon>
+				</el-icon>
 			</div>
 		</template>
 
 		<template #right="{ item }">
 			<div class="btn-favorite">
-				<fb-icon>
+				<el-icon>
 					<fas-heart />
-				</fb-icon>
+				</el-icon>
 			</div>
 
 			<div class="btn-edit">
-				<fb-icon>
+				<el-icon>
 					<fas-pen-to-square />
-				</fb-icon>
+				</el-icon>
 			</div>
 		</template>
 
@@ -68,7 +70,7 @@ export const BasicUsage: Story = {
 	</fb-swipe>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts">
 import { FasTrash, FasXmark, FasHeart, FasPenToSquare } from '@fastybird/web-ui-icons';
 
 const items = [
@@ -146,7 +148,7 @@ const items = [
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbSwipe, FbIcon, FasTrash, FasXmark, FasHeart, FasPenToSquare },
+        components: { ElIcon, FbSwipe, FasTrash, FasXmark, FasHeart, FasPenToSquare },
         setup: () => {
             const items = [
                 {
@@ -193,29 +195,29 @@ const items = [
 
 		<template #left="{ item, close }">
 			<div class="fb-swipe-story-block__button-trash">
-				<fb-icon>
+				<el-icon>
 					<fas-trash />
-				</fb-icon>
+				</el-icon>
 			</div>
 
 			<div class="fb-swipe-story-block__button-close">
-				<fb-icon>
+				<el-icon>
 					<fas-xmark />
-				</fb-icon>
+				</el-icon>
 			</div>
 		</template>
 
 		<template #right="{ item }">
 			<div class="fb-swipe-story-block__button-favorite">
-				<fb-icon>
+				<el-icon>
 					<fas-heart />
-				</fb-icon>
+				</el-icon>
 			</div>
 
 			<div class="fb-swipe-story-block__button-edit">
-				<fb-icon>
+				<el-icon>
 					<fas-pen-to-square />
-				</fb-icon>
+				</el-icon>
 			</div>
 		</template>
 

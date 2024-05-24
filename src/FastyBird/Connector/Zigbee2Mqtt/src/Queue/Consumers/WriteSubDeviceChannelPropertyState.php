@@ -90,6 +90,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ValueError
+	 * @throws TypeError
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{

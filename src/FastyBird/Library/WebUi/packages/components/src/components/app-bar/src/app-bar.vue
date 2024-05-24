@@ -1,27 +1,40 @@
 <template>
 	<div :class="[ns.b()]">
-		<div id="fb-app-bar-button-small" ref="buttonSmall" :class="[ns.e('buttons-small'), ns.is('expanded', hasSmallButtons)]">
+		<div
+			id="fb-app-bar-button-small"
+			ref="buttonSmall"
+			:class="[ns.e('buttons-small'), ns.is('expanded', hasSmallButtons)]"
+		>
 			<slot name="button-small" />
 		</div>
 
 		<div :class="[ns.e('header')]">
-			<div id="fb-app-bar-header" :class="[ns.e('heading')]">
+			<div
+				id="fb-app-bar-heading"
+				:class="[ns.e('heading')]"
+			>
 				<slot name="heading">
 					<slot name="logo" />
 				</slot>
 			</div>
 
-			<div id="fb-app-bar-button-left" :class="[ns.e('button-left')]">
+			<div
+				id="fb-app-bar-button-left"
+				:class="[ns.e('button-left')]"
+			>
 				<slot name="button-left" />
 			</div>
 
-			<div id="fb-app-bar-button-right" :class="[ns.e('button-right')]">
+			<div
+				id="fb-app-bar-button-right"
+				:class="[ns.e('button-right')]"
+			>
 				<slot name="button-right">
-					<fb-button
+					<el-button
 						v-if="!props.menuButtonHidden"
-						:size="ComponentSizeTypes.LARGE"
 						:icon="props.menuCollapsed ? FasBars : FasXmark"
-						:variant="VariantTypes.PRIMARY"
+						size="large"
+						type="primary"
 						circle
 						@click.prevent="emit('toggleMenu', $event)"
 					/>
@@ -29,20 +42,21 @@
 			</div>
 		</div>
 
-		<div id="fb-app-bar-content" ref="subContent" :class="[ns.e('content'), ns.is('expanded', hasSubContent)]">
+		<div
+			id="fb-app-bar-content"
+			ref="content"
+			:class="[ns.e('content'), ns.is('expanded', hasContent)]"
+		>
 			<slot name="content" />
 		</div>
 	</div>
 </template>
 
-<script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref, useSlots } from 'vue';
+import { ElButton, useNamespace } from 'element-plus';
 
-import { ComponentSizeTypes, VariantTypes } from '@fastybird/web-ui-constants';
-import { useNamespace } from '@fastybird/web-ui-hooks';
 import { FasBars, FasXmark } from '@fastybird/web-ui-icons';
-
-import { FbButton } from '../../button';
 
 import { appBarEmits, appBarProps } from './app-bar';
 
@@ -52,6 +66,8 @@ defineOptions({
 
 const props = defineProps(appBarProps);
 const emit = defineEmits(appBarEmits);
+
+const slots = useSlots();
 
 const ns = useNamespace('app-bar');
 
@@ -67,21 +83,21 @@ const newMutationObserver = (callback: () => void): MutationObserver | null => {
 };
 
 const buttonSmall = ref<HTMLElement | null>(null);
-const subContent = ref<HTMLElement | null>(null);
+const content = ref<HTMLElement | null>(null);
 
 const hasSmallButtons = ref<boolean>(false);
-const hasSubContent = ref<boolean>(false);
+const hasContent = ref<boolean>(false);
 
 let mutationObserver: MutationObserver | null = null;
 
 const mutationObserverCallback = (): void => {
-	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
-	hasSubContent.value = subContent.value !== null && (subContent.value?.childElementCount > 0 || subContent.value.textContent !== null);
+	hasSmallButtons.value = 'button-small' in slots;
+	hasContent.value = 'content' in slots;
 };
 
 onMounted((): void => {
-	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
-	hasSubContent.value = subContent.value !== null && (subContent.value?.childElementCount > 0 || subContent.value.textContent !== null);
+	hasSmallButtons.value = 'button-small' in slots;
+	hasContent.value = 'content' in slots;
 
 	mutationObserver = newMutationObserver(mutationObserverCallback);
 
@@ -89,8 +105,8 @@ onMounted((): void => {
 		mutationObserver.observe(buttonSmall.value as any as Node, { childList: true });
 	}
 
-	if (mutationObserver !== null && subContent.value !== null) {
-		mutationObserver.observe(subContent.value as any as Node, { childList: true });
+	if (mutationObserver !== null && content.value !== null) {
+		mutationObserver.observe(content.value as any as Node, { childList: true });
 	}
 });
 

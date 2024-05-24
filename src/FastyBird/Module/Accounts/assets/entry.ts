@@ -1,8 +1,16 @@
 import { App } from 'vue';
+import { registerAccountStore } from './models/account';
+import { registerAccountsStore } from './models/accounts';
+import { registerEmailsStore } from './models/emails';
+import { registerIdentitiesStore } from './models/identities';
+import { registerRolesStore } from './models/roles';
+import { registerSessionStore } from './models/session';
 
 import moduleRouter from './router';
 import { IAccountsModuleOptions, InstallFunction } from './types';
 import { configurationKey, metaKey } from './configuration';
+
+import 'virtual:uno.css';
 
 export function createAccountsModule(): InstallFunction {
 	return {
@@ -20,6 +28,13 @@ export function createAccountsModule(): InstallFunction {
 
 			app.provide(metaKey, options.meta);
 			app.provide(configurationKey, options.configuration);
+
+			registerAccountStore(options.store);
+			registerAccountsStore(options.store);
+			registerEmailsStore(options.store);
+			registerIdentitiesStore(options.store);
+			registerRolesStore(options.store);
+			registerSessionStore(options.store);
 		},
 	};
 }

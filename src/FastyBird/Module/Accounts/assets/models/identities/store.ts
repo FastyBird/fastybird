@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
@@ -441,3 +441,7 @@ export const useIdentities = defineStore('accounts_module_identities', {
 		},
 	},
 });
+
+export const registerIdentitiesStore = (pinia: Pinia): Store => {
+	return useIdentities(pinia);
+};

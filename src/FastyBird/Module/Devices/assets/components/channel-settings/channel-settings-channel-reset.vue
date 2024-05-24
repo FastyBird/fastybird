@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FbUiConfirmationWindow } from '@fastybird/web-ui-library';
 
 import { useDeviceState, useEntityTitle, useFlashMessage } from '../../composables';

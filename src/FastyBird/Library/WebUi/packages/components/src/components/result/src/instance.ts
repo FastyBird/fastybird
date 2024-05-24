@@ -1,3 +1,3 @@
-import type FbResult from './result.vue';
+import type Result from './result.vue';
 
-export type FbResultInstance = InstanceType<typeof FbResult>;
+export type ResultInstance = InstanceType<typeof Result>;

@@ -18,6 +18,7 @@ type UserSignedEvent = 'in' | 'out';
 type Events = {
 	loadingOverlay?: number | boolean;
 	userSigned: UserSignedEvent;
+	userLocked: boolean;
 };
 
 export const eventBus: Emitter<Events> = mitt<Events>();

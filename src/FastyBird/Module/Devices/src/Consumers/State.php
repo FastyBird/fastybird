@@ -17,12 +17,12 @@ namespace FastyBird\Module\Devices\Consumers;
 
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
@@ -32,6 +32,8 @@ use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette\Utils;
 use Throwable;
+use TypeError;
+use ValueError;
 use function in_array;
 use function React\Async\await;
 
@@ -67,11 +69,11 @@ final class State implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
@@ -90,11 +92,11 @@ final class State implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws ExchangeExceptions\InvalidArgument
-	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
 	 */
 	private function handlePropertyStateAction(
 		MetadataDocuments\Document $document,
