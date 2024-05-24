@@ -1,7 +1,9 @@
+import { ElButton, ElIcon } from "element-plus";
+
 import { Meta, StoryObj } from "@storybook/vue3";
 import { action } from "@storybook/addon-actions";
 import { FasWandMagicSparkles } from "@fastybird/web-ui-icons";
-import { FbMediaItem, FbButton, FbIcon } from "@fastybird/web-ui-components";
+import { FbMediaItem } from "@fastybird/web-ui-components";
 
 import "./fb-media-item.stories.scss";
 
@@ -66,7 +68,7 @@ type Story = StoryObj<typeof FbMediaItem>;
 export const Component: Story = {
     tags: ["hideInSidebar"],
     render: (args) => ({
-        components: { FbMediaItem, FbButton, FbIcon, FasWandMagicSparkles },
+        components: { ElButton, ElIcon, FbMediaItem, FasWandMagicSparkles },
         template: `
 <fb-media-item>
 	${args.left !== null && typeof args.left !== "undefined" ? `<template #left>${args.left}</template>` : ""}
@@ -77,10 +79,10 @@ export const Component: Story = {
 </fb-media-item>`,
     }),
     args: {
-        left: '<fb-icon size="35"><fas-wand-magic-sparkles /></fb-icon>',
+        left: '<el-icon size="35"><fas-wand-magic-sparkles /></el-icon>',
         heading: "All created items",
         description: "Here could find all created items stored in database",
-        action: "<fb-button>Reload</fb-button>",
+        action: "<el-button>Reload</el-button>",
     },
 };
 
@@ -92,9 +94,9 @@ export const BasicUsage: Story = {
 <template>
 	<fb-media-item>
 		<template #left>
-			<fb-icon size="35">
+			<el-icon size="35">
 				<fas-wand-magic-sparkles />
-			</fb-icon>
+			</el-icon>
 		</template>
 		<template #heading>
 			All created items
@@ -103,7 +105,7 @@ export const BasicUsage: Story = {
 			Here could find all created items stored in database
 		</template>
 		<template #action>
-			<fb-button @click.prevent="handleClick">Reload</fb-button>
+			<el-button @click.prevent="handleClick">Reload</el-button>
 		</template>
 	</fb-media-item>
 </template>
@@ -118,7 +120,7 @@ const handleClick = (): void => {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbMediaItem, FbButton, FbIcon, FasWandMagicSparkles },
+        components: { ElButton, ElIcon, FbMediaItem, FasWandMagicSparkles },
         setup: () => {
             const onClick = action("button-clicked");
 
@@ -130,9 +132,9 @@ const handleClick = (): void => {
         template: `
 <fb-media-item>
 	<template #left>
-		<fb-icon size="35">
+		<el-icon size="35">
 			<fas-wand-magic-sparkles />
-		</fb-icon>
+		</el-icon>
 	</template>
 	<template #heading>
 		All created items
@@ -141,7 +143,7 @@ const handleClick = (): void => {
 		Here could find all created items stored in database
 	</template>
 	<template #action>
-		<fb-button @click.prevent="onClick">Reload</fb-button>
+		<el-button @click.prevent="onClick">Reload</el-button>
 	</template>
 </fb-media-item>`,
     }),

@@ -1,6 +1,8 @@
+import { ElButton, ElIcon, ElRow, ElCol } from "element-plus";
+
 import { Meta, StoryObj } from "@storybook/vue3";
 import { FarFaceSmile } from "@fastybird/web-ui-icons";
-import { FbResult, FbRow, FbCol, FbButton, FbIcon, ResultIconTypes, resultIcons } from "@fastybird/web-ui-components";
+import { FbResult, ResultIconTypes, resultIcons } from "@fastybird/web-ui-components";
 
 import "./fb-result.stories.scss";
 
@@ -42,7 +44,7 @@ const meta: Meta<typeof FbResult> = {
             description: "animate status icon",
             table: {
                 type: { summary: "boolean" },
-                defaultValue: { summary: false },
+                defaultValue: { summary: "false" },
             },
         },
     },
@@ -69,106 +71,106 @@ export const BasicUsage: Story = {
             source: {
                 code: `
 <template>
-	<fb-row>
-		<fb-col :sm="12" :lg="6">
+	<el-row>
+		<el-col :sm="12" :lg="6">
 			<fb-result
 				status="success"
 				title="Success Tip"
 				subtitle="Please follow the instructions"
 			>
 				<template #extra>
-					<fb-button>Back</fb-button>
+					<el-button>Back</el-button>
 				</template>
 			</fb-result>
-		</fb-col>
-		<fb-col :sm="12" :lg="6">
+		</el-col>
+		<el-col :sm="12" :lg="6">
 			<fb-result
 				status="warning"
 				title="Warning Tip"
 				subtitle="Please follow the instructions"
 			>
 				<template #extra>
-					<fb-button>Back</fb-button>
+					<el-button>Back</el-button>
 				</template>
 			</fb-result>
-		</fb-col>
-		<fb-col :sm="12" :lg="6">
+		</el-col>
+		<el-col :sm="12" :lg="6">
 			<fb-result
 				status="error"
 				title="Error Tip"
 				subtitle="Please follow the instructions"
 			>
 				<template #extra>
-					<fb-button>Back</fb-button>
+					<el-button>Back</el-button>
 				</template>
 			</fb-result>
-		</fb-col>
-		<fb-col :sm="12" :lg="6">
+		</el-col>
+		<el-col :sm="12" :lg="6">
 			<fb-result
 				status="info"
 				title="Info Tip"
 				subtitle="Please follow the instructions"
 			>
 				<template #extra>
-					<fb-button>Back</fb-button>
+					<el-button>Back</el-button>
 				</template>
 			</fb-result>
-		</fb-col>
-	</fb-row>
+		</el-col>
+	</el-row>
 </template>`,
             },
         },
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbResult, FbRow, FbCol, FbButton },
+        components: { ElButton, ElRow, ElCol, FbResult },
         template: `
-<fb-row>
-	<fb-col :sm="12" :lg="6">
+<el-row>
+	<el-col :sm="12" :lg="6">
 		<fb-result
 			status="success"
 			title="Success Tip"
 			subtitle="Please follow the instructions"
 		>
 			<template #extra>
-				<fb-button>Back</fb-button>
+				<el-button>Back</el-button>
 			</template>
 		</fb-result>
-	</fb-col>
-	<fb-col :sm="12" :lg="6">
+	</el-col>
+	<el-col :sm="12" :lg="6">
 		<fb-result
 			status="warning"
 			title="Warning Tip"
 			subtitle="Please follow the instructions"
 		>
 			<template #extra>
-				<fb-button>Back</fb-button>
+				<el-button>Back</el-button>
 			</template>
 		</fb-result>
-	</fb-col>
-	<fb-col :sm="12" :lg="6">
+	</el-col>
+	<el-col :sm="12" :lg="6">
 		<fb-result
 			status="error"
 			title="Error Tip"
 			subtitle="Please follow the instructions"
 		>
 			<template #extra>
-				<fb-button>Back</fb-button>
+				<el-button>Back</el-button>
 			</template>
 		</fb-result>
-	</fb-col>
-	<fb-col :sm="12" :lg="6">
+	</el-col>
+	<el-col :sm="12" :lg="6">
 		<fb-result
 			status="info"
 			title="Info Tip"
 			subtitle="Please follow the instructions"
 		>
 			<template #extra>
-				<fb-button>Back</fb-button>
+				<el-button>Back</el-button>
 			</template>
 		</fb-result>
-	</fb-col>
-</fb-row>`,
+	</el-col>
+</el-row>`,
     }),
 };
 
@@ -184,7 +186,7 @@ export const LoadingStatus403: Story = {
 		subtitle="Sorry, you are not authorized to access this page."
 	>
 		<template #extra>
-			<fb-button>Back Home</fb-button>
+			<el-button>Back Home</el-button>
 		</template>
 	</fb-result>
 </template>`,
@@ -193,7 +195,7 @@ export const LoadingStatus403: Story = {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbResult, FbButton },
+        components: { ElButton, FbResult },
         template: `
 <fb-result
 	status="${ResultIconTypes.NOT_ALLOWED}"
@@ -201,7 +203,7 @@ export const LoadingStatus403: Story = {
 	subtitle="Sorry, you are not authorized to access this page."
 >
 	<template #extra>
-		<fb-button>Back Home</fb-button>
+		<el-button>Back Home</el-button>
 	</template>
 </fb-result>`,
     }),
@@ -219,7 +221,7 @@ export const LoadingStatus404: Story = {
 		subtitle="Sorry, the page you visited does not exist."
 	>
 		<template #extra>
-			<fb-button>Back Home</fb-button>
+			<el-button>Back Home</el-button>
 		</template>
 	</fb-result>
 </template>`,
@@ -228,7 +230,7 @@ export const LoadingStatus404: Story = {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbResult, FbButton },
+        components: { ElButton, FbResult },
         template: `
 <fb-result
 	status="${ResultIconTypes.NOT_FOUND}"
@@ -236,7 +238,7 @@ export const LoadingStatus404: Story = {
 	subtitle="Sorry, the page you visited does not exist."
 >
 	<template #extra>
-		<fb-button>Back Home</fb-button>
+		<el-button>Back Home</el-button>
 	</template>
 </fb-result>`,
     }),
@@ -254,7 +256,7 @@ export const LoadingStatus500: Story = {
 		subtitle="Sorry, something went wrong."
 	>
 		<template #extra>
-			<fb-button>Back Home</fb-button>
+			<el-button>Back Home</el-button>
 		</template>
 	</fb-result>
 </template>`,
@@ -263,7 +265,7 @@ export const LoadingStatus500: Story = {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbResult, FbButton },
+        components: { ElButton, FbResult },
         template: `
 <fb-result
 	status="${ResultIconTypes.SERVER_ERROR}"
@@ -271,7 +273,7 @@ export const LoadingStatus500: Story = {
 	subtitle="Sorry, something went wrong."
 >
 	<template #extra>
-		<fb-button>Back Home</fb-button>
+		<el-button>Back Home</el-button>
 	</template>
 </fb-result>`,
     }),
@@ -287,12 +289,12 @@ export const CustomIcon: Story = {
 		title="Great, we have done all the operations!"
 	>
 		<template #icon>
-			<fb-icon size="80">
+			<el-icon size="80">
 				<far-face-smile />
-			</fb-icon>
+			</el-icon>
 		</template>
 		<template #extra>
-			<fb-button>Next</fb-button>
+			<el-button>Next</el-button>
 		</template>
 	</fb-result>
 </template>`,
@@ -301,18 +303,18 @@ export const CustomIcon: Story = {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbResult, FbButton, FbIcon, FarFaceSmile },
+        components: { ElButton, ElIcon, FbResult, FarFaceSmile },
         template: `
 <fb-result
 	title="Great, we have done all the operations!"
 >
 	<template #icon>
-		<fb-icon size="80">
+		<el-icon size="80">
 			<far-face-smile />
-		</fb-icon>
+		</el-icon>
 	</template>
 	<template #extra>
-		<fb-button>Next</fb-button>
+		<el-button>Next</el-button>
 	</template>
 </fb-result>`,
     }),

@@ -1,6 +1,8 @@
+import { ElIcon } from "element-plus";
+
 import { Meta, StoryObj } from "@storybook/vue3";
 import { FasMagnifyingGlass, FasPenToSquare } from "@fastybird/web-ui-icons";
-import { FbAppBar, FbAppBarHeading, FbAppBarButton, FbAppBarIcon, FbAppBarContent, FbButton, FbIcon } from "@fastybird/web-ui-components";
+import { FbAppBar, FbAppBarHeading, FbAppBarButton, FbAppBarIcon, FbAppBarContent } from "@fastybird/web-ui-components";
 
 import "./fb-app-bar.stories.scss";
 import { ref } from "vue";
@@ -34,13 +36,12 @@ export const BasicUsage: Story = {
     tags: ["hideInSidebar"],
     render: () => ({
         components: {
+            ElIcon,
             FbAppBar,
             FbAppBarHeading,
             FbAppBarButton,
             FbAppBarIcon,
             FbAppBarContent,
-            FbButton,
-            FbIcon,
             FasMagnifyingGlass,
             FasPenToSquare,
         },
@@ -70,9 +71,9 @@ export const BasicUsage: Story = {
 				</template>
 
 				<template #prepend>
-					<fb-icon size="25px">
+					<el-icon size="25px">
 						<fas-pen-to-square />
-					</fb-icon>
+					</el-icon>
 				</template>
 			</fb-app-bar-heading>
 		</template>
@@ -90,9 +91,9 @@ export const BasicUsage: Story = {
 		<template #button-left>
 			<fb-app-bar-button>
 				<template #icon>
-					<fb-icon>
+					<el-icon>
 						<fas-magnifying-glass />
-					</fb-icon>
+					</el-icon>
 				</template>
 			</fb-app-bar-button>
 		</template>

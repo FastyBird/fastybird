@@ -14,4 +14,10 @@ export const packages: { [key: string]: { name: string; src: string; dest: strin
 		dest: resolve(pathSrc, 'components'),
 		relativeDest: './components/entry',
 	},
+	utils: {
+		name: '@fastybird/web-ui-utils',
+		src: resolve(packagesPathRoot, 'utils', 'src'),
+		dest: resolve(pathSrc, 'utils'),
+		relativeDest: './utils/entry',
+	},
 };

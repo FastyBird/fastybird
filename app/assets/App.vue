@@ -61,7 +61,7 @@ import { useMeta } from 'vue-meta';
 import { ElContainer, ElAside, ElHeader, ElDrawer, vLoading, useNamespace } from 'element-plus';
 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
-import { FbAppBar } from '@fastybird/web-ui-components';
+import { FbAppBar } from '@fastybird/web-ui-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 import { useSession } from '@fastybird/accounts-module';
 

@@ -59,6 +59,7 @@
   "dependencies": {
     "@fastybird/metadata-library": "1.0.0-dev.20",
     "@fastybird/web-ui-icons": "1.0.0-dev.20",
+    "@fastybird/web-ui-library": "1.0.0-dev.20",
     "@sentry/vue": "^7.113",
     "ajv": "^8.12",
     "axios": "^1.6",

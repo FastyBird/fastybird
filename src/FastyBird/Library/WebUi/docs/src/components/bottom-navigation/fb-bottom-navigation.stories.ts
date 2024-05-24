@@ -1,6 +1,8 @@
+import { ElButton } from "element-plus";
+
 import { Meta, StoryObj } from "@storybook/vue3";
 import { action } from "@storybook/addon-actions";
-import { FbBottomNavigation, FbBottomNavigationHeading, FbButton } from "@fastybird/web-ui-components";
+import { FbBottomNavigation, FbBottomNavigationHeading } from "@fastybird/web-ui-components";
 
 import "./fb-bottom-navigation.stories.scss";
 import { ref } from "vue";
@@ -33,7 +35,7 @@ export const BasicUsage: Story = {
     },
     tags: ["hideInSidebar"],
     render: () => ({
-        components: { FbBottomNavigation, FbBottomNavigationHeading, FbButton },
+        components: { ElButton, FbBottomNavigation, FbBottomNavigationHeading },
         setup: () => {
             const show = ref<boolean>(false);
             const onClick = action("button-clicked");
@@ -45,7 +47,7 @@ export const BasicUsage: Story = {
         },
         template: `
 <div class="fb-bottom-navigation-story-block">
-	<fb-button @click="show = true">Open menu</fb-button>
+	<el-button @click="show = true">Open menu</el-button>
 
 	<fb-bottom-navigation
 		:show="show"
@@ -58,36 +60,36 @@ export const BasicUsage: Story = {
 		</template>
 
 		<fb-bottom-navigation-content :teleport="false">
-			<fb-button
+			<el-button
 				style="font-size: 1.8rem; padding: 1rem;"
 				link
 				block
 				@click.prevent="onClick"
 			>
 				Option one
-			</fb-button>
+			</el-button>
 		</fb-bottom-navigation-content>
 
 		<fb-bottom-navigation-content :teleport="false">
-			<fb-button
+			<el-button
 				style="font-size: 1.8rem; padding: 1rem;"
 				link
 				block
 				@click.prevent="onClick"
 			>
 				Option two
-			</fb-button>
+			</el-button>
 		</fb-bottom-navigation-content>
 
 		<fb-bottom-navigation-content :teleport="false">
-			<fb-button
+			<el-button
 				style="font-size: 1.8rem; padding: 1rem;"
 				link
 				block
 				@click.prevent="onClick"
 			>
 				Option three
-			</fb-button>
+			</el-button>
 		</fb-bottom-navigation-content>
 	</fb-bottom-navigation>
 </div>`,

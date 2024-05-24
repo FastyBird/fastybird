@@ -48,7 +48,7 @@ import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ElDialog, ElLoading } from 'element-plus';
 
-import { FbDialogHeader, FbDialogFooter } from '@fastybird/web-ui-components';
+import { FbDialogHeader, FbDialogFooter } from '@fastybird/web-ui-library';
 import { FasUser } from '@fastybird/web-ui-icons';
 
 import { useBreakpoints } from '../../composables';

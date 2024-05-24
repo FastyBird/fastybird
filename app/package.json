@@ -33,6 +33,7 @@
     "@fastybird/metadata-library": "1.0.0-dev.20",
     "@fastybird/triggers-module": "1.0.0-dev.20",
     "@fastybird/vue-wamp-v1": "^1.2",
+    "@fastybird/web-ui-library": "1.0.0-dev.20",
     "@fastybird/web-ui-icons": "1.0.0-dev.20",
     "@iconify/iconify": "^3.1",
     "@iconify/vue": "^4.1",

@@ -70,7 +70,7 @@ import { useI18n } from 'vue-i18n';
 import { useNamespace, ElButton, ElBreadcrumb, ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch } from 'element-plus';
 
 import { FasBars, FasSun, FasMoon } from '@fastybird/web-ui-icons';
-import { FB_BREADCRUMBS_TARGET } from '@fastybird/web-ui-components';
+import { FB_BREADCRUMBS_TARGET } from '@fastybird/web-ui-library';
 import { useRoutesNames as useAccountsModuleRoutesNames, useSession } from '@fastybird/accounts-module';
 
 import { eventBusInjectionKey } from '../plugins';

@@ -132,7 +132,7 @@ import md5 from 'md5';
 import { ElMain, ElPageHeader, ElButton, ElBreadcrumbItem, ElAvatar, ElIcon, ElTabs, ElTabPane, TabsPaneContext, ElBreadcrumb } from 'element-plus';
 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
-import { FB_BREADCRUMBS_TARGET, FbAppBarHeading, FbBreadcrumbs } from '@fastybird/web-ui-components';
+import { FB_BREADCRUMBS_TARGET, FbAppBarHeading, FbBreadcrumbs } from '@fastybird/web-ui-library';
 import { FasUser, FasLock } from '@fastybird/web-ui-icons';
 
 import { useRoutesNames } from '../composables';
