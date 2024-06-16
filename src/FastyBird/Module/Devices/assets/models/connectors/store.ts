@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.json';
 import {
@@ -56,7 +56,7 @@ const recordFactory = (data: IConnectorRecordFactoryPayload): IConnector => {
 		category: data.category,
 		identifier: data.identifier,
 		name: get(data, 'name', null),
-		comment: get(data, 'commend', null),
+		comment: get(data, 'comment', null),
 		enabled: get(data, 'enabled', false),
 
 		relationshipNames: ['properties', 'controls', 'devices'],
@@ -220,16 +220,16 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 
 				addPropertiesRelations(this.data[connectorResponseModel.id], connectorResponseModel.properties);
 				addControlsRelations(this.data[connectorResponseModel.id], connectorResponseModel.controls);
-
-				if (payload.withDevices) {
-					const devicesStore = useDevices();
-
-					await devicesStore.fetch({ connector: this.data[connectorResponseModel.id], withChannels: true });
-				}
 			} catch (e: any) {
 				throw new ApiError('devices-module.connectors.get.failed', e, 'Fetching connector failed.');
 			} finally {
 				this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
+			}
+
+			if (payload.withDevices) {
+				const devicesStore = useDevices();
+
+				await devicesStore.fetch({ connector: this.data[payload.id], withChannels: true });
 			}
 
 			return true;
@@ -240,14 +240,16 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 		 *
 		 * @param {IConnectorsFetchActionPayload} payload
 		 */
-		async fetch(payload: IConnectorsFetchActionPayload): Promise<boolean> {
+		async fetch(payload?: IConnectorsFetchActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.items) {
 				return false;
 			}
 
 			this.semaphore.fetching.items = true;
 
-			const devicesStore = useDevices();
+			this.firstLoad = false;
+
+			const connectorIds: string[] = [];
 
 			try {
 				const connectorsResponse = await axios.get<IConnectorsResponseJson>(
@@ -259,12 +261,10 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				for (const connector of connectorsResponseModel) {
 					this.data[connector.id] = recordFactory(connector);
 
+					connectorIds.push(connector.id);
+
 					addPropertiesRelations(this.data[connector.id], connector.properties);
 					addControlsRelations(this.data[connector.id], connector.controls);
-
-					if (payload.withDevices) {
-						await devicesStore.fetch({ connector: this.data[connector.id], withChannels: true });
-					}
 				}
 
 				this.firstLoad = true;
@@ -272,6 +272,14 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				throw new ApiError('devices-module.connectors.fetch.failed', e, 'Fetching connectors failed.');
 			} finally {
 				this.semaphore.fetching.items = false;
+			}
+
+			if (payload?.withDevices) {
+				const devicesStore = useDevices();
+
+				for (const connectorId of connectorIds) {
+					await devicesStore.fetch({ connector: this.data[connectorId], withChannels: true });
+				}
 			}
 
 			return true;

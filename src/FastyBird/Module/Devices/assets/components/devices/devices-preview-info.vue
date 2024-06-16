@@ -1,123 +1,94 @@
 <template>
-	<fb-ui-content
-		:ml="FbSizeTypes.MEDIUM"
-		class="fb-devices-module-devices-preview-info__container"
-	>
-		<fb-ui-media-item>
+	<div class="flex flex-col justify-center">
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="plug"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-plug />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.allDevices') }}
+				{{ t('headings.devices.allDevices') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.allDevices', { count: props.total }, props.total) }}
+				{{ t('subHeadings.devices.allDevices', { count: props.total }, props.total) }}
 			</template>
-		</fb-ui-media-item>
+		</fb-media-item>
 
-		<fb-ui-media-item>
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="plus"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-plus />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.connectDevice') }}
+				{{ t('headings.devices.new') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.connectDevice') }}
+				{{ t('subHeadings.devices.new') }}
 			</template>
 
 			<template #action>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-					:size="FbSizeTypes.MEDIUM"
-					@click="emit('connect')"
+				<el-button
+					type="primary"
+					plain
+					@click="emit('register', $event)"
 				>
-					{{ t('buttons.add.title') }}
-				</fb-ui-button>
+					{{ t('buttons.addDevice.title') }}
+				</el-button>
 			</template>
-		</fb-ui-media-item>
+		</fb-media-item>
 
-		<fb-ui-media-item>
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="sync-alt"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-arrows-rotate />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.syncDevices') }}
+				{{ t('headings.devices.sync') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.syncDevices') }}
+				{{ t('subHeadings.devices.sync') }}
 			</template>
 
 			<template #action>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.MEDIUM"
-					@click="emit('synchronise')"
+				<el-button
+					type="info"
+					plain
+					@click="emit('synchronise', $event)"
 				>
 					{{ t('buttons.sync.title') }}
-				</fb-ui-button>
+				</el-button>
 			</template>
-		</fb-ui-media-item>
-	</fb-ui-content>
+		</fb-media-item>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { ElButton, ElIcon } from 'element-plus';
 
-import { FbUiButton, FbUiMediaItem, FbUiContent, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
+import { FasPlus, FasPlug, FasArrowsRotate } from '@fastybird/web-ui-icons';
+import { FbMediaItem } from '@fastybird/web-ui-library';
 
 import { IDevicesDesktopInfoProps } from './devices-preview-info.types';
+
+defineOptions({
+	name: 'DevicesPreviewInfo',
+});
 
 const props = defineProps<IDevicesDesktopInfoProps>();
 
 const emit = defineEmits<{
-	(e: 'connect'): void;
-	(e: 'synchronise'): void;
+	(e: 'register', event: Event): void;
+	(e: 'synchronise', event: Event): void;
 }>();
 
 const { t } = useI18n();
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'devices-preview-info';
-</style>
-
-<i18n>
-{
-  "en": {
-    "headings": {
-      "allDevices": "All devices",
-      "connectDevice": "Connect new device",
-      "syncDevices": "Sync devices"
-    },
-    "subHeadings": {
-      "allDevices": "No devices registered | One device registered | {count} devices registered",
-      "connectDevice": "Register new device to the system",
-      "syncDevices": "Sync all devices with server"
-    },
-    "buttons": {
-      "add": {
-        "title": "Connect new device"
-      },
-      "sync": {
-        "title": "Synchronise"
-      }
-    }
-  }
-}
-</i18n>

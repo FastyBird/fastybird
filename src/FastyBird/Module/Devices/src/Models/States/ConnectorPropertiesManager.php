@@ -78,7 +78,15 @@ final class ConnectorPropertiesManager extends PropertiesManager
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ValueError
+	 * @throws TypeError
+	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
 		Documents\Connectors\Properties\Dynamic $property,

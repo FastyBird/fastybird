@@ -74,6 +74,7 @@ final class ClassMetadataFactory
 	 * @return Mapping\ClassMetadata<T>
 	 *
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\Mapping
 	 */
 	public function getMetadataFor(string $className): Mapping\ClassMetadata
 	{

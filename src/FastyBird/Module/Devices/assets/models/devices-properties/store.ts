@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
 import {
@@ -81,6 +81,8 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 		invalid: get(data, 'invalid', null),
 		scale: get(data, 'scale', null),
 		step: get(data, 'scale', null),
+		default: get(data, 'default', null),
+		valueTransformer: get(data, 'valueTransformer', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -333,14 +335,38 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 										type: newProperty.type,
 										identifier: newProperty.identifier,
 										name: newProperty.name,
+										value: newProperty.value,
 										device: newProperty.device,
 										parent: newProperty.parent,
 										relationshipNames: ['device', 'parent'],
 									}
-								: newProperty;
+								: {
+										id: newProperty.id,
+										type: newProperty.type,
+										identifier: newProperty.identifier,
+										name: newProperty.name,
+										value: newProperty.value,
+										settable: newProperty.settable,
+										queryable: newProperty.queryable,
+										dataType: newProperty.dataType,
+										unit: newProperty.unit,
+										invalid: newProperty.invalid,
+										scale: newProperty.scale,
+										step: newProperty.step,
+										format: newProperty.format,
+										default: newProperty.default,
+										valueTransformer: newProperty.valueTransformer,
+										device: newProperty.device,
+										relationshipNames: ['device'],
+									};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const createdProperty = await axios.post<IDevicePropertyResponseJson>(
@@ -409,31 +435,44 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 										type: updatedRecord.type,
 										identifier: updatedRecord.identifier,
 										name: updatedRecord.name,
+										value: updatedRecord.value,
 										device: updatedRecord.device,
 										parent: updatedRecord.parent,
 										relationshipNames: ['device', 'parent'],
 									}
-								: updatedRecord;
+								: {
+										id: updatedRecord.id,
+										type: updatedRecord.type,
+										identifier: updatedRecord.identifier,
+										name: updatedRecord.name,
+										value: updatedRecord.value,
+										settable: updatedRecord.settable,
+										queryable: updatedRecord.queryable,
+										dataType: updatedRecord.dataType,
+										unit: updatedRecord.unit,
+										invalid: updatedRecord.invalid,
+										scale: updatedRecord.scale,
+										step: updatedRecord.step,
+										format: updatedRecord.format,
+										default: updatedRecord.default,
+										valueTransformer: updatedRecord.valueTransformer,
+										device: updatedRecord.device,
+										relationshipNames: ['device'],
+									};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const updatedProperty = await axios.patch<IDevicePropertyResponseJson>(
 							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${updatedRecord.device.id}/properties/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
-								stuff:
-									updatedRecord.parent !== null
-										? {
-												id: updatedRecord.id,
-												type: updatedRecord.type,
-												identifier: updatedRecord.identifier,
-												name: updatedRecord.name,
-												device: updatedRecord.device,
-												parent: updatedRecord.parent,
-												relationshipNames: ['device', 'parent'],
-											}
-										: updatedRecord,
+								stuff: apiData,
 							})
 						);
 
@@ -518,14 +557,38 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 									type: recordToSave.type,
 									identifier: recordToSave.identifier,
 									name: recordToSave.name,
+									value: recordToSave.value,
 									device: recordToSave.device,
 									parent: recordToSave.parent,
 									relationshipNames: ['device', 'parent'],
 								}
-							: recordToSave;
+							: {
+									id: recordToSave.id,
+									type: recordToSave.type,
+									identifier: recordToSave.identifier,
+									name: recordToSave.name,
+									value: recordToSave.value,
+									settable: recordToSave.settable,
+									queryable: recordToSave.queryable,
+									dataType: recordToSave.dataType,
+									unit: recordToSave.unit,
+									invalid: recordToSave.invalid,
+									scale: recordToSave.scale,
+									step: recordToSave.step,
+									format: recordToSave.format,
+									default: recordToSave.default,
+									valueTransformer: recordToSave.valueTransformer,
+									device: recordToSave.device,
+									relationshipNames: ['device'],
+								};
 
-					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+					if (apiData?.type?.type === PropertyType.DYNAMIC) {
 						delete apiData.value;
+					}
+
+					if (apiData?.type?.type === PropertyType.VARIABLE) {
+						delete apiData.settable;
+						delete apiData.queryable;
 					}
 
 					const savedProperty = await axios.post<IDevicePropertyResponseJson>(
@@ -646,6 +709,8 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 								invalid: body.invalid,
 								scale: body.scale,
 								step: body.step,
+								default: body.default,
+								valueTransformer: body.value_transformer,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

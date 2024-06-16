@@ -49,7 +49,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 								path: 'settings/channel/add',
 								name: routeNames.deviceSettingsAddChannel,
 								component: () => import('../views/view-channel-settings.vue'),
-								props: true,
+								props: (route) => ({ id: null, deviceId: route.params.id }),
 								meta: {
 									guards: ['authenticated'],
 								},
@@ -58,7 +58,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 								path: 'settings/channel/:channelId',
 								name: routeNames.deviceSettingsEditChannel,
 								component: () => import('../views/view-channel-settings.vue'),
-								props: true,
+								props: (route) => ({ id: route.params.channelId, deviceId: route.params.id }),
 								meta: {
 									guards: ['authenticated'],
 								},
@@ -124,7 +124,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 								path: 'settings/device/:deviceId/channel/add',
 								name: routeNames.connectorSettingsEditDeviceAddChannel,
 								component: () => import('../views/view-channel-settings.vue'),
-								props: (route) => ({ id: route.params.deviceId, connectorId: route.params.id }),
+								props: (route) => ({ id: null, deviceId: route.params.deviceId, connectorId: route.params.id }),
 								meta: {
 									guards: ['authenticated'],
 								},
@@ -133,7 +133,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 								path: 'settings/device/:deviceId/channel/:channelId',
 								name: routeNames.connectorSettingsEditDeviceEditChannel,
 								component: () => import('../views/view-channel-settings.vue'),
-								props: (route) => ({ id: route.params.deviceId, connectorId: route.params.id, channelId: route.params.channelId }),
+								props: (route) => ({ id: route.params.channelId, deviceId: route.params.deviceId, connectorId: route.params.id }),
 								meta: {
 									guards: ['authenticated'],
 								},
@@ -148,6 +148,6 @@ const moduleRoutes: RouteRecordRaw[] = [
 
 export default (router: Router): void => {
 	moduleRoutes.forEach((route) => {
-		router.addRoute('/', route);
+		router.addRoute('root', route);
 	});
 };

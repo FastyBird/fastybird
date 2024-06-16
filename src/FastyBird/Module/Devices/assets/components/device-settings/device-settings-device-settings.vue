@@ -1,264 +1,226 @@
 <template>
-	<div class="fb-devices-module-device-settings-device-settings__container">
-		<h3 class="fb-devices-module-device-settings-device-settings__heading">
-			{{ t('headings.aboutDevice') }}
+	<el-form
+		ref="deviceFormEl"
+		:model="deviceForm"
+		:rules="rules"
+		label-position="top"
+		status-icon
+		class="px-5 py-5"
+	>
+		<h3>
+			{{ t('headings.devices.aboutDevice') }}
 		</h3>
 
-		<fb-ui-content
-			:ph="FbSizeTypes.SMALL"
-			:pv="FbSizeTypes.SMALL"
-		>
-			<device-settings-device-rename
-				v-model="aboutField"
-				:errors="{ identifier: identifierError, name: nameError, comment: commentError }"
-				:device="props.deviceData.device"
-			/>
+		<device-settings-device-rename
+			v-model="deviceForm.about"
+			:device="props.deviceData.device"
+		/>
 
-			<property-settings-variable-properties-edit
-				v-model="variablePropertiesFields"
-				:properties="variableProperties"
-			/>
-		</fb-ui-content>
+		<property-settings-variable-properties-edit
+			v-model="deviceForm.properties.static"
+			:properties="variableProperties"
+		/>
+	</el-form>
 
-		<template v-if="!props.deviceData.device.draft">
-			<fb-ui-divider :variant="FbUiDividerVariantTypes.GRADIENT" />
+	<template v-if="!props.deviceData.device.draft">
+		<el-divider />
 
-			<fb-ui-items-container>
-				<template #heading>
-					{{ t('headings.channels') }}
-				</template>
+		<fb-list class="pb-2">
+			<template #title>
+				{{ t('headings.devices.channels') }}
+			</template>
 
-				<template #buttons>
-					<fb-ui-content :mr="FbSizeTypes.SMALL">
-						<fb-ui-button
-							v-if="channelsData.length > 0"
-							:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-							:size="FbSizeTypes.EXTRA_SMALL"
-							@click="emit('addChannel')"
-						>
-							<template #icon>
-								<font-awesome-icon icon="plus" />
-							</template>
-							{{ t('buttons.addChannel.title') }}
-						</fb-ui-button>
-					</fb-ui-content>
-				</template>
-
-				<div
-					v-if="channelsData.length === 0"
-					class="fb-devices-module-device-settings-device-settings__add-item-row"
+			<template
+				v-if="channelsData.length > 0"
+				#buttons
+			>
+				<el-button
+					:icon="FasPlus"
+					type="primary"
+					size="small"
+					plain
+					@click="emit('addChannel', $event)"
 				>
-					<fb-ui-button
-						:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-						:size="FbSizeTypes.LARGE"
-						block
-						@click="emit('addChannel')"
-					>
-						<template #icon>
-							<font-awesome-icon icon="plus-circle" />
-						</template>
-						<span>{{ t('buttons.addChannel.title') }}</span>
-					</fb-ui-button>
-				</div>
+					{{ t('buttons.addChannel.title') }}
+				</el-button>
+			</template>
 
-				<device-settings-device-channel
-					v-for="channelData in channelsData"
-					:key="channelData.channel.id"
-					:device="props.deviceData.device"
-					:channel-data="channelData"
-					@edit="emit('editChannel', channelData.channel.id)"
-				/>
-			</fb-ui-items-container>
+			<div
+				v-if="channelsData.length === 0"
+				class="p-2"
+			>
+				<el-button
+					:icon="FasPlus"
+					size="large"
+					plain
+					class="w-full"
+					@click="emit('addChannel', $event)"
+				>
+					<span>{{ t('buttons.addChannel.title') }}</span>
+				</el-button>
+			</div>
+
+			<device-settings-device-channel
+				v-for="channelData in channelsData"
+				:key="channelData.channel.id"
+				:device="props.deviceData.device"
+				:channel-data="channelData"
+				@edit="emit('editChannel', channelData.channel.id, $event)"
+				@remove="emit('removeChannel', channelData.channel.id, $event)"
+				@reset="emit('resetChannel', channelData.channel.id, $event)"
+			/>
+		</fb-list>
+	</template>
+
+	<el-divider />
+
+	<fb-list class="pb-2">
+		<template #title>
+			{{ t('headings.devices.variableProperties') }}
 		</template>
 
-		<fb-ui-divider :variant="FbUiDividerVariantTypes.GRADIENT" />
-
-		<fb-ui-items-container>
-			<template #heading>
-				{{ t('headings.variableProperties') }}
-			</template>
-
-			<template #buttons>
-				<fb-ui-content :mr="FbSizeTypes.SMALL">
-					<fb-ui-button
-						v-if="variableProperties.length > 0"
-						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER)"
-					>
-						<template #icon>
-							<font-awesome-icon icon="plus" />
-						</template>
-						{{ t('buttons.addProperty.title') }}
-					</fb-ui-button>
-				</fb-ui-content>
-			</template>
-
-			<div
-				v-if="variableProperties.length === 0"
-				class="fb-devices-module-device-settings-device-settings__add-item-row"
-			>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.LARGE"
-					block
-					@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER)"
-				>
-					<template #icon>
-						<font-awesome-icon icon="plus-circle" />
-					</template>
-					<span>{{ t('buttons.addProperty.title') }}</span>
-				</fb-ui-button>
-			</div>
-
-			<property-settings-property
-				v-for="property in variableProperties"
-				:key="property.identifier"
-				:device="props.deviceData.device"
-				:property="property"
-			/>
-		</fb-ui-items-container>
-
-		<fb-ui-divider :variant="FbUiDividerVariantTypes.GRADIENT" />
-
-		<fb-ui-items-container>
-			<template #heading>
-				{{ t('headings.dynamicProperties') }}
-			</template>
-
-			<template #buttons>
-				<fb-ui-content :mr="FbSizeTypes.SMALL">
-					<fb-ui-button
-						v-if="dynamicProperties.length > 0"
-						:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-						:size="FbSizeTypes.EXTRA_SMALL"
-						@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
-					>
-						<template #icon>
-							<font-awesome-icon icon="plus" />
-						</template>
-						{{ t('buttons.addProperty.title') }}
-					</fb-ui-button>
-				</fb-ui-content>
-			</template>
-
-			<div
-				v-if="dynamicProperties.length === 0"
-				class="fb-devices-module-device-settings-device-settings__add-item-row"
-			>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.LARGE"
-					block
-					@click="onOpenView(DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER)"
-				>
-					<template #icon>
-						<font-awesome-icon icon="plus-circle" />
-					</template>
-					<span>{{ t('buttons.addProperty.title') }}</span>
-				</fb-ui-button>
-			</div>
-
-			<property-settings-property
-				v-for="property in dynamicProperties"
-				:key="property.identifier"
-				:device="props.deviceData.device"
-				:property="property"
-			/>
-		</fb-ui-items-container>
-	</div>
-
-	<property-settings-property-add-modal
-		v-if="
-			(activeView === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER ||
-				activeView === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
-			newProperty !== null
-		"
-		:property="newProperty"
-		:device="props.deviceData.device"
-		@close="onCloseAddProperty"
-	/>
-
-	<div
-		v-if="[FbFormResultTypes.WORKING, FbFormResultTypes.OK, FbFormResultTypes.ERROR].includes(props.remoteFormResult)"
-		class="fb-devices-module-device-settings-device-settings__result"
-	>
-		<fb-ui-loading-box
-			v-if="props.remoteFormResult === FbFormResultTypes.WORKING"
-			:size="FbSizeTypes.LARGE"
+		<template
+			v-if="variableProperties.length > 0"
+			#buttons
 		>
-			{{ t('messages.savingData') }}
-		</fb-ui-loading-box>
+			<el-button
+				:icon="FasPlus"
+				type="primary"
+				size="small"
+				plain
+				@click="emit('addStaticProperty', $event)"
+			>
+				{{ t('buttons.addProperty.title') }}
+			</el-button>
+		</template>
 
-		<fb-ui-result-ok v-if="props.remoteFormResult === FbFormResultTypes.OK" />
-		<fb-ui-result-err v-if="props.remoteFormResult === FbFormResultTypes.ERROR" />
-	</div>
+		<div
+			v-if="variableProperties.length === 0"
+			class="p-2"
+		>
+			<el-button
+				:icon="FasPlus"
+				size="large"
+				class="w-full"
+				@click="emit('addStaticProperty', $event)"
+			>
+				<span>{{ t('buttons.addProperty.title') }}</span>
+			</el-button>
+		</div>
+
+		<property-settings-property
+			v-for="property in variableProperties"
+			:key="property.identifier"
+			:device="props.deviceData.device"
+			:property="property"
+			@edit="emit('editProperty', property.id, $event)"
+			@remove="emit('removeProperty', property.id, $event)"
+		/>
+	</fb-list>
+
+	<el-divider />
+
+	<fb-list class="pb-2">
+		<template #title>
+			{{ t('headings.devices.dynamicProperties') }}
+		</template>
+
+		<template
+			v-if="dynamicProperties.length > 0"
+			#buttons
+		>
+			<el-button
+				:icon="FasPlus"
+				type="primary"
+				size="small"
+				plain
+				@click="emit('addDynamicProperty', $event)"
+			>
+				{{ t('buttons.addProperty.title') }}
+			</el-button>
+		</template>
+
+		<div
+			v-if="dynamicProperties.length === 0"
+			class="p-2"
+		>
+			<el-button
+				:icon="FasPlus"
+				size="large"
+				class="w-full"
+				@click="emit('addDynamicProperty', $event)"
+			>
+				<span>{{ t('buttons.addProperty.title') }}</span>
+			</el-button>
+		</div>
+
+		<property-settings-property
+			v-for="property in dynamicProperties"
+			:key="property.identifier"
+			:device="props.deviceData.device"
+			:property="property"
+			@edit="emit('editProperty', property.id, $event)"
+			@remove="emit('removeProperty', property.id, $event)"
+		/>
+	</fb-list>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useField, useForm, useFieldError } from 'vee-validate';
-import { object as yObject, string as yString, array as yArray } from 'yup';
 import { orderBy } from 'natural-orderby';
-import get from 'lodash/get';
+import get from 'lodash.get';
+import { ElButton, ElDivider, ElForm, FormInstance, FormRules } from 'element-plus';
 
-import {
-	FbUiButton,
-	FbUiContent,
-	FbUiDivider,
-	FbUiItemsContainer,
-	FbUiLoadingBox,
-	FbUiResultErr,
-	FbUiResultOk,
-	FbFormResultTypes,
-	FbSizeTypes,
-	FbUiButtonVariantTypes,
-	FbUiDividerVariantTypes,
-} from '@fastybird/web-ui-library';
-import { DataType, ModuleSource, PropertyType } from '@fastybird/metadata-library';
+import { FasPlus } from '@fastybird/web-ui-icons';
+import { FbList } from '@fastybird/web-ui-library';
+import { PropertyType } from '@fastybird/metadata-library';
 
-import { useEntityTitle, useFlashMessage, useUuid } from '../../composables';
+import { useEntityTitle, useFlashMessage } from '../../composables';
 import { useDevices, useDeviceProperties } from '../../models';
 import { IDevice, IDeviceProperty } from '../../models/types';
 import {
 	DeviceSettingsDeviceChannel,
 	DeviceSettingsDeviceRename,
 	PropertySettingsProperty,
-	PropertySettingsPropertyAddModal,
 	PropertySettingsVariablePropertiesEdit,
 } from '../../components';
-import { IChannelData } from '../../types';
-import {
-	IDeviceSettingsDeviceSettingsForm,
-	IDeviceSettingsDeviceSettingsProps,
-	DeviceSettingsDeviceSettingsViewTypes,
-} from './device-settings-device-settings.types';
+import { FormResultTypes, IChannelData, IConnectorSettingsConnectorSettingsForm } from '../../types';
+import { IDeviceSettingsDeviceSettingsForm, IDeviceSettingsDeviceSettingsProps } from './device-settings-device-settings.types';
+
+defineOptions({
+	name: 'DeviceSettingsDeviceSettings',
+});
 
 const props = withDefaults(defineProps<IDeviceSettingsDeviceSettingsProps>(), {
 	remoteFormSubmit: false,
-	remoteFormResult: FbFormResultTypes.NONE,
+	remoteFormResult: FormResultTypes.NONE,
 	remoteFormReset: false,
 });
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FbFormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
-	(e: 'addChannel'): void;
-	(e: 'editChannel', id: string): void;
+	(e: 'addChannel', event: Event): void;
+	(e: 'editChannel', id: string, event: Event): void;
+	(e: 'removeChannel', id: string, event: Event): void;
+	(e: 'resetChannel', id: string, event: Event): void;
+	(e: 'addStaticProperty', event: Event): void;
+	(e: 'addDynamicProperty', event: Event): void;
+	(e: 'editProperty', id: string, event: Event): void;
+	(e: 'removeProperty', id: string, event: Event): void;
 	(e: 'created', device: IDevice): void;
 }>();
 
 const { t } = useI18n();
 
-const { generate: generateUuid } = useUuid();
 const flashMessage = useFlashMessage();
 
 const devicesStore = useDevices();
 const propertiesStore = useDeviceProperties();
 
-const activeView = ref<DeviceSettingsDeviceSettingsViewTypes>(DeviceSettingsDeviceSettingsViewTypes.NONE);
+const deviceFormEl = ref<FormInstance | undefined>(undefined);
 
 const variableProperties = computed<IDeviceProperty[]>((): IDeviceProperty[] => {
 	return props.deviceData.properties.filter((property) => property.type.type === PropertyType.VARIABLE);
@@ -268,42 +230,42 @@ const dynamicProperties = computed<IDeviceProperty[]>((): IDeviceProperty[] => {
 	return props.deviceData.properties.filter((property) => property.type.type === PropertyType.DYNAMIC);
 });
 
-const newPropertyId = ref<string | null>(null);
-const newProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
-	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
-);
-
-const { validate } = useForm<IDeviceSettingsDeviceSettingsForm>({
-	validationSchema: yObject({
-		about: yObject({
-			identifier: yString().required(t('fields.identifier.validation.required')),
-			name: yString().nullable().default(null),
-			comment: yString().nullable().default(null),
-		}),
-		properties: yObject({
-			static: yArray(yObject({ id: yString().required(), value: yString().nullable().default(null) })),
-		}),
-	}),
-	initialValues: {
-		about: {
-			identifier: props.deviceData.device.identifier,
-			name: props.deviceData.device.name,
-			comment: props.deviceData.device.comment,
+const rules = reactive<FormRules<IConnectorSettingsConnectorSettingsForm>>({
+	about: {
+		type: 'object',
+		required: true,
+		fields: {
+			identifier: [{ type: 'string', required: true, message: t('fields.devices.identifier.validation.required') }],
+			name: [{ type: 'string', required: false }],
+			comment: [{ type: 'string', required: false }],
 		},
-		properties: {
-			static: variableProperties.value.map((property) => {
-				return { id: property.id, value: property.value as string };
-			}),
+	},
+	properties: {
+		type: 'object',
+		required: true,
+		fields: {
+			static: {
+				type: 'array',
+				required: true,
+				fields: {
+					id: [{ type: 'string', required: true, message: t('fields.devices.identifier.validation.required') }],
+					value: [{ required: false }],
+				},
+			},
 		},
 	},
 });
 
-const { value: aboutField } = useField<{ identifier: string; name: string | undefined; comment: string | undefined }>('about');
-const { value: variablePropertiesFields } = useField<{ id: string; value: string | undefined }[]>('properties.static');
-
-const identifierError = useFieldError('about.identifier');
-const nameError = useFieldError('about.name');
-const commentError = useFieldError('about.comment');
+const deviceForm = reactive<IDeviceSettingsDeviceSettingsForm>({
+	about: {
+		identifier: props.deviceData.device.identifier,
+		name: props.deviceData.device.name,
+		comment: props.deviceData.device.comment,
+	},
+	properties: {
+		static: variableProperties.value.map((property) => ({ id: property.id, value: property.value })),
+	},
+});
 
 let timer: number;
 
@@ -315,85 +277,29 @@ const channelsData = computed<IChannelData[]>((): IChannelData[] => {
 	);
 });
 
-const onOpenView = async (view: DeviceSettingsDeviceSettingsViewTypes): Promise<void> => {
-	if (view === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER) {
-		const { id } = await propertiesStore.add({
-			device: props.deviceData.device,
-			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device' },
-			draft: true,
-			data: {
-				identifier: generateUuid(),
-				dataType: DataType.UNKNOWN,
-			},
-		});
-
-		newPropertyId.value = id;
-	} else if (view === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) {
-		const { id } = await propertiesStore.add({
-			device: props.deviceData.device,
-			type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device' },
-			draft: true,
-			data: {
-				identifier: generateUuid(),
-				dataType: DataType.UNKNOWN,
-			},
-		});
-
-		newPropertyId.value = id;
-	}
-
-	activeView.value = view;
-};
-
-const onCloseView = async (): Promise<void> => {
-	if (
-		(activeView.value === DeviceSettingsDeviceSettingsViewTypes.ADD_STATIC_PARAMETER ||
-			activeView.value === DeviceSettingsDeviceSettingsViewTypes.ADD_DYNAMIC_PARAMETER) &&
-		newProperty.value?.draft
-	) {
-		await propertiesStore.remove({ id: newProperty.value.id });
-		newPropertyId.value = null;
-	}
-
-	activeView.value = DeviceSettingsDeviceSettingsViewTypes.NONE;
-};
-
-const onCloseAddProperty = (saved: boolean): void => {
-	if (saved) {
-		activeView.value = DeviceSettingsDeviceSettingsViewTypes.NONE;
-	} else {
-		onCloseView();
-	}
-};
-
 const clearResult = (): void => {
 	window.clearTimeout(timer);
 
-	emit('update:remoteFormResult', FbFormResultTypes.NONE);
+	emit('update:remoteFormResult', FormResultTypes.NONE);
 };
-
-onBeforeUnmount(async (): Promise<void> => {
-	if (newProperty.value?.draft) {
-		await propertiesStore.remove({ id: newProperty.value.id });
-		newPropertyId.value = null;
-	}
-});
 
 watch(
 	(): boolean => props.remoteFormSubmit,
-	async (val): Promise<void> => {
+	async (val: boolean): Promise<void> => {
 		if (val) {
 			emit('update:remoteFormSubmit', false);
 
-			const validationResult = await validate();
-
-			if (validationResult.valid) {
-				emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+			await deviceFormEl.value!.validate(async (valid: boolean): Promise<void> => {
+				if (!valid) {
+					return;
+				}
 
 				if (props.deviceData.device.draft) {
 					const errorMessage = t('messages.notCreated', {
 						device: useEntityTitle(props.deviceData.device).value,
 					});
+
+					emit('update:remoteFormResult', FormResultTypes.WORKING);
 
 					const variablePropertiesToCreate = variableProperties.value;
 					const dynamicPropertiesToCreate = dynamicProperties.value;
@@ -402,21 +308,21 @@ watch(
 						await devicesStore.edit({
 							id: props.deviceData.device.id,
 							data: {
-								identifier: aboutField.value.identifier,
-								name: aboutField.value.name,
-								comment: aboutField.value.comment,
+								identifier: deviceForm.about.identifier,
+								name: deviceForm.about.name,
+								comment: deviceForm.about.comment,
 							},
 						});
 
 						await devicesStore.save({ id: props.deviceData.device.id });
 					} catch (e: any) {
 						if (get(e, 'exception', null) !== null) {
-							flashMessage.exception(get(e, 'exception', null), t('messages.notCreated'));
+							flashMessage.exception(get(e, 'exception', null), t('messages.devices.notCreated'));
 						} else {
-							flashMessage.error(t('messages.notCreated'));
+							flashMessage.error(t('messages.devices.notCreated'));
 						}
 
-						emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+						emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 						timer = window.setTimeout(clearResult, 2000);
 
@@ -435,7 +341,7 @@ watch(
 								flashMessage.error(errorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							success = false;
 
@@ -453,7 +359,7 @@ watch(
 								flashMessage.error(errorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							success = false;
 
@@ -461,7 +367,7 @@ watch(
 						}
 					}
 
-					for (const variablePropertyField of variablePropertiesFields.value) {
+					for (const variablePropertyField of deviceForm.properties.static) {
 						try {
 							await propertiesStore.edit({
 								id: variablePropertyField.id,
@@ -476,7 +382,7 @@ watch(
 								flashMessage.error(errorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							timer = window.setTimeout(clearResult, 2000);
 
@@ -487,7 +393,7 @@ watch(
 					}
 
 					if (success) {
-						emit('update:remoteFormResult', FbFormResultTypes.OK);
+						emit('update:remoteFormResult', FormResultTypes.OK);
 
 						timer = window.setTimeout((): void => {
 							clearResult();
@@ -496,18 +402,18 @@ watch(
 						}, 2000);
 					}
 				} else {
-					const errorMessage = t('messages.notEdited', {
+					const errorMessage = t('messages.devices.notEdited', {
 						device: useEntityTitle(props.deviceData.device).value,
 					});
 
-					emit('update:remoteFormResult', FbFormResultTypes.WORKING);
+					emit('update:remoteFormResult', FormResultTypes.WORKING);
 
 					try {
 						await devicesStore.edit({
 							id: props.deviceData.device.id,
 							data: {
-								name: aboutField.value.name,
-								comment: aboutField.value.comment,
+								name: deviceForm.about.name,
+								comment: deviceForm.about.comment,
 							},
 						});
 					} catch (e: any) {
@@ -517,7 +423,7 @@ watch(
 							flashMessage.error(errorMessage);
 						}
 
-						emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+						emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 						timer = window.setTimeout(clearResult, 2000);
 
@@ -526,7 +432,7 @@ watch(
 
 					let success = true;
 
-					for (const variablePropertyField of variablePropertiesFields.value) {
+					for (const variablePropertyField of deviceForm.properties.static) {
 						try {
 							await propertiesStore.edit({
 								id: variablePropertyField.id,
@@ -541,7 +447,7 @@ watch(
 								flashMessage.error(errorMessage);
 							}
 
-							emit('update:remoteFormResult', FbFormResultTypes.ERROR);
+							emit('update:remoteFormResult', FormResultTypes.ERROR);
 
 							timer = window.setTimeout(clearResult, 2000);
 
@@ -552,50 +458,26 @@ watch(
 					}
 
 					if (success) {
-						emit('update:remoteFormResult', FbFormResultTypes.OK);
+						emit('update:remoteFormResult', FormResultTypes.OK);
 
 						timer = window.setTimeout(clearResult, 2000);
 					}
 				}
-			}
+			});
+		}
+	}
+);
+
+watch(
+	(): boolean => props.remoteFormReset,
+	(val: boolean): void => {
+		emit('update:remoteFormReset', false);
+
+		if (val) {
+			deviceForm.about.identifier = props.deviceData.device.identifier;
+			deviceForm.about.name = props.deviceData.device.name;
+			deviceForm.about.comment = props.deviceData.device.comment;
 		}
 	}
 );
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'device-settings-device-settings';
-</style>
-
-<i18n>
-{
-  "en": {
-    "headings": {
-      "aboutDevice": "About device",
-      "variableProperties": "Device config parameters",
-      "dynamicProperties": "Device data parameters",
-      "channels": "Channels"
-    },
-    "buttons": {
-      "addChannel": {
-        "title": "Add channel"
-      },
-      "addProperty": {
-        "title": "Add parameter"
-      }
-    },
-    "messages": {
-      "savingData": "Saving device",
-      "notCreated": "New device couldn't be created.",
-      "notEdited": "Device {device} couldn't be edited."
-    },
-    "fields": {
-      "identifier": {
-        "validation": {
-          "required": "Please fill in device identifier"
-        }
-      }
-    }
-  }
-}
-</i18n>

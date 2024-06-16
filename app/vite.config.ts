@@ -30,6 +30,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@fastybird/accounts-module': resolve(__dirname, './../src/FastyBird/Module/Accounts/assets/entry.ts'),
+			'@fastybird/devices-module': resolve(__dirname, './../src/FastyBird/Module/Devices/assets/entry.ts'),
 			'@fastybird/metadata-library': resolve(__dirname, './../node_modules/@fastybird/metadata-library'),
 			'@fastybird/web-ui-library': resolve(__dirname, './../node_modules/@fastybird/web-ui-library'),
 		},
@@ -49,12 +50,12 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://miniserver.local:8000',
+				target: 'http://localhost:8001',
 				secure: true,
 				changeOrigin: true,
 			},
 			'/ws-exchange': {
-				target: 'ws://miniserver.local:8888',
+				target: 'ws://localhost:8888',
 				rewrite: (path: string): string => {
 					const wsPrefix = '/ws-exchange';
 

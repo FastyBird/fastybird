@@ -2,7 +2,7 @@ import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '../../mod
 
 export interface IPropertySettingsVariablePropertiesEditModel {
 	id: string;
-	value: string | undefined;
+	value: string | number | boolean | Date | null | undefined;
 }
 
 export interface IPropertySettingsVariablePropertiesEditProps {

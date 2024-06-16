@@ -5,6 +5,9 @@
 @use 'element-plus/theme-chalk/src/common/var' as *;
 
 @include b(app-topbar) {
+  @include set-css-var-value(('header', 'padding'), '0.25rem 0.5rem');
+  @include set-css-var-value(('header', 'height'), '40px');
+
   border-bottom: 1px solid var(--el-border-color);
 }
 

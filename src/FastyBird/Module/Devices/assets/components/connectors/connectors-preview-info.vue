@@ -1,123 +1,94 @@
 <template>
-	<fb-ui-content
-		:ml="FbSizeTypes.MEDIUM"
-		class="fb-devices-module-connectors-preview-info__container"
-	>
-		<fb-ui-media-item>
+	<div class="flex flex-col justify-center">
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="plug"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-ethernet />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.allConnectors') }}
+				{{ t('headings.connectors.allConnectors') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.allConnectors', { count: props.total }, props.total) }}
+				{{ t('subHeadings.connectors.allConnectors', { count: props.total }, props.total) }}
 			</template>
-		</fb-ui-media-item>
+		</fb-media-item>
 
-		<fb-ui-media-item>
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="plus"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-plus />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.registerConnector') }}
+				{{ t('headings.connectors.new') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.registerConnector') }}
+				{{ t('subHeadings.connectors.new') }}
 			</template>
 
 			<template #action>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-					:size="FbSizeTypes.MEDIUM"
-					@click="emit('register')"
+				<el-button
+					type="primary"
+					plain
+					@click="emit('register', $event)"
 				>
-					{{ t('buttons.add.title') }}
-				</fb-ui-button>
+					{{ t('buttons.addConnector.title') }}
+				</el-button>
 			</template>
-		</fb-ui-media-item>
+		</fb-media-item>
 
-		<fb-ui-media-item>
+		<fb-media-item class="my-5">
 			<template #left>
-				<font-awesome-icon
-					icon="sync-alt"
-					size="2x"
-				/>
+				<el-icon :size="32">
+					<fas-arrows-rotate />
+				</el-icon>
 			</template>
 
 			<template #heading>
-				{{ t('headings.syncConnectors') }}
+				{{ t('headings.connectors.sync') }}
 			</template>
 
 			<template #description>
-				{{ t('subHeadings.syncConnectors') }}
+				{{ t('subHeadings.connectors.sync') }}
 			</template>
 
 			<template #action>
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.MEDIUM"
-					@click="emit('synchronise')"
+				<el-button
+					type="info"
+					plain
+					@click="emit('synchronise', $event)"
 				>
 					{{ t('buttons.sync.title') }}
-				</fb-ui-button>
+				</el-button>
 			</template>
-		</fb-ui-media-item>
-	</fb-ui-content>
+		</fb-media-item>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+import { ElButton, ElIcon } from 'element-plus';
 
-import { FbUiButton, FbUiMediaItem, FbUiContent, FbSizeTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
+import { FasPlus, FasEthernet, FasArrowsRotate } from '@fastybird/web-ui-icons';
+import { FbMediaItem } from '@fastybird/web-ui-library';
 
 import { IConnectorsDesktopInfoProps } from './connectors-preview-info.types';
+
+defineOptions({
+	name: 'ConnectorsPreviewInfo',
+});
 
 const props = defineProps<IConnectorsDesktopInfoProps>();
 
 const emit = defineEmits<{
-	(e: 'register'): void;
-	(e: 'synchronise'): void;
+	(e: 'register', event: Event): void;
+	(e: 'synchronise', event: Event): void;
 }>();
 
 const { t } = useI18n();
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'connectors-preview-info';
-</style>
-
-<i18n>
-{
-  "en": {
-    "headings": {
-      "allConnectors": "All connectors",
-      "registerConnector": "New connector",
-      "syncConnectors": "Sync connectors"
-    },
-    "subHeadings": {
-      "allConnectors": "No connectors registered | One connector registered | {count} connectors registered",
-      "registerConnector": "Register new connector to the system",
-      "syncConnectors": "Sync all connectors with server"
-    },
-    "buttons": {
-      "add": {
-        "title": "Register new connector"
-      },
-      "sync": {
-        "title": "Synchronise"
-      }
-    }
-  }
-}
-</i18n>

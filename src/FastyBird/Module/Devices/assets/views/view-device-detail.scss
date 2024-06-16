@@ -1,9 +1,0 @@
-@import '@fastybird/web-ui-library/src/assets/mixins/utilities';
-
-.fb-devices-module-view-device-detail {
-	&__setting {
-		height: 100%;
-
-		@include flex-column(nowrap);
-	}
-}

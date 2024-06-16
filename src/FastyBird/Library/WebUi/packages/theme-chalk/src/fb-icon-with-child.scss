@@ -10,6 +10,11 @@
 
 	@include e(icon) {
 		display: block;
+
+		svg {
+			height: 100%;
+			width: 100%;
+		}
 	}
 
 	@include e(child-icon) {
@@ -23,6 +28,11 @@
 		border-radius: 50%;
 		text-align: center;
 		padding: 4px;
+
+		svg {
+			height: 100%;
+			width: 100%;
+		}
 	}
 
 	@each $type in (primary, default, info, success, warning, danger) {

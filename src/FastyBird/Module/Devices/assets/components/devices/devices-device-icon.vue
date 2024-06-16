@@ -1,31 +1,52 @@
 <template>
-	<fb-ui-icon-with-child
+	<fb-icon-with-child
 		v-if="props.withState"
-		:variant="stateColor"
-		:data-device-state="stateName"
+		:type="stateColor"
+		:size="props.size"
+		:data-connector-state="stateName"
 	>
-		<template #main>
-			<font-awesome-icon icon="plug" />
+		<template #primary>
+			<fas-plug />
 		</template>
-		<template #child>
-			<font-awesome-icon :icon="stateIcon" />
+		<template #secondary>
+			<component :is="stateIcon" />
 		</template>
-	</fb-ui-icon-with-child>
+	</fb-icon-with-child>
 
-	<template v-else>
-		<font-awesome-icon icon="plug" />
-	</template>
+	<el-icon
+		v-else
+		:size="props.size"
+	>
+		<fas-plug />
+	</el-icon>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { ElIcon } from 'element-plus';
 
-import { FbUiIconWithChild, FbUiVariantTypes } from '@fastybird/web-ui-library';
+import {
+	FasPlug,
+	FarCirclePause,
+	FarCircleStop,
+	FasCircleExclamation,
+	FarCircleQuestion,
+	FarCircleUser,
+	FarCirclePlay,
+	FarCircle,
+} from '@fastybird/web-ui-icons';
+import { FbIconWithChild } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState } from '../../composables';
 import { IDevicesIconProps } from './devices-device-icon.types';
+
+import type { Component } from 'vue';
+
+defineOptions({
+	name: 'DevicesDeviceIcon',
+});
 
 const props = withDefaults(defineProps<IDevicesIconProps>(), {
 	withState: false,
@@ -35,22 +56,22 @@ const { status: wsStatus } = useWampV1Client();
 
 const { state: deviceState } = useDeviceState(props.device);
 
-const stateIcon = computed<string>((): string => {
+const stateIcon = computed<Component>((): Component => {
 	if (!wsStatus || deviceState.value === ConnectionState.SLEEPING) {
-		return 'pause-circle';
+		return FarCirclePause;
 	} else if ([ConnectionState.STOPPED, ConnectionState.DISCONNECTED].includes(deviceState.value)) {
-		return 'stop-circle';
+		return FarCircleStop;
 	} else if (deviceState.value === ConnectionState.ALERT) {
-		return 'exclamation-circle';
+		return FasCircleExclamation;
 	} else if (deviceState.value === ConnectionState.LOST) {
-		return 'question-circle';
+		return FarCircleQuestion;
 	} else if (deviceState.value === ConnectionState.INIT) {
-		return 'user-circle';
+		return FarCircleUser;
 	} else if ([ConnectionState.RUNNING, ConnectionState.READY, ConnectionState.CONNECTED].includes(deviceState.value)) {
-		return 'play-circle';
+		return FarCirclePlay;
 	}
 
-	return 'circle';
+	return FarCircle;
 });
 
 const stateName = computed<string>((): string => {
@@ -73,17 +94,17 @@ const stateName = computed<string>((): string => {
 	return 'unknown';
 });
 
-const stateColor = computed<FbUiVariantTypes>((): FbUiVariantTypes => {
+const stateColor = computed<string>((): string => {
 	if (!wsStatus || deviceState.value === ConnectionState.SLEEPING) {
-		return FbUiVariantTypes.WARNING;
+		return 'warning';
 	} else if (deviceState.value === ConnectionState.ALERT) {
-		return FbUiVariantTypes.DANGER;
+		return 'danger';
 	} else if (deviceState.value === ConnectionState.INIT) {
-		return FbUiVariantTypes.INFO;
+		return 'info';
 	} else if ([ConnectionState.RUNNING, ConnectionState.READY, ConnectionState.CONNECTED].includes(deviceState.value)) {
-		return FbUiVariantTypes.SUCCESS;
+		return 'success';
 	}
 
-	return FbUiVariantTypes.DEFAULT;
+	return 'primary';
 });
 </script>

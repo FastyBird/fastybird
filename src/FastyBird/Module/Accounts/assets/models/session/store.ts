@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useCookies } from 'vue3-cookies';
 import { jwtDecode } from 'jwt-decode';
 import { Jsona } from 'jsona';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
 

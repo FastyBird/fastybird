@@ -27,6 +27,6 @@ export interface UseConnectorState {
 }
 
 export interface UseBreakpoints {
-	isExtraSmallDevice: ComputedRef<boolean>;
-	isSmallDevice: ComputedRef<boolean>;
+	isXSDevice: ComputedRef<boolean>;
+	isSMDevice: ComputedRef<boolean>;
 }

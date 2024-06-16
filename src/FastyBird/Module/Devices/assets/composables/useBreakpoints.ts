@@ -7,11 +7,11 @@ import { UseBreakpoints } from './types';
 const breakpoints = vueUseBreakpoints(breakpointsBootstrapV5);
 
 export function useBreakpoints(): UseBreakpoints {
-	const isExtraSmallDevice = computed<boolean>((): boolean => !breakpoints.md.value);
-	const isSmallDevice = computed<boolean>((): boolean => !breakpoints.lg.value);
+	const isXSDevice = computed<boolean>((): boolean => !breakpoints.md.value);
+	const isSMDevice = computed<boolean>((): boolean => !breakpoints.lg.value);
 
 	return {
-		isExtraSmallDevice,
-		isSmallDevice,
+		isXSDevice,
+		isSMDevice,
 	};
 }

@@ -1,5 +1,5 @@
 import { RouteLocationNormalized } from 'vue-router';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import { useSession } from '../../models';
 

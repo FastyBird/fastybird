@@ -110,8 +110,8 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 		return [
 			self::RELATIONSHIPS_DEVICES => [
 				self::RELATIONSHIP_DATA => $resource->getDevices(),
-				self::RELATIONSHIP_LINKS_SELF => false,
-				self::RELATIONSHIP_LINKS_RELATED => false,
+				self::RELATIONSHIP_LINKS_SELF => true,
+				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 			self::RELATIONSHIPS_PROPERTIES => [
 				self::RELATIONSHIP_DATA => $resource->getProperties(),
@@ -136,7 +136,21 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 		string $name,
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
-		if ($name === self::RELATIONSHIPS_PROPERTIES) {
+		if ($name === self::RELATIONSHIPS_DEVICES) {
+			return new JsonApi\Schema\Link(
+				false,
+				$this->router->urlFor(
+					Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICES,
+					[
+						Router\ApiRoutes::URL_CONNECTOR_ID => $resource->getId()->toString(),
+					],
+				),
+				true,
+				[
+					'count' => count($resource->getDevices()),
+				],
+			);
+		} elseif ($name === self::RELATIONSHIPS_PROPERTIES) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
@@ -180,7 +194,8 @@ abstract class Connector extends JsonApiSchemas\JsonApi
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
 		if (
-			$name === self::RELATIONSHIPS_PROPERTIES
+			$name === self::RELATIONSHIPS_DEVICES
+			|| $name === self::RELATIONSHIPS_PROPERTIES
 			|| $name === self::RELATIONSHIPS_CONTROLS
 		) {
 			return new JsonApi\Schema\Link(

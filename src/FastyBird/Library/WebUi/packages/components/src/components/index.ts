@@ -4,6 +4,7 @@ export * from './breadcrumbs/index';
 export * from './component-loading/index';
 export * from './component-loading-error/index';
 export * from './expand-transition/index';
+export * from './expandable-box/index';
 export * from './icon-with-child/index';
 export * from './list/index';
 export * from './media-item/index';

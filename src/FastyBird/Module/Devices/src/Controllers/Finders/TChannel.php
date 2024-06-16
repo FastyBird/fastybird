@@ -18,14 +18,15 @@ namespace FastyBird\Module\Devices\Controllers\Finders;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Models\Entities\Channels\ChannelsRepository;
+use FastyBird\Module\Devices\Models;
+use FastyBird\Module\Devices\Queries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
 
 /**
  * @property-read Localization\Translator $translator
- * @property-read ChannelsRepository $channelsRepository
+ * @property-read Models\Entities\Channels\ChannelsRepository $channelsRepository
  */
 trait TChannel
 {
@@ -36,11 +37,20 @@ trait TChannel
 	 */
 	protected function findChannel(
 		string $id,
-		Entities\Devices\Device $device,
+		Entities\Devices\Device|null $device = null,
 	): Entities\Channels\Channel
 	{
 		try {
-			$channel = $this->channelsRepository->find(Uuid\Uuid::fromString($id));
+			if ($device !== null) {
+				$findQuery = new Queries\Entities\FindChannels();
+				$findQuery->forDevice($device);
+				$findQuery->byId(Uuid\Uuid::fromString($id));
+
+				$channel = $this->channelsRepository->findOneBy($findQuery);
+
+			} else {
+				$channel = $this->channelsRepository->find(Uuid\Uuid::fromString($id));
+			}
 
 			if ($channel === null) {
 				throw new JsonApiExceptions\JsonApiError(

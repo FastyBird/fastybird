@@ -22,6 +22,7 @@
       "@fastybird/web-ui-icons",
       "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash.get",
+      "@types/lodash.defaultsdeep",
       "@types/uuid",
       "ajv",
       "date-fns",
@@ -44,10 +45,8 @@
     "assets/**/*.ts",
     "assets/**/*.d.ts",
     "assets/**/*.vue",
-    "resources/schemas/document.account.json",
-    "resources/schemas/document.email.json",
-    "resources/schemas/document.identity.json",
-    "resources/schemas/document.role.json"
+    "assets/locales/*.json",
+    "resources/schemas/*.json"
   ],
   "exclude": [
     "node_modules",

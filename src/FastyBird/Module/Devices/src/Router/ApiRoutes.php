@@ -64,6 +64,7 @@ class ApiRoutes
 		private readonly Controllers\ConnectorPropertyStateV1 $connectorPropertyStateV1Controller,
 		private readonly Controllers\ConnectorControlsV1 $connectorControlsV1Controller,
 		private readonly Middleware\Access $devicesAccessControlMiddleware,
+		private readonly Middleware\UrlFormat $urlFormatlMiddleware,
 		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
@@ -90,11 +91,129 @@ class ApiRoutes
 		$routes->addMiddleware($this->accessControlMiddleware);
 		$routes->addMiddleware($this->userMiddleware);
 		$routes->addMiddleware($this->devicesAccessControlMiddleware);
+		$routes->addMiddleware($this->urlFormatlMiddleware);
 	}
 
 	private function buildRoutes(Routing\IRouter|Routing\IRouteCollector $group): Routing\IRouteGroup
 	{
 		return $group->group('/v1', function (Routing\RouteCollector $group): void {
+			/**
+			 * CHANNELS
+			 */
+			$group->group('/channels', function (Routing\RouteCollector $group): void {
+				$route = $group->get('', [$this->channelsV1Controller, 'index']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNELS);
+
+				$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'read']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL);
+
+				$route = $group->post('', [$this->channelsV1Controller, 'create']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL);
+
+				$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'update']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL);
+
+				$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'delete']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL);
+
+				$route = $group->get(
+					'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+					[
+						$this->channelsV1Controller,
+						'readRelationship',
+					],
+				);
+				$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_RELATIONSHIP);
+
+				$group->group(
+					'/{' . self::URL_CHANNEL_ID . '}',
+					function (Routing\RouteCollector $group): void {
+						/**
+						 * CHANNEL PROPERTIES
+						 */
+						$group->group('/properties', function (Routing\RouteCollector $group): void {
+							$route = $group->get('', [$this->channelPropertiesV1Controller, 'index']);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTIES);
+
+							$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
+								$this->channelPropertiesV1Controller,
+								'read',
+							]);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY);
+
+							$route = $group->post('', [$this->channelPropertiesV1Controller, 'create']);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY);
+
+							$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [
+								$this->channelPropertiesV1Controller,
+								'update',
+							]);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY);
+
+							$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [
+								$this->channelPropertiesV1Controller,
+								'delete',
+							]);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY);
+
+							$route = $group->get(
+								'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+								[
+									$this->channelPropertiesV1Controller,
+									'readRelationship',
+								],
+							);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_RELATIONSHIP);
+
+							$group->group('/{' . self::URL_PROPERTY_ID . '}', function (
+								Routing\RouteCollector $group,
+							): void {
+								/**
+								 * CHILDREN
+								 */
+								$route = $group->get('/children', [
+									$this->channelPropertyChildrenV1Controller,
+									'index',
+								]);
+								$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_CHILDREN);
+
+								/**
+								 * STATE
+								 */
+								$route = $group->get(
+									'/state',
+									[$this->channelPropertyStateV1Controller, 'index'],
+								);
+								$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_STATE);
+							});
+						});
+
+						/**
+						 * CHANNEL CONTROLS
+						 */
+						$group->group('/controls', function (Routing\RouteCollector $group): void {
+							$route = $group->get('', [$this->channelControlsV1Controller, 'index']);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROLS);
+
+							$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
+								$this->channelControlsV1Controller,
+								'read',
+							]);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROL);
+
+							$route = $group->get(
+								'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+								[
+									$this->channelControlsV1Controller,
+									'readRelationship',
+								],
+							);
+							$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROL_RELATIONSHIP);
+						});
+					},
+				);
+			});
+
 			/**
 			 * DEVICES
 			 */
@@ -105,11 +224,14 @@ class ApiRoutes
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'read']);
 				$route->setName(Devices\Constants::ROUTE_NAME_DEVICE);
 
-				$group->post('', [$this->devicesV1Controller, 'create']);
+				$route = $group->post('', [$this->devicesV1Controller, 'create']);
+				$route->setName(Devices\Constants::ROUTE_NAME_DEVICE);
 
-				$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'update']);
+				$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'update']);
+				$route->setName(Devices\Constants::ROUTE_NAME_DEVICE);
 
-				$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'delete']);
+				$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'delete']);
+				$route->setName(Devices\Constants::ROUTE_NAME_DEVICE);
 
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}', [
 					$this->devicesV1Controller,
@@ -143,11 +265,20 @@ class ApiRoutes
 						]);
 						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY);
 
-						$group->post('', [$this->devicePropertiesV1Controller, 'create']);
+						$route = $group->post('', [$this->devicePropertiesV1Controller, 'create']);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY);
 
-						$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->devicePropertiesV1Controller, 'update']);
+						$route = $group->patch(
+							'/{' . self::URL_ITEM_ID . '}',
+							[$this->devicePropertiesV1Controller, 'update'],
+						);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY);
 
-						$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->devicePropertiesV1Controller, 'delete']);
+						$route = $group->delete(
+							'/{' . self::URL_ITEM_ID . '}',
+							[$this->devicePropertiesV1Controller, 'delete'],
+						);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_PROPERTY);
 
 						$route = $group->get(
 							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
@@ -204,16 +335,22 @@ class ApiRoutes
 					 */
 					$group->group('/channels', function (Routing\RouteCollector $group): void {
 						$route = $group->get('', [$this->channelsV1Controller, 'index']);
-						$route->setName(Devices\Constants::ROUTE_NAME_CHANNELS);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNELS);
 
 						$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'read']);
-						$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL);
 
-						$group->post('', [$this->channelsV1Controller, 'create']);
+						$route = $group->post('', [$this->channelsV1Controller, 'create']);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL);
 
-						$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'update']);
+						$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'update']);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL);
 
-						$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->channelsV1Controller, 'delete']);
+						$route = $group->delete(
+							'/{' . self::URL_ITEM_ID . '}',
+							[$this->channelsV1Controller, 'delete'],
+						);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL);
 
 						$route = $group->get(
 							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
@@ -222,7 +359,7 @@ class ApiRoutes
 								'readRelationship',
 							],
 						);
-						$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_RELATIONSHIP);
+						$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_RELATIONSHIP);
 
 						$group->group(
 							'/{' . self::URL_CHANNEL_ID . '}',
@@ -232,25 +369,28 @@ class ApiRoutes
 								 */
 								$group->group('/properties', function (Routing\RouteCollector $group): void {
 									$route = $group->get('', [$this->channelPropertiesV1Controller, 'index']);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTIES);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTIES);
 
 									$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
 										$this->channelPropertiesV1Controller,
 										'read',
 									]);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY);
 
-									$group->post('', [$this->channelPropertiesV1Controller, 'create']);
+									$route = $group->post('', [$this->channelPropertiesV1Controller, 'create']);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY);
 
-									$group->patch('/{' . self::URL_ITEM_ID . '}', [
+									$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [
 										$this->channelPropertiesV1Controller,
 										'update',
 									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY);
 
-									$group->delete('/{' . self::URL_ITEM_ID . '}', [
+									$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [
 										$this->channelPropertiesV1Controller,
 										'delete',
 									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY);
 
 									$route = $group->get(
 										'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
@@ -259,7 +399,7 @@ class ApiRoutes
 											'readRelationship',
 										],
 									);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_RELATIONSHIP);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_RELATIONSHIP);
 
 									$group->group('/{' . self::URL_PROPERTY_ID . '}', function (
 										Routing\RouteCollector $group,
@@ -271,7 +411,7 @@ class ApiRoutes
 											$this->channelPropertyChildrenV1Controller,
 											'index',
 										]);
-										$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_CHILDREN);
+										$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_CHILDREN);
 
 										/**
 										 * STATE
@@ -280,7 +420,7 @@ class ApiRoutes
 											'/state',
 											[$this->channelPropertyStateV1Controller, 'index'],
 										);
-										$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_PROPERTY_STATE);
+										$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_STATE);
 									});
 								});
 
@@ -289,13 +429,13 @@ class ApiRoutes
 								 */
 								$group->group('/controls', function (Routing\RouteCollector $group): void {
 									$route = $group->get('', [$this->channelControlsV1Controller, 'index']);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROLS);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_CONTROLS);
 
 									$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
 										$this->channelControlsV1Controller,
 										'read',
 									]);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROL);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_CONTROL);
 
 									$route = $group->get(
 										'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
@@ -304,7 +444,7 @@ class ApiRoutes
 											'readRelationship',
 										],
 									);
-									$route->setName(Devices\Constants::ROUTE_NAME_CHANNEL_CONTROL_RELATIONSHIP);
+									$route->setName(Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_CONTROL_RELATIONSHIP);
 								});
 							},
 						);
@@ -322,7 +462,8 @@ class ApiRoutes
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'read']);
 				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
 
-				$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'update']);
+				$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'update']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
 
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}', [
 					$this->connectorsV1Controller,
@@ -344,17 +485,20 @@ class ApiRoutes
 						]);
 						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY);
 
-						$group->post('', [$this->connectorPropertiesV1Controller, 'create']);
+						$route = $group->post('', [$this->connectorPropertiesV1Controller, 'create']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY);
 
-						$group->patch('/{' . self::URL_ITEM_ID . '}', [
+						$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [
 							$this->connectorPropertiesV1Controller,
 							'update',
 						]);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY);
 
-						$group->delete('/{' . self::URL_ITEM_ID . '}', [
+						$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [
 							$this->connectorPropertiesV1Controller,
 							'delete',
 						]);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_PROPERTY);
 
 						$route = $group->get(
 							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
@@ -397,6 +541,129 @@ class ApiRoutes
 							],
 						);
 						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_CONTROL_RELATIONSHIP);
+					});
+
+					/**
+					 * DEVICES
+					 */
+					$group->group('/devices', function (Routing\RouteCollector $group): void {
+						$route = $group->get('', [$this->devicesV1Controller, 'index']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICES);
+
+						$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'read']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE);
+
+						$route = $group->post('', [$this->devicesV1Controller, 'create']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE);
+
+						$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'update']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE);
+
+						$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [$this->devicesV1Controller, 'delete']);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE);
+
+						$route = $group->get(
+							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+							[
+								$this->devicesV1Controller,
+								'readRelationship',
+							],
+						);
+						$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_RELATIONSHIP);
+
+						$group->group(
+							'/{' . self::URL_DEVICE_ID . '}',
+							function (Routing\RouteCollector $group): void {
+								/**
+								 * DEVICE PROPERTIES
+								 */
+								$group->group('/properties', function (Routing\RouteCollector $group): void {
+									$route = $group->get('', [$this->devicePropertiesV1Controller, 'index']);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTIES);
+
+									$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
+										$this->devicePropertiesV1Controller,
+										'read',
+									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY);
+
+									$route = $group->post('', [$this->devicePropertiesV1Controller, 'create']);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY);
+
+									$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [
+										$this->devicePropertiesV1Controller,
+										'update',
+									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY);
+
+									$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [
+										$this->devicePropertiesV1Controller,
+										'delete',
+									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY);
+
+									$route = $group->get(
+										'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+										[
+											$this->devicePropertiesV1Controller,
+											'readRelationship',
+										],
+									);
+									$route->setName(
+										Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_RELATIONSHIP,
+									);
+
+									$group->group('/{' . self::URL_PROPERTY_ID . '}', function (
+										Routing\RouteCollector $group,
+									): void {
+										/**
+										 * CHILDREN
+										 */
+										$route = $group->get('/children', [
+											$this->devicePropertyChildrenV1Controller,
+											'index',
+										]);
+										$route->setName(
+											Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_CHILDREN,
+										);
+
+										/**
+										 * STATE
+										 */
+										$route = $group->get(
+											'/state',
+											[$this->devicePropertyStateV1Controller, 'index'],
+										);
+										$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_STATE);
+									});
+								});
+
+								/**
+								 * DEVICE CONTROLS
+								 */
+								$group->group('/controls', function (Routing\RouteCollector $group): void {
+									$route = $group->get('', [$this->deviceControlsV1Controller, 'index']);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_CONTROLS);
+
+									$route = $group->get('/{' . self::URL_ITEM_ID . '}', [
+										$this->deviceControlsV1Controller,
+										'read',
+									]);
+									$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_CONTROL);
+
+									$route = $group->get(
+										'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+										[
+											$this->deviceControlsV1Controller,
+											'readRelationship',
+										],
+									);
+									$route->setName(
+										Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_CONTROL_RELATIONSHIP,
+									);
+								});
+							},
+						);
 					});
 				});
 			});

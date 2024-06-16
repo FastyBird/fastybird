@@ -28,6 +28,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelProperty
@@ -53,6 +54,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelPropertyInvalid

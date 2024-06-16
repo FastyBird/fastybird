@@ -1,92 +1,52 @@
 <template>
-	<fb-ui-item :variant="FbUiItemVariantTypes.LIST">
-		<template #heading>
+	<fb-list-item :variant="ListItemVariantTypes.LIST">
+		<template #title>
 			{{ useEntityTitle(props.deviceData.device).value }}
 		</template>
 
 		<template
 			v-if="props.deviceData.device.hasComment"
-			#subheading
+			#subtitle
 		>
 			{{ props.deviceData.device.comment }}
 		</template>
 
 		<template #detail>
-			<div class="fb-devices-module-connector-settings-connector-device__buttons">
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="emit('edit', props.deviceData.device.id)"
-				>
-					<font-awesome-icon icon="pencil-alt" />
-					{{ t('buttons.edit.title') }}
-				</fb-ui-button>
+			<el-button
+				:icon="FasPencil"
+				size="small"
+				plain
+				@click="emit('edit', $event)"
+			/>
 
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
-					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(ConnectorSettingsConnectorDeviceViewTypes.REMOVE)"
-				>
-					<font-awesome-icon icon="trash" />
-					{{ t('buttons.remove.title') }}
-				</fb-ui-button>
-			</div>
+			<el-button
+				:icon="FasTrash"
+				type="warning"
+				size="small"
+				plain
+				@click="emit('remove', $event)"
+			/>
 		</template>
-	</fb-ui-item>
-
-	<device-settings-device-remove
-		v-if="activeView === ConnectorSettingsConnectorDeviceViewTypes.REMOVE"
-		:device="props.deviceData.device"
-		:transparent-bg="true"
-		@removed="onCloseView"
-		@close="onCloseView"
-	/>
+	</fb-list-item>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { ElButton } from 'element-plus';
 
-import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
+import { FasPencil, FasTrash } from '@fastybird/web-ui-icons';
+import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '../../composables';
-import { DeviceSettingsDeviceRemove } from '../../components';
-import { IConnectorSettingsConnectorPropertyProps, ConnectorSettingsConnectorDeviceViewTypes } from './connector-settings-connector-device.types';
+import { IConnectorSettingsConnectorPropertyProps } from './connector-settings-connector-device.types';
+
+defineOptions({
+	name: 'ConnectorSettingsConnectorDevice',
+});
 
 const props = defineProps<IConnectorSettingsConnectorPropertyProps>();
 
 const emit = defineEmits<{
-	(e: 'edit', id: string): void;
+	(e: 'edit', event: Event): void;
+	(e: 'remove', event: Event): void;
 }>();
-
-const { t } = useI18n();
-
-const activeView = ref<ConnectorSettingsConnectorDeviceViewTypes>(ConnectorSettingsConnectorDeviceViewTypes.NONE);
-
-const onOpenView = (view: ConnectorSettingsConnectorDeviceViewTypes): void => {
-	activeView.value = view;
-};
-
-const onCloseView = (): void => {
-	activeView.value = ConnectorSettingsConnectorDeviceViewTypes.NONE;
-};
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'connector-settings-connector-device';
-</style>
-
-<i18n>
-{
-  "en": {
-    "buttons": {
-      "edit": {
-        "title": "Edit"
-      },
-      "remove": {
-        "title": "Remove"
-      }
-    }
-  }
-}
-</i18n>

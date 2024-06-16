@@ -147,6 +147,11 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		$builder->addDefinition($this->prefix('middlewares.access'), new DI\Definitions\ServiceDefinition())
 			->setType(Middleware\Access::class);
 
+		$builder->addDefinition($this->prefix('middlewares.urlFormat'), new DI\Definitions\ServiceDefinition())
+			->setType(Middleware\UrlFormat::class)
+			->setArguments(['usePrefix' => $configuration->apiPrefix])
+			->addTag('middleware');
+
 		$builder->addDefinition($this->prefix('router.api.routes'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\ApiRoutes::class)
 			->setArguments(['usePrefix' => $configuration->apiPrefix]);
@@ -715,6 +720,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		// CONNECTORS
 		$builder->addDefinition(
+			$this->prefix('schemas.connector.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Connectors\Generic::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -739,6 +750,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Connectors\Controls\Control::class);
 
 		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('schemas.device.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Devices\Generic::class);
+
 		$builder->addDefinition(
 			$this->prefix('schemas.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -770,6 +787,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Devices\Controls\Control::class);
 
 		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Generic::class);
+
 		$builder->addDefinition(
 			$this->prefix('schemas.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -806,6 +829,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		// CONNECTORS
 		$builder->addDefinition(
+			$this->prefix('hydrators.connector.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Connectors\Generic::class);
+
+		$builder->addDefinition(
 			$this->prefix('hydrators.connector.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -818,6 +847,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Connectors\Properties\Variable::class);
 
 		// DEVICES
+		$builder->addDefinition(
+			$this->prefix('hydrators.device.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Devices\Generic::class);
+
 		$builder->addDefinition(
 			$this->prefix('hydrators.device.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),
@@ -837,6 +872,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Devices\Properties\Mapped::class);
 
 		// CHANNELS
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.generic'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Generic::class);
+
 		$builder->addDefinition(
 			$this->prefix('hydrators.channel.property.dynamic'),
 			new DI\Definitions\ServiceDefinition(),

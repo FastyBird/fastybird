@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.json';
 import {
@@ -191,7 +191,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 		return {
 			semaphore: {
 				fetching: {
-					items: false,
+					items: [],
 					item: [],
 				},
 				creating: [],
@@ -199,23 +199,24 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				deleting: [],
 			},
 
-			firstLoad: false,
+			firstLoad: [],
 
 			data: {},
 		};
 	},
 
 	getters: {
-		firstLoadFinished: (state: IDevicesState): boolean => {
-			return state.firstLoad;
+		firstLoadFinished: (state: IDevicesState): ((connectorId?: string | null) => boolean) => {
+			return (connectorId = null) => (connectorId !== null ? state.firstLoad.includes(connectorId) : state.semaphore.fetching.items.includes('all'));
 		},
 
 		getting: (state: IDevicesState): ((id: string) => boolean) => {
 			return (id: string): boolean => state.semaphore.fetching.item.includes(id);
 		},
 
-		fetching: (state: IDevicesState): boolean => {
-			return state.semaphore.fetching.items;
+		fetching: (state: IDevicesState): ((connectorId?: string | null) => boolean) => {
+			return (connectorId = null) =>
+				connectorId !== null ? state.semaphore.fetching.items.includes(connectorId) : state.semaphore.fetching.items.includes('all');
 		},
 
 		findById: (state: IDevicesState): ((id: string) => IDevice | null) => {
@@ -268,9 +269,17 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			this.semaphore.fetching.item.push(payload.id);
 
 			try {
-				const deviceResponse = await axios.get<IDeviceResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`
-				);
+				let deviceResponse: AxiosResponse<IDeviceResponseJson>;
+
+				if (payload.connector) {
+					deviceResponse = await axios.get<IDeviceResponseJson>(
+						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/devices/${payload.id}?include=properties,controls`
+					);
+				} else {
+					deviceResponse = await axios.get<IDeviceResponseJson>(
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`
+					);
+				}
 
 				const deviceResponseModel = jsonApiFormatter.deserialize(deviceResponse.data) as IDeviceResponseModel;
 
@@ -281,16 +290,16 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				addControlsRelations(this.data[deviceResponseModel.id], deviceResponseModel.controls);
 				addPropertiesRelations(this.data[deviceResponseModel.id], deviceResponseModel.properties);
-
-				if (payload.withChannels) {
-					const channelsStore = useChannels();
-
-					await channelsStore.fetch({ device: this.data[deviceResponseModel.id] });
-				}
 			} catch (e: any) {
 				throw new ApiError('devices-module.devices.get.failed', e, 'Fetching device failed.');
 			} finally {
 				this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
+			}
+
+			if (payload.withChannels) {
+				const channelsStore = useChannels();
+
+				await channelsStore.fetch({ device: this.data[payload.id] });
 			}
 
 			return true;
@@ -301,17 +310,28 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 		 *
 		 * @param {IDevicesFetchActionPayload} payload
 		 */
-		async fetch(payload: IDevicesFetchActionPayload): Promise<boolean> {
-			if (this.semaphore.fetching.items) {
+		async fetch(payload?: IDevicesFetchActionPayload): Promise<boolean> {
+			if (this.semaphore.fetching.items.includes(payload?.connector?.id ?? 'all')) {
 				return false;
 			}
 
-			this.semaphore.fetching.items = true;
+			this.semaphore.fetching.items.push(payload?.connector?.id ?? 'all');
 
-			const channelsStore = useChannels();
+			this.firstLoad = this.firstLoad.filter((item) => item !== (payload?.connector?.id ?? 'all'));
+
+			const connectorIds: string[] = [];
+			const deviceIds: string[] = [];
 
 			try {
-				const devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`);
+				let devicesResponse: AxiosResponse<IDevicesResponseJson>;
+
+				if (payload?.connector) {
+					devicesResponse = await axios.get<IDevicesResponseJson>(
+						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/devices?include=properties,controls`
+					);
+				} else {
+					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`);
+				}
 
 				const devicesResponseModel = jsonApiFormatter.deserialize(devicesResponse.data) as IDeviceResponseModel[];
 
@@ -321,19 +341,36 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 						...{ connectorId: device.connector.id },
 					});
 
+					connectorIds.push(device.connector.id);
+					deviceIds.push(device.id);
+
 					addControlsRelations(this.data[device.id], device.controls);
 					addPropertiesRelations(this.data[device.id], device.properties);
-
-					if (payload.withChannels) {
-						await channelsStore.fetch({ device: this.data[device.id] });
-					}
 				}
 
-				this.firstLoad = true;
+				if (payload?.connector) {
+					this.firstLoad.push(payload.connector.id);
+				} else {
+					this.firstLoad.push('all');
+
+					const uniqueConnectorIds = [...new Set(connectorIds)];
+
+					for (const connectorId of uniqueConnectorIds) {
+						this.firstLoad.push(connectorId);
+					}
+				}
 			} catch (e: any) {
 				throw new ApiError('devices-module.devices.fetch.failed', e, 'Fetching devices failed.');
 			} finally {
-				this.semaphore.fetching.items = false;
+				this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== (payload?.connector?.id ?? 'all'));
+			}
+
+			if (payload?.withChannels) {
+				const channelsStore = useChannels();
+
+				for (const deviceId of deviceIds) {
+					await channelsStore.fetch({ device: this.data[deviceId] });
+				}
 			}
 
 			return true;

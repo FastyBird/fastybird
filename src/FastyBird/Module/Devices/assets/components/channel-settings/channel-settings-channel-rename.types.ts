@@ -2,16 +2,11 @@ import { IChannel } from '../../models/types';
 
 export interface IChannelSettingsChannelRenameModel {
 	identifier: string;
-	name?: string;
-	comment?: string;
+	name: string | null;
+	comment: string | null;
 }
 
 export interface IChannelSettingsChannelRenameProps {
-	channel: IChannel;
+	channel: IChannel | null;
 	modelValue: IChannelSettingsChannelRenameModel;
-	errors: {
-		identifier?: string;
-		name?: string;
-		comment?: string;
-	};
 }

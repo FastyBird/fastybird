@@ -1,10 +1,11 @@
 <template>
-	<div
+	<el-header
 		:class="ns.b()"
 		class="flex flex-row items-center justify-between px-2 h-[56px]"
 	>
 		<div class="flex flex-row items-center gap-5">
 			<el-button
+				type="primary"
 				circle
 				link
 				@click="onToggleMenu"
@@ -60,14 +61,14 @@
 				</template>
 			</el-dropdown>
 		</div>
-	</div>
+	</el-header>
 </template>
 
 <script setup lang="ts">
 import { inject, nextTick, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { useNamespace, ElButton, ElBreadcrumb, ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch } from 'element-plus';
+import { useNamespace, ElButton, ElHeader, ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch } from 'element-plus';
 
 import { FasBars, FasSun, FasMoon } from '@fastybird/web-ui-icons';
 import { FB_BREADCRUMBS_TARGET } from '@fastybird/web-ui-library';

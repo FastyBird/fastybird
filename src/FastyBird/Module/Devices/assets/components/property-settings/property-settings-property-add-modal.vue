@@ -1,425 +1,442 @@
 <template>
-	<fb-ui-modal-form
-		:transparent-bg="true"
-		:lock-submit-button="remoteFormResult !== FbFormResultTypes.NONE"
-		:state="remoteFormResult"
-		:submit-btn-label="isDraft ? t('buttons.add.title') : t('buttons.save.title')"
-		:layout="isExtraSmallDevice ? FbUiModalLayoutTypes.PHONE : isSmallDevice ? FbUiModalLayoutTypes.TABLET : FbUiModalLayoutTypes.DEFAULT"
-		@submit="onSubmitForm"
-		@cancel="onClose"
-		@close="onClose"
+	<el-dialog
+		v-model="open"
+		:show-close="false"
+		align-center
+		@closed="onClosed"
 	>
-		<template #title>
-			{{ t('headings.add') }}
+		<template #header>
+			<fb-dialog-header
+				:layout="isXSDevice ? 'phone' : isSMDevice ? 'tablet' : 'default'"
+				:left-btn-label="t('buttons.close.title')"
+				:right-btn-label="isDraft ? t('buttons.add.title') : t('buttons.save.title')"
+				:icon="FasPlus"
+				@left-click="onClose"
+				@right-click="onSubmitForm"
+				@close="onClose"
+			>
+				<template #title>
+					{{ t('headings.properties.add') }}
+				</template>
+			</fb-dialog-header>
 		</template>
 
-		<template #icon>
-			<font-awesome-icon icon="plus" />
-		</template>
+		<property-settings-property-form
+			v-if="isConnectorProperty || props.property.type.type === PropertyType.VARIABLE"
+			v-model:remote-form-submit="remoteFormSubmit"
+			v-model:remote-form-result="remoteFormResult"
+			:connector="props.connector"
+			:device="props.device"
+			:channel="props.channel"
+			:property="props.property"
+			@added="onAdded"
+			@saved="onSaved"
+		/>
 
-		<template #form>
-			<template v-if="isConnectorProperty || props.property.type.type === PropertyType.VARIABLE">
-				<property-settings-property-form
-					v-model:remote-form-submit="remoteFormSubmit"
-					v-model:remote-form-result="remoteFormResult"
-					:connector="props.connector"
-					:device="props.device"
-					:channel="props.channel"
-					:property="props.property"
-					@added="onAdded"
-				/>
-			</template>
-
-			<template v-else>
-				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE">
-					<div class="fb-devices-module-property-settings-property-add-modal__row">
-						<div class="fb-devices-module-property-settings-property-add-modal__row-item">
-							<fb-ui-button
-								:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-								:size="FbSizeTypes.LARGE"
-								block
-								class="fb-devices-module-property-settings-property-add-modal__button"
-								@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY)"
-							>
-								<font-awesome-icon
-									icon="file"
-									size="2x"
-									class="fb-devices-module-property-settings-property-add-modal__button-icon"
-								/>
-
-								{{ t('buttons.addTypeNew.title') }}
-							</fb-ui-button>
-						</div>
-
-						<div class="fb-devices-module-property-settings-property-add-modal__row-item">
-							<fb-ui-button
-								:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-								:size="FbSizeTypes.LARGE"
-								block
-								class="fb-devices-module-property-settings-property-add-modal__button"
-								@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR)"
-							>
-								<font-awesome-icon
-									icon="clone"
-									size="2x"
-									class="fb-devices-module-property-settings-property-add-modal__button-icon"
-								/>
-
-								{{ t('buttons.addTypeCloned.title') }}
-							</fb-ui-button>
-						</div>
-					</div>
-
-					<fb-ui-alert :variant="FbUiVariantTypes.INFO">
-						<h3>New parameter</h3>
-						<p>This option will create new independent item parameter to receive or set data. This type of parameter could be fully customized.</p>
-
-						<hr />
-
-						<h3>Mapped parameter</h3>
-						<p>
-							This option will create parameter mapped to existing parameter. This type of parameter could not be configured, every settings is used
-							from mapped parent one.
-						</p>
-					</fb-ui-alert>
-				</template>
-
-				<property-settings-property-form
-					v-if="
-						activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
-						activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY
-					"
-					v-model:remote-form-submit="remoteFormSubmit"
-					v-model:remote-form-result="remoteFormResult"
-					:connector="props.connector"
-					:device="props.device"
-					:channel="props.channel"
-					:property="props.property"
-					@added="onAdded"
-				/>
-
-				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR">
-					<fb-ui-items-container>
-						<template #heading>
-							{{ t('headings.connectorSelect') }}
-						</template>
-
-						<fb-ui-content :pv="FbSizeTypes.SMALL">
-							<fb-ui-item
-								v-for="connectorItem in connectors"
-								:key="connectorItem.id"
-								:disabled="connectorItem.disabled"
-								:variant="FbUiItemVariantTypes.DEFAULT"
-								class="fb-devices-module-property-settings-property-add-modal__item"
-								@click="onSelectConnector(connectorItem)"
-							>
-								<template #icon>
-									<connectors-connector-icon :connector="connectorItem" />
-								</template>
-
-								<template #heading>
-									{{ useEntityTitle(connectorItem).value }}
-								</template>
-
-								<template
-									v-if="connectorItem.hasComment"
-									#subheading
-								>
-									{{ connectorItem.comment }}
-								</template>
-
-								<template #button>
-									<font-awesome-icon icon="chevron-right" />
-								</template>
-							</fb-ui-item>
-						</fb-ui-content>
-
-						<fb-ui-no-results
-							v-if="!connectors.length"
-							:size="FbSizeTypes.LARGE"
-							:variant="FbUiVariantTypes.PRIMARY"
-							class="fb-devices-module-property-settings-property-add-modal__no-results"
-						>
-							<template #icon>
-								<font-awesome-icon icon="ethernet" />
-							</template>
-
-							<template #second-icon>
-								<font-awesome-icon icon="exclamation" />
-							</template>
-
-							{{ t('texts.noConnectors') }}
-						</fb-ui-no-results>
-					</fb-ui-items-container>
-				</template>
-
-				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE">
-					<fb-ui-items-container>
-						<template #heading>
-							{{ t('headings.deviceSelect') }}
-						</template>
-
-						<fb-ui-content :pv="FbSizeTypes.SMALL">
-							<fb-ui-item
-								v-for="deviceItem in devices"
-								:key="deviceItem.id"
-								:disabled="deviceItem.disabled"
-								:variant="FbUiItemVariantTypes.DEFAULT"
-								class="fb-devices-module-property-settings-property-add-modal__item"
-								@click="onSelectDevice(deviceItem)"
-							>
-								<template #icon>
-									<devices-device-icon :device="deviceItem" />
-								</template>
-
-								<template #heading>
-									{{ useEntityTitle(deviceItem).value }}
-								</template>
-
-								<template
-									v-if="deviceItem.hasComment"
-									#subheading
-								>
-									{{ deviceItem.comment }}
-								</template>
-
-								<template #button>
-									<font-awesome-icon icon="chevron-right" />
-								</template>
-							</fb-ui-item>
-						</fb-ui-content>
-
-						<fb-ui-no-results
-							v-if="!devices.length"
-							:size="FbSizeTypes.LARGE"
-							:variant="FbUiVariantTypes.PRIMARY"
-							class="fb-devices-module-property-settings-property-add-modal__no-results"
-						>
-							<template #icon>
-								<font-awesome-icon icon="plug" />
-							</template>
-
-							<template #second-icon>
-								<font-awesome-icon icon="exclamation" />
-							</template>
-
-							{{ t('texts.noDevices') }}
-						</fb-ui-no-results>
-					</fb-ui-items-container>
-				</template>
-
-				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL">
-					<fb-ui-items-container>
-						<template #heading>
-							{{ t('headings.channelSelect') }}
-						</template>
-
-						<fb-ui-content :pv="FbSizeTypes.SMALL">
-							<fb-ui-item
-								v-for="channelItem in channels"
-								:key="channelItem.id"
-								:disabled="channelItem.disabled"
-								:variant="FbUiItemVariantTypes.DEFAULT"
-								class="fb-devices-module-property-settings-property-add-modal__item"
-								@click="onSelectChannel(channelItem)"
-							>
-								<template #icon>
-									<font-awesome-icon icon="cube" />
-								</template>
-
-								<template #heading>
-									{{ useEntityTitle(channelItem).value }}
-								</template>
-
-								<template
-									v-if="channelItem.hasComment"
-									#subheading
-								>
-									{{ channelItem.comment }}
-								</template>
-
-								<template #button>
-									<font-awesome-icon icon="chevron-right" />
-								</template>
-							</fb-ui-item>
-						</fb-ui-content>
-
-						<fb-ui-no-results
-							v-if="!channels.length"
-							:size="FbSizeTypes.LARGE"
-							:variant="FbUiVariantTypes.PRIMARY"
-							class="fb-devices-module-property-settings-property-add-modal__no-results"
-						>
-							<template #icon>
-								<font-awesome-icon icon="cube" />
-							</template>
-
-							<template #second-icon>
-								<font-awesome-icon icon="exclamation" />
-							</template>
-
-							{{ t('texts.noChannels') }}
-						</fb-ui-no-results>
-					</fb-ui-items-container>
-				</template>
-
-				<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT">
-					<fb-ui-items-container>
-						<template #heading>
-							{{ t('headings.parentSelect') }}
-						</template>
-
-						<fb-ui-content :pv="FbSizeTypes.SMALL">
-							<fb-ui-item
-								v-for="propertyItem in properties"
-								:key="propertyItem.id"
-								:variant="FbUiItemVariantTypes.DEFAULT"
-								@click="onSelectParent(propertyItem)"
-							>
-								<template #icon>
-									<properties-property-icon :property="propertyItem" />
-								</template>
-
-								<template #heading>
-									{{ useEntityTitle(propertyItem).value }}
-								</template>
-
-								<template #button>
-									<font-awesome-icon icon="chevron-right" />
-								</template>
-							</fb-ui-item>
-						</fb-ui-content>
-
-						<fb-ui-no-results
-							v-if="!properties.length"
-							:size="FbSizeTypes.LARGE"
-							:variant="FbUiVariantTypes.PRIMARY"
-							class="fb-devices-module-property-settings-property-add-modal__no-results"
-						>
-							<template #icon>
-								<font-awesome-icon icon="cube" />
-							</template>
-
-							<template #second-icon>
-								<font-awesome-icon icon="exclamation" />
-							</template>
-
-							<template v-if="isDeviceProperty">
-								{{ t('texts.noDeviceProperties') }}
-							</template>
-
-							<template v-if="isChannelProperty">
-								{{ t('texts.noChannelProperties') }}
-							</template>
-						</fb-ui-no-results>
-					</fb-ui-items-container>
-				</template>
-			</template>
-		</template>
-
-		<template
-			v-if="!isConnectorProperty && props.property.type.type !== PropertyType.VARIABLE"
-			#footer
-		>
+		<template v-else>
 			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE">
-				<fb-ui-button
-					:size="FbSizeTypes.LARGE"
-					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-					uppercase
-					name="close"
-					@click="onClose"
+				<div class="mb-2 flex flex-row">
+					<el-button
+						:icon="FasFile"
+						size="large"
+						type="primary"
+						class="w-full uppercase"
+						@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY)"
+					>
+						{{ t('buttons.new.title') }}
+					</el-button>
+
+					<el-button
+						:icon="FasClone"
+						size="large"
+						type="primary"
+						class="w-full uppercase"
+						@click.prevent="onOpenView(PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR)"
+					>
+						{{ t('buttons.mapExisting.title') }}
+					</el-button>
+				</div>
+
+				<el-alert
+					type="info"
+					:closable="false"
 				>
-					{{ t('buttons.close.title') }}
-				</fb-ui-button>
+					<h3>New parameter</h3>
+					<p>This option will create new independent item parameter to receive or set data. This type of parameter could be fully customized.</p>
+
+					<hr />
+
+					<h3>Mapped parameter</h3>
+					<p>
+						This option will create parameter mapped to existing parameter. This type of parameter could not be configured, every settings is used
+						from mapped parent one.
+					</p>
+				</el-alert>
 			</template>
 
-			<template
+			<property-settings-property-form
 				v-if="
 					activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
 					activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY
 				"
-			>
-				<fb-ui-button
-					:size="FbSizeTypes.LARGE"
-					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-					uppercase
-					name="cancel"
-					@click="onClose"
-				>
-					{{ t('buttons.cancel.title') }}
-				</fb-ui-button>
+				v-model:remote-form-submit="remoteFormSubmit"
+				v-model:remote-form-result="remoteFormResult"
+				:connector="props.connector"
+				:device="props.device"
+				:channel="props.channel"
+				:property="props.property"
+				@added="onAdded"
+				@saved="onSaved"
+			/>
 
-				<fb-ui-button
-					:size="FbSizeTypes.LARGE"
-					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-					:loading="remoteFormResult === FbFormResultTypes.WORKING"
-					uppercase
-					name="submit"
-					@click="onSubmitForm"
-				>
-					{{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
-				</fb-ui-button>
+			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR">
+				<fb-list>
+					<template #title>
+						{{ t('headings.properties.connectorSelect') }}
+					</template>
+
+					<div class="py-2">
+						<fb-list-item
+							v-for="connectorItem in connectors"
+							:key="connectorItem.id"
+							:disabled="connectorItem.disabled"
+							:variant="ListItemVariantTypes.DEFAULT"
+							@click="onSelectConnector(connectorItem)"
+						>
+							<template #icon>
+								<connectors-connector-icon :connector="connectorItem" />
+							</template>
+
+							<template #title>
+								{{ useEntityTitle(connectorItem).value }}
+							</template>
+
+							<template
+								v-if="connectorItem.hasComment"
+								#subtitle
+							>
+								{{ connectorItem.comment }}
+							</template>
+
+							<template #button>
+								<el-icon>
+									<fas-chevron-right />
+								</el-icon>
+							</template>
+						</fb-list-item>
+					</div>
+
+					<el-result v-if="!connectors.length">
+						<template #primary>
+							<fas-ethernet />
+						</template>
+
+						<template #secondary>
+							<fas-exclamation />
+						</template>
+
+						<template #title>
+							{{ t('texts.misc.noConnectors') }}
+						</template>
+					</el-result>
+				</fb-list>
 			</template>
 
-			<template
-				v-if="
-					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR ||
-					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE ||
-					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL ||
-					activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT
-				"
-			>
-				<fb-ui-button
-					:size="FbSizeTypes.LARGE"
-					:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-					uppercase
-					name="close"
-					@click="onClose"
-				>
-					{{ t('buttons.close.title') }}
-				</fb-ui-button>
+			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE">
+				<fb-list>
+					<template #title>
+						{{ t('headings.properties.deviceSelect') }}
+					</template>
 
-				<fb-ui-button
-					:size="FbSizeTypes.LARGE"
-					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-					:loading="remoteFormResult === FbFormResultTypes.WORKING"
-					uppercase
-					name="back"
-					@click="onBack"
-				>
-					{{ t('buttons.back.title') }}
-				</fb-ui-button>
+					<div class="py-2">
+						<fb-list-item
+							v-for="deviceItem in devices"
+							:key="deviceItem.id"
+							:disabled="deviceItem.disabled"
+							:variant="ListItemVariantTypes.DEFAULT"
+							@click="onSelectDevice(deviceItem)"
+						>
+							<template #icon>
+								<devices-device-icon :device="deviceItem" />
+							</template>
+
+							<template #title>
+								{{ useEntityTitle(deviceItem).value }}
+							</template>
+
+							<template
+								v-if="deviceItem.hasComment"
+								#subtitle
+							>
+								{{ deviceItem.comment }}
+							</template>
+
+							<template #button>
+								<el-icon>
+									<fas-chevron-right />
+								</el-icon>
+							</template>
+						</fb-list-item>
+					</div>
+
+					<el-result v-if="!devices.length">
+						<template #primary>
+							<fas-plug />
+						</template>
+
+						<template #secondary>
+							<fas-exclamation />
+						</template>
+
+						<template #title>
+							{{ t('texts.misc.noDevices') }}
+						</template>
+					</el-result>
+				</fb-list>
+			</template>
+
+			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL">
+				<fb-list>
+					<template #title>
+						{{ t('headings.properties.channelSelect') }}
+					</template>
+
+					<div class="py-2">
+						<fb-list-item
+							v-for="channelItem in channels"
+							:key="channelItem.id"
+							:disabled="channelItem.disabled"
+							:variant="ListItemVariantTypes.DEFAULT"
+							@click="onSelectChannel(channelItem)"
+						>
+							<template #icon>
+								<fas-cube />
+							</template>
+
+							<template #title>
+								{{ useEntityTitle(channelItem).value }}
+							</template>
+
+							<template
+								v-if="channelItem.hasComment"
+								#subtitle
+							>
+								{{ channelItem.comment }}
+							</template>
+
+							<template #button>
+								<el-icon>
+									<fas-chevron-right />
+								</el-icon>
+							</template>
+						</fb-list-item>
+					</div>
+
+					<el-result v-if="!channels.length">
+						<template #primary>
+							<fas-cube />
+						</template>
+
+						<template #secondary>
+							<fas-exclamation />
+						</template>
+
+						<template #title>
+							{{ t('texts.devices.noChannels') }}
+						</template>
+					</el-result>
+				</fb-list>
+			</template>
+
+			<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT">
+				<fb-list>
+					<template #title>
+						{{ t('headings.properties.parentSelect') }}
+					</template>
+
+					<div class="py-2">
+						<fb-list-item
+							v-for="propertyItem in properties"
+							:key="propertyItem.id"
+							:variant="ListItemVariantTypes.DEFAULT"
+							@click="onSelectParent(propertyItem)"
+						>
+							<template #icon>
+								<properties-property-icon :property="propertyItem" />
+							</template>
+
+							<template #title>
+								{{ useEntityTitle(propertyItem).value }}
+							</template>
+
+							<template #button>
+								<el-icon>
+									<fas-chevron-right />
+								</el-icon>
+							</template>
+						</fb-list-item>
+					</div>
+
+					<el-result v-if="!properties.length">
+						<template #primary>
+							<fas-cube />
+						</template>
+
+						<template #secondary>
+							<fas-exclamation />
+						</template>
+
+						<template #title>
+							<template v-if="isDeviceProperty">
+								{{ t('texts.devices.noProperties') }}
+							</template>
+
+							<template v-if="isChannelProperty">
+								{{ t('texts.channels.noProperties') }}
+							</template>
+						</template>
+					</el-result>
+				</fb-list>
 			</template>
 		</template>
-	</fb-ui-modal-form>
+
+		<template #footer>
+			<fb-dialog-footer
+				:left-btn-label="t('buttons.close.title')"
+				:right-btn-label="isDraft ? t('buttons.add.title') : t('buttons.save.title')"
+				@left-click="onClose"
+				@right-click="onSubmitForm"
+			>
+				<template #left-button>
+					<el-button
+						v-if="
+							!isConnectorProperty &&
+							props.property.type.type !== PropertyType.VARIABLE &&
+							(activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
+								activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY)
+						"
+						size="large"
+						link
+						name="cancel"
+						class="uppercase"
+						@click="onClose"
+					>
+						{{ t('buttons.cancel.title') }}
+					</el-button>
+
+					<el-button
+						v-else
+						size="large"
+						link
+						name="close"
+						class="uppercase"
+						@click="onClose"
+					>
+						{{ t('buttons.close.title') }}
+					</el-button>
+				</template>
+
+				<template #right-button>
+					<el-button
+						v-if="isConnectorProperty || props.property.type.type === PropertyType.VARIABLE"
+						:loading="remoteFormResult === FormResultTypes.WORKING"
+						:disabled="remoteFormResult !== FormResultTypes.NONE"
+						:icon="remoteFormResult === FormResultTypes.OK ? FarCircleCheck : remoteFormResult === FormResultTypes.ERROR ? FarCircleXmark : undefined"
+						type="primary"
+						size="large"
+						name="submit"
+						class="uppercase"
+						@click="onSubmitForm"
+					>
+						{{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
+					</el-button>
+
+					<template v-else>
+						<template v-if="activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE">
+							<el-button
+								type="primary"
+								size="large"
+								name="submit"
+								class="uppercase"
+								disabled
+							>
+								{{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
+							</el-button>
+						</template>
+
+						<template
+							v-if="
+								activeView === PropertySettingsPropertyAddModalViewTypes.NEW_PROPERTY ||
+								activeView === PropertySettingsPropertyAddModalViewTypes.MAPPED_PROPERTY
+							"
+						>
+							<el-button
+								:loading="remoteFormResult === FormResultTypes.WORKING"
+								:disabled="remoteFormResult !== FormResultTypes.NONE"
+								:icon="
+									remoteFormResult === FormResultTypes.OK ? FarCircleCheck : remoteFormResult === FormResultTypes.ERROR ? FarCircleXmark : undefined
+								"
+								type="primary"
+								size="large"
+								name="submit"
+								class="uppercase"
+								@click="onSubmitForm"
+							>
+								{{ isDraft ? t('buttons.add.title') : t('buttons.save.title') }}
+							</el-button>
+						</template>
+
+						<template
+							v-if="
+								activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CONNECTOR ||
+								activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_DEVICE ||
+								activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_CHANNEL ||
+								activeView === PropertySettingsPropertyAddModalViewTypes.SELECT_PARENT
+							"
+						>
+							<el-button
+								type="primary"
+								size="large"
+								name="submit"
+								class="uppercase"
+								@click="onBack"
+							>
+								{{ t('buttons.back.title') }}
+							</el-button>
+						</template>
+					</template>
+				</template>
+			</fb-dialog-footer>
+		</template>
+	</el-dialog>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { orderBy } from 'natural-orderby';
+import { ElAlert, ElButton, ElDialog, ElIcon, ElResult } from 'element-plus';
 
 import {
-	FbUiAlert,
-	FbUiButton,
-	FbUiContent,
-	FbUiItem,
-	FbUiItemsContainer,
-	FbUiModalForm,
-	FbUiNoResults,
-	FbFormResultTypes,
-	FbSizeTypes,
-	FbUiButtonVariantTypes,
-	FbUiItemVariantTypes,
-	FbUiModalLayoutTypes,
-	FbUiVariantTypes,
-} from '@fastybird/web-ui-library';
+	FasPlus,
+	FasFile,
+	FasClone,
+	FasChevronRight,
+	FasEthernet,
+	FasExclamation,
+	FasPlug,
+	FasCube,
+	FarCircleCheck,
+	FarCircleXmark,
+} from '@fastybird/web-ui-icons';
+import { FbDialogHeader, FbDialogFooter, FbList, FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 import { PropertyType } from '@fastybird/metadata-library';
 
 import { useBreakpoints, useEntityTitle } from '../../composables';
 import { useChannelProperties, useChannels, useConnectorProperties, useConnectors, useDeviceProperties, useDevices } from '../../models';
 import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
 import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertySettingsPropertyForm } from '../../components';
+import { FormResultTypes } from '../../types';
 import {
 	IChannelListItem,
 	IConnectorListItem,
@@ -428,14 +445,18 @@ import {
 	PropertySettingsPropertyAddModalViewTypes,
 } from './property-settings-property-add-modal.types';
 
+defineOptions({
+	name: 'PropertySettingsPropertyAddModal',
+});
+
 const props = defineProps<IPropertySettingsPropertyAddModalProps>();
 
 const emit = defineEmits<{
-	(e: 'close', saved: boolean): void;
+	(e: 'close', canceled: boolean): void;
 }>();
 
 const { t } = useI18n();
-const { isExtraSmallDevice, isSmallDevice } = useBreakpoints();
+const { isXSDevice, isSMDevice } = useBreakpoints();
 
 const connectorsStore = useConnectors();
 const connectorPropertiesStore = useConnectorProperties();
@@ -444,8 +465,12 @@ const devicePropertiesStore = useDeviceProperties();
 const channelsStore = useChannels();
 const channelPropertiesStore = useChannelProperties();
 
+const open = ref<boolean>(true);
+
+let closedCallback: () => void = (): void => {};
+
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
 
 const activeView = ref<PropertySettingsPropertyAddModalViewTypes>(PropertySettingsPropertyAddModalViewTypes.SELECT_TYPE);
 
@@ -636,7 +661,12 @@ const onSubmitForm = (): void => {
 };
 
 const onClose = (): void => {
-	emit('close', false);
+	closedCallback = (): void => emit('close', true);
+	open.value = false;
+};
+
+const onClosed = (): void => {
+	closedCallback();
 };
 
 const onBack = (): void => {
@@ -662,63 +692,12 @@ const onOpenView = (view: PropertySettingsPropertyAddModalViewTypes): void => {
 };
 
 const onAdded = (): void => {
-	emit('close', true);
+	closedCallback = (): void => emit('close', false);
+	open.value = false;
 };
 
-watch(
-	(): FbFormResultTypes => remoteFormResult.value,
-	(actual, previous): void => {
-		if (actual === FbFormResultTypes.NONE && previous === FbFormResultTypes.OK) {
-			emit('close', true);
-		}
-	}
-);
+const onSaved = (): void => {
+	closedCallback = (): void => emit('close', false);
+	open.value = false;
+};
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'property-settings-property-add-modal';
-</style>
-
-<i18n>
-{
-  "en": {
-    "headings": {
-      "add": "Add parameter",
-      "connectorSelect": "Select connector",
-      "deviceSelect": "Select device",
-      "channelSelect": "Select device channel",
-      "parentSelect": "Select parameter"
-    },
-    "buttons": {
-      "addTypeNew": {
-        "title": "Create new"
-      },
-      "addTypeCloned": {
-        "title": "Map existing"
-      },
-      "cancel": {
-        "title": "Cancel"
-      },
-      "close": {
-        "title": "Close"
-      },
-      "add": {
-        "title": "Add"
-      },
-      "save": {
-        "title": "Save"
-      },
-      "back": {
-        "title": "Back"
-      }
-    },
-    "texts": {
-      "noConnectors": "No connectors registered",
-      "noDevices": "No devices connected under selected connector",
-      "noChannels": "No channels under selected device",
-      "noDeviceProperties": "No parameters under selected device",
-      "noChannelProperties": "No parameters under selected channel"
-    }
-  }
-}
-</i18n>

@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createMetaManager, plugin as metaPlugin } from 'vue-meta';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { createWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { version } from './../package.json';
@@ -13,7 +13,7 @@ import router from './router';
 import { backendPlugin, eventBusPlugin, eventBusInjectionKey } from './plugins';
 
 import { createAccountsModule, IAccountsModuleOptions } from '@fastybird/accounts-module';
-//import { createDevicesModule, IDevicesModuleOptions } from '@fastybird/devices-module';
+import { createDevicesModule, IDevicesModuleOptions } from '@fastybird/devices-module';
 
 import 'nprogress/nprogress.css';
 import '@fastybird/web-ui-theme-chalk/src/index.scss';
@@ -56,13 +56,20 @@ app.use(createAccountsModule(), {
 		},
 	},
 	store: pinia,
+	i18n,
 } as IAccountsModuleOptions);
 
-//app.use(createDevicesModule(), {
-//	router,
-//	meta: {},
-//	configuration: {},
-//} as IDevicesModuleOptions);
+app.use(createDevicesModule(), {
+	router,
+	meta: {
+		author: 'FastyBird s.r.o.',
+		website: 'https://www.fastybird.com',
+		version: version,
+	},
+	configuration: {},
+	store: pinia,
+	i18n,
+} as IDevicesModuleOptions);
 
 app.use(router);
 

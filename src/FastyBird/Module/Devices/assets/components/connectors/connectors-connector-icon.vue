@@ -1,31 +1,53 @@
 <template>
-	<fb-ui-icon-with-child
+	<fb-icon-with-child
 		v-if="props.withState"
-		:variant="stateColor"
+		:type="stateColor"
+		:size="props.size"
 		:data-connector-state="stateName"
 	>
-		<template #main>
-			<font-awesome-icon icon="ethernet" />
+		<template #primary>
+			<fas-ethernet />
 		</template>
-		<template #child>
-			<font-awesome-icon :icon="stateIcon" />
+		<template #secondary>
+			<component :is="stateIcon" />
 		</template>
-	</fb-ui-icon-with-child>
+	</fb-icon-with-child>
 
-	<template v-else>
-		<font-awesome-icon icon="ethernet" />
-	</template>
+	<el-icon
+		v-else
+		:size="props.size"
+	>
+		<fas-ethernet />
+	</el-icon>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { ElIcon } from 'element-plus';
 
-import { FbUiIconWithChild, FbUiVariantTypes } from '@fastybird/web-ui-library';
+import {
+	FasEthernet,
+	FarCirclePause,
+	FarCircleStop,
+	FasCircleExclamation,
+	FarCircleQuestion,
+	FarCircleUser,
+	FarCirclePlay,
+	FarCircleCheck,
+	FarCircle,
+} from '@fastybird/web-ui-icons';
+import { FbIconWithChild } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useConnectorState } from '../../composables';
 import { IConnectorsIconProps } from './connectors-connector-icon.types';
+
+import type { Component } from 'vue';
+
+defineOptions({
+	name: 'ConnectorsConnectorIcon',
+});
 
 const props = withDefaults(defineProps<IConnectorsIconProps>(), {
 	withState: false,
@@ -35,24 +57,24 @@ const { status: wsStatus } = useWampV1Client();
 
 const { state: connectorState } = useConnectorState(props.connector);
 
-const stateIcon = computed<string>((): string => {
+const stateIcon = computed<Component>((): Component => {
 	if (!wsStatus || connectorState.value === ConnectionState.SLEEPING) {
-		return 'pause-circle';
+		return FarCirclePause;
 	} else if ([ConnectionState.STOPPED, ConnectionState.DISCONNECTED].includes(connectorState.value)) {
-		return 'stop-circle';
+		return FarCircleStop;
 	} else if (connectorState.value === ConnectionState.ALERT) {
-		return 'exclamation-circle';
+		return FasCircleExclamation;
 	} else if (connectorState.value === ConnectionState.LOST) {
-		return 'question-circle';
+		return FarCircleQuestion;
 	} else if (connectorState.value === ConnectionState.INIT) {
-		return 'user-circle';
+		return FarCircleUser;
 	} else if ([ConnectionState.RUNNING, ConnectionState.READY].includes(connectorState.value)) {
-		return 'play-circle';
+		return FarCirclePlay;
 	} else if (connectorState.value === ConnectionState.CONNECTED) {
-		return 'check-circle';
+		return FarCircleCheck;
 	}
 
-	return 'circle';
+	return FarCircle;
 });
 
 const stateName = computed<string>((): string => {
@@ -75,17 +97,17 @@ const stateName = computed<string>((): string => {
 	return 'unknown';
 });
 
-const stateColor = computed<FbUiVariantTypes>((): FbUiVariantTypes => {
+const stateColor = computed<string>((): string => {
 	if (!wsStatus || connectorState.value === ConnectionState.SLEEPING) {
-		return FbUiVariantTypes.WARNING;
+		return 'warning';
 	} else if (connectorState.value === ConnectionState.ALERT) {
-		return FbUiVariantTypes.DANGER;
+		return 'danger';
 	} else if (connectorState.value === ConnectionState.INIT) {
-		return FbUiVariantTypes.INFO;
+		return 'info';
 	} else if ([ConnectionState.RUNNING, ConnectionState.READY].includes(connectorState.value)) {
-		return FbUiVariantTypes.SUCCESS;
+		return 'success';
 	}
 
-	return FbUiVariantTypes.DEFAULT;
+	return 'primary';
 });
 </script>

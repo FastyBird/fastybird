@@ -1,29 +1,27 @@
 <template>
-	<fb-ui-item :variant="isExtraSmallDevice ? FbUiItemVariantTypes.LIST : FbUiItemVariantTypes.DEFAULT">
+	<fb-list-item :variant="isXSDevice ? ListItemVariantTypes.LIST : ListItemVariantTypes.DEFAULT">
 		<template #icon>
 			<devices-device-icon :device="props.deviceData.device" />
 		</template>
 
-		<template #heading>
+		<template #title>
 			{{ useEntityTitle(props.deviceData.device).value }}
 		</template>
-
-		<template #detail> </template>
-	</fb-ui-item>
+	</fb-list-item>
 </template>
 
 <script setup lang="ts">
-import { FbUiItem, FbUiItemVariantTypes } from '@fastybird/web-ui-library';
+import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle } from '../../composables';
 import { DevicesDeviceIcon } from '../../components';
 import { IDeviceDefaultChannelPropertyProps } from './connector-default-connector-device.types';
 
+defineOptions({
+	name: 'ConnectorDefaultConnectorDevice',
+});
+
 const props = defineProps<IDeviceDefaultChannelPropertyProps>();
 
-const { isExtraSmallDevice } = useBreakpoints();
+const { isXSDevice } = useBreakpoints();
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'connector-default-connector-device';
-</style>

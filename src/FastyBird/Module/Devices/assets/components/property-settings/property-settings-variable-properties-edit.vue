@@ -1,32 +1,36 @@
 <template>
-	<fb-ui-content
+	<div
 		v-for="property in props.properties"
 		:key="property.id"
-		:mt="FbSizeTypes.MEDIUM"
 	>
-		<fb-form-checkbox
+		<el-form-item
 			v-if="property.dataType === DataType.BOOLEAN"
-			v-model="model[property.id]"
-			:name="property.identifier"
-			:option="true"
+			:label="useEntityTitle(property).value"
+			:prop="property.identifier"
 		>
-			{{ useEntityTitle(property).value }}
-		</fb-form-checkbox>
-
-		<template v-else>
-			<fb-form-input
+			<el-switch
 				v-model="model[property.id]"
-				:label="useEntityTitle(property).value"
 				:name="property.identifier"
 			/>
-		</template>
-	</fb-ui-content>
+		</el-form-item>
+
+		<el-form-item
+			v-else
+			:label="useEntityTitle(property).value"
+			:prop="property.identifier"
+		>
+			<el-input
+				v-model="model[property.id]"
+				:name="property.identifier"
+			/>
+		</el-form-item>
+	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { ElFormItem, ElInput, ElSwitch } from 'element-plus';
 
-import { FbFormCheckbox, FbFormInput, FbUiContent, FbSizeTypes } from '@fastybird/web-ui-library';
 import { DataType } from '@fastybird/metadata-library';
 
 import { useEntityTitle } from '../../composables';
@@ -34,6 +38,10 @@ import {
 	IPropertySettingsVariablePropertiesEditModel,
 	IPropertySettingsVariablePropertiesEditProps,
 } from './property-settings-variable-properties-edit.types';
+
+defineOptions({
+	name: 'PropertySettingsVariablePropertiesEdit',
+});
 
 const props = defineProps<IPropertySettingsVariablePropertiesEditProps>();
 

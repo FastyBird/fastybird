@@ -10,6 +10,7 @@
 			>
 				<slot name="left-button">
 					<el-button
+						v-if="!('left-button' in $slots)"
 						type="default"
 						size="large"
 						text
@@ -26,6 +27,7 @@
 			>
 				<slot name="right-button">
 					<el-button
+						v-if="!('right-button' in $slots)"
 						:type="props.type"
 						size="large"
 						plain

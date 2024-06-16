@@ -1,6 +1,6 @@
 import { App, InjectionKey } from 'vue';
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
 

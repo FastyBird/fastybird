@@ -1,22 +1,20 @@
-import { useToast } from 'vue-toastification';
 import { AxiosResponse } from 'axios';
-import get from 'lodash/get';
+import get from 'lodash.get';
+import { ElNotification } from 'element-plus';
 
 import { UseFlashMessage } from './types';
 
 export function useFlashMessage(): UseFlashMessage {
-	const toast = useToast();
-
 	const success = (message: string): void => {
-		toast.success(message);
+		ElNotification.success(message);
 	};
 
 	const info = (message: string): void => {
-		toast.info(message);
+		ElNotification.info(message);
 	};
 
 	const error = (message: string): void => {
-		toast.error(message);
+		ElNotification.error(message);
 	};
 
 	const exception = (exception: Error, errorMessage: string): void => {
@@ -24,14 +22,14 @@ export function useFlashMessage(): UseFlashMessage {
 
 		get(exception, 'response.data.errors', []).forEach((error: any): void => {
 			if ('code' in error && parseInt(error.code, 10) === 422) {
-				toast.error(get(error, 'detail', ''));
+				ElNotification.error(get(error, 'detail', ''));
 
 				errorShown = true;
 			}
 		});
 
 		if (!errorShown && errorMessage !== null) {
-			toast.error(errorMessage);
+			ElNotification.error(errorMessage);
 		}
 	};
 
@@ -41,7 +39,7 @@ export function useFlashMessage(): UseFlashMessage {
 		if (response && Object.prototype.hasOwnProperty.call(response, 'data') && Object.prototype.hasOwnProperty.call(response.data, 'errors')) {
 			for (const key in response.data.errors) {
 				if (Object.prototype.hasOwnProperty.call(response.data.errors, key) && parseInt(response.data.errors[key].code, 10) === 422) {
-					toast.error(response.data.errors[key].detail);
+					ElNotification.error(response.data.errors[key].detail);
 
 					errorShown = true;
 				}
@@ -49,7 +47,7 @@ export function useFlashMessage(): UseFlashMessage {
 		}
 
 		if (!errorShown && errorMessage !== null) {
-			toast.error(errorMessage);
+			ElNotification.error(errorMessage);
 		}
 	};
 

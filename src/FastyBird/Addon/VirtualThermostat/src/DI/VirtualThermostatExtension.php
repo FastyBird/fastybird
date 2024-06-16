@@ -92,6 +92,12 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			->setType(Schemas\Channels\Actors::class);
 
 		$builder->addDefinition(
+			$this->prefix('schemas.channel.configuration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Configuration::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.channel.preset'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -104,10 +110,10 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			->setType(Schemas\Channels\Sensors::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.channel.configuration'),
+			$this->prefix('schemas.channel.state'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\Channels\Configuration::class);
+			->setType(Schemas\Channels\State::class);
 
 		/**
 		 * JSON-API HYDRATORS
@@ -126,6 +132,12 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			->setType(Hydrators\Channels\Actors::class);
 
 		$builder->addDefinition(
+			$this->prefix('hydrators.channel.configuration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Configuration::class);
+
+		$builder->addDefinition(
 			$this->prefix('hydrators.channel.preset'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -138,10 +150,10 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 			->setType(Hydrators\Channels\Sensors::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.channel.configuration'),
+			$this->prefix('hydrators.channel.state'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Channels\Configuration::class);
+			->setType(Hydrators\Channels\State::class);
 
 		/**
 		 * HELPERS

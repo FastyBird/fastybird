@@ -1,30 +1,33 @@
 <template>
-	<div :class="['fb-devices-module-devices-list-devices__items', { 'fb-devices-module-devices-list-devices__items-empty': noResults }]">
-		<fb-ui-no-results
-			v-if="noResults"
-			:size="FbSizeTypes.LARGE"
-			:variant="FbUiVariantTypes.PRIMARY"
-		>
+	<div v-if="noResults">
+		<el-result class="h-full w-full">
 			<template #icon>
-				<font-awesome-icon icon="plug" />
+				<fb-icon-with-child
+					type="primary"
+					:size="50"
+				>
+					<template #primary>
+						<fas-plug />
+					</template>
+					<template #secondary>
+						<fas-info />
+					</template>
+				</fb-icon-with-child>
 			</template>
 
-			<template #second-icon>
-				<font-awesome-icon icon="exclamation" />
+			<template #title>
+				{{ t('texts.misc.noDevices') }}
 			</template>
+		</el-result>
+	</div>
 
-			{{ t('texts.noDevices') }}
-		</fb-ui-no-results>
-
-		<fb-ui-swipe-actions-list
-			v-else
-			:items="props.items"
-		>
+	<el-scrollbar v-else>
+		<fb-swipe :items="props.items">
 			<template #default="{ item }">
-				<fb-ui-item
-					:variant="FbUiItemVariantTypes.LIST"
-					class="fb-devices-module-devices-list-devices__item"
-					@click="emit('open', item.id)"
+				<fb-list-item
+					:variant="ListItemVariantTypes.LIST"
+					class="b-r b-r-solid cursor-pointer mr-[-1px]"
+					@click="emit('open', item.id, $event)"
 				>
 					<template #icon>
 						<devices-device-icon
@@ -33,96 +36,66 @@
 						/>
 					</template>
 
-					<template #heading>
+					<template #title>
 						{{ useEntityTitle(item).value }}
 					</template>
 
 					<template
 						v-if="item.hasComment"
-						#subheading
+						#subtitle
 					>
 						{{ item.comment }}
 					</template>
-				</fb-ui-item>
+				</fb-list-item>
 			</template>
 
 			<template #right="{ item, close }">
 				<div
-					class="fb-devices-module-devices-list-devices__item-remove"
+					:class="ns.e('button')"
+					class="flex flex-col items-center justify-center p-5"
 					@click="
 						close();
-						onOpenRemove(item);
+						emit('remove', item.id, $event);
 					"
 				>
-					<font-awesome-icon icon="trash" />
+					<el-icon>
+						<fas-trash />
+					</el-icon>
 				</div>
 			</template>
-		</fb-ui-swipe-actions-list>
-
-		<device-settings-device-remove
-			v-if="activeView === DevicesListDevicesViewTypes.REMOVE && selectedDevice !== null"
-			:device="selectedDevice"
-			:call-remove="false"
-			@close="onCloseView"
-			@confirmed="onRemoveConfirmed"
-		/>
-	</div>
+		</fb-swipe>
+	</el-scrollbar>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ElResult, ElIcon, ElScrollbar, useNamespace } from 'element-plus';
 
-import { FbUiItem, FbUiSwipeActionsList, FbUiNoResults, FbSizeTypes, FbUiItemVariantTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
+import { FasInfo, FasPlug, FasTrash } from '@fastybird/web-ui-icons';
+import { FbListItem, FbSwipe, FbIconWithChild, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { useEntityTitle } from '../../composables';
-import { IDevice } from '../../models/types';
-import { DeviceSettingsDeviceRemove, DevicesDeviceIcon } from '../../components';
-import { IDevicesListDevicesProps, DevicesListDevicesViewTypes } from './devices-list-devices.types';
+import { DevicesDeviceIcon } from '../../components';
+import { IDevicesListDevicesProps } from './devices-list-devices.types';
+
+defineOptions({
+	name: 'DevicesListDevices',
+});
 
 const props = defineProps<IDevicesListDevicesProps>();
 
 const emit = defineEmits<{
-	(e: 'open', id: string): void;
-	(e: 'remove', id: string): void;
+	(e: 'open', id: string, event: Event): void;
+	(e: 'remove', id: string, event: Event): void;
 }>();
 
+const ns = useNamespace('devices-list-devices');
 const { t } = useI18n();
 
-const activeView = ref<DevicesListDevicesViewTypes>(DevicesListDevicesViewTypes.NONE);
-
-const selectedDevice = ref<IDevice | null>(null);
 const noResults = computed<boolean>((): boolean => props.items.length === 0);
-
-const onOpenRemove = (device: IDevice): void => {
-	selectedDevice.value = device;
-
-	activeView.value = DevicesListDevicesViewTypes.REMOVE;
-};
-
-const onCloseView = (): void => {
-	activeView.value = DevicesListDevicesViewTypes.NONE;
-};
-
-const onRemoveConfirmed = (): void => {
-	if (selectedDevice.value !== null) {
-		emit('remove', selectedDevice.value.id);
-	}
-
-	onCloseView();
-};
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'devices-list-devices';
+@import 'devices-list-devices.scss';
 </style>
-
-<i18n>
-{
-  "en": {
-    "texts": {
-      "noDevices": "You don't have assigned any device"
-    }
-  }
-}
-</i18n>

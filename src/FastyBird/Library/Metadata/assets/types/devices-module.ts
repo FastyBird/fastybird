@@ -152,7 +152,8 @@ export interface ConnectorPropertyDocument {
 	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	valueTransformer: string | null;
+	value_transformer: string | null;
+	default?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
@@ -205,7 +206,8 @@ export interface DevicePropertyDocument {
 	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	valueTransformer: string | null;
+	value_transformer: string | null;
+	default?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
@@ -256,7 +258,8 @@ export interface ChannelPropertyDocument {
 	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
-	valueTransformer: string | null;
+	value_transformer: string | null;
+	default?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 	expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;

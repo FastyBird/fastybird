@@ -2,10 +2,10 @@
 	<div :class="ns.b()">
 		<div :class="ns.e('header')">
 			<h3 :class="ns.e('title')">
-				<slot name="heading" />
+				<slot name="title" />
 
-				<small v-if="'subheading' in $slots">
-					<slot name="subheading" />
+				<small v-if="'subtitle' in $slots">
+					<slot name="subtitle" />
 				</small>
 			</h3>
 

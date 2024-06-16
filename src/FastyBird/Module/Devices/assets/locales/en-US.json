@@ -1,0 +1,332 @@
+{
+	"meta": {
+		"connectors": {
+			"list": {
+				"title": "Registered connectors"
+			},
+			"detail": {
+				"title": "Connector: {connector}"
+			},
+			"settings": {
+				"title": "Connector settings: {connector}"
+			}
+		},
+		"devices": {
+			"list": {
+				"title": "Registered devices"
+			},
+			"detail": {
+				"title": "Device: {device}"
+			},
+			"settings": {
+				"title": "Device settings: {device}"
+			}
+		},
+		"channels": {
+			"list": {
+				"title": "Registered channels"
+			},
+			"detail": {
+				"title": "Channel: {channel}"
+			},
+			"settings": {
+				"title": "Channel settings: {channel}"
+			}
+		}
+	},
+	"headings": {
+		"connectors": {
+			"allConnectors": "All connectors",
+			"connector": "Connector: {connector}",
+			"configuration": "Connector configuration",
+			"aboutConnector": "About connector",
+			"variableProperties": "Configuration parameters",
+			"dynamicProperties": "Data parameters",
+			"remove": "Remove connector",
+			"devices": "Devices",
+			"new": "New connector",
+			"sync": "Sync connectors"
+		},
+		"devices": {
+			"allDevices": "All devices",
+			"device": "Device: {device}",
+			"configuration": "Device configuration",
+			"aboutDevice": "About device",
+			"variableProperties": "Configuration parameters",
+			"dynamicProperties": "Data parameters",
+			"remove": "Remove device",
+			"channels": "Device channels",
+			"new": "Connect new device",
+			"sync": "Sync devices"
+		},
+		"channels": {
+			"configuration": "Channel configuration",
+			"aboutChannel": "About channel",
+			"variableProperties": "Configuration parameters",
+			"dynamicProperties": "Data parameters"
+		},
+		"properties": {
+			"add": "Add parameter",
+			"connectorSelect": "Select connector",
+			"deviceSelect": "Select device",
+			"channelSelect": "Select device channel",
+			"parentSelect": "Select parameter",
+			"edit": "Edit parameter",
+			"remove": "Remove parameter"
+		},
+		"misc": {
+			"loadingFailed": "An error occurred"
+		}
+	},
+	"subHeadings": {
+		"connectors": {
+			"allConnectors": "No connectors registered | One connector registered | {count} connectors registered",
+			"new": "Register new connector to the system",
+			"sync": "Sync all connectors with server"
+		},
+		"devices": {
+			"allDevices": "No devices registered | One device registered | {count} devices registered",
+			"new": "Register new device to the system",
+			"sync": "Sync all devices with server"
+		}
+	},
+	"messages": {
+		"connectors": {
+			"confirmRemove": "Are you sure to remove connector {connector} ?",
+			"notRemoved": "Connector {connector} couldn't be removed.",
+			"removeCanceled": "Action to remove connector {connector} was canceled",
+			"notEdited": "Connector {connector} couldn't be edited.",
+			"loadAllFailed": "Connectors could not be loaded",
+			"loadFailed": "Connector could not be loaded"
+		},
+		"devices": {
+			"confirmRemove": "Are you sure to remove device {device} ?",
+			"notRemoved": "Device {device} couldn't be removed.",
+			"removeCanceled": "Action to remove device {device} was canceled",
+			"notEdited": "Device {device} couldn't be edited.",
+			"notOnline": "Device {device} is not connected to server.",
+			"loadAllFailed": "Devices could not be loaded",
+			"loadFailed": "Device could not be loaded"
+		},
+		"channels": {
+			"confirmRemove": "Are you sure to remove channel {channel} ?",
+			"notRemoved": "Channel {channel} couldn't be removed.",
+			"removeCanceled": "Action to remove channel {channel} was canceled",
+			"notEdited": "Channel {channel} couldn't be edited.",
+			"loadAllFailed": "Channels could not be loaded",
+			"loadFailed": "Channel could not be loaded"
+		},
+		"properties": {
+			"confirmRemoveConnectorProperty": "Are you sure to remove connector parameter {property} ?",
+			"confirmRemoveDeviceProperty": "Are you sure to remove device parameter {property} ?",
+			"confirmRemoveChannelProperty": "Are you sure to remove channel parameter {property} ?",
+			"notRemoved": "Parameter {property} couldn't be removed.",
+			"removeCanceled": "Action to remove parameter {property} was canceled",
+			"commandNotAccepted": "Last command was not accepted by device {device}.",
+			"propertyNotCreated": "Property {property} couldn't be created",
+			"propertyNotEdited": "Property {property} couldn't be updated"
+		}
+	},
+	"texts": {
+		"connectors": {
+			"noDevices": "This connector is without devices"
+		},
+		"devices": {
+			"noChannels": "This device is without channels",
+			"noProperties": "This device is without parameters"
+		},
+		"channels": {
+			"noProperties": "This channel is without properties"
+		},
+		"misc": {
+			"loadingConnectors": "Loading connectors...",
+			"loadingConnector": "Loading connector...",
+			"noConnectors": "You don't have assigned any connector",
+			"loadingDevices": "Loading devices...",
+			"loadingDevice": "Loading device...",
+			"noDevices": "You don't have assigned any device",
+			"loadingChannels": "Loading channels...",
+			"loadingChannel": "Loading channel...",
+			"noChannels": "You don't have assigned any channel"
+		}
+	},
+	"fields": {
+		"connectors": {
+			"identifier": {
+				"title": "Connector identifier",
+				"validation": {
+					"required": "Please fill in connector identifier"
+				}
+			},
+			"name": {
+				"title": "Connector name",
+				"placeholder": "Enter connector name"
+			},
+			"comment": {
+				"title": "Connector description",
+				"placeholder": "Enter connector description"
+			}
+		},
+		"devices": {
+			"identifier": {
+				"title": "Device identifier",
+				"validation": {
+					"required": "Please fill in device identifier"
+				}
+			},
+			"name": {
+				"title": "Device name",
+				"placeholder": "Enter device name",
+				"validation": {
+					"required": "Please fill in device name"
+				}
+			},
+			"comment": {
+				"title": "Device description",
+				"placeholder": "Enter device description"
+			}
+		},
+		"channels": {
+			"identifier": {
+				"title": "Channel identifier",
+				"validation": {
+					"required": "Please fill in channel identifier"
+				}
+			},
+			"name": {
+				"title": "Channel name",
+				"placeholder": "Enter channel name",
+				"validation": {
+					"required": "Please fill in channel name"
+				}
+			},
+			"comment": {
+				"title": "Channel description",
+				"placeholder": "Enter channel description"
+			}
+		},
+		"properties": {
+			"identifier": {
+				"title": "Parameter identifier",
+				"placeholder": "Enter parameter identifier"
+			},
+			"name": {
+				"title": "Parameter name",
+				"placeholder": "Enter parameter name"
+			},
+			"dataType": {
+				"title": "Value data type",
+				"values": {
+					"unknown": "Unknown",
+					"char": "Char",
+					"uchar": "Unsigned char",
+					"short": "Short integer",
+					"ushort": "Unsigned short integer",
+					"int": "Integer",
+					"uint": "Unsigned integer",
+					"float": "Float",
+					"bool": "Boolean",
+					"string": "Text",
+					"enum": "Enum",
+					"date": "Date",
+					"time": "Time",
+					"datetime": "Date & Time",
+					"color": "Color",
+					"button": "Button",
+					"switch": "Switch"
+				}
+			},
+			"unit": {
+				"title": "Value unit",
+				"placeholder": "Enter parameter unit"
+			},
+			"settable": {
+				"title": "Is parameter settable?"
+			},
+			"queryable": {
+				"title": "Is parameter queryable?"
+			},
+			"invalid": {
+				"title": "Invalid value",
+				"placeholder": "Enter parameter invalid value"
+			},
+			"scale": {
+				"title": "Number of decimal places",
+				"placeholder": "Enter parameter number of decimal places"
+			},
+			"format": {
+				"title": "Value format",
+				"placeholder": "Enter parameter value format for value transformation"
+			}
+		}
+	},
+	"buttons": {
+		"yes": {
+			"title": "Yes"
+		},
+		"no": {
+			"title": "No"
+		},
+		"close": {
+			"title": "Close"
+		},
+		"cancel": {
+			"title": "Cancel"
+		},
+		"new": {
+			"title": "New"
+		},
+		"add": {
+			"title": "Add"
+		},
+		"edit": {
+			"title": "Edit"
+		},
+		"done": {
+			"title": "Done"
+		},
+		"update": {
+			"title": "Update"
+		},
+		"save": {
+			"title": "Save"
+		},
+		"remove": {
+			"title": "Remove"
+		},
+		"configure": {
+			"title": "Configure"
+		},
+		"back": {
+			"title": "Back"
+		},
+		"sync": {
+			"title": "Synchronise"
+		},
+		"addConnector": {
+			"title": "Add connector"
+		},
+		"addDevice": {
+			"title": "Add device"
+		},
+		"addChannel": {
+			"title": "Add channel"
+		},
+		"addProperty": {
+			"title": "Add parameter"
+		},
+		"mapExisting": {
+			"title": "Map existing"
+		}
+	},
+	"states": {
+		"actual": "Actual",
+		"on": "On",
+		"off": "Off",
+		"notAvailable": "N/A"
+	},
+	"misc": {
+		"or": "or",
+		"paging": "{page} of {total}"
+	}
+}

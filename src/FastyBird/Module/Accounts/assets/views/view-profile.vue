@@ -111,5 +111,3 @@ useMeta({
 	title: t('meta.profile.profile.title'),
 });
 </script>
-
-<i18n src="../locales/locales.json" />

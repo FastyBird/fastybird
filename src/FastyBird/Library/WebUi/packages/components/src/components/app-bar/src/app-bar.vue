@@ -1,5 +1,5 @@
 <template>
-	<div :class="[ns.b()]">
+	<el-header :class="[ns.b()]">
 		<div
 			id="fb-app-bar-button-small"
 			ref="buttonSmall"
@@ -49,12 +49,12 @@
 		>
 			<slot name="content" />
 		</div>
-	</div>
+	</el-header>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, useSlots } from 'vue';
-import { ElButton, useNamespace } from 'element-plus';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { ElButton, ElHeader, useNamespace } from 'element-plus';
 
 import { FasBars, FasXmark } from '@fastybird/web-ui-icons';
 
@@ -66,8 +66,6 @@ defineOptions({
 
 const props = defineProps(appBarProps);
 const emit = defineEmits(appBarEmits);
-
-const slots = useSlots();
 
 const ns = useNamespace('app-bar');
 
@@ -91,13 +89,13 @@ const hasContent = ref<boolean>(false);
 let mutationObserver: MutationObserver | null = null;
 
 const mutationObserverCallback = (): void => {
-	hasSmallButtons.value = 'button-small' in slots;
-	hasContent.value = 'content' in slots;
+	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
+	hasContent.value = content.value !== null && (content.value?.childElementCount > 0 || content.value.textContent !== '');
 };
 
 onMounted((): void => {
-	hasSmallButtons.value = 'button-small' in slots;
-	hasContent.value = 'content' in slots;
+	hasSmallButtons.value = buttonSmall.value !== null && buttonSmall.value?.children.length > 0;
+	hasContent.value = content.value !== null && (content.value?.childElementCount > 0 || content.value.textContent !== '');
 
 	mutationObserver = newMutationObserver(mutationObserverCallback);
 

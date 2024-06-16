@@ -1,6 +1,6 @@
 import { IJsonPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelationships } from 'jsona/lib/JsonaTypes';
 import { JsonPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 
@@ -48,7 +48,7 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 		if (this.channelTypeRegex.test(type)) {
 			const parsedTypes = this.channelTypeRegex.exec(type);
 
-			return { type: { ...{ source: 'N/A', entity: 'channel' }, ...parsedTypes?.groups } };
+			return { type: { ...{ source: 'N/A', type: 'N/A', entity: 'channel' }, ...parsedTypes?.groups } };
 		}
 
 		if (this.controlTypeRegex.test(type)) {

@@ -19,6 +19,7 @@ final class DocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\MalformedInput
+	 * @throws Exceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelProperty
@@ -39,6 +40,7 @@ final class DocumentTest extends Tests\Cases\Unit\BaseTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\MalformedInput
+	 * @throws Exceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelPropertyInvalid

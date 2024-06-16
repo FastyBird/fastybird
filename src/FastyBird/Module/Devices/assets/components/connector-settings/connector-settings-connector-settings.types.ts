@@ -1,11 +1,11 @@
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
-
-import { IConnectorData } from '../../types';
+import { FormResultTypes, IConnectorData } from '../../types';
 
 export interface IConnectorSettingsConnectorSettingsProps {
 	connectorData: IConnectorData;
+	loading: boolean;
+	devicesLoading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 	remoteFormReset?: boolean;
 }
 
@@ -16,12 +16,6 @@ export interface IConnectorSettingsConnectorSettingsForm {
 		comment: string | null;
 	};
 	properties: {
-		static: { id: string; value: string | null }[];
+		static: { id: string; value: string | number | boolean | Date | null | undefined }[];
 	};
-}
-
-export enum ConnectorSettingsConnectorSettingsViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
 }

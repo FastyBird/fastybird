@@ -1,11 +1,8 @@
-import { IConnector, IConnectorControl, IConnectorProperty } from '../../models/types';
-import { IDeviceData } from '../../types';
+import { IConnectorData } from '../../types';
 
 export interface IConnectorsConnectorDetailDefaultProps {
-	connectorData: {
-		connector: IConnector;
-		properties: IConnectorProperty[];
-		controls: IConnectorControl[];
-		devices: IDeviceData[];
-	};
+	loading: boolean;
+	devicesLoading: boolean;
+	connectorData: IConnectorData;
+	editMode?: boolean;
 }

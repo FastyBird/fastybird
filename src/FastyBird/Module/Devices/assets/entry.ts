@@ -1,5 +1,6 @@
 import { App } from 'vue';
-import get from 'lodash/get';
+import get from 'lodash.get';
+import defaultsDeep from 'lodash.defaultsdeep';
 
 import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
@@ -19,6 +20,9 @@ import {
 	useDevices,
 } from './models';
 import { useFlashMessage } from './composables';
+import locales from './locales';
+
+import 'virtual:uno.css';
 
 export function createDevicesModule(): InstallFunction {
 	return {
@@ -38,6 +42,13 @@ export function createDevicesModule(): InstallFunction {
 			app.provide(configurationKey, options.configuration);
 
 			wampClient.subscribe(`/${ModulePrefix.MODULE_DEVICES}/v1/exchange`, onWsMessage);
+
+			for (const [locale, translations] of Object.entries(locales)) {
+				const currentMessages = options.i18n?.global.getLocaleMessage(locale);
+				const mergedMessages = defaultsDeep(currentMessages, translations);
+
+				options.i18n?.global.setLocaleMessage(locale, mergedMessages);
+			}
 		},
 	};
 }
@@ -87,7 +98,6 @@ const onWsMessage = (data: string): void => {
 export * from './configuration';
 export * from './components';
 export * from './composables';
-export * from './layouts';
 export * from './models';
 export * from './router';
 

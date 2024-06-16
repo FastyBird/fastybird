@@ -1,13 +1,12 @@
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
-
 import { IDevice } from '../../models/types';
-import { IChannelData } from '../../types';
+import { FormResultTypes, IChannelData } from '../../types';
 
 export interface IChannelSettingsChannelSettingsProps {
 	device: IDevice;
 	channelData: IChannelData;
+	loading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 	remoteFormReset?: boolean;
 }
 
@@ -18,12 +17,6 @@ export interface IChannelSettingsChannelSettingsForm {
 		comment: string | null;
 	};
 	properties: {
-		static: { id: string; value: string | null }[];
+		static: { id: string; value: string | number | boolean | Date | null | undefined }[];
 	};
-}
-
-export enum ChannelSettingsChannelSettingsViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
 }

@@ -1,4 +1,4 @@
 export interface IViewDeviceSettingsProps {
 	id: string | null;
-	connectorId: string;
+	connectorId?: string | null;
 }

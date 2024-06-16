@@ -31,7 +31,7 @@ use RuntimeException;
 use function str_replace;
 
 /**
- * Access token check middleware
+ * Response url formatter
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Middleware

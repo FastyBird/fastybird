@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
 import { InternalRuleItem, SyncValidateResult } from 'async-validator';
 
@@ -183,5 +183,3 @@ watch(
 	}
 );
 </script>
-
-<i18n src="../../locales/locales.json" />

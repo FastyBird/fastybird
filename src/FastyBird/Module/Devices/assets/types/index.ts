@@ -1,4 +1,6 @@
+import { Pinia } from 'pinia';
 import { Plugin } from 'vue';
+import { I18n } from 'vue-i18n';
 import { Router } from 'vue-router';
 import { Client } from '@fastybird/vue-wamp-v1';
 
@@ -25,14 +27,22 @@ export interface IDevicesModuleOptions {
 	router?: Router;
 	meta: IDevicesModuleMeta;
 	configuration: IDevicesModuleConfiguration;
+	store: Pinia;
 	wsClient?: Client;
+	i18n?: I18n;
 }
 
 export interface IDevicesModuleMeta {
+	author: string;
+	website: string;
+	version: string;
 	[key: string]: any;
 }
 
 export interface IDevicesModuleConfiguration {
+	injectionKeys: {
+		eventBusInjectionKey?: symbol | string;
+	};
 	[key: string]: any;
 }
 
@@ -75,3 +85,12 @@ export interface IRoutes {
 	connectorSettingsEditDeviceAddChannel: string;
 	connectorSettingsEditDeviceEditChannel: string;
 }
+
+export enum FormResultTypes {
+	NONE = 'none',
+	WORKING = 'working',
+	ERROR = 'error',
+	OK = 'ok',
+}
+
+export type FormResultType = FormResultTypes.NONE | FormResultTypes.WORKING | FormResultTypes.ERROR | FormResultTypes.OK;

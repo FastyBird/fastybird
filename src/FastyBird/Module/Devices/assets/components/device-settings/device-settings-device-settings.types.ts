@@ -1,13 +1,13 @@
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
-
 import { IConnector } from '../../models/types';
-import { IDeviceData } from '../../types';
+import { FormResultTypes, IDeviceData } from '../../types';
 
 export interface IDeviceSettingsDeviceSettingsProps {
 	connector: IConnector;
 	deviceData: IDeviceData;
+	loading: boolean;
+	channelsLoading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 	remoteFormReset?: boolean;
 }
 
@@ -18,12 +18,6 @@ export interface IDeviceSettingsDeviceSettingsForm {
 		comment: string | null;
 	};
 	properties: {
-		static: { id: string; value: string | null }[];
+		static: { id: string; value: string | number | boolean | Date | null | undefined }[];
 	};
-}
-
-export enum DeviceSettingsDeviceSettingsViewTypes {
-	NONE = 'none',
-	ADD_STATIC_PARAMETER = 'addStaticParameter',
-	ADD_DYNAMIC_PARAMETER = 'addDynamicParameter',
 }

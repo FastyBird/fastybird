@@ -1,107 +1,147 @@
 <template>
-	<template v-if="deviceData !== null">
-		<template v-if="isExtraSmallDevice || isMounted">
-			<fb-layout-header-heading
-				:heading="isConnectorSettingsRoute ? (deviceData.device.draft ? t('headings.add') : t('headings.edit')) : t('headings.configure')"
-				:sub-heading="isConnectorSettingsRoute ? useEntityTitle(connector).value : useEntityTitle(deviceData.device).value"
-			/>
+	<div
+		v-loading="isLoading || deviceData === null"
+		:element-loading-text="t('texts.misc.loadingDevice')"
+		class="flex flex-col overflow-hidden h-full"
+	>
+		<template v-if="deviceData !== null">
+			<fb-app-bar-heading
+				v-if="isXSDevice"
+				teleport
+			>
+				<template #icon>
+					<devices-device-icon :device="deviceData.device" />
+				</template>
 
-			<template v-if="isExtraSmallDevice">
-				<fb-layout-header-button
-					:action-type="FbMenuItemTypes.BUTTON"
-					small
-					left
-					@click="onClose"
-				>
-					{{ t('buttons.close.title') }}
-				</fb-layout-header-button>
+				<template #title>
+					{{ t('headings.devices.configuration') }}
+				</template>
 
-				<fb-layout-header-button
-					:action-type="FbMenuItemTypes.BUTTON"
-					small
-					right
+				<template #subtitle>
+					{{ useEntityTitle(deviceData.device).value }}
+				</template>
+			</fb-app-bar-heading>
+
+			<fb-app-bar-button
+				v-if="isXSDevice"
+				teleport
+				:align="AppBarButtonAlignTypes.LEFT"
+				small
+				@click="onClose"
+			>
+				<span class="uppercase">{{ t('buttons.close.title') }}</span>
+			</fb-app-bar-button>
+
+			<fb-app-bar-button
+				v-if="isXSDevice"
+				teleport
+				:align="AppBarButtonAlignTypes.LEFT"
+				small
+				@click="onSubmit"
+			>
+				<span class="uppercase">{{ t('buttons.save.title') }}</span>
+			</fb-app-bar-button>
+
+			<el-scrollbar class="flex-1">
+				<device-settings-device-settings
+					v-model:remote-form-submit="remoteFormSubmit"
+					v-model:remote-form-result="remoteFormResult"
+					:connector="connector"
+					:device-data="deviceData"
+					:loading="isLoading"
+					:channels-loading="areChannelsLoading"
+					@created="onCreated"
+					@add-channel="onAddChannel"
+					@edit-channel="onEditChannel"
+					@remove-channel="onRemoveChannel"
+					@reset-channel="onResetChannel"
+					@add-static-property="onAddStaticProperty"
+					@add-dynamic-property="onAddDynamicProperty"
+					@edit-property="onEditProperty"
+					@remove-property="onRemoveProperty"
+				/>
+			</el-scrollbar>
+
+			<div
+				v-if="!isXSDevice"
+				class="flex flex-row gap-2 justify-end b-t b-t-solid p-2 shadow-top z-10"
+			>
+				<el-button
+					:loading="remoteFormResult === FormResultTypes.WORKING"
+					:disabled="remoteFormResult !== FormResultTypes.NONE"
+					:icon="remoteFormResult === FormResultTypes.OK ? FarCircleCheck : remoteFormResult === FormResultTypes.ERROR ? FarCircleXmark : undefined"
+					type="primary"
+					class="order-2"
 					@click="onSubmit"
 				>
 					{{ t('buttons.save.title') }}
-				</fb-layout-header-button>
-			</template>
+				</el-button>
+
+				<el-button
+					:disabled="remoteFormResult !== FormResultTypes.NONE"
+					class="order-1"
+					@click="onClose"
+				>
+					{{ t('buttons.close.title') }}
+				</el-button>
+			</div>
+
+			<property-settings-property-add-modal
+				v-if="newProperty !== null"
+				:property="newProperty"
+				:device="deviceData.device"
+				@created="onPropertyCreated"
+				@close="onCloseAddProperty"
+			/>
+
+			<property-settings-property-edit-modal
+				v-if="editProperty !== null"
+				:property="editProperty"
+				:device="deviceData.device"
+				@close="onCloseEditProperty"
+			/>
 		</template>
-
-		<device-settings-device-settings
-			v-model:remote-form-submit="remoteFormSubmit"
-			v-model:remote-form-result="remoteFormResult"
-			:connector="connector"
-			:device-data="deviceData"
-			@add-channel="onAddChannel"
-			@edit-channel="onEditChannel"
-			@created="onDeviceCreated"
-		/>
-
-		<fb-ui-content
-			v-if="!isExtraSmallDevice"
-			:pv="FbSizeTypes.MEDIUM"
-			:ph="FbSizeTypes.MEDIUM"
-			class="fb-devices-module-view-device-settings__buttons"
-		>
-			<fb-ui-button
-				:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-				:size="FbSizeTypes.MEDIUM"
-				:loading="remoteFormResult === FbFormResultTypes.WORKING"
-				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-				uppercase
-				class="fb-devices-module-view-device-settings__buttons-save"
-				@click="onSubmit"
-			>
-				{{ t('buttons.save.title') }}
-			</fb-ui-button>
-
-			<fb-ui-button
-				:variant="FbUiButtonVariantTypes.LINK_DEFAULT"
-				:size="FbSizeTypes.MEDIUM"
-				:disabled="remoteFormResult !== FbFormResultTypes.NONE"
-				uppercase
-				class="fb-devices-module-view-device-settings__buttons-close"
-				@click="onClose"
-			>
-				{{ t('buttons.close.title') }}
-			</fb-ui-button>
-		</fb-ui-content>
-	</template>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ComputedRef, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
 import { orderBy } from 'natural-orderby';
+import get from 'lodash.get';
+import { ElButton, ElMessageBox, ElScrollbar, vLoading } from 'element-plus';
 
-import {
-	FbLayoutHeaderButton,
-	FbLayoutHeaderHeading,
-	FbUiButton,
-	FbUiContent,
-	FbSizeTypes,
-	FbMenuItemTypes,
-	FbUiButtonVariantTypes,
-	FbFormResultTypes,
-} from '@fastybird/web-ui-library';
+import { FarCircleCheck, FarCircleXmark } from '@fastybird/web-ui-icons';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
+import { DataType, ModuleSource, PropertyType } from '@fastybird/metadata-library';
 
-import { useBreakpoints, useEntityTitle, useRoutesNames, useUuid } from '../composables';
+import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames, useUuid } from '../composables';
+import { ApplicationError } from '../errors';
 import { useChannelControls, useChannelProperties, useChannels, useConnectors, useDeviceControls, useDeviceProperties, useDevices } from '../models';
 import { IConnector, IChannelControl, IChannelProperty, IDevice, IDeviceControl, IDeviceProperty } from '../models/types';
-import { DeviceSettingsDeviceSettings } from '../components';
-import { IChannelData, IDeviceData, IViewDeviceSettingsProps } from '../types';
+import { DevicesDeviceIcon, DeviceSettingsDeviceSettings, PropertySettingsPropertyAddModal, PropertySettingsPropertyEditModal } from '../components';
+import { FormResultTypes, IChannelData, IDeviceData } from '../types';
+import { IViewDeviceSettingsProps } from './view-device-settings.types';
 
-const props = defineProps<IViewDeviceSettingsProps>();
+defineOptions({
+	name: 'ViewDeviceSettings',
+});
+
+const props = withDefaults(defineProps<IViewDeviceSettingsProps>(), {
+	connectorId: null,
+});
 
 const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 
-const { isExtraSmallDevice } = useBreakpoints();
-const { routeNames } = useRoutesNames();
+const flashMessage = useFlashMessage();
 const { generate: generateUuid, validate: validateUuid } = useUuid();
+const { isXSDevice } = useBreakpoints();
+const { routeNames } = useRoutesNames();
+const { meta } = useMeta({});
 
 const connectorsStore = useConnectors();
 const devicesStore = useDevices();
@@ -110,34 +150,84 @@ const devicePropertiesStore = useDeviceProperties();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
+const propertiesStore = useDeviceProperties();
 
 if (props.id !== null && !validateUuid(props.id)) {
 	throw new Error('Device identifier is not valid');
 }
 
+const id = ref<string>(props.id ?? generateUuid());
+
+const isLoading = computed<boolean>((): boolean => {
+	if (devicesStore.getting(id.value)) {
+		return true;
+	}
+
+	if (devicesStore.findById(id.value)) {
+		return false;
+	}
+
+	return devicesStore.fetching(props.connectorId ?? null);
+});
+const areChannelsLoading = computed<boolean>((): boolean => {
+	if (channelsStore.fetching(id.value)) {
+		return true;
+	}
+
+	if (channelsStore.firstLoadFinished(id.value)) {
+		return false;
+	}
+
+	return channelsStore.fetching();
+});
+
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+
+const newPropertyId = ref<string | null>(null);
+const newProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
+	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
+);
+
+const editPropertyId = ref<string | null>(null);
+const editProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
+	editPropertyId.value ? propertiesStore.findById(editPropertyId.value) : null
+);
 
 const isConnectorSettingsRoute = computed<boolean>((): boolean => {
 	return (
 		route.matched.find((matched) => {
-			return (
-				matched.name === routeNames.connectorSettings ||
-				matched.name === routeNames.connectorSettingsAddDevice ||
-				matched.name === routeNames.connectorSettingsEditDevice
-			);
+			return matched.name === routeNames.connectorSettingsAddDevice || matched.name === routeNames.connectorSettingsEditDevice;
 		}) !== undefined
 	);
 });
 
-const isMounted = ref<boolean>(false);
-
 const connector = computed<IConnector>((): IConnector => {
-	if (!validateUuid(props.connectorId)) {
+	if (props.connectorId !== null && !validateUuid(props.connectorId)) {
 		throw new Error('Connector identifier is not valid');
 	}
 
-	const connector = connectorsStore.findById(props.connectorId);
+	if (props.connectorId !== null) {
+		const connector = connectorsStore.findById(props.connectorId);
+
+		if (connector === null) {
+			throw new Error('Connector was not found');
+		}
+
+		return connector;
+	}
+
+	if (props.id === null) {
+		throw new Error('Connector was not found');
+	}
+
+	const device = devicesStore.findById(props.id);
+
+	if (device === null) {
+		throw new Error('Connector was not found');
+	}
+
+	const connector = connectorsStore.findById(device.connector.id);
 
 	if (connector === null) {
 		throw new Error('Connector was not found');
@@ -146,42 +236,39 @@ const connector = computed<IConnector>((): IConnector => {
 	return connector;
 });
 
-let device: ComputedRef<IDevice | null>;
-
 if (props.id === null) {
-	const { id } = await devicesStore.add({
+	await devicesStore.add({
+		id: id.value,
 		connector: connector.value,
-		type: { source: connector.value.type.source, type: connector.value.type.type },
+		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
 		},
 	});
-
-	device = computed<IDevice | null>((): IDevice | null => devicesStore.findById(id));
-} else {
-	device = computed<IDevice | null>((): IDevice | null => devicesStore.findById(props.id as string));
 }
 
-const deviceData = computed<IDeviceData>((): IDeviceData => {
-	if (device.value === null) {
-		throw new Error('Device was not found');
+const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
+	const device = devicesStore.findById(id.value);
+
+	if (device === null) {
+		return null;
 	}
 
 	return {
-		device: device.value,
+		device: device,
 		controls: orderBy<IDeviceControl>(
-			deviceControlsStore.findForDevice(device.value.id).filter((control) => (device.value?.draft ? true : !control.draft)),
+			deviceControlsStore.findForDevice(device.id).filter((control) => (device?.draft ? true : !control.draft)),
 			[(v): string => v.name],
 			['asc']
 		),
 		properties: orderBy<IDeviceProperty>(
-			devicePropertiesStore.findForDevice(device.value.id).filter((property) => (device.value?.draft ? true : !property.draft)),
+			devicePropertiesStore.findForDevice(device.id).filter((property) => (device?.draft ? true : !property.draft)),
 			[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
 			['asc']
 		),
 		channels: orderBy<IChannelData>(
-			channelsStore.findForDevice(device.value.id).map((channel): IChannelData => {
+			channelsStore.findForDevice(device.id).map((channel): IChannelData => {
 				return {
 					channel,
 					controls: orderBy<IChannelControl>(
@@ -210,13 +297,17 @@ const onClose = (): void => {
 	if (isConnectorSettingsRoute.value) {
 		router.push({ name: routeNames.connectorSettings, params: { id: props.connectorId } });
 	} else {
-		router.push({ name: routeNames.deviceDetail, params: { id: props.id } });
+		if (deviceData.value!.device.draft) {
+			router.push({ name: routeNames.devices });
+		} else {
+			router.push({ name: routeNames.deviceDetail, params: { id: props.id } });
+		}
 	}
 };
 
 const onAddChannel = (): void => {
 	if (isConnectorSettingsRoute.value) {
-		router.push({ name: routeNames.connectorSettingsEditDeviceAddChannel, params: { id: connector.value?.id, deviceId: props.id } });
+		router.push({ name: routeNames.connectorSettingsEditDeviceAddChannel, params: { id: connector.value.id, deviceId: props.id } });
 	} else {
 		router.push({ name: routeNames.deviceSettingsAddChannel, params: { id: props.id } });
 	}
@@ -224,13 +315,57 @@ const onAddChannel = (): void => {
 
 const onEditChannel = (id: string): void => {
 	if (isConnectorSettingsRoute.value) {
-		router.push({ name: routeNames.connectorSettingsEditDeviceEditChannel, params: { id: connector.value?.id, deviceId: props.id, channelId: id } });
+		router.push({ name: routeNames.connectorSettingsEditDeviceEditChannel, params: { id: connector.value.id, deviceId: props.id, channelId: id } });
 	} else {
 		router.push({ name: routeNames.deviceSettingsEditChannel, params: { id: props.id, channelId: id } });
 	}
 };
 
-const onDeviceCreated = (device: IDevice): void => {
+const onRemoveChannel = async (id: string): Promise<void> => {
+	const channel = channelsStore.findById(id);
+
+	if (channel === null) {
+		return;
+	}
+
+	ElMessageBox.confirm(t('messages.channels.confirmRemove', { channel: useEntityTitle(channel).value }), t('headings.channels.remove'), {
+		confirmButtonText: t('buttons.yes.title'),
+		cancelButtonText: t('buttons.no.title'),
+		type: 'warning',
+	})
+		.then(async (): Promise<void> => {
+			const errorMessage = t('messages.channels.notRemoved', {
+				channel: useEntityTitle(channel).value,
+			});
+
+			channelsStore.remove({ id: channel.id }).catch((e): void => {
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(get(e, 'exception', null), errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
+				}
+			});
+		})
+		.catch(() => {
+			flashMessage.info(
+				t('messages.channels.removeCanceled', {
+					channel: useEntityTitle(channel).value,
+				})
+			);
+		});
+};
+
+const onResetChannel = async (id: string): Promise<void> => {
+	const channel = channelsStore.findById(id);
+
+	if (channel === null) {
+		return;
+	}
+
+	// TODO: Reset channel
+};
+
+const onCreated = (device: IDevice): void => {
 	if (isConnectorSettingsRoute.value) {
 		router.push({ name: routeNames.connectorSettingsEditDevice, params: { id: props.connectorId, deviceId: device.id } });
 	} else {
@@ -238,44 +373,182 @@ const onDeviceCreated = (device: IDevice): void => {
 	}
 };
 
-onMounted((): void => {
-	isMounted.value = true;
-});
+const onAddStaticProperty = async (): Promise<void> => {
+	if (deviceData.value === null) {
+		return;
+	}
 
-onUnmounted((): void => {
-	if (device.value?.draft) {
-		devicesStore.remove({ id: device.value.id });
+	const { id } = await propertiesStore.add({
+		device: deviceData.value.device,
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device' },
+		draft: true,
+		data: {
+			identifier: generateUuid(),
+			dataType: DataType.UNKNOWN,
+		},
+	});
+
+	newPropertyId.value = id;
+};
+
+const onAddDynamicProperty = async (): Promise<void> => {
+	if (deviceData.value === null) {
+		return;
+	}
+
+	const { id } = await propertiesStore.add({
+		device: deviceData.value.device,
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device' },
+		draft: true,
+		data: {
+			identifier: generateUuid(),
+			dataType: DataType.UNKNOWN,
+		},
+	});
+
+	newPropertyId.value = id;
+};
+
+const onPropertyCreated = async (): Promise<void> => {
+	newPropertyId.value = null;
+};
+
+const onCloseAddProperty = async (canceled: boolean): Promise<void> => {
+	if (canceled && newProperty.value?.draft) {
+		await propertiesStore.remove({ id: newProperty.value.id });
+	}
+
+	newPropertyId.value = null;
+};
+
+const onEditProperty = async (id: string): Promise<void> => {
+	const property = propertiesStore.findById(id);
+
+	if (property === null) {
+		return;
+	}
+
+	editPropertyId.value = id;
+};
+
+const onCloseEditProperty = async (): Promise<void> => {
+	editPropertyId.value = null;
+};
+
+const onRemoveProperty = async (id: string): Promise<void> => {
+	const property = propertiesStore.findById(id);
+
+	if (property === null) {
+		return;
+	}
+
+	ElMessageBox.confirm(
+		t('messages.properties.confirmRemoveDeviceProperty', { property: useEntityTitle(property).value }),
+		t('headings.properties.remove'),
+		{
+			confirmButtonText: t('buttons.yes.title'),
+			cancelButtonText: t('buttons.no.title'),
+			type: 'warning',
+		}
+	)
+		.then(async (): Promise<void> => {
+			const errorMessage = t('messages.properties.notRemoved', {
+				property: useEntityTitle(property).value,
+			});
+
+			propertiesStore.remove({ id: property.id }).catch((e): void => {
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(get(e, 'exception', null), errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
+				}
+			});
+		})
+		.catch(() => {
+			flashMessage.info(
+				t('messages.properties.removeCanceled', {
+					property: useEntityTitle(property).value,
+				})
+			);
+		});
+};
+
+onBeforeMount(async (): Promise<void> => {
+	fetchDevice(id.value).catch((e) => {
+		if (get(e, 'exception.response.status', 0) === 404) {
+			throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+		} else {
+			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+		}
+	});
+
+	if (!isLoading.value && devicesStore.findById(id.value) === null) {
+		throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
+	}
+
+	if (deviceData.value) {
+		fetchChannels(deviceData.value.device).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
 	}
 });
 
-useMeta(() => ({
-	title: t('meta.title', { device: useEntityTitle(deviceData.value.device).value }),
-}));
+onBeforeUnmount(async (): Promise<void> => {
+	if (newProperty.value?.draft) {
+		await propertiesStore.remove({ id: newProperty.value.id });
+		newPropertyId.value = null;
+	}
+});
+
+onUnmounted((): void => {
+	if (deviceData.value?.device.draft) {
+		devicesStore.remove({ id: deviceData.value?.device.id });
+	}
+});
+
+const fetchDevice = async (id: string): Promise<void> => {
+	if (!isLoading.value && !devicesStore.firstLoadFinished) {
+		await devicesStore.get({ id });
+	}
+};
+
+const fetchChannels = async (device: IDevice): Promise<void> => {
+	if (!areChannelsLoading.value && !channelsStore.firstLoadFinished(device.id)) {
+		await channelsStore.fetch({ device });
+	}
+};
+
+watch(
+	(): boolean => isLoading.value,
+	(val: boolean): void => {
+		if (!val && deviceData.value === null) {
+			throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
+		}
+	}
+);
+
+watch(
+	(): IDeviceData | null => deviceData.value,
+	async (val: IDeviceData | null): Promise<void> => {
+		if (val !== null) {
+			meta.title = t('meta.devices.settings.title', { device: useEntityTitle(val.device).value });
+
+			fetchChannels(val.device).catch((e) => {
+				if (get(e, 'exception.response.status', 0) === 404) {
+					throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+				} else {
+					throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+				}
+			});
+		}
+
+		if (!isLoading.value && val === null) {
+			throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
+		}
+	}
+);
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'view-device-settings';
-</style>
-
-<i18n>
-{
-  "en": {
-    "meta": {
-      "title": "Device settings: {device}"
-    },
-    "headings": {
-      "add": "Add connector device",
-      "edit": "Configure connector device",
-      "configure": "Configure device"
-    },
-    "buttons": {
-      "save": {
-        "title": "Save"
-      },
-      "close": {
-        "title": "Close"
-      }
-    }
-  }
-}
-</i18n>

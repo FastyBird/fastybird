@@ -18,43 +18,38 @@
     "resolveJsonModule": true,
     "types": [
       "@fastybird/metadata-library",
-      "@fastybird/web-ui-library",
-      "@fastybird/vue-wamp-v1",
+      "@fastybird/web-ui-components",
+      "@fastybird/web-ui-icons",
       "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash.get",
       "@types/lodash.capitalize",
+      "@types/lodash.defaultsdeep",
       "@types/uuid",
       "ajv",
       "date-fns",
       "jsona",
       "node",
-      "natural-orderby",
       "pinia",
-      "vee-validate",
-      "vite-plugin-vue-type-imports",
       "vue",
       "vue-i18n",
       "vue-meta",
       "vue-router",
-      "vue-toastification",
-      "vite/client"
+      "vite/client",
     ],
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
+      "dom.iterable"
     ]
   },
   "include": [
     "assets/**/*.ts",
     "assets/**/*.d.ts",
-    "assets/**/*.vue"
+    "assets/**/*.vue",
+    "assets/locales/*.json",
+    "resources/schemas/*.json"
   ],
   "exclude": [
-    "src/**/*.stories.ts",
-    "src/**/stories.ts",
-    "src/**/*.spec.ts",
     "node_modules",
     "dist"
   ]

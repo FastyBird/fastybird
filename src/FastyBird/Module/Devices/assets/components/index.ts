@@ -9,3 +9,4 @@ export * from './devices';
 export * from './properties';
 export * from './property-default';
 export * from './property-settings';
+export * from './errors';

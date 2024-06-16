@@ -212,7 +212,7 @@ abstract class Device extends JsonApiSchemas\JsonApi
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					Devices\Constants::ROUTE_NAME_CHANNELS,
+					Devices\Constants::ROUTE_NAME_DEVICE_CHANNELS,
 					[
 						Router\ApiRoutes::URL_DEVICE_ID => $resource->getId()->toString(),
 					],

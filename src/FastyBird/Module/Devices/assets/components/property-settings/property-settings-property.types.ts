@@ -6,9 +6,3 @@ export interface IPropertySettingsPropertyProps {
 	channel?: IChannel;
 	property: IChannelProperty | IConnectorProperty | IDeviceProperty;
 }
-
-export enum PropertySettingsPropertyViewTypes {
-	NONE = 'none',
-	EDIT = 'edit',
-	REMOVE = 'remove',
-}

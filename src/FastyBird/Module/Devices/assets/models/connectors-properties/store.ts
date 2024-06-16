@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
 import {
@@ -81,6 +81,8 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 		invalid: get(data, 'invalid', null),
 		scale: get(data, 'scale', null),
 		step: get(data, 'step', null),
+		default: get(data, 'default', null),
+		valueTransformer: get(data, 'valueTransformer', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -307,12 +309,28 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 							type: newProperty.type,
 							identifier: newProperty.identifier,
 							name: newProperty.name,
+							value: newProperty.value,
+							settable: newProperty.settable,
+							queryable: newProperty.queryable,
+							dataType: newProperty.dataType,
+							unit: newProperty.unit,
+							invalid: newProperty.invalid,
+							scale: newProperty.scale,
+							step: newProperty.step,
+							format: newProperty.format,
+							default: newProperty.default,
+							valueTransformer: newProperty.valueTransformer,
 							connector: newProperty.connector,
 							relationshipNames: ['connector'],
 						};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const createdProperty = await axios.post<IConnectorPropertyResponseJson>(
@@ -375,12 +393,28 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 							type: updatedRecord.type,
 							identifier: updatedRecord.identifier,
 							name: updatedRecord.name,
+							value: updatedRecord.value,
+							settable: updatedRecord.settable,
+							queryable: updatedRecord.queryable,
+							dataType: updatedRecord.dataType,
+							unit: updatedRecord.unit,
+							invalid: updatedRecord.invalid,
+							scale: updatedRecord.scale,
+							step: updatedRecord.step,
+							format: updatedRecord.format,
+							default: updatedRecord.default,
+							valueTransformer: updatedRecord.valueTransformer,
 							connector: updatedRecord.connector,
 							relationshipNames: ['connector'],
 						};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const updatedProperty = await axios.patch<IConnectorPropertyResponseJson>(
@@ -439,18 +473,34 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						type: recordToSave.type,
 						identifier: recordToSave.identifier,
 						name: recordToSave.name,
+						value: recordToSave.value,
+						settable: recordToSave.settable,
+						queryable: recordToSave.queryable,
+						dataType: recordToSave.dataType,
+						unit: recordToSave.unit,
+						invalid: recordToSave.invalid,
+						scale: recordToSave.scale,
+						step: recordToSave.step,
+						format: recordToSave.format,
+						default: recordToSave.default,
+						valueTransformer: recordToSave.valueTransformer,
 						connector: recordToSave.connector,
 						relationshipNames: ['connector'],
 					};
 
-					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+					if (apiData?.type?.type === PropertyType.DYNAMIC) {
 						delete apiData.value;
+					}
+
+					if (apiData?.type?.type === PropertyType.VARIABLE) {
+						delete apiData.settable;
+						delete apiData.queryable;
 					}
 
 					const savedProperty = await axios.post<IConnectorPropertyResponseJson>(
 						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${recordToSave.connector.id}/properties`,
 						jsonApiFormatter.serialize({
-							stuff: recordToSave,
+							stuff: apiData,
 						})
 					);
 
@@ -565,6 +615,8 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 								invalid: body.invalid,
 								scale: body.scale,
 								step: body.step,
+								default: body.default,
+								valueTransformer: body.value_transformer,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

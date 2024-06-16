@@ -54,6 +54,7 @@ final class ConditionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function create(
 		Entities\Conditions\Condition $condition,
@@ -76,6 +77,7 @@ final class ConditionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function update(
 		Entities\Conditions\Condition $condition,
@@ -103,6 +105,7 @@ final class ConditionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function delete(
 		Entities\Conditions\Condition $condition,
@@ -126,6 +129,7 @@ final class ConditionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	private function publishEntity(
 		Entities\Conditions\Condition $condition,

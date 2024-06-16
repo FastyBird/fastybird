@@ -122,5 +122,3 @@ useMeta({
 	title: t('meta.profile.password.title'),
 });
 </script>
-
-<i18n src="../locales/locales.json" />
