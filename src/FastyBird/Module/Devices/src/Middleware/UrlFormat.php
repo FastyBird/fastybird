@@ -76,9 +76,8 @@ final readonly class UrlFormat implements MiddlewareInterface
 				case Devices\Constants::ROUTE_NAME_DEVICE_CHANNEL_CONTROL_RELATIONSHIP:
 					$content = str_replace(
 						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '') . '\/v1\/channels',
-						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '') . '\/v1\/devices\/' . $route->getArgument(
-							Router\ApiRoutes::URL_DEVICE_ID,
-						) . '\/channels',
+						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '')
+							. '\/v1\/devices\/' . $route->getArgument(Router\ApiRoutes::URL_DEVICE_ID) . '\/channels',
 						$content,
 					);
 
@@ -98,9 +97,10 @@ final readonly class UrlFormat implements MiddlewareInterface
 				case Devices\Constants::ROUTE_NAME_CONNECTOR_DEVICE_CONTROL_RELATIONSHIP:
 					$content = str_replace(
 						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '') . '\/v1\/devices',
-						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '') . '\/v1\/connectors\/' . $route->getArgument(
-							Router\ApiRoutes::URL_CONNECTOR_ID,
-						) . '\/devices',
+						'\/api' . ($this->usePrefix ? '\/' . Metadata\Constants::MODULE_DEVICES_PREFIX : '')
+							. '\/v1\/connectors\/' . $route->getArgument(
+								Router\ApiRoutes::URL_CONNECTOR_ID,
+							) . '\/devices',
 						$content,
 					);
 
