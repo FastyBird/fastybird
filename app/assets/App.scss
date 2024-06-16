@@ -12,26 +12,28 @@
     }
   }
 
-  @include b(header) {
-    @include set-css-var-value(('header', 'padding'), '0px');
-    @include set-css-var-value(('header', 'height'), 'auto');
-  }
-
   @include e(mobile-menu) {
-    @include b(drawer) {
-      @include e(header) {
+    .el-drawer {
+      &__header {
         @include set-css-var-value(('drawer', 'padding', 'primary'), '0px');
 
         position: absolute;
-        top: 0.75rem;
-        right: 0.5rem;
-        z-index: 1;
+        width: 100%;
         margin: 0;
+        padding: 1rem 1rem 0 0;
+        z-index: 1;
+        box-sizing: border-box;
       }
+    }
+  }
 
-      @include e(body) {
-        @include set-css-var-value(('drawer', 'padding', 'primary'), '0px');
-      }
+  .el-main {
+    @include set-css-var-value(('main', 'padding'), '0');
+  }
+
+  .el-drawer {
+    &__body {
+      @include set-css-var-value(('drawer', 'padding', 'primary'), '0px');
     }
   }
 }

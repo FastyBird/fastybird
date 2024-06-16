@@ -107,5 +107,3 @@ watch(
 	}
 );
 </script>
-
-<i18n src="../../locales/locales.json" />

@@ -73,5 +73,3 @@ useMeta({
 	title: t('meta.sign.passwordReset.title'),
 });
 </script>
-
-<i18n src="../locales/locales.json" />

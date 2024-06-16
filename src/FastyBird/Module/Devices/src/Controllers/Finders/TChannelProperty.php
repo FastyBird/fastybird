@@ -18,14 +18,14 @@ namespace FastyBird\Module\Devices\Controllers\Finders;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Models\Entities\Channels\Properties\PropertiesRepository;
+use FastyBird\Module\Devices\Models;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
 
 /**
  * @property-read Localization\Translator $translator
- * @property-read PropertiesRepository $channelPropertiesRepository
+ * @property-read Models\Entities\Channels\Properties\PropertiesRepository $channelPropertiesRepository
  */
 trait TChannelProperty
 {

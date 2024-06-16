@@ -43,5 +43,3 @@ useMeta({
 	title: t('meta.sign.up.title'),
 });
 </script>
-
-<i18n src="../locales/locales.json" />

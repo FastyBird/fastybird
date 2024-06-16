@@ -1,124 +1,69 @@
 <template>
-	<fb-layout-content
-		v-model="itemsSearch"
-		:search-placeholder="t('fields.search.placeholder')"
-		with-search
+	<fb-app-bar-heading
+		v-if="isXSDevice && !isPartialDetailRoute"
+		teleport
 	>
-		<template
-			v-if="isExtraSmallDevice"
-			#header
-		>
-			<fb-layout-header menu-button-hidden>
-				<template
-					v-if="!isPartialDetailRoute"
-					#heading
-				>
-					<fb-layout-header-heading
-						:heading="t('headings.allDevices')"
-						:sub-heading="t('subHeadings.allDevices', { count: items.length }, items.length)"
-						:teleport="false"
-					/>
-				</template>
-
-				<template
-					v-if="!isPartialDetailRoute"
-					#button-right
-				>
-					<fb-layout-header-icon
-						:teleport="false"
-						right
-					>
-						<font-awesome-icon icon="plug" />
-					</fb-layout-header-icon>
-				</template>
-
-				<template
-					v-if="!isPartialDetailRoute"
-					#button-small
-				>
-					<fb-layout-header-button
-						:teleport="false"
-						:action-type="FbMenuItemTypes.BUTTON"
-						small
-						left
-						@click="emit('toggleMenu')"
-					>
-						{{ t('buttons.menu.title') }}
-					</fb-layout-header-button>
-
-					<fb-layout-header-button
-						:teleport="false"
-						:action-type="FbMenuItemTypes.BUTTON"
-						small
-						right
-						@click="onOpenConnect"
-					>
-						{{ t('buttons.new.title') }}
-					</fb-layout-header-button>
-				</template>
-			</fb-layout-header>
+		<template #icon>
+			<fas-plug />
 		</template>
 
-		<template
-			v-if="isLoading || (!isLoading && isExtraSmallDevice && isPartialDetailRoute)"
-			#content
-		>
-			<div
-				v-if="isLoading"
-				class="fb-devices-module-view-devices__loading"
-			>
-				<fb-ui-loading-box :size="FbSizeTypes.LARGE">
-					{{ t('texts.loadingDevices') }}
-				</fb-ui-loading-box>
-			</div>
-
-			<router-view
-				v-if="!isLoading && isExtraSmallDevice && isPartialDetailRoute"
-				v-slot="{ Component }"
-			>
-				<component
-					:is="Component"
-					:devices="items"
-				/>
-			</router-view>
+		<template #title>
+			{{ t('headings.devices.allDevices') }}
 		</template>
 
-		<template
-			v-if="!isLoading && (!isPartialDetailRoute || !isExtraSmallDevice)"
-			#items
+		<template #subtitle>
+			{{ t('subHeadings.devices.allDevices', { count: items.length }, items.length) }}
+		</template>
+	</fb-app-bar-heading>
+
+	<fb-app-bar-button
+		v-if="isXSDevice && !isPartialDetailRoute"
+		teleport
+		:align="AppBarButtonAlignTypes.LEFT"
+		small
+		@click="onOpenRegister"
+	>
+		<span class="uppercase">{{ t('buttons.new.title') }}</span>
+	</fb-app-bar-button>
+
+	<div class="sm:flex sm:flex-row h-full w-full">
+		<view-error
+			v-if="isXSDevice && isPartialDetailRoute"
+			:type="'connector'"
+		>
+			<router-view />
+		</view-error>
+
+		<div
+			v-if="!isPartialDetailRoute || !isXSDevice"
+			class="sm:w-[20rem] sm:border-r sm:border-r-solid"
 		>
 			<devices-list-devices
+				v-loading="isLoading"
+				:element-loading-text="t('texts.misc.loadingDevices')"
 				:items="items"
 				@open="onOpenDetail"
 				@remove="onRemove"
 			/>
-		</template>
+		</div>
 
-		<template
-			v-if="!isLoading && !isExtraSmallDevice"
-			#preview
-		>
-			<router-view
+		<template v-if="!isXSDevice">
+			<view-error
 				v-if="isPartialDetailRoute"
-				v-slot="{ Component }"
+				:type="'connector'"
 			>
-				<component
-					:is="Component"
-					:devices="items"
-				/>
-			</router-view>
+				<router-view class="flex-grow h-full" />
+			</view-error>
 
 			<devices-preview-info
 				v-else
 				:total="itemsCount"
-				@connect="onOpenConnect"
+				class="h-full"
+				@register="onOpenRegister"
+				@synchronise="onSynchronise"
 			/>
 		</template>
-
-		<template #footer>
-			<fb-layout-footer />
-		</template>
-	</fb-layout-content>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -128,34 +73,26 @@ import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
 import get from 'lodash/get';
 import { orderBy } from 'natural-orderby';
+import { ElMessageBox, vLoading } from 'element-plus';
 
-import {
-	FbLayoutContent,
-	FbLayoutFooter,
-	FbUiLoadingBox,
-	FbLayoutHeader,
-	FbLayoutHeaderIcon,
-	FbLayoutHeaderHeading,
-	FbLayoutHeaderButton,
-	FbMenuItemTypes,
-	FbSizeTypes,
-} from '@fastybird/web-ui-library';
+import { FasPlug } from '@fastybird/web-ui-icons';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
 import { useDevices } from '../models';
 import { IDevice } from '../models/types';
-import { DevicesPreviewInfo, DevicesListDevices } from '../components';
+import { DevicesPreviewInfo, DevicesListDevices, ViewError } from '../components';
 import { ApplicationError } from '../errors';
 
-const emit = defineEmits<{
-	(e: 'toggleMenu'): void;
-}>();
+defineOptions({
+	name: 'ViewDevices',
+});
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 
-const { isExtraSmallDevice } = useBreakpoints();
+const { isXSDevice } = useBreakpoints();
 const { routeNames } = useRoutesNames();
 const flashMessage = useFlashMessage();
 
@@ -165,7 +102,7 @@ const itemsSearch = ref<string>('');
 
 const itemsCount = computed<number>((): number => Object.keys(devicesStore.data).length);
 
-const isLoading = computed<boolean>((): boolean => devicesStore.fetching);
+const isLoading = computed<boolean>((): boolean => devicesStore.fetching(null));
 
 const isPartialDetailRoute = computed<boolean>((): boolean => {
 	return route.matched.find((matched) => matched.name === routeNames.deviceDetail) !== undefined;
@@ -192,85 +129,69 @@ const onOpenDetail = (id: string): void => {
 	});
 };
 
-const onOpenConnect = (): void => {
+const onOpenRegister = (): void => {
 	router.push({
 		name: routeNames.deviceConnect,
 	});
 };
 
+const onSynchronise = (): void => {
+	// TODO: Handle refresh
+};
+
 const onRemove = async (id: string): Promise<void> => {
-	if (route.name === routeNames.deviceDetail && route.params.id === id) {
-		await router.push({ name: routeNames.devices });
+	const device = await devicesStore.findById(id);
+
+	if (device === null) {
+		return;
 	}
 
-	try {
-		await devicesStore.remove({ id });
-	} catch (e: any) {
-		const device = await devicesStore.findById(id);
+	ElMessageBox.confirm(t('messages.devices.confirmRemove', { device: useEntityTitle(device).value }), t('headings.devices.remove'), {
+		confirmButtonText: t('buttons.yes.title'),
+		cancelButtonText: t('buttons.no.title'),
+		type: 'warning',
+	})
+		.then(async (): Promise<void> => {
+			if (route.name === routeNames.deviceDetail && route.params.id === id) {
+				await router.push({ name: routeNames.devices });
+			}
 
-		const errorMessage = t('messages.notRemoved', {
-			device: useEntityTitle(device).value,
+			try {
+				await devicesStore.remove({ id });
+			} catch (e: any) {
+				const device = await devicesStore.findById(id);
+
+				const errorMessage = t('messages.devices.notRemoved', {
+					device: useEntityTitle(device).value,
+				});
+
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(get(e, 'exception', null), errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
+				}
+			}
+		})
+		.catch(() => {
+			flashMessage.info(
+				t('messages.devices.removeCanceled', {
+					property: useEntityTitle(device).value,
+				})
+			);
 		});
-
-		if (get(e, 'exception', null) !== null) {
-			flashMessage.exception(get(e, 'exception', null), errorMessage);
-		} else {
-			flashMessage.error(errorMessage);
-		}
-	}
 };
 
 onBeforeMount(async (): Promise<void> => {
-	if (!isLoading.value && !devicesStore.firstLoadFinished) {
+	if (!isLoading.value && !devicesStore.firstLoadFinished(null)) {
 		try {
-			await devicesStore.fetch({ withChannels: true });
+			await devicesStore.fetch();
 		} catch (e: any) {
 			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 		}
 	}
 });
 
-useMeta(() => ({
-	title: t('meta.title'),
-}));
+useMeta({
+	title: t('meta.connectors.list.title'),
+});
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'view-devices';
-</style>
-
-<i18n>
-{
-  "en": {
-    "meta": {
-      "title": "Registered devices"
-    },
-    "headings": {
-      "allDevices": "All devices"
-    },
-    "subHeadings": {
-      "allDevices": "No devices registered | One device registered | {count} devices registered"
-    },
-    "texts": {
-      "loadingDevices": "Loading devices..."
-    },
-    "messages": {
-      "notRemoved": "Device {device} couldn't be removed."
-    },
-    "fields": {
-      "search": {
-        "title": "Search devices",
-        "placeholder": "Search for device"
-      }
-    },
-    "buttons": {
-      "menu": {
-        "title": "Menu"
-      },
-      "new": {
-        "title": "New"
-      }
-    }
-  }
-}
-</i18n>

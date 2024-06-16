@@ -135,5 +135,3 @@ const breakpoints = useBreakpoints(breakpointsBootstrapV5);
 
 const isXsBreakpoint = breakpoints.smaller('sm');
 </script>
-
-<i18n src="../../locales/locales.json" />

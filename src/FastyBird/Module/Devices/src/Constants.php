@@ -58,6 +58,28 @@ final class Constants
 
 	public const ROUTE_NAME_DEVICE_CONTROL_RELATIONSHIP = 'device.control.relationship';
 
+	public const ROUTE_NAME_DEVICE_CHANNELS = 'device.channels';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL = 'device.channel';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_RELATIONSHIP = 'device.channel.relationship';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_PROPERTIES = 'device.channel.properties';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_PROPERTY = 'device.channel.property';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_RELATIONSHIP = 'device.channel.property.relationship';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_CHILDREN = 'device.channel.property.children';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_PROPERTY_STATE = 'device.channel.property.state';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_CONTROLS = 'device.channel.controls';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_CONTROL = 'device.channel.control';
+
+	public const ROUTE_NAME_DEVICE_CHANNEL_CONTROL_RELATIONSHIP = 'device.channel.control.relationship';
+
 	public const ROUTE_NAME_CHANNELS = 'channels';
 
 	public const ROUTE_NAME_CHANNEL = 'channel';
@@ -99,6 +121,32 @@ final class Constants
 	public const ROUTE_NAME_CONNECTOR_CONTROL = 'connector.control';
 
 	public const ROUTE_NAME_CONNECTOR_CONTROL_RELATIONSHIP = 'connector.control.relationship';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICES = 'connector.devices';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE = 'connector.device';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_RELATIONSHIP = 'connector.device.relationship';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PARENTS = 'connector.device.parents';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_CHILDREN = 'connector.device.children';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PROPERTIES = 'connector.device.properties';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY = 'connector.device.property';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_RELATIONSHIP = 'connector.device.property.relationship';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_CHILDREN = 'connector.device.property.children';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_PROPERTY_STATE = 'connector.device.property.state';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_CONTROLS = 'connector.device.controls';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_CONTROL = 'connector.device.control';
+
+	public const ROUTE_NAME_CONNECTOR_DEVICE_CONTROL_RELATIONSHIP = 'connector.device.control.relationship';
 
 	/**
 	 * MODULE MESSAGE BUS

@@ -54,28 +54,28 @@ export const BasicUsage: Story = {
                 code: `
 <template>
 	<fb-icon-with-child :size="50">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="info">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="success">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="warning">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="danger">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 </template>
 
@@ -94,38 +94,38 @@ export const BasicUsage: Story = {
 <div class="fb-icon-with-child-story-block">
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="info">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="success">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="warning">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="danger">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 </div>`,
@@ -139,24 +139,24 @@ export const Sizes: Story = {
                 code: `
 <template>
 	<fb-icon-with-child :size="80" type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="50" type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="40" type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child :size="30" type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 	<fb-icon-with-child type="primary">
-		<template #icon><fas-envelope class="icon" /></template>
-		<template #child><fas-bell /></template>
+		<template #primary><fas-envelope class="icon" /></template>
+		<template #secondary><fas-bell /></template>
 	</fb-icon-with-child>
 </template>
 
@@ -175,32 +175,32 @@ export const Sizes: Story = {
 <div class="fb-icon-with-child-story-block">
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="80" type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="50" type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="40" type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child :size="30" type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 	<div class="fb-icon-with-child-story-block__item">
 		<fb-icon-with-child type="primary">
-			<template #icon><fas-envelope class="icon-color" /></template>
-			<template #child><fas-bell /></template>
+			<template #primary><fas-envelope class="icon-color" /></template>
+			<template #secondary><fas-bell /></template>
 		</fb-icon-with-child>
 	</div>
 </div>`,

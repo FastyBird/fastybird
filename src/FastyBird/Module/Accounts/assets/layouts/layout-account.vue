@@ -1,27 +1,27 @@
 <template>
-	<el-main>
-		<fb-breadcrumbs>
-			<el-breadcrumb
-				:id="FB_BREADCRUMBS_TARGET"
-				separator="/"
+	<fb-breadcrumbs>
+		<el-breadcrumb
+			:id="FB_BREADCRUMBS_TARGET"
+			separator="/"
+		>
+			<el-breadcrumb-item :to="{ path: '/' }"> {{ t('breadcrumbs.homepage') }} </el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ name: routeNames.account }"> {{ t('breadcrumbs.account') }} </el-breadcrumb-item>
+			<el-breadcrumb-item
+				v-if="route.name === routeNames.accountProfile"
+				:to="{ name: routeNames.accountProfile }"
 			>
-				<el-breadcrumb-item :to="{ path: '/' }"> {{ t('breadcrumbs.homepage') }} </el-breadcrumb-item>
-				<el-breadcrumb-item :to="{ name: routeNames.account }"> {{ t('breadcrumbs.account') }} </el-breadcrumb-item>
-				<el-breadcrumb-item
-					v-if="route.name === routeNames.accountProfile"
-					:to="{ name: routeNames.accountProfile }"
-				>
-					{{ t('breadcrumbs.profile') }}
-				</el-breadcrumb-item>
-				<el-breadcrumb-item
-					v-if="route.name === routeNames.accountPassword"
-					:to="{ name: routeNames.accountPassword }"
-				>
-					{{ t('breadcrumbs.security') }}
-				</el-breadcrumb-item>
-			</el-breadcrumb>
-		</fb-breadcrumbs>
+				{{ t('breadcrumbs.profile') }}
+			</el-breadcrumb-item>
+			<el-breadcrumb-item
+				v-if="route.name === routeNames.accountPassword"
+				:to="{ name: routeNames.accountPassword }"
+			>
+				{{ t('breadcrumbs.security') }}
+			</el-breadcrumb-item>
+		</el-breadcrumb>
+	</fb-breadcrumbs>
 
+	<div class="lt-sm:p-5 sm:p-2">
 		<el-page-header
 			v-if="!isXsBreakpoint"
 			@back="onBack"
@@ -121,7 +121,7 @@
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
 		/>
-	</el-main>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -129,7 +129,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { RouteRecordName, useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import md5 from 'md5';
-import { ElMain, ElPageHeader, ElButton, ElBreadcrumbItem, ElAvatar, ElIcon, ElTabs, ElTabPane, TabsPaneContext, ElBreadcrumb } from 'element-plus';
+import { ElPageHeader, ElButton, ElBreadcrumbItem, ElAvatar, ElIcon, ElTabs, ElTabPane, TabsPaneContext, ElBreadcrumb } from 'element-plus';
 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
 import { FB_BREADCRUMBS_TARGET, FbAppBarHeading, FbBreadcrumbs } from '@fastybird/web-ui-library';
@@ -203,5 +203,3 @@ watch(
 	}
 );
 </script>
-
-<i18n src="../locales/locales.json" />

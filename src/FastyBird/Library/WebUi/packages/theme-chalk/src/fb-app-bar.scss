@@ -9,6 +9,10 @@ $header-background-color: #d9230f;
 	@include set-css-var-value(('app-bar', 'heading', 'icon-size'), '32px');
 	@include set-css-var-value(('app-bar', 'heading', 'icon-font-size'), '18px');
 	@include set-css-var-value(('app-bar', 'heading', 'icon-margin'), '10px');
+
+	// Override element-plus styling
+	@include set-css-var-value(('header', 'padding'), '0');
+	@include set-css-var-value(('header', 'height'), 'auto');
 }
 
 @include b(app-bar) {
@@ -16,6 +20,7 @@ $header-background-color: #d9230f;
 	color: $color-white;
 	box-shadow: 0 3px 9px rgb(0 0 0 / 50%);
 	z-index: 1030;
+	position: relative;
 
 	@include e(buttons-small) {
 		height: 0;
@@ -26,8 +31,8 @@ $header-background-color: #d9230f;
 		flex-flow: row nowrap;
 
 		@include when(expanded) {
-			padding: 1rem 1rem 0;
-			height: 3.4rem;
+			padding: 0.25rem;
+			height: 1.5rem;
 			transition: height 0.3s ease-in-out;
 		}
 	}
@@ -38,6 +43,8 @@ $header-background-color: #d9230f;
 		flex-flow: row nowrap;
 		padding: 0.25rem 0 0.25rem 0.5rem;
 		align-items: center;
+		height: 3.125rem;
+		box-sizing: border-box;
 	}
 
 	@include e(heading) {
@@ -80,7 +87,7 @@ $header-background-color: #d9230f;
 @include b(app-bar-heading) {
 	@include e(title) {
 		overflow: hidden;
-		line-height: 1.3rem;
+		line-height: 2rem;
 		font-size: 1.3rem;
 		color: $color-white;
 		margin: 0;

@@ -74,13 +74,19 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			// At first, try to load device
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
 
-		$findQuery = new Queries\Entities\FindChannels();
-		$findQuery->forDevice($device);
+			$findQuery = new Queries\Entities\FindChannels();
+			$findQuery->forDevice($device);
 
-		$channels = $this->channelsRepository->getResultSet($findQuery);
+			$channels = $this->channelsRepository->getResultSet($findQuery);
+		} else {
+			$findQuery = new Queries\Entities\FindChannels();
+
+			$channels = $this->channelsRepository->getResultSet($findQuery);
+		}
 
 		// @phpstan-ignore-next-line
 		return $this->buildResponse($request, $response, $channels);
@@ -95,10 +101,14 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load device
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+			// & channel
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		} else {
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		return $this->buildResponse($request, $response, $channel);
 	}
@@ -117,8 +127,10 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			// At first, try to load device
+			$this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		}
 
 		$document = $this->createDocument($request);
 
@@ -239,10 +251,14 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load device
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+			// & channel
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		} else {
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		$document = $this->createDocument($request);
 
@@ -317,10 +333,14 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load device
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+			// & channel
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		} else {
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		try {
 			// Start transaction connection to the database
@@ -367,10 +387,14 @@ final class ChannelsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		// & channel
-		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load device
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+			// & channel
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $device);
+		} else {
+			$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 

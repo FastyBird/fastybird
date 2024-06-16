@@ -2,4 +2,5 @@ import { IChannelProperty, IConnectorProperty, IDeviceProperty } from '../../mod
 
 export interface IPropertiesPropertyIconProps {
 	property: IDeviceProperty | IChannelProperty | IConnectorProperty;
+	size?: number | string;
 }

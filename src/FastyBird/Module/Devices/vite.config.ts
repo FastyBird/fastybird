@@ -7,6 +7,7 @@ import vueI18n from '@intlify/unplugin-vue-i18n/vite';
 import vueTypeImports from 'vite-plugin-vue-type-imports';
 import svgLoader from 'vite-svg-loader';
 import del from 'rollup-plugin-delete';
+import UnoCSS from 'unocss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,35 +22,11 @@ export default defineConfig({
 			outDir: 'dist',
 			staticImport: true,
 			insertTypesEntry: true,
-			aliasesExclude: [
-				'@fastybird/metadata-library',
-				'@fastybird/web-ui-library',
-				'@fastybird/vue-wamp-v1',
-				'ajv',
-				'axios',
-				'date-fns',
-				'jsona',
-				'lodash.capitalize',
-				'lodash.get',
-				'natural-orderby',
-				'uuid',
-				'yup',
-				'pinia',
-				'vee-validate',
-				'vue',
-				'vue-i18n',
-				'vue-meta',
-				'vue-router',
-				'vue-toastification',
-			],
+			rollupTypes: true,
 		}),
 		svgLoader(),
+		UnoCSS(),
 	],
-	resolve: {
-		alias: {
-			'@fastybird/web-ui-library': resolve(__dirname, './../../../../node_modules/@fastybird/web-ui-library'),
-		},
-	},
 	build: {
 		lib: {
 			entry: resolve(__dirname, './assets/entry.ts'),
@@ -76,51 +53,7 @@ export default defineConfig({
 					hook: 'generateBundle',
 				}),
 			],
-			external: [
-				'@fastybird/metadata-library',
-				'@fastybird/web-ui-library',
-				'@fastybird/vue-wamp-v1',
-				'ajv',
-				'axios',
-				'date-fns',
-				'jsona',
-				'lodash.capitalize',
-				'lodash.get',
-				'natural-orderby',
-				'uuid',
-				'yup',
-				'pinia',
-				'vee-validate',
-				'vue',
-				'vue-i18n',
-				'vue-meta',
-				'vue-router',
-				'vue-toastification',
-			],
 			output: {
-				// Provide global variables to use in the UMD build
-				// for externalized deps
-				globals: {
-					'@fastybird/metadata-library': 'fastyBirdMetadataLibrary',
-					'@fastybird/web-ui-library': 'fastyBirdWebUiLibrary',
-					'@fastybird/vue-wamp-v1': 'fastyBirdVueWampV1',
-					ajv: 'Ajv',
-					axios: 'Axios',
-					'date-fns': 'DateFns',
-					jsona: 'Jsona',
-					'lodash.capitalize': 'LodashCapitalize',
-					'lodash.get': 'LodashGet',
-					'natural-orderby': 'NaturalOrderby',
-					uuid: 'Uuid',
-					yup: 'Yup',
-					pinia: 'Pinia',
-					'vee-validate': 'VeeValidate',
-					vue: 'Vue',
-					'vue-i18n': 'VueI18n',
-					'vue-meta': 'VueMeta',
-					'vue-router': 'VueRouter',
-					'vue-toastification': 'VueToastification',
-				},
 				assetFileNames: (chunkInfo) => {
 					if (chunkInfo.name == 'style.css') return 'devices-module.css';
 

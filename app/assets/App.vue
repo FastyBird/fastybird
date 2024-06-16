@@ -6,50 +6,64 @@
 	</metainfo>
 
 	<el-container
+		v-if="isXsBreakpoint"
 		v-loading="loadingOverlay"
-		:class="ns.b()"
-		class="h-full"
+		direction="vertical"
+		:class="[ns.b()]"
+		class="h-full min-h-full max-h-full w-full min-w-full max-w-full"
 	>
-		<el-header
-			v-if="sessionStore.isSignedIn && isXsBreakpoint"
-			:class="[ns.e('mobile-header')]"
+		<fb-app-bar
+			v-if="sessionStore.isSignedIn"
+			@toggleMenu="onToggleMenu"
 		>
-			<fb-app-bar @toggleMenu="onToggleMenu">
-				<template #logo>
-					<router-link :to="{ name: 'root' }">
-						<logo class="fill-white h-[30px]" />
-					</router-link>
-				</template>
-			</fb-app-bar>
-		</el-header>
+			<template #logo>
+				<router-link :to="{ name: 'root' }">
+					<logo class="fill-white h-[30px]" />
+				</router-link>
+			</template>
+		</fb-app-bar>
+
+		<el-main class="flex-1">
+			<router-view />
+		</el-main>
 
 		<el-drawer
-			v-if="sessionStore.isSignedIn && isXsBreakpoint"
+			v-if="sessionStore.isSignedIn"
 			v-model="menuState"
-			:with-header="true"
 			:size="'80%'"
 			:class="[ns.e('mobile-menu')]"
 		>
 			<app-navigation @click="onToggleMenu" />
 		</el-drawer>
+	</el-container>
 
+	<el-container
+		v-else
+		v-loading="loadingOverlay"
+		direction="horizontal"
+		:class="[ns.b()]"
+		class="h-full min-h-full max-h-full w-full min-w-full max-w-full"
+	>
 		<el-aside
-			v-if="sessionStore.isSignedIn && !isXsBreakpoint"
+			v-if="sessionStore.isSignedIn"
 			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: menuCollapsed }]"
 			class="bg-menu-background"
 		>
 			<app-sidebar :menu-collapsed="menuCollapsed" />
 		</el-aside>
 
-		<el-container>
-			<div class="flex flex-col w-full h-full">
-				<app-topbar
-					v-if="sessionStore.isSignedIn && !isXsBreakpoint"
-					v-model:menu-collapsed="menuCollapsed"
-				/>
+		<el-container
+			direction="vertical"
+			class="flex-1 overflow-hidden"
+		>
+			<app-topbar
+				v-if="sessionStore.isSignedIn"
+				v-model:menu-collapsed="menuCollapsed"
+			/>
 
+			<el-main class="flex-1">
 				<router-view />
-			</div>
+			</el-main>
 		</el-container>
 	</el-container>
 </template>
@@ -58,7 +72,7 @@
 import { inject, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMeta } from 'vue-meta';
-import { ElContainer, ElAside, ElHeader, ElDrawer, vLoading, useNamespace } from 'element-plus';
+import { ElContainer, ElAside, ElMain, ElDrawer, vLoading, useNamespace } from 'element-plus';
 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
 import { FbAppBar } from '@fastybird/web-ui-library';

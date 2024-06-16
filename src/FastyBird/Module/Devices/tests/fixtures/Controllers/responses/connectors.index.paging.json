@@ -29,6 +29,15 @@
       },
       "relationships": {
         "devices": {
+          "links": {
+            "self": "/api/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/relationships/devices",
+            "related": {
+              "href": "/api/devices-module/v1/connectors/7a3dd94c-7294-46fd-8c61-1b375c313d4d/devices",
+              "meta": {
+                "count": 0
+              }
+            }
+          },
           "data": []
         },
         "properties": {

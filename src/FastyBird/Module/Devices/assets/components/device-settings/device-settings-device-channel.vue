@@ -1,91 +1,68 @@
 <template>
-	<fb-ui-item :variant="FbUiItemVariantTypes.LIST">
-		<template #heading>
+	<fb-list-item :variant="ListItemVariantTypes.LIST">
+		<template #title>
 			{{ useEntityTitle(props.channelData.channel).value }}
 		</template>
 
 		<template
 			v-if="props.channelData.channel.hasComment"
-			#subheading
+			#subtitle
 		>
 			{{ props.channelData.channel.comment }}
 		</template>
 
 		<template #detail>
-			<div class="fb-devices-module-device-settings-device-channel__buttons">
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DEFAULT"
-					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="emit('edit', props.channelData.channel.id)"
-				>
-					<font-awesome-icon icon="pencil-alt" />
-					{{ t('buttons.edit.title') }}
-				</fb-ui-button>
+			<el-button
+				:icon="FasPencil"
+				size="small"
+				plain
+				@click="emit('edit', $event)"
+			/>
 
-				<fb-ui-button
-					v-if="resetControl !== null"
-					:variant="FbUiButtonVariantTypes.OUTLINE_PRIMARY"
-					:size="FbSizeTypes.EXTRA_SMALL"
-					:disabled="!isDeviceReady"
-					@click="onOpenView(DeviceSettingsDeviceChannelViewTypes.RESET)"
-				>
-					<font-awesome-icon icon="sync-alt" />
-					{{ t('buttons.reset.title') }}
-				</fb-ui-button>
+			<el-button
+				v-if="resetControl !== null"
+				:icon="FasRotate"
+				:disabled="!isDeviceReady"
+				type="warning"
+				size="small"
+				plain
+				@click="emit('reset', $event)"
+			/>
 
-				<fb-ui-button
-					:variant="FbUiButtonVariantTypes.OUTLINE_DANGER"
-					:size="FbSizeTypes.EXTRA_SMALL"
-					@click="onOpenView(DeviceSettingsDeviceChannelViewTypes.REMOVE)"
-				>
-					<font-awesome-icon icon="trash" />
-					{{ t('buttons.remove.title') }}
-				</fb-ui-button>
-			</div>
+			<el-button
+				:icon="FasTrash"
+				type="warning"
+				size="small"
+				plain
+				@click="emit('remove', $event)"
+			/>
 		</template>
-	</fb-ui-item>
-
-	<channel-settings-channel-reset
-		v-if="activeView === DeviceSettingsDeviceChannelViewTypes.RESET && resetControl !== null"
-		:device="props.device"
-		:channel="props.channelData.channel"
-		:control="resetControl"
-		:transparent-bg="true"
-		@reseted="onCloseView"
-		@close="onCloseView"
-	/>
-
-	<channel-settings-channel-remove
-		v-if="activeView === DeviceSettingsDeviceChannelViewTypes.REMOVE"
-		:device="props.device"
-		:channel="props.channelData.channel"
-		:transparent-bg="true"
-		@removed="onCloseView"
-		@close="onCloseView"
-	/>
+	</fb-list-item>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed } from 'vue';
+import { ElButton } from 'element-plus';
 
-import { FbUiButton, FbUiItem, FbSizeTypes, FbUiItemVariantTypes, FbUiButtonVariantTypes } from '@fastybird/web-ui-library';
+import { FasPencil, FasRotate, FasTrash } from '@fastybird/web-ui-icons';
+import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 import { ControlName } from '@fastybird/metadata-library';
 
 import { useDeviceState, useEntityTitle } from '../../composables';
 import { IChannelControl } from '../../models/types';
-import { ChannelSettingsChannelRemove, ChannelSettingsChannelReset } from '../../components';
-import { IDeviceSettingsDevicePropertyProps, DeviceSettingsDeviceChannelViewTypes } from './device-settings-device-channel.types';
+import { IDeviceSettingsDevicePropertyProps } from './device-settings-device-channel.types';
+
+defineOptions({
+	name: 'DeviceSettingsDeviceChannel',
+});
 
 const props = defineProps<IDeviceSettingsDevicePropertyProps>();
 
 const emit = defineEmits<{
-	(e: 'edit', id: string): void;
+	(e: 'edit', event: Event): void;
+	(e: 'remove', event: Event): void;
+	(e: 'reset', event: Event): void;
 }>();
-
-const { t } = useI18n();
-
-const activeView = ref<DeviceSettingsDeviceChannelViewTypes>(DeviceSettingsDeviceChannelViewTypes.NONE);
 
 const { isReady: isDeviceReady } = useDeviceState(props.device);
 
@@ -94,34 +71,4 @@ const resetControl = computed<IChannelControl | null>((): IChannelControl | null
 
 	return control ?? null;
 });
-
-const onOpenView = (view: DeviceSettingsDeviceChannelViewTypes): void => {
-	activeView.value = view;
-};
-
-const onCloseView = (): void => {
-	activeView.value = DeviceSettingsDeviceChannelViewTypes.NONE;
-};
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'device-settings-device-channel';
-</style>
-
-<i18n>
-{
-  "en": {
-    "buttons": {
-      "edit": {
-        "title": "Edit"
-      },
-      "reset": {
-        "title": "Reset"
-      },
-      "remove": {
-        "title": "Remove"
-      }
-    }
-  }
-}
-</i18n>

@@ -22,6 +22,15 @@ export default defineConfig({
 				darkColor: '#a6a6a6',
 				darkActive: '#fff',
 			},
+			success: '#67c23a',
+			warning: '#e6a23c',
+			danger: '#f56c6c',
+			error: '#f56c6c',
+			info: '#909399',
+			shadow: 'rgba(0, 0, 0, 0.5)',
+		},
+		boxShadow: {
+			top: '0 -3px 9px rgba(0, 0, 0, 0.5)',
 		},
 		breakpoints: {
 			xs: '0px',

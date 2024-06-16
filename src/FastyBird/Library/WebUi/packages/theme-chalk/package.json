@@ -50,6 +50,8 @@
     "gulp-sass": "^5.1",
     "prettier": "^3.2",
     "rimraf": "^5.0",
+    "sass": "^1.76",
+    "sass-loader": "^14.2",
     "stylelint": "^16.4",
     "stylelint-config-prettier": "^9.0",
     "stylelint-config-recommended": "^14.0",

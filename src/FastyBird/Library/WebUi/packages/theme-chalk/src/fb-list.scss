@@ -8,22 +8,26 @@
 }
 
 @include b(list) {
-	margin: getCssVar('list', 'list-margin');
 	display: flex;
-	flex-flow: column nowrap;
+	flex-direction: column;
+	flex-wrap: nowrap;
 
 	@include e(header) {
-		height: getCssVar('list', 'header-size');
-		border-bottom: getCssVar('list', 'header-border');
 		display: flex;
-		flex-flow: row nowrap;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: center;
+		height: getCssVar('list', 'header', 'size');
+		padding: getCssVar('list', 'header', 'padding');
+		border-bottom: getCssVar('list', 'header', 'border');
 	}
 
 	@include e(title) {
 		padding: 0;
 		margin: 0;
-		line-height: getCssVar('list', 'header-line-height');
-		font-size: getCssVar('list', 'header-font-size');
+		line-height: getCssVar('list', 'header', 'line-height');
+		font-size: getCssVar('list', 'header', 'font-size');
+		font-weight: bold;
 		height: auto;
 		flex-grow: 1;
 
@@ -34,7 +38,7 @@
 		small {
 			font-weight: normal;
 			line-height: 1;
-			color: getCssVar('list', 'header-subtitle-color');
+			color: getCssVar('list', 'header', 'subtitle-color');
 			font-size: 65%;
 			margin-left: 0.5rem;
 		}
@@ -49,21 +53,26 @@
 }
 
 @include b(list-item) {
-	height: getCssVar('list', 'item-height');
+	@include set-component-css-var('list', $list);
+}
+
+@include b(list-item) {
+	height: getCssVar('list', 'item', 'height');
 	align-items: center;
-	padding: 0 1.5rem;
-	background-color: getCssVar('list', 'item-background');
+	padding: getCssVar('list', 'item', 'padding');
+	background-color: getCssVar('list', 'item', 'background');
 	display: flex;
 	flex-flow: row nowrap;
+	box-sizing: border-box;
 
 	@include m(variant-default) {
-		margin: 0.8rem 0 0;
-		border: getCssVar('list', 'item-border');
+		margin: 0.75rem 0 0;
+		border: getCssVar('list', 'item', 'border');
 		border-radius: getCssVar('border-radius', 'small');
 	}
 
 	@include m(variant-list) {
-		border-bottom: getCssVar('list', 'item-border');
+		border-bottom: getCssVar('list', 'item', 'border');
 	}
 
 	&[role='button'] {
@@ -102,7 +111,7 @@
 		height: 100%;
 		justify-content: center;
 		display: flex;
-		flex-flow: column nowrap;
+		flex-direction: row;
 	}
 
 	@include e(button) {
@@ -110,5 +119,9 @@
 		color: getCssVar('text-color', 'secondary');
 		flex: 0 0 4rem;
 		max-width: 4rem;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-end;
 	}
 }

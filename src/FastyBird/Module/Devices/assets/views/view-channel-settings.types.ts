@@ -1,5 +1,5 @@
 export interface IViewChanelSettingsProps {
-	id: string;
-	channelId?: string | null;
-	connectorId: string;
+	id: string | null;
+	deviceId: string;
+	connectorId: string | null;
 }

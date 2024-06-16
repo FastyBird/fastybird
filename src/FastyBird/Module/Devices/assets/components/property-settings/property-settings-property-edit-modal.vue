@@ -1,45 +1,63 @@
 <template>
-	<fb-ui-modal-form
-		:transparent-bg="true"
-		:lock-submit-button="remoteFormResult !== FbFormResultTypes.NONE"
-		:state="remoteFormResult"
-		:submit-btn-label="isDraft ? t('buttons.update.title') : t('buttons.save.title')"
-		:layout="isExtraSmallDevice ? FbUiModalLayoutTypes.PHONE : isSmallDevice ? FbUiModalLayoutTypes.TABLET : FbUiModalLayoutTypes.DEFAULT"
-		@submit="onSubmitForm"
-		@cancel="onClose"
-		@close="onClose"
+	<el-dialog
+		v-model="open"
+		:show-close="false"
+		align-center
+		@closed="onClosed"
 	>
-		<template #title>
-			{{ t('headings.edit') }}
+		<template #header>
+			<fb-dialog-header
+				:layout="isXSDevice ? 'phone' : isSMDevice ? 'tablet' : 'default'"
+				:left-btn-label="t('buttons.close.title')"
+				:right-btn-label="isDraft ? t('buttons.update.title') : t('buttons.save.title')"
+				:icon="FasPencil"
+				@left-click="onClose"
+				@right-click="onSubmitForm"
+				@close="onClose"
+			>
+				<template #title>
+					{{ t('headings.properties.edit') }}
+				</template>
+			</fb-dialog-header>
 		</template>
 
-		<template #icon>
-			<font-awesome-icon icon="pencil-alt" />
-		</template>
+		<property-settings-property-form
+			v-model:remote-form-submit="remoteFormSubmit"
+			v-model:remote-form-result="remoteFormResult"
+			:connector="props.connector"
+			:device="props.device"
+			:channel="props.channel"
+			:property="props.property"
+			@created="onCreated"
+		/>
 
-		<template #form>
-			<property-settings-property-form
-				v-model:remote-form-submit="remoteFormSubmit"
-				v-model:remote-form-result="remoteFormResult"
-				:connector="props.connector"
-				:device="props.device"
-				:channel="props.channel"
-				:property="props.property"
-				@added="emit('close')"
+		<template #footer>
+			<fb-dialog-footer
+				:left-btn-label="t('buttons.close.title')"
+				:right-btn-label="isDraft ? t('buttons.update.title') : t('buttons.save.title')"
+				@left-click="onClose"
+				@right-click="onSubmitForm"
 			/>
 		</template>
-	</fb-ui-modal-form>
+	</el-dialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ElDialog } from 'element-plus';
 
-import { FbUiModalForm, FbFormResultTypes, FbUiModalLayoutTypes } from '@fastybird/web-ui-library';
+import { FasPencil } from '@fastybird/web-ui-icons';
+import { FbDialogFooter, FbDialogHeader } from '@fastybird/web-ui-library';
 
 import { useBreakpoints } from '../../composables';
 import { PropertySettingsPropertyForm } from '../../components';
+import { FormResultTypes } from '../../types';
 import { IPropertySettingsPropertyEditModalProps } from './property-settings-property-edit-modal.types';
+
+defineOptions({
+	name: 'PropertySettingsPropertyEditModal',
+});
 
 const props = defineProps<IPropertySettingsPropertyEditModalProps>();
 
@@ -48,10 +66,12 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const { isExtraSmallDevice, isSmallDevice } = useBreakpoints();
+const { isXSDevice, isSMDevice } = useBreakpoints();
+
+const open = ref<boolean>(true);
 
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FbFormResultTypes>(FbFormResultTypes.NONE);
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
 
 const isDraft = computed<boolean>((): boolean => {
 	if (isChannelProperty.value) {
@@ -78,33 +98,23 @@ const onSubmitForm = (): void => {
 };
 
 const onClose = (): void => {
+	open.value = false;
+};
+
+const onClosed = (): void => {
 	emit('close');
 };
 
+const onCreated = (): void => {
+	onClose();
+};
+
 watch(
-	(): FbFormResultTypes => remoteFormResult.value,
+	(): FormResultTypes => remoteFormResult.value,
 	(actual, previous): void => {
-		if (actual === FbFormResultTypes.NONE && previous === FbFormResultTypes.OK) {
-			emit('close');
+		if (actual === FormResultTypes.NONE && previous === FormResultTypes.OK) {
+			onClose();
 		}
 	}
 );
 </script>
-
-<i18n>
-{
-  "en": {
-    "headings": {
-      "edit": "Edit parameter"
-    },
-    "buttons": {
-      "update": {
-        "title": "Update"
-      },
-      "save": {
-        "title": "Save"
-      }
-    }
-  }
-}
-</i18n>

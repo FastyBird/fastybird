@@ -48,7 +48,7 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 		if (this.channelTypeRegex.test(type)) {
 			const parsedTypes = this.channelTypeRegex.exec(type);
 
-			return { type: { ...{ source: 'N/A', entity: 'channel' }, ...parsedTypes?.groups } };
+			return { type: { ...{ source: 'N/A', type: 'N/A', entity: 'channel' }, ...parsedTypes?.groups } };
 		}
 
 		if (this.controlTypeRegex.test(type)) {

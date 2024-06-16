@@ -73,6 +73,8 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 		invalid: get(data, 'invalid', null),
 		scale: get(data, 'scale', null),
 		step: get(data, 'step', null),
+		default: get(data, 'default', null),
+		valueTransformer: get(data, 'valueTransformer', null),
 
 		value: get(data, 'value', null),
 		actualValue: get(data, 'actualValue', null),
@@ -351,14 +353,38 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										type: newProperty.type,
 										identifier: newProperty.identifier,
 										name: newProperty.name,
+										value: newProperty.value,
 										channel: newProperty.channel,
 										parent: newProperty.parent,
 										relationshipNames: ['channel', 'parent'],
 									}
-								: newProperty;
+								: {
+										id: newProperty.id,
+										type: newProperty.type,
+										identifier: newProperty.identifier,
+										name: newProperty.name,
+										value: newProperty.value,
+										settable: newProperty.settable,
+										queryable: newProperty.queryable,
+										dataType: newProperty.dataType,
+										unit: newProperty.unit,
+										invalid: newProperty.invalid,
+										scale: newProperty.scale,
+										step: newProperty.step,
+										format: newProperty.format,
+										default: newProperty.default,
+										valueTransformer: newProperty.valueTransformer,
+										channel: newProperty.channel,
+										relationshipNames: ['channel'],
+									};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const createdProperty = await axios.post<IChannelPropertyResponseJson>(
@@ -437,14 +463,38 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 										type: updatedRecord.type,
 										identifier: updatedRecord.identifier,
 										name: updatedRecord.name,
+										value: updatedRecord.value,
 										channel: updatedRecord.channel,
 										parent: updatedRecord.parent,
 										relationshipNames: ['channel', 'parent'],
 									}
-								: updatedRecord;
+								: {
+										id: updatedRecord.id,
+										type: updatedRecord.type,
+										identifier: updatedRecord.identifier,
+										name: updatedRecord.name,
+										value: updatedRecord.value,
+										settable: updatedRecord.settable,
+										queryable: updatedRecord.queryable,
+										dataType: updatedRecord.dataType,
+										unit: updatedRecord.unit,
+										invalid: updatedRecord.invalid,
+										scale: updatedRecord.scale,
+										step: updatedRecord.step,
+										format: updatedRecord.format,
+										default: updatedRecord.default,
+										valueTransformer: updatedRecord.valueTransformer,
+										channel: updatedRecord.channel,
+										relationshipNames: ['channel'],
+									};
 
-						if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+						if (apiData?.type?.type === PropertyType.DYNAMIC) {
 							delete apiData.value;
+						}
+
+						if (apiData?.type?.type === PropertyType.VARIABLE) {
+							delete apiData.settable;
+							delete apiData.queryable;
 						}
 
 						const updatedProperty = await axios.patch<IChannelPropertyResponseJson>(
@@ -545,14 +595,38 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 									type: recordToSave.type,
 									identifier: recordToSave.identifier,
 									name: recordToSave.name,
+									value: recordToSave.value,
 									channel: recordToSave.channel,
 									parent: recordToSave.parent,
 									relationshipNames: ['channel', 'parent'],
 								}
-							: recordToSave;
+							: {
+									id: recordToSave.id,
+									type: recordToSave.type,
+									identifier: recordToSave.identifier,
+									name: recordToSave.name,
+									value: recordToSave.value,
+									settable: recordToSave.settable,
+									queryable: recordToSave.queryable,
+									dataType: recordToSave.dataType,
+									unit: recordToSave.unit,
+									invalid: recordToSave.invalid,
+									scale: recordToSave.scale,
+									step: recordToSave.step,
+									format: recordToSave.format,
+									default: recordToSave.default,
+									valueTransformer: recordToSave.valueTransformer,
+									channel: recordToSave.channel,
+									relationshipNames: ['channel'],
+								};
 
-					if (apiData?.type?.type === PropertyType.DYNAMIC && 'value' in apiData) {
+					if (apiData?.type?.type === PropertyType.DYNAMIC) {
 						delete apiData.value;
+					}
+
+					if (apiData?.type?.type === PropertyType.VARIABLE) {
+						delete apiData.settable;
+						delete apiData.queryable;
 					}
 
 					const savedProperty = await axios.post<IChannelPropertyResponseJson>(
@@ -685,6 +759,8 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 								invalid: body.invalid,
 								scale: body.scale,
 								step: body.step,
+								default: body.default,
+								valueTransformer: body.value_transformer,
 								actualValue: body.actual_value,
 								expectedValue: body.expected_value,
 								value: body.value,

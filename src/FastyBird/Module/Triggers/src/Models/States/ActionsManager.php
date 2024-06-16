@@ -54,6 +54,7 @@ final class ActionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function create(
 		Entities\Actions\Action $action,
@@ -76,6 +77,7 @@ final class ActionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function update(
 		Entities\Actions\Action $action,
@@ -103,6 +105,7 @@ final class ActionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	public function delete(
 		Entities\Actions\Action $action,
@@ -126,6 +129,7 @@ final class ActionsManager
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 */
 	private function publishEntity(
 		Entities\Actions\Action $action,

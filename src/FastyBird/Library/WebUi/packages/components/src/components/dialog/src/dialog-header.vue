@@ -1,9 +1,6 @@
 <template>
 	<slot>
-		<div
-			ref="headerRef"
-			:class="[ns.b(), ns.m('type-' + props.type), ns.m('layout-' + props.layout), { 'show-close': props.showClose }]"
-		>
+		<div :class="[ns.b(), ns.m('type-' + props.type), ns.m('layout-' + props.layout), { 'show-close': props.showClose }]">
 			<div :class="[ns.e('inner')]">
 				<template v-if="props.layout === 'phone' || props.layout === 'tablet'">
 					<div :class="[ns.e('heading')]">
@@ -148,8 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue';
-import { ElButton, ElIcon, dialogInjectionKey, useLocale, useNamespace } from 'element-plus';
+import { ElButton, ElIcon, useLocale, useNamespace } from 'element-plus';
 
 import { Close } from '@element-plus/icons-vue';
 
@@ -165,6 +161,4 @@ defineOptions({
 const props = defineProps(dialogHeaderProps);
 
 defineEmits(dialogHeaderEmits);
-
-const { headerRef } = inject(dialogInjectionKey)!;
 </script>

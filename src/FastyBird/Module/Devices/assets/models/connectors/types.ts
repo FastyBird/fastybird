@@ -33,7 +33,7 @@ export interface IConnectorsGetters extends _GettersTree<IConnectorsState> {
 export interface IConnectorsActions {
 	set: (payload: IConnectorsSetActionPayload) => Promise<IConnector>;
 	get: (payload: IConnectorsGetActionPayload) => Promise<boolean>;
-	fetch: (payload: IConnectorsFetchActionPayload) => Promise<boolean>;
+	fetch: (payload?: IConnectorsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IConnectorsAddActionPayload) => Promise<IConnector>;
 	edit: (payload: IConnectorsEditActionPayload) => Promise<IConnector>;
 	save: (payload: IConnectorsSaveActionPayload) => Promise<IConnector>;

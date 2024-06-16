@@ -8,6 +8,7 @@ import {
 	IChannelControlResponseModel,
 	IChannelPropertyResponseData,
 	IChannelPropertyResponseModel,
+	IConnector,
 	IDevice,
 	IDeviceResponseData,
 	IDeviceResponseModel,
@@ -24,9 +25,9 @@ export interface IChannelsState {
 }
 
 export interface IChannelsGetters extends _GettersTree<IChannelsState> {
-	firstLoadFinished: (state: IChannelsState) => (deviceId: string) => boolean;
+	firstLoadFinished: (state: IChannelsState) => (deviceId?: string | null) => boolean;
 	getting: (state: IChannelsState) => (channelId: string) => boolean;
-	fetching: (state: IChannelsState) => (deviceId: string | null) => boolean;
+	fetching: (state: IChannelsState) => (deviceId?: string | null) => boolean;
 	findById: (state: IChannelsState) => (id: string) => IChannel | null;
 	findForDevice: (state: IChannelsState) => (deviceId: string) => IChannel[];
 }
@@ -35,7 +36,7 @@ export interface IChannelsActions {
 	set: (payload: IChannelsSetActionPayload) => Promise<IChannel>;
 	unset: (payload: IChannelsUnsetActionPayload) => void;
 	get: (payload: IChannelsGetActionPayload) => Promise<boolean>;
-	fetch: (payload: IChannelsFetchActionPayload) => Promise<boolean>;
+	fetch: (payload?: IChannelsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IChannelsAddActionPayload) => Promise<IChannel>;
 	edit: (payload: IChannelsEditActionPayload) => Promise<IChannel>;
 	save: (payload: IChannelsSaveActionPayload) => Promise<IChannel>;
@@ -60,7 +61,7 @@ interface IChannelsStateSemaphoreFetching {
 
 export interface IChannel {
 	id: string;
-	type: { source: string; entity: string };
+	type: { source: string; type: string; entity: string };
 
 	draft: boolean;
 
@@ -86,7 +87,7 @@ export interface IChannel {
 
 export interface IChannelRecordFactoryPayload {
 	id?: string;
-	type: { source: string; entity?: string };
+	type: { source: string; type: string; entity?: string };
 
 	category: ChannelCategory;
 	identifier: string;
@@ -115,17 +116,19 @@ export interface IChannelsUnsetActionPayload {
 }
 
 export interface IChannelsGetActionPayload {
-	device: IDevice;
+	connector?: IConnector;
+	device?: IDevice;
 	id: string;
 }
 
 export interface IChannelsFetchActionPayload {
-	device: IDevice;
+	connector?: IConnector;
+	device?: IDevice;
 }
 
 export interface IChannelsAddActionPayload {
 	id?: string;
-	type: { source: string; entity?: string };
+	type: { source: string; type: string; entity?: string };
 
 	draft?: boolean;
 
@@ -200,7 +203,7 @@ interface IChannelResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IChannelResponseModel extends TJsonaModel {
 	id: string;
-	type: { source: string; entity: string };
+	type: { source: string; type: string; entity?: string };
 
 	category: ChannelCategory;
 	identifier: string;

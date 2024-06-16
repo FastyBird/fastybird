@@ -19,7 +19,7 @@ parameters:
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Controllers/DevicesV1.php
-            count: 5
+            count: 15
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Controllers/DevicePropertyStateV1.php
@@ -63,7 +63,7 @@ parameters:
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Controllers/ChannelsV1.php
-            count: 11
+            count: 15
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Controllers/ChannelPropertyStateV1.php

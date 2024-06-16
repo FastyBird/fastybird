@@ -1,9 +1,26 @@
 <template>
-	<teleport
-		v-if="(!props.teleport || mounted) && props.align !== AppBarButtonAlignTypes.NONE"
-		:disabled="!props.teleport"
-		:to="`#${teleportTarget}`"
-	>
+	<template v-if="props.teleport">
+		<teleport
+			v-if="mounted && props.align !== AppBarButtonAlignTypes.NONE"
+			:to="`#${teleportTarget}`"
+		>
+			<el-button
+				v-bind="props"
+				:size="props.small ? 'small' : 'large'"
+				:circle="'icon' in $slots"
+				:class="[ns.b(), ns.m(`align-${props.align}`)]"
+				type="primary"
+				@click="emit('click', $event)"
+			>
+				<template v-if="'icon' in $slots">
+					<slot name="icon" />
+				</template>
+
+				<slot />
+			</el-button>
+		</teleport>
+	</template>
+	<template v-else>
 		<el-button
 			v-bind="props"
 			:size="props.small ? 'small' : 'large'"
@@ -18,7 +35,7 @@
 
 			<slot />
 		</el-button>
-	</teleport>
+	</template>
 </template>
 
 <script setup lang="ts">

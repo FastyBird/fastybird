@@ -1,11 +1,15 @@
 <template>
-	<teleport
-		v-if="mounted"
-		:to="`#${teleportTarget}`"
-		:disabled="!props.teleport"
-	>
+	<template v-if="props.teleport">
+		<teleport
+			v-if="mounted"
+			:to="`#${teleportTarget}`"
+		>
+			<slot />
+		</teleport>
+	</template>
+	<template v-else>
 		<slot />
-	</teleport>
+	</template>
 </template>
 
 <script setup lang="ts">

@@ -35,6 +35,8 @@ export interface IProperty {
 	invalid: string | number | boolean | null;
 	scale: number | null;
 	step: number | null;
+	valueTransformer: string | null;
+	default: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;
 
 	// Static property
 	value: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload | Date | null;

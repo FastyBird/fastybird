@@ -1,13 +1,19 @@
 <template>
-	<teleport
-		v-if="(!props.teleport || mounted) && props.align !== AppBarIconAlignTypes.NONE"
-		:disabled="!props.teleport || props.align === AppBarIconAlignTypes.NONE"
-		:to="`#${teleportTarget}`"
-	>
+	<template v-if="props.teleport && props.align !== AppBarIconAlignTypes.NONE">
+		<teleport
+			v-if="mounted && props.align !== AppBarIconAlignTypes.NONE"
+			:to="`#${teleportTarget}`"
+		>
+			<div :class="[ns.b(), ns.m(`align-${props.align}`)]">
+				<slot />
+			</div>
+		</teleport>
+	</template>
+	<template v-else>
 		<div :class="[ns.b(), ns.m(`align-${props.align}`)]">
 			<slot />
 		</div>
-	</teleport>
+	</template>
 </template>
 
 <script setup lang="ts">

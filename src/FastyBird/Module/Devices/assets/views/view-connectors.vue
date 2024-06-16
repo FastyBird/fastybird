@@ -1,124 +1,69 @@
 <template>
-	<fb-layout-content
-		v-model="itemsSearch"
-		:search-placeholder="t('fields.search.placeholder')"
-		with-search
+	<fb-app-bar-heading
+		v-if="isXSDevice && !isPartialDetailRoute"
+		teleport
 	>
-		<template
-			v-if="isExtraSmallDevice"
-			#header
-		>
-			<fb-layout-header menu-button-hidden>
-				<template
-					v-if="!isPartialDetailRoute"
-					#heading
-				>
-					<fb-layout-header-heading
-						:heading="t('headings.allConnectors')"
-						:sub-heading="t('subHeadings.allConnectors', { count: items.length }, items.length)"
-						:teleport="false"
-					/>
-				</template>
-
-				<template
-					v-if="!isPartialDetailRoute"
-					#button-right
-				>
-					<fb-layout-header-icon
-						:teleport="false"
-						right
-					>
-						<font-awesome-icon icon="plug" />
-					</fb-layout-header-icon>
-				</template>
-
-				<template
-					v-if="!isPartialDetailRoute"
-					#button-small
-				>
-					<fb-layout-header-button
-						:teleport="false"
-						:action-type="FbMenuItemTypes.BUTTON"
-						small
-						left
-						@click="emit('toggleMenu')"
-					>
-						{{ t('buttons.menu.title') }}
-					</fb-layout-header-button>
-
-					<fb-layout-header-button
-						:teleport="false"
-						:action-type="FbMenuItemTypes.BUTTON"
-						small
-						right
-						@click="onOpenRegister"
-					>
-						{{ t('buttons.new.title') }}
-					</fb-layout-header-button>
-				</template>
-			</fb-layout-header>
+		<template #icon>
+			<fas-ethernet />
 		</template>
 
-		<template
-			v-if="isLoading || (!isLoading && isExtraSmallDevice && isPartialDetailRoute)"
-			#content
-		>
-			<div
-				v-if="isLoading"
-				class="fb-devices-module-view-connectors__loading"
-			>
-				<fb-ui-loading-box :size="FbSizeTypes.LARGE">
-					{{ t('texts.loadingConnectors') }}
-				</fb-ui-loading-box>
-			</div>
-
-			<router-view
-				v-if="!isLoading && isExtraSmallDevice && isPartialDetailRoute"
-				v-slot="{ Component }"
-			>
-				<component
-					:is="Component"
-					:connectors="items"
-				/>
-			</router-view>
+		<template #title>
+			{{ t('headings.connectors.allConnectors') }}
 		</template>
 
-		<template
-			v-if="!isLoading && (!isPartialDetailRoute || !isExtraSmallDevice)"
-			#items
+		<template #subtitle>
+			{{ t('subHeadings.connectors.allConnectors', { count: items.length }, items.length) }}
+		</template>
+	</fb-app-bar-heading>
+
+	<fb-app-bar-button
+		v-if="isXSDevice && !isPartialDetailRoute"
+		teleport
+		:align="AppBarButtonAlignTypes.LEFT"
+		small
+		@click="onOpenRegister"
+	>
+		<span class="uppercase">{{ t('buttons.new.title') }}</span>
+	</fb-app-bar-button>
+
+	<div class="sm:flex sm:flex-row h-full w-full">
+		<view-error
+			v-if="isXSDevice && isPartialDetailRoute"
+			:type="'connector'"
+		>
+			<router-view />
+		</view-error>
+
+		<div
+			v-if="!isPartialDetailRoute || !isXSDevice"
+			class="sm:w-[20rem] sm:border-r sm:border-r-solid"
 		>
 			<connectors-list-connectors
+				v-loading="isLoading"
+				:element-loading-text="t('texts.misc.loadingConnectors')"
 				:items="items"
 				@open="onOpenDetail"
 				@remove="onRemove"
 			/>
-		</template>
+		</div>
 
-		<template
-			v-if="!isLoading && !isExtraSmallDevice"
-			#preview
-		>
-			<router-view
+		<template v-if="!isXSDevice">
+			<view-error
 				v-if="isPartialDetailRoute"
-				v-slot="{ Component }"
+				:type="'connector'"
 			>
-				<component
-					:is="Component"
-					:connectors="items"
-				/>
-			</router-view>
+				<router-view class="flex-grow h-full" />
+			</view-error>
 
 			<connectors-preview-info
 				v-else
 				:total="itemsCount"
+				class="flex-grow h-full"
 				@register="onOpenRegister"
+				@synchronise="onSynchronise"
 			/>
 		</template>
-
-		<template #footer>
-			<fb-layout-footer />
-		</template>
-	</fb-layout-content>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -128,34 +73,29 @@ import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
 import get from 'lodash/get';
 import { orderBy } from 'natural-orderby';
+import { ElMessageBox, vLoading } from 'element-plus';
 
-import {
-	FbLayoutContent,
-	FbLayoutFooter,
-	FbUiLoadingBox,
-	FbLayoutHeader,
-	FbLayoutHeaderIcon,
-	FbLayoutHeaderHeading,
-	FbLayoutHeaderButton,
-	FbMenuItemTypes,
-	FbSizeTypes,
-} from '@fastybird/web-ui-library';
+import { FasEthernet } from '@fastybird/web-ui-icons';
+import { FbAppBarHeading, FbAppBarButton, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
 import { useConnectors } from '../models';
 import { IConnector } from '../models/types';
-import { ConnectorsPreviewInfo, ConnectorsListConnectors } from '../components';
+import { ConnectorsPreviewInfo, ConnectorsListConnectors, ViewError } from '../components';
 import { ApplicationError } from '../errors';
 
-const emit = defineEmits<{
-	(e: 'toggleMenu'): void;
-}>();
+defineOptions({
+	name: 'ViewConnectors',
+});
 
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
+useMeta({
+	title: t('meta.connectors.list.title'),
+});
 
-const { isExtraSmallDevice } = useBreakpoints();
+const { isXSDevice } = useBreakpoints();
 const { routeNames } = useRoutesNames();
 const flashMessage = useFlashMessage();
 
@@ -198,79 +138,59 @@ const onOpenRegister = (): void => {
 	});
 };
 
+const onSynchronise = (): void => {
+	// TODO: handle connectors refresh
+};
+
 const onRemove = async (id: string): Promise<void> => {
-	if (route.name === routeNames.connectorDetail && route.params.id === id) {
-		await router.push({ name: routeNames.connectors });
+	const connector = await connectorsStore.findById(id);
+
+	if (connector === null) {
+		return;
 	}
 
-	try {
-		await connectorsStore.remove({ id });
-	} catch (e: any) {
-		const connector = await connectorsStore.findById(id);
+	ElMessageBox.confirm(t('messages.connectors.confirmRemove', { connector: useEntityTitle(connector).value }), t('headings.connectors.remove'), {
+		confirmButtonText: t('buttons.yes.title'),
+		cancelButtonText: t('buttons.no.title'),
+		type: 'warning',
+	})
+		.then(async (): Promise<void> => {
+			if (route.name === routeNames.connectorDetail && route.params.id === id) {
+				await router.push({ name: routeNames.connectors });
+			}
 
-		const errorMessage = t('messages.notRemoved', {
-			connector: useEntityTitle(connector).value,
+			try {
+				await connectorsStore.remove({ id });
+			} catch (e: any) {
+				const connector = await connectorsStore.findById(id);
+
+				const errorMessage = t('messages.connectors.notRemoved', {
+					connector: useEntityTitle(connector).value,
+				});
+
+				if (get(e, 'exception', null) !== null) {
+					flashMessage.exception(get(e, 'exception', null), errorMessage);
+				} else {
+					flashMessage.error(errorMessage);
+				}
+			}
+		})
+		.catch(() => {
+			flashMessage.info(
+				t('messages.connectors.removeCanceled', {
+					property: useEntityTitle(connector).value,
+				})
+			);
 		});
-
-		if (get(e, 'exception', null) !== null) {
-			flashMessage.exception(get(e, 'exception', null), errorMessage);
-		} else {
-			flashMessage.error(errorMessage);
-		}
-	}
 };
 
 onBeforeMount(async (): Promise<void> => {
 	if (!isLoading.value && !connectorsStore.firstLoadFinished) {
 		try {
-			await connectorsStore.fetch({ withDevices: true });
+			await connectorsStore.fetch();
 		} catch (e: any) {
 			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 		}
 	}
 });
-
-useMeta(() => ({
-	title: t('meta.title'),
-}));
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'view-connectors';
-</style>
-
-<i18n>
-{
-  "en": {
-    "meta": {
-      "title": "Registered connectors"
-    },
-    "headings": {
-      "allConnectors": "All connectors"
-    },
-    "subHeadings": {
-      "allConnectors": "No connectors registered | One connector registered | {count} connectors registered"
-    },
-    "texts": {
-      "loadingConnectors": "Loading connectors..."
-    },
-    "messages": {
-      "notRemoved": "Connector {connector} couldn't be removed."
-    },
-    "fields": {
-      "search": {
-        "title": "Search connectors",
-        "placeholder": "Search for connector"
-      }
-    },
-    "buttons": {
-      "menu": {
-        "title": "Menu"
-      },
-      "new": {
-        "title": "New"
-      }
-    }
-  }
-}
-</i18n>

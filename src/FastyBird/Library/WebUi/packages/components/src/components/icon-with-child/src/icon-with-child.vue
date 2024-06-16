@@ -7,14 +7,14 @@
 			:class="ns.e('icon')"
 			:size="props.size"
 		>
-			<slot name="icon" />
+			<slot name="primary" />
 		</el-icon>
 
 		<el-icon
 			:class="ns.e('child-icon')"
 			:size="childSize"
 		>
-			<slot name="child" />
+			<slot name="secondary" />
 		</el-icon>
 	</span>
 </template>

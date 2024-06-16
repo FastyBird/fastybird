@@ -1,42 +1,33 @@
 <template>
 	<div
 		:data-device-state="isDeviceReady && wsStatus ? 'on' : 'off'"
-		class="fb-devices-module-actors-property-actor-switch__container"
+		:class="[
+			{ 'color-success': property.lastResult === PropertyCommandResult.OK },
+			{ 'color-error': property.lastResult === PropertyCommandResult.ERR },
+		]"
+		class="flex flex-col items-center justify-center h-full"
 	>
-		<fb-ui-switch-element
+		<el-switch
 			v-if="property.command === null"
-			:status="value"
+			v-model="value"
 			:disabled="!isDeviceReady || !wsStatus"
-			:variant="FbUiVariantTypes.PRIMARY"
-			:size="FbSizeTypes.MEDIUM"
+			type="primary"
 			@change="onToggleState"
 		/>
 
-		<div
-			v-show="property.command === PropertyCommandState.COMPLETED"
-			class="fb-devices-module-actors-property-actor-switch__result"
-		>
-			<font-awesome-icon
-				v-show="property.lastResult === PropertyCommandResult.ERR"
-				icon="ban"
-				class="fb-devices-module-actors-property-actor-switch__result-err"
-			/>
-			<font-awesome-icon
-				v-show="property.lastResult === PropertyCommandResult.OK"
-				icon="check"
-				class="fb-devices-module-actors-property-actor-switch__result-ok"
-			/>
-		</div>
+		<el-icon v-show="property.command === PropertyCommandState.COMPLETED && property.lastResult === PropertyCommandResult.ERR">
+			<fas-ban />
+		</el-icon>
 
-		<div
+		<el-icon v-show="property.command === PropertyCommandState.COMPLETED && property.lastResult === PropertyCommandResult.OK">
+			<fas-check />
+		</el-icon>
+
+		<fb-spinner
 			v-show="property.command === PropertyCommandState.SENDING"
-			class="fb-devices-module-actors-property-actor-switch__loading"
-		>
-			<fb-ui-spinner
-				:variant="FbUiVariantTypes.PRIMARY"
-				:size="FbSizeTypes.MEDIUM"
-			/>
-		</div>
+			type="primary"
+			size="small"
+		/>
 	</div>
 </template>
 
@@ -44,8 +35,10 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash/get';
+import { ElIcon, ElSwitch } from 'element-plus';
 
-import { FbUiSwitchElement, FbUiSpinner, FbSizeTypes, FbUiVariantTypes } from '@fastybird/web-ui-library';
+import { FasCheck, FasBan } from '@fastybird/web-ui-icons';
+import { FbSpinner } from '@fastybird/web-ui-library';
 import { ActionRoutes, DataType, ModulePrefix, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
@@ -115,7 +108,7 @@ const onToggleState = async (): Promise<void> => {
 
 	if (!isDeviceReady.value) {
 		flashMessage.error(
-			t('messages.notOnline', {
+			t('messages.devices.notOnline', {
 				device: useEntityTitle(props.device).value,
 			})
 		);
@@ -233,7 +226,7 @@ const onToggleState = async (): Promise<void> => {
 		}
 
 		flashMessage.error(
-			t('messages.commandNotAccepted', {
+			t('messages.properties.commandNotAccepted', {
 				device: useEntityTitle(props.device).value,
 			})
 		);
@@ -242,7 +235,3 @@ const onToggleState = async (): Promise<void> => {
 	}
 };
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-@import 'actors-property-actor-switch';
-</style>

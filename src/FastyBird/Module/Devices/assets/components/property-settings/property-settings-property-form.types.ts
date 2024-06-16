@@ -1,7 +1,7 @@
 import { DataType } from '@fastybird/metadata-library';
-import { FbFormResultTypes } from '@fastybird/web-ui-library';
 
 import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../models/types';
+import { FormResultTypes } from '../../types';
 
 export interface IPropertySettingsPropertyFormForm {
 	identifier: string;
@@ -22,5 +22,5 @@ export interface IPropertySettingsPropertyFormProps {
 	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
 	remoteFormSubmit?: boolean;
 	remoteFormReset?: boolean;
-	remoteFormResult?: FbFormResultTypes;
+	remoteFormResult?: FormResultTypes;
 }

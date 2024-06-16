@@ -54,9 +54,11 @@ use function strval;
 class DevicesV1 extends BaseV1
 {
 
+	use Controllers\Finders\TConnector;
 	use Controllers\Finders\TDevice;
 
 	public function __construct(
+		protected readonly Models\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		protected readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly Models\Entities\Devices\DevicesManager $devicesManager,
 		protected readonly Models\Entities\Devices\Properties\PropertiesRepository $devicePropertiesRepository,
@@ -69,15 +71,26 @@ class DevicesV1 extends BaseV1
 
 	/**
 	 * @throws Exception
+	 * @throws JsonApiExceptions\JsonApi
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$findQuery = new Queries\Entities\FindDevices();
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
 
-		$devices = $this->devicesRepository->getResultSet($findQuery);
+			$findQuery = new Queries\Entities\FindDevices();
+			$findQuery->forConnector($connector);
+
+			$devices = $this->devicesRepository->getResultSet($findQuery);
+		} else {
+			$findQuery = new Queries\Entities\FindDevices();
+
+			$devices = $this->devicesRepository->getResultSet($findQuery);
+		}
 
 		// @phpstan-ignore-next-line
 		return $this->buildResponse($request, $response, $devices);
@@ -92,7 +105,14 @@ class DevicesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
+
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $connector);
+		} else {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		return $this->buildResponse($request, $response, $device);
 	}
@@ -111,6 +131,11 @@ class DevicesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
+		}
+
 		$document = $this->createDocument($request);
 
 		$hydrator = $this->hydratorsContainer->findHydrator($document);
@@ -230,11 +255,18 @@ class DevicesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
+
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $connector);
+		} else {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
+
 		$document = $this->createDocument($request);
 
 		$this->validateIdentifier($request, $document);
-
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		$hydrator = $this->hydratorsContainer->findHydrator($document);
 
@@ -329,7 +361,14 @@ class DevicesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
+
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $connector);
+		} else {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		try {
 			// Start transaction connection to the database
@@ -385,7 +424,14 @@ class DevicesV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID) !== null) {
+			// At first, try to load connector
+			$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_CONNECTOR_ID)));
+
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $connector);
+		} else {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+		}
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 

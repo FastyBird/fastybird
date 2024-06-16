@@ -1,3 +1,3 @@
 export interface IViewConnectorSettingsProps {
-	id: string;
+	id: string | null;
 }

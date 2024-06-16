@@ -8,8 +8,3 @@ export interface IDeviceDefaultDeviceChannelProps {
 	channelData: IChannelData;
 	editMode?: boolean;
 }
-
-export enum DeviceDefaultDeviceChannelViewTypes {
-	NONE = 'none',
-	ADD_PARAMETER = 'addParameter',
-}

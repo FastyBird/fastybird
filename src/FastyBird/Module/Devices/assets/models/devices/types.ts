@@ -21,14 +21,14 @@ import {
 
 export interface IDevicesState {
 	semaphore: IDevicesStateSemaphore;
-	firstLoad: boolean;
+	firstLoad: string[];
 	data: { [key: string]: IDevice };
 }
 
 export interface IDevicesGetters extends _GettersTree<IDevicesState> {
-	firstLoadFinished: (state: IDevicesState) => boolean;
+	firstLoadFinished: (state: IDevicesState) => (connectorId?: string | null) => boolean;
 	getting: (state: IDevicesState) => (id: string) => boolean;
-	fetching: (state: IDevicesState) => boolean;
+	fetching: (state: IDevicesState) => (connectorId?: string | null) => boolean;
 	findById: (state: IDevicesState) => (id: string) => IDevice | null;
 	findForConnector: (state: IDevicesState) => (connectorId: string) => IDevice[];
 }
@@ -36,7 +36,7 @@ export interface IDevicesGetters extends _GettersTree<IDevicesState> {
 export interface IDevicesActions {
 	set: (payload: IDevicesSetActionPayload) => Promise<IDevice>;
 	get: (payload: IDevicesGetActionPayload) => Promise<boolean>;
-	fetch: (payload: IDevicesFetchActionPayload) => Promise<boolean>;
+	fetch: (payload?: IDevicesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IDevicesAddActionPayload) => Promise<IDevice>;
 	edit: (payload: IDevicesEditActionPayload) => Promise<IDevice>;
 	save: (payload: IDevicesSaveActionPayload) => Promise<IDevice>;
@@ -55,7 +55,7 @@ interface IDevicesStateSemaphore {
 }
 
 interface IDevicesStateSemaphoreFetching {
-	items: boolean;
+	items: string[];
 	item: string[];
 }
 

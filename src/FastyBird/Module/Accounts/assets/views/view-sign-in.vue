@@ -61,5 +61,3 @@ useMeta({
 	title: t('meta.sign.in.title'),
 });
 </script>
-
-<i18n src="../locales/locales.json" />

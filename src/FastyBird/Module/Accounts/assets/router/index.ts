@@ -72,7 +72,7 @@ const moduleRoutes: RouteRecordRaw[] = [
 
 export default (router: Router): void => {
 	moduleRoutes.forEach((route) => {
-		router.addRoute('/', route);
+		router.addRoute('root', route);
 	});
 
 	// Register router guards

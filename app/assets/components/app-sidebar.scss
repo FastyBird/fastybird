@@ -6,6 +6,7 @@
   border-right: 1px solid var(--el-border-color);
 
   @include e(logo) {
+    height: 55px;
     border-bottom: 1px solid var(--el-border-color);
   }
 }

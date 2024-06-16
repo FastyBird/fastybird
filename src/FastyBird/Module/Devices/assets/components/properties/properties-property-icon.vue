@@ -1,9 +1,19 @@
 <template>
-	<font-awesome-icon icon="lightbulb" />
+	<el-icon :size="props.size">
+		<fas-lightbulb />
+	</el-icon>
 </template>
 
 <script setup lang="ts">
+import { ElIcon } from 'element-plus';
+
+import { FasLightbulb } from '@fastybird/web-ui-icons';
+
 import { IPropertiesPropertyIconProps } from './properties-property-icon.types';
 
-defineProps<IPropertiesPropertyIconProps>();
+defineOptions({
+	name: 'PropertiesPropertyIcon',
+});
+
+const props = defineProps<IPropertiesPropertyIconProps>();
 </script>

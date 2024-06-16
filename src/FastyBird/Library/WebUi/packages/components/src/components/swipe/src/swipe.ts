@@ -1,4 +1,4 @@
-import { buildProps, definePropType, isBoolean, isNumber, isObject } from '@fastybird/web-ui-utils';
+import { buildProps, definePropType, isBoolean, isObject } from '@fastybird/web-ui-utils';
 
 import type { ExtractPropTypes } from 'vue';
 
@@ -32,7 +32,7 @@ export const swipeProps = buildProps({
 export type SwipeProps = ExtractPropTypes<typeof swipeProps>;
 
 export const swipeEmits = {
-	['update:revealed']: (value: { [key: number]: SwipeActionsOutDir }): boolean => isNumber(value),
+	['update:revealed']: (value: { [key: number]: SwipeActionsOutDir }): boolean => isObject(value),
 	active: (value: boolean): boolean => isBoolean(value),
 	closed: (value: { index: number; item: any }): boolean => isObject(value),
 	revealed: (value: { index: number; item: any; side: SwipeActionsOutDir; close: () => void }): boolean => isObject(value),

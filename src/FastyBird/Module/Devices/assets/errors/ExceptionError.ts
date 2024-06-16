@@ -3,7 +3,6 @@ class ExceptionError extends Error {
 
 	public exception: Error | null;
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 	constructor(type: string, exception: Error | null, ...params: any) {
 		// Pass remaining arguments (including vendor specific ones) to parent constructor
 		super(...params);

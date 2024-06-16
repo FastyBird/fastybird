@@ -5,7 +5,7 @@
 	>
 		<div
 			:class="ns.e('logo')"
-			class="p-1 dark:bg-menu-background bg-brand-primary h-[50px] flex flex-row justify-center"
+			class="dark:bg-menu-background bg-brand-primary flex flex-row justify-center"
 		>
 			<router-link
 				:to="{ name: 'root' }"

@@ -1,4 +1,5 @@
 import { Plugin } from 'vue';
+import { I18n } from 'vue-i18n';
 import { Router } from 'vue-router';
 import { Pinia } from 'pinia';
 
@@ -14,18 +15,21 @@ export interface IAccountsModuleOptions {
 	meta: IAccountsModuleMeta;
 	configuration: IAccountsModuleConfiguration;
 	store: Pinia;
+	i18n?: I18n;
 }
 
 export interface IAccountsModuleMeta {
 	author: string;
 	website: string;
 	version: string;
+	[key: string]: any;
 }
 
 export interface IAccountsModuleConfiguration {
 	injectionKeys: {
 		eventBusInjectionKey?: symbol | string;
 	};
+	[key: string]: any;
 }
 
 export type UserSignedEventType = 'in' | 'out';

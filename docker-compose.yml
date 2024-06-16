@@ -29,7 +29,7 @@ services:
       - ./.docker/dev/php.ini:/etc/php/8.2/fpm/php.ini:delegated
       - ./.docker/dev/php.ini:/etc/php/8.2/cli/php.ini:delegated
     ports:
-      - "${HTTP_PORT:-8000}:8000"
+      - "${HTTP_PORT:-8001}:8000"
       - "${WS_PORT:-8888}:8888"
       - "${WORKER_STATUS_PORT:-9001}:9001"
     networks:

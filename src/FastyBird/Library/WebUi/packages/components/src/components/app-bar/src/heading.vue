@@ -1,9 +1,47 @@
 <template>
-	<teleport
-		v-if="!props.teleport || mounted"
-		:disabled="!props.teleport"
-		:to="`#${teleportTarget}`"
-	>
+	<template v-if="props.teleport">
+		<teleport
+			v-if="mounted"
+			:to="`#${teleportTarget}`"
+		>
+			<div
+				v-if="'prepend' in $slots || 'icon' in $slots || props.icon"
+				:class="[ns.e('prepend')]"
+			>
+				<slot name="prepend">
+					<el-icon
+						v-if="'icon' in $slots || props.icon"
+						:class="[ns.e('icon')]"
+					>
+						<slot name="icon">
+							<component
+								:is="props.icon"
+								v-if="props.icon"
+							/>
+						</slot>
+					</el-icon>
+				</slot>
+			</div>
+
+			<h1 :class="[ns.e('title'), ns.em('title', `align-${props.align}`)]">
+				<template v-if="'subtitle' in $slots">
+					<span><slot name="title" /></span>
+					<small><slot name="subtitle" /></small>
+				</template>
+				<template v-else>
+					<slot name="title" />
+				</template>
+			</h1>
+
+			<div
+				v-if="'append' in $slots"
+				:class="[ns.e('append')]"
+			>
+				<slot name="append" />
+			</div>
+		</teleport>
+	</template>
+	<template v-else>
 		<div
 			v-if="'prepend' in $slots || 'icon' in $slots || props.icon"
 			:class="[ns.e('prepend')]"
@@ -39,7 +77,7 @@
 		>
 			<slot name="append" />
 		</div>
-	</teleport>
+	</template>
 </template>
 
 <script setup lang="ts">

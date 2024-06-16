@@ -73,7 +73,7 @@ import { ElMenu, ElMenuItem, ElMenuItemGroup, ElIcon, ElScrollbar, useNamespace 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
 import { FasGaugeHigh, FasPlug, FasEthernet, FasDiagramProject, FasUser, FasLock, FasRightFromBracket } from '@fastybird/web-ui-icons';
 import { useRoutesNames as useAccountsModuleRoutesNames } from '@fastybird/accounts-module';
-//import { useRoutesNames as useDevicesModuleRoutesNames } from '@fastybird/devices-module';
+import { useRoutesNames as useDevicesModuleRoutesNames } from '@fastybird/devices-module';
 
 import { eventBusInjectionKey } from '../plugins';
 
@@ -98,7 +98,7 @@ const { t } = useI18n();
 const ns = useNamespace('app-navigation');
 
 const { routeNames: accountsModuleRouteNames } = useAccountsModuleRoutesNames();
-//const { routeNames: devicesModuleRouteNames } = useDevicesModuleRoutesNames();
+const { routeNames: devicesModuleRouteNames } = useDevicesModuleRoutesNames();
 
 const breakpoints = useBreakpoints(breakpointsBootstrapV5);
 
@@ -120,17 +120,17 @@ const mainItems = computed(() => {
 	items.push({
 		title: t('application.menu.devices'),
 		icon: FasPlug,
-		route: { name: 'application-home' },
+		route: { name: devicesModuleRouteNames.devices },
 		index: '1-2',
-		active: route.name === 'application-home',
+		active: route.name === devicesModuleRouteNames.devices,
 	});
 
 	items.push({
 		title: t('application.menu.connectors'),
 		icon: FasEthernet,
-		route: { name: 'application-home' },
+		route: { name: devicesModuleRouteNames.connectors },
 		index: '1-3',
-		active: route.name === 'application-home',
+		active: route.name === devicesModuleRouteNames.connectors,
 	});
 
 	items.push({
