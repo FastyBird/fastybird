@@ -169,7 +169,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { orderBy } from 'natural-orderby';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElButton, ElDivider, ElForm, FormInstance, FormRules } from 'element-plus';
 
 import { FasPlus } from '@fastybird/web-ui-icons';

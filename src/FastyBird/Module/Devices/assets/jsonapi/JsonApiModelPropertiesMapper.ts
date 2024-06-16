@@ -1,6 +1,6 @@
 import { IModelPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelationships } from 'jsona/lib/JsonaTypes';
 import { ModelPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IModelPropertiesMapper {
 	exceptedAttributes: string[];

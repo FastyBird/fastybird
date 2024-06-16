@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElIcon, ElSwitch } from 'element-plus';
 
 import { FasCheck, FasBan } from '@fastybird/web-ui-icons';

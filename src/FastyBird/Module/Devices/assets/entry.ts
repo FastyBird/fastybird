@@ -1,6 +1,6 @@
 import { App } from 'vue';
-import get from 'lodash/get';
-import defaultsDeep from 'lodash/defaultsdeep';
+import get from 'lodash.get';
+import defaultsDeep from 'lodash.defaultsdeep';
 
 import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';

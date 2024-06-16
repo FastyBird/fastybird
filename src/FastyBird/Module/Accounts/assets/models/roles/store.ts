@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.role.json';
 import { RoleDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';

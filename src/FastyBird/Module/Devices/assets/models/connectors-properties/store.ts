@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import get from 'lodash.get';
+import isEqual from 'lodash.isEqual';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
 import {

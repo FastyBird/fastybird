@@ -1,6 +1,6 @@
 import { IJsonPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelationships } from 'jsona/lib/JsonaTypes';
 import { JsonPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
-import get from 'lodash/get';
+import get from 'lodash.get';
 
 import { DataType, PropertyType } from '@fastybird/metadata-library';
 

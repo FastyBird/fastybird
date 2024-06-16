@@ -1,5 +1,5 @@
 import { RouteLocation } from 'vue-router';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { jwtDecode } from 'jwt-decode';
 
 import * as Sentry from '@sentry/vue';

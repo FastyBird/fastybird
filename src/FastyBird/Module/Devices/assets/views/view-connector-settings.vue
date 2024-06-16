@@ -108,7 +108,7 @@ import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
 import { orderBy } from 'natural-orderby';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElButton, ElMessageBox, ElScrollbar, vLoading } from 'element-plus';
 
 import { FarCircleXmark, FarCircleCheck } from '@fastybird/web-ui-icons';

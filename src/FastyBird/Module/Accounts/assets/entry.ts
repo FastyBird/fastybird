@@ -1,5 +1,5 @@
 import { App } from 'vue';
-import defaultsDeep from 'lodash/defaultsdeep';
+import defaultsDeep from 'lodash.defaultsdeep';
 
 import { registerAccountStore } from './models/account';
 import { registerAccountsStore } from './models/accounts';

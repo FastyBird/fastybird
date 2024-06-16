@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElInput, ElCheckbox, ElForm, ElFormItem, ElButton, FormInstance, FormRules } from 'element-plus';
 
 import { useSession } from '../../models';

@@ -113,7 +113,7 @@
 import { reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElInput, ElForm, ElFormItem, ElButton, FormInstance, FormItemInstance, FormRules } from 'element-plus';
 
 import { useFlashMessage, useRoutesNames } from '../../composables';

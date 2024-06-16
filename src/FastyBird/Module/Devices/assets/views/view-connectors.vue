@@ -71,7 +71,7 @@ import { computed, onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { orderBy } from 'natural-orderby';
 import { ElMessageBox, vLoading } from 'element-plus';
 

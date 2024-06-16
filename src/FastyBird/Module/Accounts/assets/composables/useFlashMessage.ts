@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { ElNotification } from 'element-plus';
 
 import { UseFlashMessage } from './types';

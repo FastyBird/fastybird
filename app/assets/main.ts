@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createMetaManager, plugin as metaPlugin } from 'vue-meta';
-import get from 'lodash/get';
+import get from 'lodash.get';
 import { createWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { version } from './../package.json';
