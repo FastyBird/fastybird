@@ -4,7 +4,7 @@ import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
-import isEqual from 'lodash.isEqual';
+import isEqual from 'lodash.isequal';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.channel.json';
 import { ChannelCategory, ChannelDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
