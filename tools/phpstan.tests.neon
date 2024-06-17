@@ -37,6 +37,8 @@ includes:
 
     - ../src/FastyBird/Addon/VirtualThermostat/tools/phpstan.config.tests.neon
 
+    - ../app/tools/phpstan.config.tests.neon
+
 parameters:
     level: max
 

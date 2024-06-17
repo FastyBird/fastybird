@@ -2,13 +2,12 @@
   "$schema": "../vendor/infection/infection/resources/schema.json",
   "source": {
     "directories": [
-      "src",
-      "app"
+      "src"
     ]
   },
   "logs": {
-    "html": "var/tools/Coverage/mutations/infection.html",
-    "text": "var/tools/Coverage/mutations/infection.log",
+    "html": "../var/coverage/mutations/infection.html",
+    "text": "../var/coverage/mutations/infection.log",
     "stryker": {
       "report": "main"
     }

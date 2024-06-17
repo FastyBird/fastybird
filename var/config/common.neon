@@ -18,6 +18,7 @@ extensions:
     contributteConsole                              : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteTranslation                          : Contributte\Translation\DI\TranslationExtension
     contributteEvents                               : Contributte\EventDispatcher\DI\EventDispatcherExtension
+    contributteVite                                 : Contributte\Vite\Nette\Extension
     nettrineCache                                   : Nettrine\Cache\DI\CacheExtension
     nettrineDbal                                    : Nettrine\DBAL\DI\DbalExtension
     nettrineDbalConsole                             : Nettrine\DBAL\DI\DbalConsoleExtension
@@ -65,6 +66,8 @@ extensions:
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
     fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension
+    # FastyBird application
+    fbApplication                                   : FastyBird\App\DI\AppExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:
@@ -143,6 +146,9 @@ fbTriggersModule:
 # Application
 #############
 
+application:
+    scanDirs: false
+
 contributteConsole:
     name: "FastyBird:IoTServer!"
     version: "1.0.0"
@@ -158,6 +164,10 @@ contributteTranslation:
     localeResolvers: []
     dirs:
         - %appDir%/vendor/fastybird/json-api/src/Translations
+
+contributteVite:
+    server: http://localhost:3000
+    cookie: fb-app-vite
 
 fbMetadataLibrary:
     documents:

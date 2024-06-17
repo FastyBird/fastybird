@@ -19,6 +19,7 @@
         <directory>../src/FastyBird/Library/**/tests/cases/</directory>
         <directory>../src/FastyBird/Module/**/tests/cases/</directory>
         <directory>../src/FastyBird/Plugin/**/tests/cases/</directory>
+        <directory>../app/tests/cases/</directory>
     </testsuite>
     <coverage cacheDirectory="../var/tools/PHPUnit/coverage"/>
     <source>
@@ -30,6 +31,7 @@
             <directory suffix=".php">../src/FastyBird/Library/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Module/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Plugin/**/tests/cases/</directory>
+            <directory suffix=".php">../app/tests/cases/</directory>
         </include>
         <exclude>
             <directory>./src/FastyBird/Addon/**/tests</directory>
@@ -39,6 +41,7 @@
             <directory>./src/FastyBird/Library/**/tests</directory>
             <directory>./src/FastyBird/Module/**/tests</directory>
             <directory>./src/FastyBird/Plugin/**/tests</directory>
+            <directory>./app/tests</directory>
         </exclude>
     </source>
 </phpunit>

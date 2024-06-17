@@ -139,6 +139,10 @@
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/cases/unit" value="FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/tools" value="FastyBird\Addon\VirtualThermostat\Tests\Tools"/>
+
+                <element key="app/src" value="FastyBird\App"/>
+                <element key="app/tests/cases/unit" value="FastyBird\App\Tests\Cases\Unit"/>
+                <element key="app/tests/tools" value="FastyBird\App\Tests\Tools"/>
             </property>
         </properties>
     </rule>
