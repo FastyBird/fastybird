@@ -35,7 +35,7 @@ final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
 				Utils\FileSystem::read(
 					__DIR__ . '/../../../../../fixtures/Entities/API/Request/set_device_state.json',
 				),
-				Utils\Json::FORCE_ARRAY,
+				forceArrays: true,
 			),
 			SetDeviceState::class,
 		);

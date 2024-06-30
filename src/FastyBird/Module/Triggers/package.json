@@ -113,7 +113,7 @@
     "vue-meta": "^3.0.0-alpha.10",
     "vue-router": "^4.3",
     "vue-toastification": "^2.0.0-rc.5",
-    "vue-tsc": "^1.8"
+    "vue-tsc": "^2.0"
   },
   "peerDependencies": {
     "pinia": "^2.1",

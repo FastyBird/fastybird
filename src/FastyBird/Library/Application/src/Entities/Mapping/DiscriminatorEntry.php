@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Doctrine
  * @since          1.0.0
  *
@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORMMapping;
 /**
  * Entity discriminator item attribute for Doctrine2
  *
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Doctrine
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

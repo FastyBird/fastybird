@@ -89,10 +89,16 @@ class Build extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title($this->translator->translate('//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.title'));
+		$io->title(
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.title',
+			),
+		);
 
 		$io->note(
-			$this->translator->translate('//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.subtitle'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.subtitle',
+			),
 		);
 
 		$this->askBuildAction($io);
@@ -109,7 +115,7 @@ class Build extends Console\Command\Command
 
 		if ($device === null) {
 			$io->warning(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.noVirtualThermostats',
 				),
 			);
@@ -121,7 +127,7 @@ class Build extends Console\Command\Command
 
 		if ($connector === null) {
 			$io->warning(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.noHomeKitConnectors',
 				),
 			);
@@ -133,7 +139,7 @@ class Build extends Console\Command\Command
 			$bridge = $this->builder->build($device, $connector);
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.create.bridge.success',
 					['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 				),
@@ -150,7 +156,7 @@ class Build extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.create.bridge.error',
 				),
 			);
@@ -166,13 +172,13 @@ class Build extends Console\Command\Command
 
 		if ($bridge === null) {
 			$io->warning(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.noBridges',
 				),
 			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.questions.create.bridge',
 				),
 				false,
@@ -194,7 +200,7 @@ class Build extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.update.bridge.success',
 					['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 				),
@@ -211,7 +217,7 @@ class Build extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.update.bridge.error',
 				),
 			);
@@ -227,7 +233,7 @@ class Build extends Console\Command\Command
 		$device = $this->askWhichBridge($io);
 
 		if ($device === null) {
-			$io->info($this->translator->translate(
+			$io->info((string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.noBridges',
 			));
 
@@ -235,14 +241,14 @@ class Build extends Console\Command\Command
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.remove.bridge.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.questions.continue',
 			),
 			false,
@@ -261,7 +267,7 @@ class Build extends Console\Command\Command
 			});
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.remove.bridge.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -278,7 +284,7 @@ class Build extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.messages.remove.bridge.error',
 				),
 			);
@@ -306,11 +312,13 @@ class Build extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.data.name'),
-			$this->translator->translate(
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.data.name',
+			),
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.data.thermostat',
 			),
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.data.connector',
 			),
 		]);
@@ -337,23 +345,23 @@ class Build extends Console\Command\Command
 	private function askBuildAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.questions.whatToDo',
 			),
 			[
-				0 => $this->translator->translate(
+				0 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.create.bridge',
 				),
-				1 => $this->translator->translate(
+				1 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.update.bridge',
 				),
-				2 => $this->translator->translate(
+				2 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.remove.bridge',
 				),
-				3 => $this->translator->translate(
+				3 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.list.bridges',
 				),
-				4 => $this->translator->translate(
+				4 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.nothing',
 				),
 			],
@@ -361,7 +369,7 @@ class Build extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 			),
 		);
@@ -369,7 +377,7 @@ class Build extends Console\Command\Command
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.create.bridge',
 			)
 			|| $whatToDo === '0'
@@ -379,7 +387,7 @@ class Build extends Console\Command\Command
 			$this->askBuildAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.update.bridge',
 			)
 			|| $whatToDo === '1'
@@ -389,7 +397,7 @@ class Build extends Console\Command\Command
 			$this->askBuildAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.remove.bridge',
 			)
 			|| $whatToDo === '2'
@@ -399,7 +407,7 @@ class Build extends Console\Command\Command
 			$this->askBuildAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.actions.list.bridges',
 			)
 			|| $whatToDo === '3'
@@ -439,7 +447,7 @@ class Build extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.questions.select.item.connector',
 			),
 			array_values($connectors),
@@ -447,7 +455,7 @@ class Build extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 			),
 		);
@@ -456,7 +464,7 @@ class Build extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -486,7 +494,7 @@ class Build extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -532,7 +540,7 @@ class Build extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.questions.select.item.device',
 			),
 			array_values($devices),
@@ -540,7 +548,7 @@ class Build extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 			),
 		);
@@ -549,7 +557,7 @@ class Build extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -579,7 +587,7 @@ class Build extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -625,7 +633,7 @@ class Build extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.build.questions.select.item.device',
 			),
 			array_values($devices),
@@ -633,7 +641,7 @@ class Build extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 			),
 		);
@@ -642,7 +650,7 @@ class Build extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -672,7 +680,7 @@ class Build extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.cmd.base.messages.answerNotValid',
 						),
 						$answer,

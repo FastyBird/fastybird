@@ -21,10 +21,13 @@ use ReflectionClass;
 use function array_pop;
 use function assert;
 use function class_exists;
+use function get_object_vars;
 use function in_array;
 use function interface_exists;
+use function is_string;
 use function is_subclass_of;
 use function ltrim;
+use function property_exists;
 use function sprintf;
 use function str_contains;
 
@@ -327,6 +330,42 @@ class ClassMetadata
 
 		// @phpstan-ignore-next-line
 		return ltrim($className, '\\');
+	}
+
+	public function __serialize(): array
+	{
+		// Get all properties except $reflectionClass
+		$vars = get_object_vars($this);
+
+		// Serialize properties, adding class name separately for reflection
+		$vars['__reflection_class_name'] = $this->reflectionClass->getName();
+
+		unset($vars['reflectionClass']);
+
+		return $vars;
+	}
+
+	/**
+	 * @param array<string, mixed> $data
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function __unserialize(array $data): void
+	{
+		// Restore properties
+		foreach ($data as $key => $value) {
+			if ($key === '__reflection_class_name') {
+				if (!is_string($value) || !class_exists($value)) {
+					throw new Exceptions\InvalidState('Failed to deserialize document ClassMetadata');
+				}
+
+				// @phpstan-ignore-next-line
+				$this->reflectionClass = new ReflectionClass($value);
+			} elseif (property_exists($this, $key)) {
+				// @phpstan-ignore-next-line
+				$this->{$key} = $value;
+			}
+		}
 	}
 
 }

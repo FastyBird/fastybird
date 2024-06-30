@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * DefaultPresenter.php
+ * BasePresenter.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -15,49 +15,19 @@
 
 namespace FastyBird\App\Presenters;
 
+use FastyBird\Library\Application\Presenters as ApplicationPresenters;
 use Nette\Application;
-use function dirname;
-use function is_bool;
-use function preg_match;
 
 /**
- * Default application presenter
+ * Base application presenter
  *
  * @package        FastyBird:Application!
  * @subpackage     Presenters
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class BasePresenter extends Application\UI\Presenter
+abstract class BasePresenter extends ApplicationPresenters\BasePresenter
 {
-
-	public function formatLayoutTemplateFiles(): array
-	{
-		if (preg_match('#/|\\\\#', (string) $this->layout) !== false) {
-			return [(string) $this->layout];
-		}
-
-		[$module, $presenter] = Application\Helpers::splitName($this->getName() ?? '');
-
-		$layout = is_bool($this->layout) ? 'layout' : $this->layout;
-
-		$dir = __DIR__ . '/../../templates/';
-
-		$list = [
-			"$dir/presenters/$presenter/@$layout.latte",
-			"$dir/presenters/$presenter.@$layout.latte",
-		];
-
-		do {
-			$list[] = "$dir/@$layout.latte";
-
-			$dir = dirname($dir);
-
-			[$module] = Application\Helpers::splitName($module);
-		} while ($dir !== '' && $module !== '');
-
-		return $list;
-	}
 
 	public function formatTemplateFiles(): array
 	{

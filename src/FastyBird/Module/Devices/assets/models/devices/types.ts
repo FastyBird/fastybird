@@ -1,7 +1,7 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DeviceCategory } from '@fastybird/metadata-library';
+import { DeviceCategory, DeviceDocument } from '@fastybird/metadata-library';
 
 import {
 	IChannelResponseData,
@@ -13,24 +13,32 @@ import {
 	IDeviceProperty,
 	IDevicePropertyResponseData,
 	IDevicePropertyResponseModel,
+	IEntityMeta,
 	IPlainRelation,
 } from '../../models/types';
+
+export interface IDeviceMeta extends IEntityMeta {
+	entity: 'device';
+}
 
 // STORE
 // =====
 
 export interface IDevicesState {
 	semaphore: IDevicesStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IDevice };
+	firstLoad: IConnector['id'][];
+	data: { [key: IDevice['id']]: IDevice } | undefined;
+	meta: { [key: IDevice['id']]: IDeviceMeta };
 }
 
 export interface IDevicesGetters extends _GettersTree<IDevicesState> {
-	firstLoadFinished: (state: IDevicesState) => (connectorId?: string | null) => boolean;
-	getting: (state: IDevicesState) => (id: string) => boolean;
-	fetching: (state: IDevicesState) => (connectorId?: string | null) => boolean;
-	findById: (state: IDevicesState) => (id: string) => IDevice | null;
-	findForConnector: (state: IDevicesState) => (connectorId: string) => IDevice[];
+	firstLoadFinished: (state: IDevicesState) => (connectorId?: IConnector['id'] | null) => boolean;
+	getting: (state: IDevicesState) => (id: IDevice['id']) => boolean;
+	fetching: (state: IDevicesState) => (connectorId?: IConnector['id'] | null) => boolean;
+	findById: (state: IDevicesState) => (id: IDevice['id']) => IDevice | null;
+	findForConnector: (state: IDevicesState) => (connectorId: IConnector['id']) => IDevice[];
+	findAll: (state: IDevicesState) => () => IDevice[];
+	findMeta: (state: IDevicesState) => (id: IDevice['id']) => IDeviceMeta | null;
 }
 
 export interface IDevicesActions {
@@ -42,6 +50,9 @@ export interface IDevicesActions {
 	save: (payload: IDevicesSaveActionPayload) => Promise<IDevice>;
 	remove: (payload: IDevicesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IDevicesSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IDevicesInsertDataActionPayload) => Promise<boolean>;
+	loadRecord: (payload: IDevicesLoadRecordActionPayload) => Promise<boolean>;
+	loadAllRecords: (payload?: IDevicesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
 // STORE STATE
@@ -61,7 +72,7 @@ interface IDevicesStateSemaphoreFetching {
 
 export interface IDevice {
 	id: string;
-	type: { source: string; type: string; entity: string };
+	type: IDeviceMeta;
 
 	draft: boolean;
 
@@ -94,7 +105,7 @@ export interface IDevice {
 
 export interface IDeviceRecordFactoryPayload {
 	id?: string;
-	type: { source: string; type: string; entity?: string };
+	type: IDeviceMeta;
 
 	category: DeviceCategory;
 	identifier: string;
@@ -109,9 +120,10 @@ export interface IDeviceRecordFactoryPayload {
 
 	channels?: (IPlainRelation | IChannelResponseModel)[];
 	controls?: (IPlainRelation | IDeviceControlResponseModel)[];
-	properties?: (IPlainRelation | IDeviceControlResponseModel)[];
+	properties?: (IPlainRelation | IDevicePropertyResponseModel)[];
 
-	connectorId: string;
+	connectorId?: string;
+	connector?: IPlainRelation;
 
 	owner?: string | null;
 }
@@ -124,55 +136,67 @@ export interface IDevicesSetActionPayload {
 }
 
 export interface IDevicesGetActionPayload {
-	id: string;
-	connector?: IConnector;
-	withChannels?: boolean;
+	id: IDevice['id'];
+	connectorId?: IConnector['id'];
+	refresh?: boolean;
 }
 
 export interface IDevicesFetchActionPayload {
-	connector?: IConnector;
-	withChannels?: boolean;
+	connectorId?: IConnector['id'];
+	refresh?: boolean;
 }
 
 export interface IDevicesAddActionPayload {
-	id?: string;
-	type: { source: string; type: string; entity?: string };
+	id?: IDevice['id'];
+	type: IDeviceMeta;
 
-	draft?: boolean;
+	draft?: IDevice['draft'];
 
 	connector: IConnector;
 
 	parents?: IDevice[];
 
 	data: {
-		identifier: string;
-		name?: string | null;
-		comment?: string | null;
+		identifier: IDevice['identifier'];
+		name?: IDevice['name'];
+		comment?: IDevice['comment'];
 	};
 }
 
 export interface IDevicesEditActionPayload {
-	id: string;
+	id: IDevice['id'];
 
 	data: {
-		identifier?: string;
-		name?: string | null;
-		comment?: string | null;
+		identifier?: IDevice['identifier'];
+		name?: IDevice['name'];
+		comment?: IDevice['comment'];
 	};
 }
 
 export interface IDevicesSaveActionPayload {
-	id: string;
+	id: IDevice['id'];
 }
 
 export interface IDevicesRemoveActionPayload {
-	id: string;
+	id: IDevice['id'];
 }
 
 export interface IDevicesSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IDevicesInsertDataActionPayload {
+	data: DeviceDocument | DeviceDocument[];
+}
+
+export interface IDevicesLoadRecordActionPayload {
+	id: IDevice['id'];
+}
+
+export interface IDevicesLoadAllRecordsActionPayload {
+	connectorId?: IConnector['id'];
 }
 
 // API RESPONSES JSONS
@@ -218,7 +242,7 @@ interface IDeviceResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IDeviceResponseModel extends TJsonaModel {
 	id: string;
-	type: { source: string; type: string; entity: string };
+	type: IDeviceMeta;
 
 	category: DeviceCategory;
 	identifier: string;
@@ -236,4 +260,31 @@ export interface IDeviceResponseModel extends TJsonaModel {
 	parents: (IPlainRelation | IDeviceResponseModel)[];
 	children: (IPlainRelation | IDeviceResponseModel)[];
 	connector: IPlainRelation | IConnectorResponseModel;
+}
+
+// DATABASE
+// ========
+
+export interface IDeviceDatabaseRecord {
+	id: string;
+	type: IDeviceMeta;
+
+	category: DeviceCategory;
+	identifier: string;
+	name: string | null;
+	comment: string | null;
+
+	// Relations
+	relationshipNames: string[];
+
+	parents: IPlainRelation[];
+	children: IPlainRelation[];
+
+	channels: IPlainRelation[];
+	controls: IPlainRelation[];
+	properties: IPlainRelation[];
+
+	connector: IPlainRelation;
+
+	owner: string | null;
 }

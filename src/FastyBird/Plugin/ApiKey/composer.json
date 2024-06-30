@@ -39,7 +39,7 @@
     "ipub/doctrine-crud": "^4.0",
     "ipub/doctrine-timestampable": "^2.0",
     "nette/di": "^3.0",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "psr/http-message": "^1.0",
     "psr/http-server-middleware": "^1.0",
     "psr/log": "^3.0",

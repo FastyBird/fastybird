@@ -43,7 +43,7 @@
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "orisai/object-mapper": "^0.1",
     "predis/predis": "^1.1",
     "psr/event-dispatcher": "^1.0",

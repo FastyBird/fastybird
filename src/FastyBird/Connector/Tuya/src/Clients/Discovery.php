@@ -392,7 +392,7 @@ final class Discovery
 		}
 
 		try {
-			$decoded = Utils\Json::decode($decryptedPacket, Utils\Json::FORCE_ARRAY);
+			$decoded = Utils\Json::decode($decryptedPacket, forceArrays: true);
 
 			if (!is_array($decoded)) {
 				$this->logger->error(
@@ -794,7 +794,7 @@ final class Discovery
 					}
 
 					try {
-						$dataPointSpecification = Utils\Json::decode($dataPointSpecification, Utils\Json::FORCE_ARRAY);
+						$dataPointSpecification = Utils\Json::decode($dataPointSpecification, forceArrays: true);
 						$dataPointSpecification = Utils\ArrayHash::from(
 							is_array($dataPointSpecification) ? $dataPointSpecification : [],
 						);

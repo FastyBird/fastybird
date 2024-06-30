@@ -24,6 +24,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
@@ -46,7 +47,7 @@ use function strval;
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
 #[DOC\MappedSuperclass]
-abstract class Property implements MetadataDocuments\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
+abstract class Property implements Documents\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
 {
 
 	use MetadataDocuments\TOwner;
@@ -323,6 +324,7 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
+			'source' => $this->getSource()->value,
 			'category' => $this->getCategory()->value,
 			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
@@ -339,6 +341,11 @@ abstract class Property implements MetadataDocuments\Document, MetadataDocuments
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 	/**

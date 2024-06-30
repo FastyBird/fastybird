@@ -258,7 +258,7 @@ readonly class Device
 	private function parsePayload(NetMqtt\Message $message): array|null
 	{
 		try {
-			$payload = Utils\Json::decode($message->getPayload(), Utils\Json::FORCE_ARRAY);
+			$payload = Utils\Json::decode($message->getPayload(), forceArrays: true);
 
 			return $payload !== null ? (array) $payload : null;
 		} catch (Utils\JsonException $ex) {

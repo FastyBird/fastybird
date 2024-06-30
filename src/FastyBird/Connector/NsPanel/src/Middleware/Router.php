@@ -68,7 +68,7 @@ final class Router
 
 			$requestBody = $request->getBody()->getContents();
 
-			$requestBody = Utils\Json::decode($requestBody, Utils\Json::FORCE_ARRAY);
+			$requestBody = Utils\Json::decode($requestBody, forceArrays: true);
 
 			if (
 				is_array($requestBody)

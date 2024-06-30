@@ -39,7 +39,7 @@
     "fastybird/metadata-library": "dev-main",
     "ipub/websockets-wamp": "^1.4",
     "nette/di": "^3.0",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "psr/event-dispatcher": "^1.0",
     "psr/log": "^3.0",
     "react/promise": "^3",

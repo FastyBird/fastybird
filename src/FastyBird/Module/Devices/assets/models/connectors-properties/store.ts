@@ -1,12 +1,3 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { Jsona } from 'jsona';
-import Ajv from 'ajv/dist/2020';
-import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
-import isEqual from 'lodash.isequal';
-
-import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
 import {
 	ConnectorPropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
@@ -14,25 +5,44 @@ import {
 	PropertyCategory,
 	PropertyType,
 } from '@fastybird/metadata-library';
+import addFormats from 'ajv-formats';
+import Ajv from 'ajv/dist/2020';
+import axios from 'axios';
+import { Jsona } from 'jsona';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
+import { defineStore } from 'pinia';
+import { v4 as uuid } from 'uuid';
+
+import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useConnectors } from '../../models';
-import { IConnector } from '../../models/types';
+import {
+	IConnector,
+	IConnectorPropertiesInsertDataActionPayload,
+	IConnectorPropertiesLoadAllRecordsActionPayload,
+	IConnectorPropertiesLoadRecordActionPayload,
+	IConnectorPropertiesSetStateActionPayload,
+	IConnectorPropertyDatabaseRecord,
+	IConnectorPropertyMeta,
+} from '../../models/types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS_PROPERTIES } from '../../utilities/database';
 
 import {
-	IConnectorPropertiesState,
 	IConnectorPropertiesActions,
-	IConnectorPropertiesGetters,
 	IConnectorPropertiesAddActionPayload,
 	IConnectorPropertiesEditActionPayload,
 	IConnectorPropertiesFetchActionPayload,
 	IConnectorPropertiesGetActionPayload,
+	IConnectorPropertiesGetters,
 	IConnectorPropertiesRemoveActionPayload,
 	IConnectorPropertiesResponseJson,
 	IConnectorPropertiesSaveActionPayload,
 	IConnectorPropertiesSetActionPayload,
 	IConnectorPropertiesSocketDataActionPayload,
+	IConnectorPropertiesState,
 	IConnectorPropertiesUnsetActionPayload,
 	IConnectorProperty,
 	IConnectorPropertyRecordFactoryPayload,
@@ -41,32 +51,51 @@ import {
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Promise<IConnectorProperty> => {
+const storeRecordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Promise<IConnectorProperty> => {
 	const connectorsStore = useConnectors();
 
-	let connector = connectorsStore.findById(data.connectorId);
+	let connector = 'connector' in data ? get(data, 'connector', null) : null;
+
+	let connectorMeta = data.connectorId ? connectorsStore.findMeta(data.connectorId) : null;
+
+	if (connector === null && connectorMeta !== null) {
+		connector = {
+			id: data.connectorId as string,
+			type: connectorMeta,
+		};
+	}
 
 	if (connector === null) {
-		if (!(await connectorsStore.get({ id: data.connectorId }))) {
+		if (!('connectorId' in data)) {
+			throw new Error("Connector for property couldn't be loaded from store");
+		}
+
+		if (!(await connectorsStore.get({ id: data.connectorId as string, refresh: false }))) {
 			throw new Error("Connector for property couldn't be loaded from server");
 		}
 
-		connector = connectorsStore.findById(data.connectorId);
+		connectorMeta = connectorsStore.findMeta(data.connectorId as string);
 
-		if (connector === null) {
+		if (connectorMeta === null) {
 			throw new Error("Connector for property couldn't be loaded from store");
 		}
+
+		connector = {
+			id: data.connectorId as string,
+			type: connectorMeta,
+		};
 	}
 
 	return {
 		id: get(data, 'id', uuid().toString()),
-		type: { ...{ parent: 'connector', entity: 'property' }, ...data.type },
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -100,10 +129,47 @@ const recordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Prom
 			id: connector.id,
 			type: connector.type,
 		},
+	};
+};
 
-		parent: null,
-		children: [],
-	} as IConnectorProperty;
+const databaseRecordFactory = (record: IConnectorProperty): IConnectorPropertyDatabaseRecord => {
+	return {
+		id: record.id,
+		type: {
+			type: record.type.type,
+			source: record.type.source,
+			entity: record.type.entity,
+			parent: record.type.parent,
+		},
+
+		category: record.category,
+		identifier: record.identifier,
+		name: record.name,
+		settable: record.settable,
+		queryable: record.queryable,
+		dataType: record.dataType,
+		unit: record.unit,
+		format: record.format,
+		invalid: record.invalid,
+		scale: record.scale,
+		step: record.step,
+		valueTransformer: record.valueTransformer,
+		default: record.default,
+
+		// Static property
+		value: record.value,
+
+		relationshipNames: record.relationshipNames.map((name) => name),
+
+		connector: {
+			id: record.connector.id,
+			type: {
+				type: record.connector.type.type,
+				source: record.connector.type.source,
+				entity: record.connector.type.entity,
+			},
+		},
+	};
 };
 
 export const useConnectorProperties = defineStore<string, IConnectorPropertiesState, IConnectorPropertiesGetters, IConnectorPropertiesActions>(
@@ -121,37 +187,36 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					deleting: [],
 				},
 
-				firstLoad: [],
-
-				data: {},
+				data: undefined,
+				meta: {},
 			};
 		},
 
 		getters: {
-			firstLoadFinished: (state: IConnectorPropertiesState): ((connectorId: string) => boolean) => {
-				return (connectorId) => state.firstLoad.includes(connectorId);
+			getting: (state: IConnectorPropertiesState): ((id: IConnectorProperty['id']) => boolean) => {
+				return (id: IConnectorProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
 
-			getting: (state: IConnectorPropertiesState): ((propertyId: string) => boolean) => {
-				return (propertyId) => state.semaphore.fetching.item.includes(propertyId);
-			},
-
-			fetching: (state: IConnectorPropertiesState): ((connectorId: string | null) => boolean) => {
-				return (connectorId) =>
+			fetching: (state: IConnectorPropertiesState): ((connectorId: IConnector['id'] | null) => boolean) => {
+				return (connectorId: IConnector['id'] | null): boolean =>
 					connectorId !== null ? state.semaphore.fetching.items.includes(connectorId) : state.semaphore.fetching.items.length > 0;
 			},
 
-			findById: (state: IConnectorPropertiesState): ((id: string) => IConnectorProperty | null) => {
-				return (id) => {
-					const property = Object.values(state.data).find((property) => property.id === id);
+			findById: (state: IConnectorPropertiesState): ((id: IConnectorProperty['id']) => IConnectorProperty | null) => {
+				return (id: IConnectorProperty['id']): IConnectorProperty | null => {
+					const property: IConnectorProperty | undefined = Object.values(state.data ?? {}).find(
+						(property: IConnectorProperty): boolean => property.id === id
+					);
 
 					return property ?? null;
 				};
 			},
 
-			findByIdentifier: (state: IConnectorPropertiesState): ((connector: IConnector, identifier: string) => IConnectorProperty | null) => {
-				return (connector: IConnector, identifier) => {
-					const property = Object.values(state.data).find((property) => {
+			findByIdentifier: (
+				state: IConnectorPropertiesState
+			): ((connector: IConnector, identifier: IConnectorProperty['identifier']) => IConnectorProperty | null) => {
+				return (connector: IConnector, identifier: IConnectorProperty['identifier']): IConnectorProperty | null => {
+					const property: IConnectorProperty | undefined = Object.values(state.data ?? {}).find((property: IConnectorProperty): boolean => {
 						return property.connector.id === connector.id && property.identifier.toLowerCase() === identifier.toLowerCase();
 					});
 
@@ -159,9 +224,15 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 				};
 			},
 
-			findForConnector: (state: IConnectorPropertiesState): ((connectorId: string) => IConnectorProperty[]) => {
-				return (connectorId: string): IConnectorProperty[] => {
-					return Object.values(state.data).filter((property) => property.connector.id === connectorId);
+			findForConnector: (state: IConnectorPropertiesState): ((connectorId: IConnector['id']) => IConnectorProperty[]) => {
+				return (connectorId: IConnector['id']): IConnectorProperty[] => {
+					return Object.values(state.data ?? {}).filter((property: IConnectorProperty): boolean => property.connector.id === connectorId);
+				};
+			},
+
+			findMeta: (state: IConnectorPropertiesState): ((id: IConnectorProperty['id']) => IConnectorPropertyMeta | null) => {
+				return (id: IConnectorProperty['id']): IConnectorPropertyMeta | null => {
+					return id in state.meta ? state.meta[id] : null;
 				};
 			},
 		},
@@ -173,14 +244,19 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			 * @param {IConnectorPropertiesSetActionPayload} payload
 			 */
 			async set(payload: IConnectorPropertiesSetActionPayload): Promise<IConnectorProperty> {
-				if (payload.data.id && payload.data.id in this.data) {
-					const record = await recordFactory({ ...this.data[payload.data.id], ...payload.data });
+				if (this.data && payload.data.id && payload.data.id in this.data) {
+					const record = await storeRecordFactory({ ...this.data[payload.data.id], ...payload.data });
 
 					return (this.data[record.id] = record);
 				}
 
-				const record = await recordFactory(payload.data);
+				const record = await storeRecordFactory(payload.data);
 
+				await addRecord<IConnectorPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CONNECTORS_PROPERTIES);
+
+				this.meta[record.id] = record.type;
+
+				this.data = this.data ?? {};
 				return (this.data[record.id] = record);
 			},
 
@@ -189,19 +265,31 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			 *
 			 * @param {IConnectorPropertiesUnsetActionPayload} payload
 			 */
-			unset(payload: IConnectorPropertiesUnsetActionPayload): void {
-				if (typeof payload.connector !== 'undefined') {
-					Object.keys(this.data).forEach((id) => {
-						if (id in this.data && this.data[id].connector.id === payload.connector?.id) {
-							delete this.data[id];
+			async unset(payload: IConnectorPropertiesUnsetActionPayload): Promise<void> {
+				if (!this.data) {
+					return;
+				}
+
+				if (payload.connector !== undefined) {
+					const items = this.findForConnector(payload.connector.id);
+
+					for (const item of items) {
+						if (item.id in (this.data ?? {})) {
+							await removeRecord(item.id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+							delete this.meta[item.id];
+
+							delete (this.data ?? {})[item.id];
 						}
-					});
+					}
 
 					return;
-				} else if (typeof payload.id !== 'undefined') {
-					if (payload.id in this.data) {
-						delete this.data[payload.id];
-					}
+				} else if (payload.id !== undefined) {
+					await removeRecord(payload.id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+					delete this.meta[payload.id];
+
+					delete this.data[payload.id];
 
 					return;
 				}
@@ -219,6 +307,12 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					return false;
 				}
 
+				const fromDatabase = await this.loadRecord({ id: payload.id });
+
+				if (fromDatabase && payload.refresh === false) {
+					return true;
+				}
+
 				this.semaphore.fetching.item.push(payload.id);
 
 				try {
@@ -228,10 +322,18 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IConnectorPropertyResponseModel;
 
-					this.data[propertyResponseModel.id] = await recordFactory({
+					this.data = this.data ?? {};
+					this.data[propertyResponseModel.id] = await storeRecordFactory({
 						...propertyResponseModel,
-						...{ connectorId: propertyResponseModel.connector.id, parentId: propertyResponseModel.parent?.id },
+						...{ connectorId: propertyResponseModel.connector.id },
 					});
+
+					await addRecord<IConnectorPropertyDatabaseRecord>(
+						databaseRecordFactory(this.data[propertyResponseModel.id]),
+						DB_TABLE_CONNECTORS_PROPERTIES
+					);
+
+					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
 					throw new ApiError('devices-module.connector-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
@@ -251,6 +353,12 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					return false;
 				}
 
+				const fromDatabase = await this.loadAllRecords({ connector: payload.connector });
+
+				if (fromDatabase && payload?.refresh === false) {
+					return true;
+				}
+
 				this.semaphore.fetching.items.push(payload.connector.id);
 
 				try {
@@ -261,13 +369,33 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IConnectorPropertyResponseModel[];
 
 					for (const property of propertiesResponseModel) {
-						this.data[property.id] = await recordFactory({
+						this.data = this.data ?? {};
+						this.data[property.id] = await storeRecordFactory({
 							...property,
-							...{ connectorId: property.connector.id, parentId: property.parent?.id },
+							...{ connectorId: property.connector.id },
 						});
+
+						await addRecord<IConnectorPropertyDatabaseRecord>(databaseRecordFactory(this.data[property.id]), DB_TABLE_CONNECTORS_PROPERTIES);
+
+						this.meta[property.id] = property.type;
 					}
 
-					this.firstLoad.push(payload.connector.id);
+					// Get all current IDs from IndexedDB
+					const allRecords = await getAllRecords<IConnectorPropertyDatabaseRecord>(DB_TABLE_CONNECTORS_PROPERTIES);
+					const indexedDbIds: string[] = allRecords.filter((record) => record.connector.id === payload.connector.id).map((record) => record.id);
+
+					// Get the IDs from the latest changes
+					const serverIds: string[] = Object.keys(this.data ?? {});
+
+					// Find IDs that are in IndexedDB but not in the server response
+					const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
+
+					// Remove records that are no longer present on the server
+					for (const id of idsToRemove) {
+						await removeRecord(id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+						delete this.meta[id];
+					}
 				} catch (e: any) {
 					throw new ApiError('devices-module.connector-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
@@ -283,7 +411,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			 * @param {IConnectorPropertiesAddActionPayload} payload
 			 */
 			async add(payload: IConnectorPropertiesAddActionPayload): Promise<IConnectorProperty> {
-				const newProperty = await recordFactory({
+				const newProperty = await storeRecordFactory({
 					...{
 						id: payload?.id,
 						type: payload?.type,
@@ -296,6 +424,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				this.semaphore.creating.push(newProperty.id);
 
+				this.data = this.data ?? {};
 				this.data[newProperty.id] = newProperty;
 
 				if (newProperty.draft) {
@@ -303,6 +432,16 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					return newProperty;
 				} else {
+					const connectorsStore = useConnectors();
+
+					const connector = connectorsStore.findById(payload.connector.id);
+
+					if (connector === null) {
+						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newProperty.id);
+
+						throw new Error('devices-module.connector-properties.create.failed');
+					}
+
 					try {
 						const apiData: Partial<IConnectorProperty> = {
 							id: newProperty.id,
@@ -342,10 +481,17 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 						const createdPropertyModel = jsonApiFormatter.deserialize(createdProperty.data) as IConnectorPropertyResponseModel;
 
-						this.data[createdPropertyModel.id] = await recordFactory({
+						this.data[createdPropertyModel.id] = await storeRecordFactory({
 							...createdPropertyModel,
-							...{ connectorId: createdPropertyModel.connector.id, parentId: createdPropertyModel.parent?.id },
+							...{ connectorId: createdPropertyModel.connector.id },
 						});
+
+						await addRecord<IConnectorPropertyDatabaseRecord>(
+							databaseRecordFactory(this.data[createdPropertyModel.id]),
+							DB_TABLE_CONNECTORS_PROPERTIES
+						);
+
+						this.meta[createdPropertyModel.id] = createdPropertyModel.type;
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
@@ -369,7 +515,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					throw new Error('devices-module.connector-properties.update.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.connector-properties.update.failed');
 				}
 
@@ -378,7 +524,10 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 				// Get record stored in database
 				const existingRecord = this.data[payload.id];
 				// Update with new values
-				const updatedRecord = { ...existingRecord, ...payload.data } as IConnectorProperty;
+				const updatedRecord = {
+					...existingRecord,
+					...payload.data,
+				} as IConnectorProperty;
 
 				this.data[payload.id] = updatedRecord;
 
@@ -387,6 +536,16 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					return this.data[payload.id];
 				} else {
+					const connectorsStore = useConnectors();
+
+					const connector = connectorsStore.findById(updatedRecord.connector.id);
+
+					if (connector === null) {
+						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+						throw new Error('devices-module.connector-properties.update.failed');
+					}
+
 					try {
 						const apiData: Partial<IConnectorProperty> = {
 							id: updatedRecord.id,
@@ -426,10 +585,17 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 						const updatedPropertyModel = jsonApiFormatter.deserialize(updatedProperty.data) as IConnectorPropertyResponseModel;
 
-						this.data[updatedPropertyModel.id] = await recordFactory({
+						this.data[updatedPropertyModel.id] = await storeRecordFactory({
 							...updatedPropertyModel,
-							...{ connectorId: updatedPropertyModel.connector.id, parentId: updatedPropertyModel.parent?.id },
+							...{ connectorId: updatedPropertyModel.connector.id },
 						});
+
+						await addRecord<IConnectorPropertyDatabaseRecord>(
+							databaseRecordFactory(this.data[updatedPropertyModel.id]),
+							DB_TABLE_CONNECTORS_PROPERTIES
+						);
+
+						this.meta[updatedPropertyModel.id] = updatedPropertyModel.type;
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
@@ -450,6 +616,35 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 			},
 
 			/**
+			 * Save property state record
+			 *
+			 * @param {IConnectorPropertiesSetStateActionPayload} payload
+			 */
+			async setState(payload: IConnectorPropertiesSetStateActionPayload): Promise<IConnectorProperty> {
+				if (this.semaphore.updating.includes(payload.id)) {
+					throw new Error('devices-module.connector-properties.update.inProgress');
+				}
+
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
+					throw new Error('devices-module.connector-properties.update.failed');
+				}
+
+				this.semaphore.updating.push(payload.id);
+
+				// Get record stored in database
+				const existingRecord = this.data[payload.id];
+				// Update with new values
+				this.data[payload.id] = {
+					...existingRecord,
+					...payload.data,
+				} as IConnectorProperty;
+
+				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+				return this.data[payload.id];
+			},
+
+			/**
 			 * Save draft record on server
 			 *
 			 * @param {IConnectorPropertiesSaveActionPayload} payload
@@ -459,13 +654,23 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					throw new Error('devices-module.connector-properties.save.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.connector-properties.save.failed');
 				}
 
 				this.semaphore.updating.push(payload.id);
 
 				const recordToSave = this.data[payload.id];
+
+				const connectorsStore = useConnectors();
+
+				const connector = connectorsStore.findById(recordToSave.connector.id);
+
+				if (connector === null) {
+					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+					throw new Error('devices-module.connector-properties.save.failed');
+				}
 
 				try {
 					const apiData: Partial<IConnectorProperty> = {
@@ -506,10 +711,14 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					const savedPropertyModel = jsonApiFormatter.deserialize(savedProperty.data) as IConnectorPropertyResponseModel;
 
-					this.data[savedPropertyModel.id] = await recordFactory({
+					this.data[savedPropertyModel.id] = await storeRecordFactory({
 						...savedPropertyModel,
-						...{ connectorId: savedPropertyModel.connector.id, parentId: savedPropertyModel.parent?.id },
+						...{ connectorId: savedPropertyModel.connector.id },
 					});
+
+					await addRecord<IConnectorPropertyDatabaseRecord>(databaseRecordFactory(this.data[savedPropertyModel.id]), DB_TABLE_CONNECTORS_PROPERTIES);
+
+					this.meta[savedPropertyModel.id] = savedPropertyModel.type;
 
 					return this.data[savedPropertyModel.id];
 				} catch (e: any) {
@@ -529,7 +738,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					throw new Error('devices-module.connector-properties.delete.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.connector-properties.delete.failed');
 				}
 
@@ -537,7 +746,21 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				const recordToDelete = this.data[payload.id];
 
+				const connectorsStore = useConnectors();
+
+				const connector = connectorsStore.findById(recordToDelete.connector.id);
+
+				if (connector === null) {
+					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+
+					throw new Error('devices-module.connector-properties.delete.failed');
+				}
+
 				delete this.data[payload.id];
+
+				await removeRecord(payload.id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+				delete this.meta[payload.id];
 
 				if (recordToDelete.draft) {
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
@@ -593,7 +816,11 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 				}
 
 				if (payload.routingKey === RoutingKeys.CONNECTOR_PROPERTY_DOCUMENT_DELETED) {
-					if (body.id in this.data) {
+					await removeRecord(body.id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+					delete this.meta[body.id];
+
+					if (this.data && body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
@@ -601,9 +828,9 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						return true;
 					}
 
-					if (body.id in this.data) {
-						const record = await recordFactory({
-							...this.data[body.id],
+					if (this.data && body.id in this.data) {
+						const record = await storeRecordFactory({
+							...JSON.parse(JSON.stringify(this.data[body.id])),
 							...{
 								category: body.category,
 								name: body.name,
@@ -628,6 +855,10 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
 							this.data[body.id] = record;
+
+							await addRecord<IConnectorPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CONNECTORS_PROPERTIES);
+
+							this.meta[record.id] = record.type;
 						}
 					} else {
 						const connectorsStore = useConnectors();
@@ -643,14 +874,118 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 							} catch {
 								return false;
 							}
-						} else {
-							try {
-								await connectorsStore.get({ id: body.connector });
-							} catch {
-								return false;
-							}
 						}
 					}
+				}
+
+				return true;
+			},
+
+			/**
+			 * Insert data from SSR
+			 *
+			 * @param {IConnectorPropertiesInsertDataActionPayload} payload
+			 */
+			async insertData(payload: IConnectorPropertiesInsertDataActionPayload) {
+				this.data = this.data ?? {};
+
+				let documents: ConnectorPropertyDocument[] = [];
+
+				if (Array.isArray(payload.data)) {
+					documents = payload.data;
+				} else {
+					documents = [payload.data];
+				}
+
+				const connectorIds = [];
+
+				for (const doc of documents) {
+					const isValid = jsonSchemaValidator.compile<ConnectorPropertyDocument>(exchangeDocumentSchema);
+
+					try {
+						if (!isValid(doc)) {
+							return false;
+						}
+					} catch {
+						return false;
+					}
+
+					const record = await storeRecordFactory({
+						...this.data[doc.id],
+						...{
+							id: doc.id,
+							type: {
+								type: doc.type,
+								source: doc.source,
+								parent: 'connector',
+								entity: 'property',
+							},
+							category: doc.category,
+							identifier: doc.identifier,
+							name: doc.name,
+							settable: doc.settable,
+							queryable: doc.queryable,
+							dataType: doc.data_type,
+							unit: doc.unit,
+							format: doc.format,
+							invalid: doc.invalid,
+							scale: doc.scale,
+							step: doc.step,
+							valueTransformer: doc.value_transformer,
+							default: doc.default,
+							value: doc.value,
+							connectorId: doc.connector,
+						},
+					});
+
+					if (documents.length === 1) {
+						this.data[doc.id] = record;
+					}
+
+					await addRecord<IConnectorPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CONNECTORS_PROPERTIES);
+
+					this.meta[record.id] = record.type;
+
+					connectorIds.push(doc.connector);
+				}
+
+				return true;
+			},
+
+			/**
+			 * Load record from database
+			 *
+			 * @param {IConnectorPropertiesLoadRecordActionPayload} payload
+			 */
+			async loadRecord(payload: IConnectorPropertiesLoadRecordActionPayload): Promise<boolean> {
+				const record = await getRecord<IConnectorPropertyDatabaseRecord>(payload.id, DB_TABLE_CONNECTORS_PROPERTIES);
+
+				if (record) {
+					this.data = this.data ?? {};
+					this.data[payload.id] = await storeRecordFactory(record);
+
+					return true;
+				}
+
+				return false;
+			},
+
+			/**
+			 * Load records from database
+			 *
+			 * @param {IConnectorPropertiesLoadAllRecordsActionPayload} payload
+			 */
+			async loadAllRecords(payload?: IConnectorPropertiesLoadAllRecordsActionPayload): Promise<boolean> {
+				const records = await getAllRecords<IConnectorPropertyDatabaseRecord>(DB_TABLE_CONNECTORS_PROPERTIES);
+
+				this.data = this.data ?? {};
+
+				for (const record of records) {
+					if (payload?.connector && payload?.connector.id !== record?.connector.id) {
+						continue;
+					}
+
+					this.data[record.id] = await storeRecordFactory(record);
 				}
 
 				return true;

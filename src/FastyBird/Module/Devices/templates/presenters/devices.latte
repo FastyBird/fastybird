@@ -1,0 +1,47 @@
+{block content}{/block}
+
+{block scripts}
+<script>
+    window.__DEVICES_MODULE_CONNECTORS__ = {$connectors|noescape};
+    window.__DEVICES_MODULE_CONNECTORS_PROPERTIES__ = {$connectorsProperties|noescape};
+    window.__DEVICES_MODULE_CONNECTORS_CONTROLS__ = {$connectorsControls|noescape};
+
+    {ifset $devices}
+    window.__DEVICES_MODULE_DEVICES__ = {$devices|noescape};
+    {/ifset}
+    {ifset $devicesProperties}
+    window.__DEVICES_MODULE_DEVICES_PROPERTIES__ = {$devicesProperties|noescape};
+    {/ifset}
+    {ifset $devicesControls}
+    window.__DEVICES_MODULE_DEVICES_CONTROLS__ = {$devicesControls|noescape};
+    {/ifset}
+    {ifset $device}
+    window.__DEVICES_MODULE_DEVICE__ = {$device|noescape};
+    {/ifset}
+    {ifset $deviceProperties}
+    window.__DEVICES_MODULE_DEVICE_PROPERTIES__ = {$deviceProperties|noescape};
+    {/ifset}
+    {ifset $deviceControls}
+    window.__DEVICES_MODULE_DEVICE_CONTROLS__ = {$deviceControls|noescape};
+    {/ifset}
+
+    {ifset $channels}
+    window.__DEVICES_MODULE_CHANNELS__ = {$channels|noescape};
+    {/ifset}
+    {ifset $channelsProperties}
+    window.__DEVICES_MODULE_CHANNELS_PROPERTIES__ = {$channelsProperties|noescape};
+    {/ifset}
+    {ifset $channelsControls}
+    window.__DEVICES_MODULE_CHANNELS_CONTROLS__ = {$channelsControls|noescape};
+    {/ifset}
+    {ifset $channel}
+    window.__DEVICES_MODULE_CHANNELS__ = {$channel|noescape};
+    {/ifset}
+    {ifset $channelProperties}
+    window.__DEVICES_MODULE_CHANNEL_PROPERTIES__ = {$channelProperties|noescape};
+    {/ifset}
+    {ifset $channelControls}
+    window.__DEVICES_MODULE_CHANNEL_CONTROLS__ = {$channelControls|noescape};
+    {/ifset}
+</script>
+{/block}

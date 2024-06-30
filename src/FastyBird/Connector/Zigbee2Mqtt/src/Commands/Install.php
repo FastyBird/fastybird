@@ -118,9 +118,9 @@ class Install extends Console\Command\Command
 
 		$io = new Style\SymfonyStyle($this->input, $this->output);
 
-		$io->title($this->translator->translate('//zigbee2mqtt-connector.cmd.install.title'));
+		$io->title((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.title'));
 
-		$io->note($this->translator->translate('//zigbee2mqtt-connector.cmd.install.subtitle'));
+		$io->note((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.subtitle'));
 
 		$this->askInstallAction($io);
 
@@ -143,7 +143,9 @@ class Install extends Console\Command\Command
 	private function createConnector(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.identifier'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.identifier',
+			),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -158,7 +160,7 @@ class Install extends Console\Command\Command
 
 				if ($connector !== null) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//zigbee2mqtt-connector.cmd.install.messages.identifier.connector.used',
 						),
 					);
@@ -192,7 +194,7 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.identifier.connector.missing',
 				),
 			);
@@ -275,7 +277,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -292,7 +294,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.create.connector.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.create.connector.error',
+				),
 			);
 
 			return;
@@ -301,7 +305,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.bridges'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.bridges'),
 			true,
 		);
 
@@ -337,10 +341,10 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.connector'),
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.connector'),
 				false,
 			);
 
@@ -359,7 +363,9 @@ class Install extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.disable.connector'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.questions.disable.connector',
+				),
 				false,
 			);
 
@@ -368,7 +374,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.enable.connector'),
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -521,7 +527,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.update.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -538,7 +544,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.update.connector.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.update.connector.error',
+				),
 			);
 
 			return;
@@ -547,7 +555,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.bridges'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.bridges'),
 			false,
 		);
 
@@ -575,20 +583,20 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -608,7 +616,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -625,7 +633,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.remove.connector.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.remove.connector.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -651,7 +661,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
@@ -680,8 +690,8 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.bridgesCnt'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.bridgesCnt'),
 		]);
 
 		foreach ($connectors as $index => $connector) {
@@ -747,7 +757,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.create.bridge.success',
 					['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 				),
@@ -764,7 +774,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.create.bridge.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.create.bridge.error',
+				),
 			);
 
 			return;
@@ -773,7 +785,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.devices'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 
@@ -807,10 +819,10 @@ class Install extends Console\Command\Command
 		$bridge = $this->askWhichBridge($io, $connector);
 
 		if ($bridge === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.bridge'),
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.create.bridge'),
 				false,
 			);
 
@@ -863,7 +875,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.update.bridge.success',
 					['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 				),
@@ -880,7 +892,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.update.bridge.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.update.bridge.error',
+				),
 			);
 
 			return;
@@ -889,7 +903,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.devices'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 
@@ -914,20 +928,20 @@ class Install extends Console\Command\Command
 		$bridge = $this->askWhichBridge($io, $connector);
 
 		if ($bridge === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.messages.remove.bridge.confirm',
 				['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -947,7 +961,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.remove.bridge.success',
 					['name' => $bridge->getName() ?? $bridge->getIdentifier()],
 				),
@@ -964,7 +978,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.remove.bridge.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.remove.bridge.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -990,7 +1006,7 @@ class Install extends Console\Command\Command
 		$bridge = $this->askWhichBridge($io, $connector);
 
 		if ($bridge === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
 
 			return;
 		}
@@ -1023,9 +1039,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.baseTopic'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.devicesCnt'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.baseTopic'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1073,7 +1089,7 @@ class Install extends Console\Command\Command
 		$findDevicesQuery->forConnector($connector);
 
 		if ($this->devicesRepository->getResultSet($findDevicesQuery, Entities\Devices\Bridge::class)->count() === 0) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noBridges'));
 
 			return;
 		}
@@ -1092,7 +1108,9 @@ class Install extends Console\Command\Command
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
-		$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.starting'));
+		$io->info(
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.starting'),
+		);
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getId()->toString(),
@@ -1105,10 +1123,14 @@ class Install extends Console\Command\Command
 
 		$io->newLine(2);
 
-		$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.stopping'));
+		$io->info(
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.stopping'),
+		);
 
 		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.error'));
+			$io->error(
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.error'),
+			);
 
 			return;
 		}
@@ -1116,11 +1138,11 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.id'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.model'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.manufacturer'),
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.bridge'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.id'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.model'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.manufacturer'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.bridge'),
 		]);
 
 		$foundDevices = 0;
@@ -1160,7 +1182,7 @@ class Install extends Console\Command\Command
 
 		if ($foundDevices > 0) {
 			$io->info(sprintf(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.foundDevices'),
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.foundDevices'),
 				$foundDevices,
 			));
 
@@ -1169,10 +1191,14 @@ class Install extends Console\Command\Command
 			$io->newLine();
 
 		} else {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevicesFound'));
+			$io->info(
+				(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevicesFound'),
+			);
 		}
 
-		$io->success($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.success'));
+		$io->success(
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.discover.success'),
+		);
 	}
 
 	/**
@@ -1188,7 +1214,7 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $bridge);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
@@ -1207,7 +1233,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1224,7 +1250,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.update.device.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.update.device.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -1244,20 +1272,20 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $bridge);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -1277,7 +1305,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//zigbee2mqtt-connector.cmd.install.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1294,7 +1322,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//zigbee2mqtt-connector.cmd.install.messages.remove.device.error'),
+				(string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.messages.remove.device.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -1320,7 +1350,7 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.data.name'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1352,26 +1382,36 @@ class Install extends Console\Command\Command
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.create.connector'),
-				1 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.update.connector'),
-				2 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.remove.connector'),
-				3 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.manage.connector'),
-				4 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.list.connectors'),
-				5 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.create.connector',
+				),
+				1 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.update.connector',
+				),
+				2 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.remove.connector',
+				),
+				3 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.manage.connector',
+				),
+				4 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.list.connectors',
+				),
+				5 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.create.connector',
 			)
 			|| $whatToDo === '0'
@@ -1381,7 +1421,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.update.connector',
 			)
 			|| $whatToDo === '1'
@@ -1391,7 +1431,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.remove.connector',
 			)
 			|| $whatToDo === '2'
@@ -1401,7 +1441,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.manage.connector',
 			)
 			|| $whatToDo === '3'
@@ -1411,7 +1451,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.list.connectors',
 			)
 			|| $whatToDo === '4'
@@ -1442,27 +1482,29 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.create.bridge'),
-				1 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.update.bridge'),
-				2 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.remove.bridge'),
-				3 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.manage.bridge'),
-				4 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.list.bridges'),
-				5 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.discover.devices'),
-				6 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.create.bridge'),
+				1 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.update.bridge'),
+				2 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.remove.bridge'),
+				3 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.manage.bridge'),
+				4 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.list.bridges'),
+				5 => (string) $this->translator->translate(
+					'//zigbee2mqtt-connector.cmd.install.actions.discover.devices',
+				),
+				6 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
 			],
 			6,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.create.bridge',
 			)
 			|| $whatToDo === '0'
@@ -1472,7 +1514,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.update.bridge',
 			)
 			|| $whatToDo === '1'
@@ -1482,7 +1524,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.remove.bridge',
 			)
 			|| $whatToDo === '2'
@@ -1492,7 +1534,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.remove.bridge',
 			)
 			|| $whatToDo === '3'
@@ -1502,7 +1544,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.list.bridges',
 			)
 			|| $whatToDo === '4'
@@ -1512,7 +1554,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.discover.devices',
 			)
 			|| $whatToDo === '5'
@@ -1541,24 +1583,24 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.update.device'),
-				1 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.remove.device'),
-				2 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.list.devices'),
-				3 => $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.update.device'),
+				1 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.remove.device'),
+				2 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.list.devices'),
+				3 => (string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.actions.nothing'),
 			],
 			3,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.update.device',
 			)
 			|| $whatToDo === '0'
@@ -1568,7 +1610,7 @@ class Install extends Console\Command\Command
 			$this->askManageBridgeAction($io, $connector, $bridge);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.remove.device',
 			)
 			|| $whatToDo === '1'
@@ -1578,7 +1620,7 @@ class Install extends Console\Command\Command
 			$this->askManageBridgeAction($io, $connector, $bridge);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//zigbee2mqtt-connector.cmd.install.actions.list.devices',
 			)
 			|| $whatToDo === '2'
@@ -1595,7 +1637,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.name'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.name',
+			),
 			$connector?->getName(),
 		);
 
@@ -1616,14 +1660,18 @@ class Install extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.address'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.address',
+			),
 			$connector?->getServerAddress() ?? Entities\Connectors\Connector::DEFAULT_SERVER_ADDRESS,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);
@@ -1647,14 +1695,18 @@ class Install extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.port'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.port',
+			),
 			$connector?->getServerPort() ?? Entities\Connectors\Connector::DEFAULT_SERVER_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);
@@ -1678,14 +1730,18 @@ class Install extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.securedPort'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.securedPort',
+			),
 			$connector?->getServerSecuredPort() ?? Entities\Connectors\Connector::DEFAULT_SERVER_SECURED_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);
@@ -1709,7 +1765,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.username'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.username',
+			),
 			$connector?->getUsername(),
 		);
 
@@ -1730,7 +1788,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.connector.password'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.connector.password',
+			),
 			$connector?->getPassword(),
 		);
 
@@ -1742,7 +1802,7 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.device.name'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -1763,7 +1823,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.provide.device.baseTopic'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.provide.device.baseTopic',
+			),
 			$device?->getBaseTopic() ?? Entities\Devices\Bridge::BASE_TOPIC,
 		);
 
@@ -1801,19 +1863,23 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.select.item.connector'),
+			(string) $this->translator->translate(
+				'//zigbee2mqtt-connector.cmd.install.questions.select.item.connector',
+			),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);
@@ -1841,7 +1907,7 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
@@ -1883,20 +1949,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.select.item.bridge'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.select.item.bridge'),
 			array_values($bridges),
 			count($bridges) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connector, $bridges): Entities\Devices\Bridge {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -1922,7 +1990,9 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);
@@ -1970,20 +2040,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.select.item.device'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.install.questions.select.item.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connector, $bridge, $devices): Entities\Devices\SubDevice {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -2013,7 +2085,9 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//zigbee2mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate(
+							'//zigbee2mqtt-connector.cmd.base.messages.answerNotValid',
+						),
 						$answer,
 					),
 				);

@@ -1,3 +1,4 @@
+import { ChannelControlDocument } from '@fastybird/metadata-library';
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
@@ -10,24 +11,30 @@ import {
 	IPlainRelation,
 	IChannelResponseModel,
 	IControlResponseModel,
+	IControlDatabaseRecord,
+	IControlMeta,
 } from '../../models/types';
+
+export interface IChannelControlMeta extends IControlMeta {
+	parent: 'channel';
+}
 
 // STORE
 // =====
 
 export interface IChannelControlsState {
 	semaphore: IChannelControlsStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IChannelControl };
+	data: { [key: IChannelControl['id']]: IChannelControl } | undefined;
+	meta: { [key: IChannelControl['id']]: IChannelControlMeta };
 }
 
 export interface IChannelControlsGetters extends _GettersTree<IChannelControlsState> {
-	firstLoadFinished: (state: IChannelControlsState) => (channelId: string) => boolean;
-	getting: (state: IChannelControlsState) => (controlId: string) => boolean;
-	fetching: (state: IChannelControlsState) => (channelId: string | null) => boolean;
-	findById: (state: IChannelControlsState) => (id: string) => IChannelControl | null;
-	findByName: (state: IChannelControlsState) => (channel: IChannel, name: string) => IChannelControl | null;
-	findForChannel: (state: IChannelControlsState) => (channelId: string) => IChannelControl[];
+	getting: (state: IChannelControlsState) => (id: IChannelControl['id']) => boolean;
+	fetching: (state: IChannelControlsState) => (channelId: IChannel['id'] | null) => boolean;
+	findById: (state: IChannelControlsState) => (id: IChannelControl['id']) => IChannelControl | null;
+	findByName: (state: IChannelControlsState) => (channel: IChannel, name: IChannelControl['name']) => IChannelControl | null;
+	findForChannel: (state: IChannelControlsState) => (channelId: IChannel['id']) => IChannelControl[];
+	findMeta: (state: IChannelControlsState) => (id: IChannelControl['id']) => IChannelControlMeta | null;
 }
 
 export interface IChannelControlsActions {
@@ -40,6 +47,9 @@ export interface IChannelControlsActions {
 	remove: (payload: IChannelControlsRemoveActionPayload) => Promise<boolean>;
 	transmitCommand: (payload: IChannelControlsTransmitCommandActionPayload) => Promise<boolean>;
 	socketData: (payload: IChannelControlsSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IChannelControlsInsertDataActionPayload) => Promise<boolean>;
+	loadRecord: (payload: IChannelControlsLoadRecordActionPayload) => Promise<boolean>;
+	loadAllRecords: (payload?: IChannelControlsLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
 // STORE STATE
@@ -61,6 +71,8 @@ interface IChannelControlsStateSemaphoreFetching {
 // ============
 
 export interface IChannelControl extends IControl {
+	type: IChannelControlMeta;
+
 	// Relations
 	channel: IPlainRelation;
 }
@@ -69,8 +81,11 @@ export interface IChannelControl extends IControl {
 // ====================
 
 export interface IChannelControlRecordFactoryPayload extends IControlRecordFactoryPayload {
+	type: IChannelControlMeta;
+
 	// Relations
-	channelId: string;
+	channelId?: string;
+	channel?: IPlainRelation;
 }
 
 // STORE ACTIONS
@@ -82,32 +97,35 @@ export interface IChannelControlsSetActionPayload {
 
 export interface IChannelControlsUnsetActionPayload {
 	channel?: IChannel;
-	id?: string;
+	id?: IChannelControl['id'];
 }
 
 export interface IChannelControlsGetActionPayload {
 	channel: IChannel;
-	id: string;
+	id: IChannelControl['id'];
+	refresh?: boolean;
 }
 
 export interface IChannelControlsFetchActionPayload {
 	channel: IChannel;
+	refresh?: boolean;
 }
 
 export interface IChannelControlsAddActionPayload extends IControlsAddActionPayload {
+	type: IChannelControlMeta;
 	channel: IChannel;
 }
 
 export interface IChannelControlsSaveActionPayload {
-	id: string;
+	id: IChannelControl['id'];
 }
 
 export interface IChannelControlsRemoveActionPayload {
-	id: string;
+	id: IChannelControl['id'];
 }
 
 export interface IChannelControlsTransmitCommandActionPayload {
-	id: string;
+	id: IChannelControl['id'];
 	value?: string;
 }
 
@@ -115,6 +133,18 @@ export interface IChannelControlsSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IChannelControlsInsertDataActionPayload {
+	data: ChannelControlDocument | ChannelControlDocument[];
+}
+
+export interface IChannelControlsLoadRecordActionPayload {
+	id: IChannelControl['id'];
+}
+
+export interface IChannelControlsLoadAllRecordsActionPayload {
+	channel: IChannel;
 }
 
 // API RESPONSES JSONS
@@ -149,6 +179,18 @@ interface IChannelControlResponseDataRelationships extends TJsonApiRelationships
 // ===================
 
 export interface IChannelControlResponseModel extends IControlResponseModel {
+	type: IChannelControlMeta;
+
 	// Relations
 	channel: IPlainRelation | IChannelResponseModel;
+}
+
+// DATABASE
+// ========
+
+export interface IChannelControlDatabaseRecord extends IControlDatabaseRecord {
+	type: IChannelControlMeta;
+
+	// Relations
+	channel: IPlainRelation;
 }

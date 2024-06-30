@@ -125,6 +125,7 @@ export enum PropertyCategory {
 export interface ConnectorDocument {
 	id: string;
 	type: string;
+	source: string;
 	category: ConnectorCategory;
 	identifier: string;
 	name: string;
@@ -141,6 +142,7 @@ export interface ConnectorDocument {
 export interface ConnectorPropertyDocument {
 	id: string;
 	type: PropertyType;
+	source: string;
 	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
@@ -167,6 +169,8 @@ export interface ConnectorPropertyDocument {
 
 export interface ConnectorControlDocument {
 	id: string;
+	type: string;
+	source: string;
 	name: string;
 	connector: string;
 	owner: string | null;
@@ -177,6 +181,7 @@ export interface ConnectorControlDocument {
 export interface DeviceDocument {
 	id: string;
 	type: string;
+	source: string;
 	category: DeviceCategory;
 	identifier: string;
 	name: string | null;
@@ -195,6 +200,7 @@ export interface DeviceDocument {
 export interface DevicePropertyDocument {
 	id: string;
 	type: PropertyType;
+	source: string;
 	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
@@ -214,6 +220,7 @@ export interface DevicePropertyDocument {
 	pending?: boolean | Date;
 	is_valid?: boolean;
 	device: string;
+	parent?: string;
 	children: string[];
 	owner: string | null;
 	createdAt: Date | null;
@@ -222,6 +229,8 @@ export interface DevicePropertyDocument {
 
 export interface DeviceControlDocument {
 	id: string;
+	type: string;
+	source: string;
 	name: string;
 	device: string;
 	owner: string | null;
@@ -232,6 +241,7 @@ export interface DeviceControlDocument {
 export interface ChannelDocument {
 	id: string;
 	type: string;
+	source: string;
 	category: ChannelCategory;
 	identifier: string;
 	name: string | null;
@@ -247,6 +257,7 @@ export interface ChannelDocument {
 export interface ChannelPropertyDocument {
 	id: string;
 	type: PropertyType;
+	source: string;
 	category: PropertyCategory;
 	identifier: string;
 	name: string | null;
@@ -266,6 +277,7 @@ export interface ChannelPropertyDocument {
 	pending?: boolean | Date;
 	is_valid?: boolean;
 	channel: string;
+	parent?: string;
 	children: string[];
 	owner: string | null;
 	createdAt: Date | null;
@@ -274,6 +286,8 @@ export interface ChannelPropertyDocument {
 
 export interface ChannelControlDocument {
 	id: string;
+	type: string;
+	source: string;
 	name: string;
 	channel: string;
 	owner: string | null;

@@ -241,7 +241,7 @@ const isChannelSettingsRoute = computed<boolean>(
 );
 
 const devices = computed<IDevice[]>((): IDevice[] => {
-	return Object.values(devicesStore.data);
+	return devicesStore.findAll();
 });
 
 const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
@@ -289,7 +289,7 @@ const deviceData = computed<IDeviceData | null>((): IDeviceData | null => {
 });
 
 const page = computed<number>((): number => {
-	const index = Object.values(devicesStore.data).findIndex(({ id }) => id === props.id);
+	const index = devicesStore.findAll().findIndex(({ id }) => id === props.id);
 
 	if (index !== -1) {
 		return index + 1;
@@ -387,27 +387,27 @@ const onAddChannelParameter = (id: string): void => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	fetchDevice(props.id).catch((e) => {
-		if (get(e, 'exception.response.status', 0) === 404) {
-			throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
-		} else {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-		}
-	});
-
-	if (!isLoading.value && devicesStore.findById(props.id) === null) {
-		throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
-	}
-
-	if (deviceData.value) {
-		fetchChannels(deviceData.value.device).catch((e) => {
+	fetchDevice(props.id)
+		.then((): void => {
+			if (!isLoading.value && devicesStore.findById(props.id) === null) {
+				throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
+			}
+		})
+		.catch((e): void => {
 			if (get(e, 'exception.response.status', 0) === 404) {
 				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
 			} else {
 				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 			}
 		});
-	}
+
+	fetchChannels(props.id).catch((e): void => {
+		if (get(e, 'exception.response.status', 0) === 404) {
+			throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+		} else {
+			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+		}
+	});
 
 	if (
 		route.name === routeNames.deviceSettings ||
@@ -421,14 +421,26 @@ onBeforeMount(async (): Promise<void> => {
 });
 
 const fetchDevice = async (id: string): Promise<void> => {
-	if (!isLoading.value && !devicesStore.firstLoadFinished) {
-		await devicesStore.get({ id });
+	await devicesStore.get({ id, refresh: !devicesStore.firstLoadFinished() });
+
+	const device = devicesStore.findById(id);
+
+	if (device) {
+		await devicePropertiesStore.fetch({ device, refresh: false });
+		await deviceControlsStore.fetch({ device, refresh: false });
 	}
 };
 
-const fetchChannels = async (device: IDevice): Promise<void> => {
-	if (!areChannelsLoading.value && !channelsStore.firstLoadFinished(device.id)) {
-		await channelsStore.fetch({ device });
+const fetchChannels = async (deviceId: IDevice['id']): Promise<void> => {
+	await channelsStore.fetch({ deviceId, refresh: !channelsStore.firstLoadFinished(deviceId) });
+
+	if (channelsStore.firstLoadFinished(deviceId)) {
+		const channels = channelsStore.findForDevice(deviceId);
+
+		for (const channel of channels) {
+			await channelPropertiesStore.fetch({ channel, refresh: false });
+			await channelControlsStore.fetch({ channel, refresh: false });
+		}
 	}
 };
 
@@ -461,19 +473,32 @@ watch(
 	(val: IDeviceData | null): void => {
 		if (val !== null) {
 			meta.title = t('meta.devices.detail.title', { device: useEntityTitle(val.device).value });
-
-			fetchChannels(val.device).catch((e) => {
-				if (get(e, 'exception.response.status', 0) === 404) {
-					throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
-				} else {
-					throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-				}
-			});
 		}
 
 		if (!isLoading.value && val === null) {
 			throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
 		}
+	}
+);
+
+watch(
+	(): string => props.id,
+	async (val: string): Promise<void> => {
+		fetchDevice(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
+
+		fetchChannels(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
 	}
 );
 </script>

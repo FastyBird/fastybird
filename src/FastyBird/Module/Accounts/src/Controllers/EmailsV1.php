@@ -40,6 +40,7 @@ use Throwable;
 use function end;
 use function explode;
 use function preg_match;
+use function str_starts_with;
 use function strtolower;
 use function strval;
 
@@ -199,7 +200,7 @@ final class EmailsV1 extends BaseV1
 				$columnParts = explode('.', $match['key']);
 				$columnKey = end($columnParts);
 
-				if (Utils\Strings::startsWith($columnKey, 'email_')) {
+				if (str_starts_with($columnKey, 'email_')) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 						$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading'),

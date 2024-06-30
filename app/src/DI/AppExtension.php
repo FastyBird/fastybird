@@ -17,8 +17,13 @@ namespace FastyBird\App\DI;
 
 use FastyBird\App\Router;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Router as ApplicationRouter;
+use FastyBird\Library\Application\UI as ApplicationUI;
 use Nette\Application;
 use Nette\DI;
+use function assert;
+use function is_string;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * FastyBird application
@@ -46,14 +51,6 @@ class AppExtension extends DI\CompilerExtension
 		};
 	}
 
-	public function loadConfiguration(): void
-	{
-		$builder = $this->getContainerBuilder();
-
-		$builder->addDefinition($this->prefix('router.app.routes'), new DI\Definitions\ServiceDefinition())
-			->setType(Router\AppRouter::class);
-	}
-
 	/**
 	 * @throws DI\MissingServiceException
 	 */
@@ -63,6 +60,21 @@ class AppExtension extends DI\CompilerExtension
 
 		$builder = $this->getContainerBuilder();
 
+		/**
+		 * ROUTES
+		 */
+
+		$appRouterServiceName = $builder->getByType(ApplicationRouter\AppRouter::class);
+		assert(is_string($appRouterServiceName));
+		$appRouterService = $builder->getDefinition($appRouterServiceName);
+		assert($appRouterService instanceof DI\Definitions\ServiceDefinition);
+
+		$appRouterService->addSetup([Router\AppRouter::class, 'createRouter'], [$appRouterService]);
+
+		/**
+		 * UI
+		 */
+
 		$presenterFactoryService = $builder->getDefinitionByType(Application\IPresenterFactory::class);
 
 		if ($presenterFactoryService instanceof DI\Definitions\ServiceDefinition) {
@@ -70,6 +82,17 @@ class AppExtension extends DI\CompilerExtension
 				'App' => 'FastyBird\App\Presenters\*Presenter',
 			]]);
 		}
+
+		$templateFactoryService = $builder->getDefinitionByType(ApplicationUI\TemplateFactory::class);
+		assert($templateFactoryService instanceof DI\Definitions\ServiceDefinition);
+
+		$templateFactoryService->addSetup(
+			'registerLayout',
+			[
+				__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR
+				. 'templates' . DIRECTORY_SEPARATOR . '@layout.latte',
+			],
+		);
 	}
 
 }

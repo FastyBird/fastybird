@@ -35,7 +35,7 @@
   },
   "require": {
     "php": ">=8.2.0",
-    "contributte/vite": "^v0.2",
+    "contributte/vite": "^0.2",
     "fastybird/application-library": "dev-main",
     "fastybird/accounts-module": "dev-main",
     "fastybird/devices-module": "dev-main",

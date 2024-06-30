@@ -86,14 +86,14 @@ final class Exchange extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title($this->translator->translate('//devices-module.cmd.exchange.title'));
+			$io->title((string) $this->translator->translate('//devices-module.cmd.exchange.title'));
 
-			$io->note($this->translator->translate('//devices-module.cmd.exchange.subtitle'));
+			$io->note((string) $this->translator->translate('//devices-module.cmd.exchange.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
+				(string) $this->translator->translate('//devices-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -143,7 +143,7 @@ final class Exchange extends Console\Command\Command
 			);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//devices-module.cmd.exchange.messages.error'));
+				$io->error((string) $this->translator->translate('//devices-module.cmd.exchange.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;

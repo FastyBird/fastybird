@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Connector type"
     },
+    "source": {
+      "type": "string",
+      "description": "Connector source"
+    },
     "category": {
       "type": "string",
       "enum": [

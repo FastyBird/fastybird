@@ -17,9 +17,10 @@ namespace FastyBird\Module\Devices\Documents\Connectors\Controls\Actions;
 
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -36,7 +37,7 @@ use Ramsey\Uuid;
 #[EXCHANGE\RoutingMap([
 	Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY,
 ])]
-final readonly class Action implements MetadataDocuments\Document
+final readonly class Action implements Documents\Document
 {
 
 	public function __construct(
@@ -88,11 +89,17 @@ final readonly class Action implements MetadataDocuments\Document
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'connector' => $this->getConnector()->toString(),
 			'control' => $this->getControl()->toString(),
 			'action' => $this->getAction()->value,
 			'expected_value' => $this->getExpectedValue(),
 		];
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 }

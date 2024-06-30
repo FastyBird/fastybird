@@ -64,6 +64,7 @@ use function range;
 use function React\Async\async;
 use function React\Async\await;
 use function sprintf;
+use function str_contains;
 use function str_replace;
 use function strval;
 use function unpack;
@@ -1050,7 +1051,7 @@ final class LocalApi
 
 			if (
 				is_string($payload)
-				&& Utils\Strings::contains(Utils\Strings::lower($payload), 'data unvalid')
+				&& str_contains(Utils\Strings::lower($payload), 'data unvalid')
 				&& $this->deviceType !== Types\LocalDeviceType::DEVICE_22
 			) {
 				if ($this->deviceType === Types\LocalDeviceType::GATEWAY) {
@@ -1090,8 +1091,8 @@ final class LocalApi
 			if (
 				is_string($payload)
 				&& (
-					Utils\Strings::contains(Utils\Strings::lower($payload), 'data unvalid')
-					|| Utils\Strings::contains(Utils\Strings::lower($payload), 'format error')
+					str_contains(Utils\Strings::lower($payload), 'data unvalid')
+					|| str_contains(Utils\Strings::lower($payload), 'format error')
 				)
 			) {
 				return $this->createMessage(
@@ -1515,7 +1516,7 @@ final class LocalApi
 		try {
 			return $this->messageBuilder->create(
 				$message,
-				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+				(array) Utils\Json::decode(Utils\Json::encode($data), forceArrays: true),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\LocalApiError('Could not map data to message', $ex->getCode(), $ex);

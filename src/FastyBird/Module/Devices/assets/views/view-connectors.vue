@@ -79,7 +79,7 @@ import { FasEthernet } from '@fastybird/web-ui-icons';
 import { FbAppBarHeading, FbAppBarButton, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
-import { useConnectors } from '../models';
+import { useConnectorControls, useConnectorProperties, useConnectors } from '../models';
 import { IConnector } from '../models/types';
 import { ConnectorsPreviewInfo, ConnectorsListConnectors, ViewError } from '../components';
 import { ApplicationError } from '../errors';
@@ -100,12 +100,14 @@ const { routeNames } = useRoutesNames();
 const flashMessage = useFlashMessage();
 
 const connectorsStore = useConnectors();
+const connectorControlsStore = useConnectorControls();
+const connectorPropertiesStore = useConnectorProperties();
 
 const itemsSearch = ref<string>('');
 
-const itemsCount = computed<number>((): number => Object.keys(connectorsStore.data).length);
+const itemsCount = computed<number>((): number => connectorsStore.findAll().length);
 
-const isLoading = computed<boolean>((): boolean => connectorsStore.fetching);
+const isLoading = computed<boolean>((): boolean => connectorsStore.fetching());
 
 const isPartialDetailRoute = computed<boolean>((): boolean => {
 	return route.matched.find((matched) => matched.name === routeNames.connectorDetail) !== undefined;
@@ -113,7 +115,8 @@ const isPartialDetailRoute = computed<boolean>((): boolean => {
 
 const items = computed<IConnector[]>((): IConnector[] => {
 	return orderBy<IConnector>(
-		Object.values(connectorsStore.data)
+		connectorsStore
+			.findAll()
 			.filter((connector) => !connector.draft)
 			.filter((connector) => {
 				return itemsSearch.value === '' || useEntityTitle(connector).value.toLowerCase().includes(itemsSearch.value.toLowerCase());
@@ -185,12 +188,17 @@ const onRemove = async (id: string): Promise<void> => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	if (!isLoading.value && !connectorsStore.firstLoadFinished) {
-		try {
-			await connectorsStore.fetch();
-		} catch (e: any) {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+	try {
+		await connectorsStore.fetch({ refresh: !connectorsStore.firstLoadFinished() });
+
+		const connectors = connectorsStore.findAll();
+
+		for (const connector of connectors) {
+			await connectorPropertiesStore.fetch({ connector, refresh: false });
+			await connectorControlsStore.fetch({ connector, refresh: false });
 		}
+	} catch (e: any) {
+		throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 	}
 });
 </script>

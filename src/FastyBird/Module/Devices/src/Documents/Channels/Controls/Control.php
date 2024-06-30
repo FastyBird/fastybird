@@ -20,7 +20,9 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -40,7 +42,7 @@ use Ramsey\Uuid;
 	Devices\Constants::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY,
 	Devices\Constants::MESSAGE_BUS_CHANNEL_CONTROL_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-class Control implements MetadataDocuments\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
+class Control implements Documents\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
 {
 
 	use MetadataDocuments\TOwner;
@@ -94,12 +96,18 @@ class Control implements MetadataDocuments\Document, MetadataDocuments\Owner, Me
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'channel' => $this->getChannel()->toString(),
 			'name' => $this->getName(),
 			'owner' => $this->getOwner()?->toString(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];
+	}
+
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return MetadataTypes\Sources\Module::DEVICES;
 	}
 
 }

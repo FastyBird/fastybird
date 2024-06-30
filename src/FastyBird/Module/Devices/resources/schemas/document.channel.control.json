@@ -7,6 +7,10 @@
       "format": "uuid",
       "description": "Document unique uuid v4 identifier"
     },
+    "source": {
+      "type": "string",
+      "description": "Control source"
+    },
     "name": {
       "type": "string"
     },

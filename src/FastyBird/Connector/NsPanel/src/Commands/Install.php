@@ -151,9 +151,9 @@ class Install extends Console\Command\Command
 
 		$io = new Style\SymfonyStyle($this->input, $this->output);
 
-		$io->title($this->translator->translate('//ns-panel-connector.cmd.install.title'));
+		$io->title((string) $this->translator->translate('//ns-panel-connector.cmd.install.title'));
 
-		$io->note($this->translator->translate('//ns-panel-connector.cmd.install.subtitle'));
+		$io->note((string) $this->translator->translate('//ns-panel-connector.cmd.install.subtitle'));
 
 		$this->askInstallAction($io);
 
@@ -174,7 +174,9 @@ class Install extends Console\Command\Command
 		$mode = $this->askConnectorMode($io);
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.connector.identifier'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.provide.connector.identifier',
+			),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -189,7 +191,7 @@ class Install extends Console\Command\Command
 
 				if ($connector !== null) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//ns-panel-connector.cmd.install.messages.identifier.connector.used',
 						),
 					);
@@ -223,7 +225,9 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.identifier.connector.missing'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.identifier.connector.missing',
+				),
 			);
 
 			return;
@@ -259,7 +263,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -276,7 +280,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.create.connector.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.create.connector.error',
+				),
 			);
 
 			return;
@@ -285,7 +291,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateways'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateways'),
 			true,
 		);
 
@@ -316,10 +322,10 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.connector'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.connector'),
 				false,
 			);
 
@@ -343,7 +349,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.change.mode'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.change.mode'),
 				false,
 			);
 
@@ -362,7 +368,7 @@ class Install extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.disable.connector'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.disable.connector'),
 				false,
 			);
 
@@ -371,7 +377,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.enable.connector'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -413,7 +419,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -430,7 +436,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.update.connector.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.update.connector.error',
+				),
 			);
 
 			return;
@@ -439,7 +447,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.gateways'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.gateways'),
 			false,
 		);
 
@@ -464,20 +472,20 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -497,7 +505,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -514,7 +522,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.connector.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.remove.connector.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -537,7 +547,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
@@ -571,11 +581,11 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.mode'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.panelsCnt'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.subDevicesCnt'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.devicesCnt'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.mode'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.panelsCnt'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.subDevicesCnt'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($connectors as $index => $connector) {
@@ -597,7 +607,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.mode.' . $connector->getClientMode()->value,
 				),
 				count($nsPanels),
@@ -628,7 +638,9 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.identifier'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.provide.device.identifier',
+			),
 		);
 
 		$question->setValidator(function (string|null $answer) {
@@ -640,7 +652,7 @@ class Install extends Console\Command\Command
 					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//ns-panel-connector.cmd.install.messages.identifier.device.used',
 						),
 					);
@@ -660,7 +672,9 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.identifier.device.missing'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.identifier.device.missing',
+				),
 			);
 
 			return;
@@ -672,11 +686,11 @@ class Install extends Console\Command\Command
 
 		$panelInfo = $this->askWhichPanel($io, $connector);
 
-		$io->note($this->translator->translate('//ns-panel-connector.cmd.install.messages.gateway.prepare'));
+		$io->note((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.gateway.prepare'));
 
 		do {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.isGatewayReady'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.isGatewayReady'),
 				false,
 			);
 
@@ -684,7 +698,7 @@ class Install extends Console\Command\Command
 
 			if (!$continue) {
 				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//ns-panel-connector.cmd.base.questions.exit'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.exit'),
 					false,
 				);
 
@@ -707,7 +721,7 @@ class Install extends Console\Command\Command
 			);
 		} catch (Exceptions\LanApiCall) {
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
 			);
 
 			return;
@@ -769,7 +783,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.gateway.success',
 					['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 				),
@@ -785,7 +799,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.create.gateway.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.create.gateway.error'),
+			);
 
 			return;
 		} finally {
@@ -797,7 +813,7 @@ class Install extends Console\Command\Command
 			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.devices'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.devices'),
 				true,
 			);
 
@@ -834,10 +850,10 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateway'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.gateway'),
 				false,
 			);
 
@@ -891,7 +907,7 @@ class Install extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.regenerateAccessToken'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.regenerateAccessToken'),
 			false,
 		);
 
@@ -900,11 +916,13 @@ class Install extends Console\Command\Command
 		$accessToken = null;
 
 		if ($regenerate) {
-			$io->note($this->translator->translate('//ns-panel-connector.cmd.install.messages.gateway.prepare'));
+			$io->note(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.gateway.prepare'),
+			);
 
 			do {
 				$question = new Console\Question\ConfirmationQuestion(
-					$this->translator->translate('//ns-panel-connector.cmd.install.questions.isGatewayReady'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.isGatewayReady'),
 					false,
 				);
 
@@ -912,7 +930,7 @@ class Install extends Console\Command\Command
 
 				if (!$continue) {
 					$question = new Console\Question\ConfirmationQuestion(
-						$this->translator->translate('//ns-panel-connector.cmd.base.questions.exit'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.exit'),
 						false,
 					);
 
@@ -935,7 +953,9 @@ class Install extends Console\Command\Command
 				);
 			} catch (Exceptions\LanApiCall) {
 				$io->error(
-					$this->translator->translate('//ns-panel-connector.cmd.install.messages.accessToken.error'),
+					(string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.messages.accessToken.error',
+					),
 				);
 			}
 		}
@@ -1034,7 +1054,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.gateway.success',
 					['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 				),
@@ -1050,7 +1070,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.update.gateway.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.update.gateway.error'),
+			);
 
 			return;
 		} finally {
@@ -1058,7 +1080,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.devices'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 
@@ -1086,20 +1108,20 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.remove.gateway.confirm',
 				['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -1119,7 +1141,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.gateway.success',
 					['name' => $gateway->getName() ?? $gateway->getIdentifier()],
 				),
@@ -1135,7 +1157,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.gateway.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.gateway.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -1163,7 +1187,7 @@ class Install extends Console\Command\Command
 		$gateway = $this->askWhichGateway($io, $connector);
 
 		if ($gateway === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noGateways'));
 
 			return;
 		}
@@ -1197,9 +1221,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.ipAddress'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.devicesCnt'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.ipAddress'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1256,7 +1280,7 @@ class Install extends Console\Command\Command
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
-		$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.starting'));
+		$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.starting'));
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
 			'--connector' => $connector->getId()->toString(),
@@ -1269,10 +1293,12 @@ class Install extends Console\Command\Command
 
 		$io->newLine(2);
 
-		$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.stopping'));
+		$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.stopping'));
 
 		if ($result !== Console\Command\Command::SUCCESS) {
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.error'),
+			);
 
 			return;
 		}
@@ -1280,10 +1306,10 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.model'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.gateway'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.id'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.model'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.gateway'),
 		]);
 
 		$foundDevices = 0;
@@ -1322,7 +1348,7 @@ class Install extends Console\Command\Command
 
 		if ($foundDevices > 0) {
 			$io->info(sprintf(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.foundDevices'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.foundDevices'),
 				$foundDevices,
 			));
 
@@ -1331,10 +1357,14 @@ class Install extends Console\Command\Command
 			$io->newLine();
 
 		} else {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevicesFound'));
+			$io->info(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevicesFound'),
+			);
 		}
 
-		$io->success($this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.success'));
+		$io->success(
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.discover.success'),
+		);
 	}
 
 	/**
@@ -1354,7 +1384,9 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.identifier'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.provide.device.identifier',
+			),
 		);
 
 		$question->setValidator(function (string|null $answer) {
@@ -1366,7 +1398,7 @@ class Install extends Console\Command\Command
 					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//ns-panel-connector.cmd.install.messages.identifier.device.used',
 						),
 					);
@@ -1386,7 +1418,9 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.identifier.device.missing'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.identifier.device.missing',
+				),
 			);
 
 			return;
@@ -1423,7 +1457,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1439,7 +1473,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.create.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.create.device.error'),
+			);
 
 			return;
 		} finally {
@@ -1475,10 +1511,10 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
 				false,
 			);
 
@@ -1505,7 +1541,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1521,7 +1557,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.update.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.update.device.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -1544,20 +1582,20 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -1594,7 +1632,7 @@ class Install extends Console\Command\Command
 					],
 				);
 
-				$io->error($this->translator->translate(
+				$io->error((string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.removeDeviceFromPanelFailed',
 					[
 						'name' => $device->getName() ?? $device->getIdentifier(),
@@ -1614,7 +1652,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1630,7 +1668,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.device.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -1658,10 +1698,10 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector, $gateway, true);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.device'),
 				false,
 			);
 
@@ -1704,9 +1744,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.category'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.capabilities'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.category'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.capabilities'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1720,13 +1760,13 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$device->getName() ?? $device->getIdentifier(),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->value,
 				),
 				implode(
 					', ',
 					array_map(
-						fn (Entities\Channels\Channel $channel): string => $this->translator->translate(
+						fn (Entities\Channels\Channel $channel): string => (string) $this->translator->translate(
 							'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->value,
 						),
 						$this->channelsRepository->findAllBy($findChannelsQuery, Entities\Channels\Channel::class),
@@ -1801,7 +1841,7 @@ class Install extends Console\Command\Command
 
 			if ($channel !== null) {
 				$io->error(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.noMultipleCapabilities',
 						['type' => $channel->getIdentifier()],
 					),
@@ -1820,7 +1860,7 @@ class Install extends Console\Command\Command
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
 				'entity' => Entities\Channels\Channel::class,
 				'identifier' => $identifier,
-				'name' => $this->translator->translate(
+				'name' => (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.capability.' . $capability->value,
 				) . (array_key_exists(
 					'key',
@@ -1838,7 +1878,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.create.capability.success',
 					['name' => $channel->getName() ?? $channel->getIdentifier()],
 				),
@@ -1855,7 +1895,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.create.capability.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.create.capability.error',
+				),
 			);
 
 			return null;
@@ -1885,10 +1927,12 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
+			$io->info(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'),
+			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
 				false,
 			);
 
@@ -1960,14 +2004,14 @@ class Install extends Console\Command\Command
 				$this->databaseHelper->commitTransaction();
 
 				$io->success(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.update.capability.success',
 						['name' => $channel->getName() ?? $channel->getIdentifier()],
 					),
 				);
 			} else {
 				$io->success(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//ns-panel-connector.cmd.install.messages.noMissingProtocols',
 						['name' => $channel->getName() ?? $channel->getIdentifier()],
 					),
@@ -1985,7 +2029,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.update.capability.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.update.capability.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -2013,10 +2059,12 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
+			$io->info(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'),
+			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.create.capability'),
 				false,
 			);
 
@@ -2043,7 +2091,9 @@ class Install extends Console\Command\Command
 		$channel = $this->askWhichCapability($io, $device);
 
 		if ($channel === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'));
+			$io->info(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noCapabilities'),
+			);
 
 			return;
 		} elseif ($channel === false) {
@@ -2051,14 +2101,14 @@ class Install extends Console\Command\Command
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.remove.capability.confirm',
 				['name' => $channel->getName() ?? $channel->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -2078,7 +2128,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.capability.success',
 					['name' => $channel->getName() ?? $channel->getIdentifier()],
 				),
@@ -2095,7 +2145,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.capability.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.remove.capability.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -2125,9 +2177,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.protocols'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.protocols'),
 		]);
 
 		foreach ($deviceChannels as $index => $channel) {
@@ -2137,13 +2189,13 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$channel->getName() ?? $channel->getIdentifier(),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.capability.' . $channel->getCapability()->value,
 				),
 				implode(
 					', ',
 					array_map(
-						fn (DevicesEntities\Channels\Properties\Property $property): string => $this->translator->translate(
+						fn (DevicesEntities\Channels\Properties\Property $property): string => (string) $this->translator->translate(
 							'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
 								$property->getIdentifier(),
 							)->value,
@@ -2234,7 +2286,7 @@ class Install extends Console\Command\Command
 		$format = $this->askFormat($io, $protocol);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.connectProtocol'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.connectProtocol'),
 			true,
 		);
 
@@ -2264,7 +2316,7 @@ class Install extends Console\Command\Command
 					'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 					'parent' => $connectProperty,
 					'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-					'name' => $this->translator->translate(
+					'name' => (string) $this->translator->translate(
 						'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 					),
 					'channel' => $channel,
@@ -2283,7 +2335,7 @@ class Install extends Console\Command\Command
 			return $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 				'entity' => DevicesEntities\Channels\Properties\Variable::class,
 				'identifier' => Helpers\Name::convertProtocolToProperty($protocol),
-				'name' => $this->translator->translate(
+				'name' => (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 				),
 				'channel' => $channel,
@@ -2343,7 +2395,7 @@ class Install extends Console\Command\Command
 		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
 
 			return;
 		}
@@ -2377,7 +2429,7 @@ class Install extends Console\Command\Command
 			$format = $this->askFormat($io, $protocol);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.connectProtocol'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.connectProtocol'),
 				$property instanceof DevicesEntities\Channels\Properties\Mapped,
 			);
 
@@ -2420,7 +2472,7 @@ class Install extends Console\Command\Command
 							'entity' => DevicesEntities\Channels\Properties\Mapped::class,
 							'parent' => $connectProperty,
 							'identifier' => $property->getIdentifier(),
-							'name' => $this->translator->translate(
+							'name' => (string) $this->translator->translate(
 								'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 							),
 							'channel' => $channel,
@@ -2455,7 +2507,7 @@ class Install extends Console\Command\Command
 					$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => $property->getIdentifier(),
-						'name' => $this->translator->translate(
+						'name' => (string) $this->translator->translate(
 							'//ns-panel-connector.cmd.base.protocol.' . $protocol->value,
 						),
 						'channel' => $channel,
@@ -2473,7 +2525,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.update.protocol.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2490,7 +2542,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.update.protocol.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.update.protocol.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -2517,20 +2571,20 @@ class Install extends Console\Command\Command
 		$property = $this->askWhichProtocol($io, $channel);
 
 		if ($property === null) {
-			$io->info($this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
+			$io->info((string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noProtocols'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.messages.remove.protocol.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -2550,7 +2604,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.messages.remove.protocol.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2567,7 +2621,9 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate('//ns-panel-connector.cmd.install.messages.remove.protocol.error'),
+				(string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.messages.remove.protocol.error',
+				),
 			);
 		} finally {
 			$this->databaseHelper->clear();
@@ -2606,9 +2662,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
-			$this->translator->translate('//ns-panel-connector.cmd.install.data.value'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.type'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.value'),
 		]);
 
 		$metadata = $this->loader->loadProtocols();
@@ -2639,7 +2695,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$property->getName() ?? $property->getIdentifier(),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.protocol.' . Helpers\Name::convertPropertyToProtocol(
 						$property->getIdentifier(),
 					)->value,
@@ -2669,26 +2725,26 @@ class Install extends Console\Command\Command
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.connector'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.connector'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.connector'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.connector'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.connectors'),
-				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.connector'),
+				1 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.connector'),
+				2 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.connector'),
+				3 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.connector'),
+				4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.connectors'),
+				5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.create.connector',
 			)
 			|| $whatToDo === '0'
@@ -2698,7 +2754,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.update.connector',
 			)
 			|| $whatToDo === '1'
@@ -2708,7 +2764,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.remove.connector',
 			)
 			|| $whatToDo === '2'
@@ -2718,7 +2774,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.manage.connector',
 			)
 			|| $whatToDo === '3'
@@ -2728,7 +2784,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.list.connectors',
 			)
 			|| $whatToDo === '4'
@@ -2759,39 +2815,39 @@ class Install extends Console\Command\Command
 			= $connector->getClientMode() === Types\ClientMode::GATEWAY
 			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		? new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
-				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
-				6 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+				1 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+				2 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+				3 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+				4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+				5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.discover.devices'),
+				6 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			6,
 		)
 		: new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
-				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.gateway'),
+				1 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.gateway'),
+				2 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.gateway'),
+				3 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.gateway'),
+				4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.gateways'),
+				5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.create.gateway',
 			)
 			|| $whatToDo === '0'
@@ -2801,7 +2857,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.update.gateway',
 			)
 			|| $whatToDo === '1'
@@ -2811,7 +2867,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.remove.gateway',
 			)
 			|| $whatToDo === '2'
@@ -2821,7 +2877,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.manage.gateway',
 			)
 			|| $whatToDo === '3'
@@ -2831,7 +2887,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.list.gateways',
 			)
 			|| $whatToDo === '4'
@@ -2846,7 +2902,7 @@ class Install extends Console\Command\Command
 			|| $connector->getClientMode() === Types\ClientMode::BOTH
 		) {
 			if (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.discover.devices',
 				)
 				|| $whatToDo === '5'
@@ -2880,55 +2936,77 @@ class Install extends Console\Command\Command
 	{
 		if ($connector->getClientMode() === Types\ClientMode::DEVICE) {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 				[
-					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.device'),
-					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.device'),
-					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.device'),
-					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.device'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+					0 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.create.device',
+					),
+					1 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.update.device',
+					),
+					2 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.remove.device',
+					),
+					3 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.manage.device',
+					),
+					4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
+					5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 				],
 				5,
 			);
 
 		} elseif ($connector->getClientMode() === Types\ClientMode::GATEWAY) {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 				[
-					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.device'),
-					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.device'),
-					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.device'),
-					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+					0 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.update.device',
+					),
+					1 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.remove.device',
+					),
+					2 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.manage.device',
+					),
+					3 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
+					4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 				],
 				4,
 			);
 
 		} else {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 				[
-					0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.device'),
-					1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.device'),
-					2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.device'),
-					3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.device'),
-					4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
-					5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+					0 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.create.device',
+					),
+					1 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.update.device',
+					),
+					2 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.remove.device',
+					),
+					3 => (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.install.actions.manage.device',
+					),
+					4 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.devices'),
+					5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 				],
 				5,
 			);
 		}
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if ($connector->getClientMode() === Types\ClientMode::DEVICE) {
 			if (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.create.device',
 				)
 				|| $whatToDo === '0'
@@ -2938,7 +3016,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.update.device',
 				)
 				|| $whatToDo === '1'
@@ -2948,7 +3026,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.remove.device',
 				)
 				|| $whatToDo === '2'
@@ -2958,7 +3036,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.manage.device',
 				)
 				|| $whatToDo === '3'
@@ -2968,7 +3046,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.list.devices',
 				)
 				|| $whatToDo === '4'
@@ -2979,7 +3057,7 @@ class Install extends Console\Command\Command
 			}
 		} elseif ($connector->getClientMode() === Types\ClientMode::GATEWAY) {
 			if (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.update.device',
 				)
 				|| $whatToDo === '0'
@@ -2989,7 +3067,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.remove.device',
 				)
 				|| $whatToDo === '1'
@@ -2999,7 +3077,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.manage.device',
 				)
 				|| $whatToDo === '2'
@@ -3009,7 +3087,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.list.devices',
 				)
 				|| $whatToDo === '3'
@@ -3020,7 +3098,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			if (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.create.device',
 				)
 				|| $whatToDo === '0'
@@ -3030,7 +3108,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.update.device',
 				)
 				|| $whatToDo === '1'
@@ -3040,7 +3118,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.remove.device',
 				)
 				|| $whatToDo === '2'
@@ -3050,7 +3128,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.manage.device',
 				)
 				|| $whatToDo === '3'
@@ -3060,7 +3138,7 @@ class Install extends Console\Command\Command
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
-				$whatToDo === $this->translator->translate(
+				$whatToDo === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.actions.list.devices',
 				)
 				|| $whatToDo === '4'
@@ -3091,26 +3169,36 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.create.capability'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.capability'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.capability'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.manage.capability'),
-				4 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.capabilities'),
-				5 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.create.capability',
+				),
+				1 => (string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.update.capability',
+				),
+				2 => (string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.remove.capability',
+				),
+				3 => (string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.manage.capability',
+				),
+				4 => (string) $this->translator->translate(
+					'//ns-panel-connector.cmd.install.actions.list.capabilities',
+				),
+				5 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.create.capability',
 			)
 			|| $whatToDo === '0'
@@ -3120,7 +3208,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.update.capability',
 			)
 			|| $whatToDo === '1'
@@ -3130,7 +3218,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.remove.capability',
 			)
 			|| $whatToDo === '2'
@@ -3140,7 +3228,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.manage.capability',
 			)
 			|| $whatToDo === '3'
@@ -3150,7 +3238,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.list.capabilities',
 			)
 			|| $whatToDo === '4'
@@ -3180,24 +3268,24 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.protocol'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.protocol'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.protocols'),
-				3 => $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.update.protocol'),
+				1 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.remove.protocol'),
+				2 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.list.protocols'),
+				3 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.actions.nothing'),
 			],
 			3,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.update.protocol',
 			)
 			|| $whatToDo === '0'
@@ -3207,7 +3295,7 @@ class Install extends Console\Command\Command
 			$this->askProtocolAction($io, $channel);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.remove.protocol',
 			)
 			|| $whatToDo === '1'
@@ -3217,7 +3305,7 @@ class Install extends Console\Command\Command
 			$this->askProtocolAction($io, $channel);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.actions.list.protocols',
 			)
 			|| $whatToDo === '2'
@@ -3231,30 +3319,30 @@ class Install extends Console\Command\Command
 	private function askConnectorMode(Style\SymfonyStyle $io): Types\ClientMode
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.connector.mode'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.connector.mode'),
 			[
-				0 => $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.gateway'),
-				1 => $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.device'),
-				2 => $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.both'),
+				0 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.gateway'),
+				1 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.device'),
+				2 => (string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.both'),
 			],
 			2,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer): Types\ClientMode {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.answers.mode.gateway',
 				)
 				|| $answer === '0'
@@ -3263,7 +3351,7 @@ class Install extends Console\Command\Command
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.answers.mode.device',
 				)
 				|| $answer === '1'
@@ -3272,7 +3360,7 @@ class Install extends Console\Command\Command
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.install.answers.mode.both',
 				)
 				|| $answer === '2'
@@ -3281,7 +3369,10 @@ class Install extends Console\Command\Command
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf(
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
 			);
 		});
 
@@ -3297,7 +3388,7 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.connector.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -3309,7 +3400,7 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.name'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -3344,7 +3435,7 @@ class Install extends Console\Command\Command
 				$requiredCapabilities = $categoryMetadata->offsetGet('capabilities');
 
 				if ((array) $requiredCapabilities !== []) {
-					$categories[$type] = $this->translator->translate(
+					$categories[$type] = (string) $this->translator->translate(
 						'//ns-panel-connector.cmd.base.deviceType.' . $type,
 					);
 				}
@@ -3354,7 +3445,7 @@ class Install extends Console\Command\Command
 		asort($categories);
 
 		$default = $device !== null ? array_search(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.base.deviceType.' . $device->getDisplayCategory()->value,
 			),
 			array_values($categories),
@@ -3362,18 +3453,18 @@ class Install extends Console\Command\Command
 		) : null;
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.category'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.category'),
 			array_values($categories),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer) use ($categories): Types\Category {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -3390,7 +3481,10 @@ class Install extends Console\Command\Command
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf(
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
 			);
 		});
 
@@ -3456,7 +3550,7 @@ class Install extends Console\Command\Command
 					);
 
 					if ($channel === null || $allowMultiple) {
-						$capabilities[$type] = $this->translator->translate(
+						$capabilities[$type] = (string) $this->translator->translate(
 							'//ns-panel-connector.cmd.base.capability.' . Types\Capability::from(strval($type))->value,
 						);
 					}
@@ -3487,7 +3581,7 @@ class Install extends Console\Command\Command
 						);
 
 						if ($channel === null || $allowMultiple) {
-							$capabilities[$type] = $this->translator->translate(
+							$capabilities[$type] = (string) $this->translator->translate(
 								'//ns-panel-connector.cmd.base.capability.' . Types\Capability::from(
 									strval($type),
 								)->value,
@@ -3497,7 +3591,7 @@ class Install extends Console\Command\Command
 				}
 
 				if ($capabilities !== []) {
-					$capabilities['none'] = $this->translator->translate(
+					$capabilities['none'] = (string) $this->translator->translate(
 						'//ns-panel-connector.cmd.install.answers.none',
 					);
 				}
@@ -3505,19 +3599,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.capabilityType'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.select.device.capabilityType',
+			),
 			array_values($capabilities),
 			0,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer) use ($capabilities): Types\Capability|null {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -3538,7 +3634,10 @@ class Install extends Console\Command\Command
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf(
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
 			);
 		});
 
@@ -3605,7 +3704,7 @@ class Install extends Console\Command\Command
 				$property = $this->channelsPropertiesRepository->findOneBy($findChannelPropertyQuery);
 
 				if ($property === null) {
-					$protocols[$type] = $this->translator->translate(
+					$protocols[$type] = (string) $this->translator->translate(
 						'//ns-panel-connector.cmd.base.protocol.' . Types\Protocol::from($type)->value,
 					);
 				}
@@ -3617,19 +3716,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.protocolType'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.select.device.protocolType',
+			),
 			array_values($protocols),
 			0,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer) use ($protocols): Types\Protocol {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -3646,7 +3747,10 @@ class Install extends Console\Command\Command
 			}
 
 			throw new Exceptions\Runtime(
-				sprintf($this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'), $answer),
+				sprintf(
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					$answer,
+				),
 			);
 		});
 
@@ -3734,7 +3838,9 @@ class Install extends Console\Command\Command
 		}
 
 		if (count($devices) === 0) {
-			$io->warning($this->translator->translate('//ns-panel-connector.cmd.install.messages.noHardwareDevices'));
+			$io->warning(
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.messages.noHardwareDevices'),
+			);
 
 			return null;
 		}
@@ -3752,18 +3858,20 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.mappedDevice'),
+			(string) $this->translator->translate(
+				'//ns-panel-connector.cmd.install.questions.select.device.mappedDevice',
+			),
 			array_values($devices),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer) use ($devices): DevicesEntities\Devices\Device {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -3785,7 +3893,7 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
@@ -3847,21 +3955,23 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.questions.select.device.mappedDeviceChannel',
 			),
 			array_values($channels),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|null $answer) use ($channels): DevicesEntities\Channels\Channel {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -3883,7 +3993,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -3930,21 +4040,23 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.questions.select.device.mappedChannelProperty',
 			),
 			array_values($properties),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|null $answer) use ($properties): DevicesEntities\Channels\Properties\Dynamic {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -3969,7 +4081,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4096,7 +4208,7 @@ class Install extends Console\Command\Command
 					}
 
 					$question = new Console\Question\ChoiceQuestion(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//ns-panel-connector.cmd.install.questions.select.device.valueMapping',
 							['value' => $name],
 						),
@@ -4106,13 +4218,13 @@ class Install extends Console\Command\Command
 						),
 					);
 					$question->setErrorMessage(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 					);
 					$question->setValidator(function (string|null $answer) use ($options): string|array {
 						if ($answer === null) {
 							throw new Exceptions\Runtime(
 								sprintf(
-									$this->translator->translate(
+									(string) $this->translator->translate(
 										'//ns-panel-connector.cmd.base.messages.answerNotValid',
 									),
 									$answer,
@@ -4142,7 +4254,9 @@ class Install extends Console\Command\Command
 
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								strval($answer),
 							),
 						);
@@ -4223,7 +4337,7 @@ class Install extends Console\Command\Command
 			);
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.value'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.device.value'),
 				$options,
 				$value !== null ? array_key_exists(
 					MetadataUtilities\Value::toString($value, true),
@@ -4231,13 +4345,15 @@ class Install extends Console\Command\Command
 				) : null,
 			);
 			$question->setErrorMessage(
-				$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 			);
 			$question->setValidator(function (string|int|null $answer) use ($options): string|int {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4255,7 +4371,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4269,21 +4385,23 @@ class Install extends Console\Command\Command
 
 		if ($dataType === MetadataTypes\DataType::BOOLEAN) {
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
 				[
-					$this->translator->translate('//ns-panel-connector.cmd.install.answers.false'),
-					$this->translator->translate('//ns-panel-connector.cmd.install.answers.true'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.false'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.true'),
 				],
 				is_bool($value) ? ($value ? 0 : 1) : null,
 			);
 			$question->setErrorMessage(
-				$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+				(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 			);
 			$question->setValidator(function (string|int|null $answer): bool {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4309,7 +4427,7 @@ class Install extends Console\Command\Command
 			: null;
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.value'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.value'),
 			is_object($value) ? MetadataUtilities\Value::toString($value) : $value,
 		);
 		$question->setValidator(
@@ -4317,7 +4435,9 @@ class Install extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4331,7 +4451,9 @@ class Install extends Console\Command\Command
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4340,7 +4462,9 @@ class Install extends Console\Command\Command
 					if ($maxValue !== null && floatval($answer) > $maxValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4354,7 +4478,9 @@ class Install extends Console\Command\Command
 					) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4374,7 +4500,9 @@ class Install extends Console\Command\Command
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4383,7 +4511,9 @@ class Install extends Console\Command\Command
 					if ($maxValue !== null && intval($answer) > $maxValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4392,7 +4522,9 @@ class Install extends Console\Command\Command
 					if ($step !== null && intval($answer) % $step !== 0) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//ns-panel-connector.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -4403,7 +4535,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4445,19 +4577,19 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.connector'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4485,7 +4617,7 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
@@ -4510,7 +4642,7 @@ class Install extends Console\Command\Command
 	): API\Messages\Response\GetGatewayInfo
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.address'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.provide.device.address'),
 			$gateway?->getIpAddress(),
 		);
 		$question->setValidator(
@@ -4539,7 +4671,7 @@ class Install extends Console\Command\Command
 						);
 
 						throw new Exceptions\Runtime(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//ns-panel-connector.cmd.install.messages.addressNotReachable',
 								['address' => $answer],
 							),
@@ -4549,7 +4681,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4592,20 +4724,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.gateway'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.gateway'),
 			array_values($gateways),
 			count($gateways) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connector, $gateways): Entities\Devices\Gateway {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4631,7 +4765,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4689,20 +4823,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.device'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connector, $gateway, $devices): Entities\Devices\ThirdPartyDevice|Entities\Devices\SubDevice {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4735,7 +4871,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4777,25 +4913,27 @@ class Install extends Console\Command\Command
 			return null;
 		}
 
-		$channels['none'] = $this->translator->translate(
+		$channels['none'] = (string) $this->translator->translate(
 			'//ns-panel-connector.cmd.install.answers.none',
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.capability'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.capability'),
 			array_values($channels),
 			count($channels) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($device, $channels): Entities\Channels\Channel|false {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4828,7 +4966,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -4871,13 +5009,13 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.protocol'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.item.protocol'),
 			array_values($properties),
 			count($properties) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -4885,7 +5023,9 @@ class Install extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//ns-panel-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -4916,7 +5056,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);

@@ -49,6 +49,7 @@
     "test": "lerna run test --stream --ignore '@fastybird/web-ui'"
   },
   "devDependencies": {
+    "@rollup/rollup-linux-arm64-gnu": "^4.18",
     "lerna": "^8.1"
   },
   "engines": {

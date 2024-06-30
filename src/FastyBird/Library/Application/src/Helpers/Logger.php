@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Helpers
  * @since          1.0.0
  *
@@ -34,7 +34,7 @@ use const DIRECTORY_SEPARATOR;
 /**
  * Logger helpers
  *
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Helpers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

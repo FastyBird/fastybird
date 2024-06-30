@@ -80,6 +80,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
@@ -107,6 +108,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Variable::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
@@ -132,6 +134,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Mapped::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
@@ -175,6 +178,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
@@ -201,6 +205,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,
@@ -227,6 +232,7 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 				[
 					'id' => '176984ad-7cf7-465d-9e53-71668a74a688',
 					'type' => Documents\Channels\Properties\Dynamic::getType(),
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'category' => Types\PropertyCategory::GENERIC->value,
 					'identifier' => 'property-identifier',
 					'name' => null,

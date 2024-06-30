@@ -14,6 +14,10 @@
         "dynamic"
       ]
     },
+    "source": {
+      "type": "string",
+      "description": "Property source"
+    },
     "category": {
       "type": "string",
       "enum": [
@@ -225,8 +229,8 @@
         },
         {
           "type": "string",
-          "pattern": "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\d.y]?)*(?:[\\+\\-\\^\\*\\:\\/\\(\\)])*(?:\\s)*)*)){1}(?:\\|(?:(?:y=)(?<equation_y>(?:(?:[\\d.x]?)*(?:[\\+\\-\\^\\*\\:\\/\\(\\)])*(?:\\s)*)*))){0,1}$"
-        }
+          "pattern": "^equation:(?:(?:x=)(?<equation_x>(?:(?:[\\d.y])*(?:[\\+\\-\\^\\*:\\/\\(\\)])*\\s*)*)){1}(?:\\|(?:(?:y=)(?<equation_y>(?:(?:[\\d.x])*(?:[\\+\\-\\^\\*:\\/\\(\\)])*\\s*)*))?){0,1}$"
+      }
       ],
       "default": null
     },

@@ -57,7 +57,7 @@ trait TEntityParams
 	{
 		$toUpdate = $this->params !== null ? array_merge($this->params, $params) : $params;
 		/** @var array<string, mixed>|false $toUpdate */
-		$toUpdate = Utils\Json::decode(Utils\Json::encode($toUpdate), Utils\Json::FORCE_ARRAY);
+		$toUpdate = Utils\Json::decode(Utils\Json::encode($toUpdate), forceArrays: true);
 
 		if (is_array($toUpdate)) {
 			$this->params = $toUpdate;

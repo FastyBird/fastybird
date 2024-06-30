@@ -138,7 +138,7 @@ final class DirectiveController extends BaseController
 		try {
 			$requestData = $this->messageBuilder->create(
 				NsPanel\API\Messages\Request\SetDeviceState::class,
-				(array) Utils\Json::decode(Utils\Json::encode($body), Utils\Json::FORCE_ARRAY),
+				(array) Utils\Json::decode(Utils\Json::encode($body), forceArrays: true),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\ServerRequestError(

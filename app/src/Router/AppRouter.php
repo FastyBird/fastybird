@@ -15,7 +15,7 @@
 
 namespace FastyBird\App\Router;
 
-use Nette\Application;
+use FastyBird\Library\Application\Router as ApplicationRouter;
 
 /**
  * Application router
@@ -25,15 +25,14 @@ use Nette\Application;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class AppRouter extends Application\Routers\RouteList
+final class AppRouter
 {
 
-	public function __construct()
+	public static function createRouter(ApplicationRouter\AppRouter $router): void
 	{
-		parent::__construct();
+		$list = $router->withModule('App');
 
-		$this->addRoute('/', [
-			'module' => 'App',
+		$list->addRoute('/', [
 			'presenter' => 'Default',
 			'action' => 'default',
 		]);

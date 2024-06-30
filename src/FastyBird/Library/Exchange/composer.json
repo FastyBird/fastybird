@@ -36,7 +36,7 @@
     "fastybird/application-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "psr/event-dispatcher": "^1.0",
     "react/promise": "^3",
     "symfony/event-dispatcher": "^5.4",

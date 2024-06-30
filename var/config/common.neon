@@ -145,10 +145,6 @@ fbTriggersModule:
 
 # Application
 #############
-
-application:
-    scanDirs: false
-
 contributteConsole:
     name: "FastyBird:IoTServer!"
     version: "1.0.0"

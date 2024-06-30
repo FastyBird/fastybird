@@ -1,12 +1,3 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { Jsona } from 'jsona';
-import Ajv from 'ajv/dist/2020';
-import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
-import isEqual from 'lodash.isequal';
-
-import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
 import {
 	DevicePropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
@@ -14,25 +5,45 @@ import {
 	PropertyCategory,
 	PropertyType,
 } from '@fastybird/metadata-library';
+import addFormats from 'ajv-formats';
+import Ajv from 'ajv/dist/2020';
+import axios from 'axios';
+import { Jsona } from 'jsona';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
+import { defineStore } from 'pinia';
+import { v4 as uuid } from 'uuid';
+
+import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useDevices } from '../../models';
-import { IDevice, IDevicePropertiesSetStateActionPayload, IPlainRelation } from '../../models/types';
+import {
+	IDevice,
+	IDevicePropertiesInsertDataActionPayload,
+	IDevicePropertiesLoadAllRecordsActionPayload,
+	IDevicePropertiesLoadRecordActionPayload,
+	IDevicePropertiesSetStateActionPayload,
+	IDevicePropertyDatabaseRecord,
+	IDevicePropertyMeta,
+	IPlainRelation,
+} from '../../models/types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_PROPERTIES } from '../../utilities/database';
 
 import {
-	IDevicePropertiesState,
 	IDevicePropertiesActions,
-	IDevicePropertiesGetters,
 	IDevicePropertiesAddActionPayload,
 	IDevicePropertiesEditActionPayload,
 	IDevicePropertiesFetchActionPayload,
 	IDevicePropertiesGetActionPayload,
+	IDevicePropertiesGetters,
 	IDevicePropertiesRemoveActionPayload,
 	IDevicePropertiesResponseJson,
 	IDevicePropertiesSaveActionPayload,
 	IDevicePropertiesSetActionPayload,
 	IDevicePropertiesSocketDataActionPayload,
+	IDevicePropertiesState,
 	IDevicePropertiesUnsetActionPayload,
 	IDeviceProperty,
 	IDevicePropertyRecordFactoryPayload,
@@ -41,32 +52,51 @@ import {
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise<IDeviceProperty> => {
+const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise<IDeviceProperty> => {
 	const devicesStore = useDevices();
 
-	let device = devicesStore.findById(data.deviceId);
+	let device = 'device' in data ? get(data, 'device', null) : null;
+
+	let deviceMeta = data.deviceId ? devicesStore.findMeta(data.deviceId) : null;
+
+	if (device === null && deviceMeta !== null) {
+		device = {
+			id: data.deviceId as string,
+			type: deviceMeta,
+		};
+	}
 
 	if (device === null) {
-		if (!(await devicesStore.get({ id: data.deviceId }))) {
+		if (!('deviceId' in data)) {
+			throw new Error("Device for property couldn't be loaded from store");
+		}
+
+		if (!(await devicesStore.get({ id: data.deviceId as string, refresh: false }))) {
 			throw new Error("Device for property couldn't be loaded from server");
 		}
 
-		device = devicesStore.findById(data.deviceId);
+		deviceMeta = devicesStore.findMeta(data.deviceId as string);
 
-		if (device === null) {
+		if (deviceMeta === null) {
 			throw new Error("Device for property couldn't be loaded from store");
 		}
+
+		device = {
+			id: data.deviceId as string,
+			type: deviceMeta,
+		};
 	}
 
 	const record: IDeviceProperty = {
 		id: get(data, 'id', uuid().toString()),
-		type: { ...{ parent: 'device', entity: 'property' }, ...data.type },
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -80,7 +110,7 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 		format: get(data, 'format', null),
 		invalid: get(data, 'invalid', null),
 		scale: get(data, 'scale', null),
-		step: get(data, 'scale', null),
+		step: get(data, 'step', null),
 		default: get(data, 'default', null),
 		valueTransformer: get(data, 'valueTransformer', null),
 
@@ -131,6 +161,62 @@ const recordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise
 	return record;
 };
 
+const databaseRecordFactory = (record: IDeviceProperty): IDevicePropertyDatabaseRecord => {
+	return {
+		id: record.id,
+		type: {
+			type: record.type.type,
+			source: record.type.source,
+			entity: record.type.entity,
+			parent: record.type.parent,
+		},
+
+		category: record.category,
+		identifier: record.identifier,
+		name: record.name,
+		settable: record.settable,
+		queryable: record.queryable,
+		dataType: record.dataType,
+		unit: record.unit,
+		format: record.format,
+		invalid: record.invalid,
+		scale: record.scale,
+		step: record.step,
+		valueTransformer: record.valueTransformer,
+		default: record.default,
+
+		// Static property
+		value: record.value,
+
+		relationshipNames: record.relationshipNames.map((name) => name),
+
+		parent: record.parent
+			? {
+					id: record.device.id,
+					type: {
+						type: record.device.type.type,
+						source: record.device.type.source,
+						entity: record.device.type.entity,
+						parent: record.device.type.parent,
+					},
+				}
+			: null,
+		children: record.children.map((children) => ({
+			id: children.id,
+			type: { type: children.type.type, source: children.type.source, entity: children.type.entity, parent: children.type.parent },
+		})),
+
+		device: {
+			id: record.device.id,
+			type: {
+				type: record.device.type.type,
+				source: record.device.type.source,
+				entity: record.device.type.entity,
+			},
+		},
+	};
+};
+
 export const useDeviceProperties = defineStore<string, IDevicePropertiesState, IDevicePropertiesGetters, IDevicePropertiesActions>(
 	'devices_module_devices_properties',
 	{
@@ -146,36 +232,34 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					deleting: [],
 				},
 
-				firstLoad: [],
-
-				data: {},
+				data: undefined,
+				meta: {},
 			};
 		},
 
 		getters: {
-			firstLoadFinished: (state: IDevicePropertiesState): ((deviceId: string) => boolean) => {
-				return (deviceId) => state.firstLoad.includes(deviceId);
+			getting: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => boolean) => {
+				return (id: IDeviceProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
 
-			getting: (state: IDevicePropertiesState): ((propertyId: string) => boolean) => {
-				return (propertyId) => state.semaphore.fetching.item.includes(propertyId);
+			fetching: (state: IDevicePropertiesState): ((deviceId: IDevice['id'] | null) => boolean) => {
+				return (deviceId: IDevice['id'] | null): boolean =>
+					deviceId !== null ? state.semaphore.fetching.items.includes(deviceId) : state.semaphore.fetching.items.length > 0;
 			},
 
-			fetching: (state: IDevicePropertiesState): ((deviceId: string | null) => boolean) => {
-				return (deviceId) => (deviceId !== null ? state.semaphore.fetching.items.includes(deviceId) : state.semaphore.fetching.items.length > 0);
-			},
-
-			findById: (state: IDevicePropertiesState): ((id: string) => IDeviceProperty | null) => {
-				return (id) => {
-					const property = Object.values(state.data).find((property) => property.id === id);
+			findById: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => IDeviceProperty | null) => {
+				return (id: IDeviceProperty['id']): IDeviceProperty | null => {
+					const property: IDeviceProperty | undefined = Object.values(state.data ?? {}).find(
+						(property: IDeviceProperty): boolean => property.id === id
+					);
 
 					return property ?? null;
 				};
 			},
 
-			findByIdentifier: (state: IDevicePropertiesState): ((device: IDevice, identifier: string) => IDeviceProperty | null) => {
-				return (device: IDevice, identifier) => {
-					const property = Object.values(state.data).find((property) => {
+			findByIdentifier: (state: IDevicePropertiesState): ((device: IDevice, identifier: IDeviceProperty['identifier']) => IDeviceProperty | null) => {
+				return (device: IDevice, identifier: IDeviceProperty['identifier']): IDeviceProperty | null => {
+					const property: IDeviceProperty | undefined = Object.values(state.data ?? {}).find((property: IDeviceProperty): boolean => {
 						return property.device.id === device.id && property.identifier.toLowerCase() === identifier.toLowerCase();
 					});
 
@@ -183,9 +267,15 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 				};
 			},
 
-			findForDevice: (state: IDevicePropertiesState): ((deviceId: string) => IDeviceProperty[]) => {
-				return (deviceId: string): IDeviceProperty[] => {
-					return Object.values(state.data).filter((property) => property.device.id === deviceId);
+			findForDevice: (state: IDevicePropertiesState): ((deviceId: IDevice['id']) => IDeviceProperty[]) => {
+				return (deviceId: IDevice['id']): IDeviceProperty[] => {
+					return Object.values(state.data ?? {}).filter((property: IDeviceProperty): boolean => property.device.id === deviceId);
+				};
+			},
+
+			findMeta: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => IDevicePropertyMeta | null) => {
+				return (id: IDeviceProperty['id']): IDevicePropertyMeta | null => {
+					return id in state.meta ? state.meta[id] : null;
 				};
 			},
 		},
@@ -197,14 +287,19 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 			 * @param {IDevicePropertiesSetActionPayload} payload
 			 */
 			async set(payload: IDevicePropertiesSetActionPayload): Promise<IDeviceProperty> {
-				if (payload.data.id && payload.data.id in this.data) {
-					const record = await recordFactory({ ...this.data[payload.data.id], ...payload.data });
+				if (this.data && payload.data.id && payload.data.id in this.data) {
+					const record = await storeRecordFactory({ ...this.data[payload.data.id], ...payload.data });
 
 					return (this.data[record.id] = record);
 				}
 
-				const record = await recordFactory(payload.data);
+				const record = await storeRecordFactory(payload.data);
 
+				await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
+
+				this.meta[record.id] = record.type;
+
+				this.data = this.data ?? {};
 				return (this.data[record.id] = record);
 			},
 
@@ -213,19 +308,31 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 			 *
 			 * @param {IDevicePropertiesUnsetActionPayload} payload
 			 */
-			unset(payload: IDevicePropertiesUnsetActionPayload): void {
-				if (typeof payload.device !== 'undefined') {
-					Object.keys(this.data).forEach((id) => {
-						if (id in this.data && this.data[id].device.id === payload.device?.id) {
-							delete this.data[id];
+			async unset(payload: IDevicePropertiesUnsetActionPayload): Promise<void> {
+				if (!this.data) {
+					return;
+				}
+
+				if (payload.device !== undefined) {
+					const items = this.findForDevice(payload.device.id);
+
+					for (const item of items) {
+						if (item.id in (this.data ?? {})) {
+							await removeRecord(item.id, DB_TABLE_DEVICES_PROPERTIES);
+
+							delete this.meta[item.id];
+
+							delete (this.data ?? {})[item.id];
 						}
-					});
+					}
 
 					return;
-				} else if (typeof payload.id !== 'undefined') {
-					if (payload.id in this.data) {
-						delete this.data[payload.id];
-					}
+				} else if (payload.id !== undefined) {
+					await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+					delete this.meta[payload.id];
+
+					delete this.data[payload.id];
 
 					return;
 				}
@@ -243,6 +350,12 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					return false;
 				}
 
+				const fromDatabase = await this.loadRecord({ id: payload.id });
+
+				if (fromDatabase && payload.refresh === false) {
+					return true;
+				}
+
 				this.semaphore.fetching.item.push(payload.id);
 
 				try {
@@ -252,10 +365,15 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IDevicePropertyResponseModel;
 
-					this.data[propertyResponseModel.id] = await recordFactory({
+					this.data = this.data ?? {};
+					this.data[propertyResponseModel.id] = await storeRecordFactory({
 						...propertyResponseModel,
 						...{ deviceId: propertyResponseModel.device.id, parentId: propertyResponseModel.parent?.id },
 					});
+
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[propertyResponseModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
 					throw new ApiError('devices-module.device-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
@@ -275,6 +393,12 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					return false;
 				}
 
+				const fromDatabase = await this.loadAllRecords({ device: payload.device });
+
+				if (fromDatabase && payload?.refresh === false) {
+					return true;
+				}
+
 				this.semaphore.fetching.items.push(payload.device.id);
 
 				try {
@@ -285,13 +409,33 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IDevicePropertyResponseModel[];
 
 					for (const property of propertiesResponseModel) {
-						this.data[property.id] = await recordFactory({
+						this.data = this.data ?? {};
+						this.data[property.id] = await storeRecordFactory({
 							...property,
 							...{ deviceId: property.device.id, parentId: property.parent?.id },
 						});
+
+						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[property.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+						this.meta[property.id] = property.type;
 					}
 
-					this.firstLoad.push(payload.device.id);
+					// Get all current IDs from IndexedDB
+					const allRecords = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
+					const indexedDbIds: string[] = allRecords.filter((record) => record.device.id === payload.device.id).map((record) => record.id);
+
+					// Get the IDs from the latest changes
+					const serverIds: string[] = Object.keys(this.data ?? {});
+
+					// Find IDs that are in IndexedDB but not in the server response
+					const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
+
+					// Remove records that are no longer present on the server
+					for (const id of idsToRemove) {
+						await removeRecord(id, DB_TABLE_DEVICES_PROPERTIES);
+
+						delete this.meta[id];
+					}
 				} catch (e: any) {
 					throw new ApiError('devices-module.device-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
@@ -307,7 +451,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 			 * @param {IDevicePropertiesAddActionPayload} payload
 			 */
 			async add(payload: IDevicePropertiesAddActionPayload): Promise<IDeviceProperty> {
-				const newProperty = await recordFactory({
+				const newProperty = await storeRecordFactory({
 					...{
 						id: payload?.id,
 						type: payload?.type,
@@ -320,6 +464,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				this.semaphore.creating.push(newProperty.id);
 
+				this.data = this.data ?? {};
 				this.data[newProperty.id] = newProperty;
 
 				if (newProperty.draft) {
@@ -327,6 +472,16 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					return newProperty;
 				} else {
+					const devicesStore = useDevices();
+
+					const device = devicesStore.findById(payload.device.id);
+
+					if (device === null) {
+						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newProperty.id);
+
+						throw new Error('devices-module.device-properties.create.failed');
+					}
+
 					try {
 						const apiData: Partial<IDeviceProperty> =
 							newProperty.parent !== null
@@ -378,10 +533,14 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 						const createdPropertyModel = jsonApiFormatter.deserialize(createdProperty.data) as IDevicePropertyResponseModel;
 
-						this.data[createdPropertyModel.id] = await recordFactory({
+						this.data[createdPropertyModel.id] = await storeRecordFactory({
 							...createdPropertyModel,
 							...{ deviceId: createdPropertyModel.device.id, parentId: createdPropertyModel.parent?.id },
 						});
+
+						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[createdPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+						this.meta[createdPropertyModel.id] = createdPropertyModel.type;
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
@@ -405,7 +564,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					throw new Error('devices-module.device-properties.update.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.device-properties.update.failed');
 				}
 
@@ -427,6 +586,16 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					return this.data[payload.id];
 				} else {
+					const devicesStore = useDevices();
+
+					const device = devicesStore.findById(updatedRecord.device.id);
+
+					if (device === null) {
+						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+						throw new Error('devices-module.device-properties.update.failed');
+					}
+
 					try {
 						const apiData: Partial<IDeviceProperty> =
 							updatedRecord.parent !== null
@@ -478,10 +647,14 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 						const updatedPropertyModel = jsonApiFormatter.deserialize(updatedProperty.data) as IDevicePropertyResponseModel;
 
-						this.data[updatedPropertyModel.id] = await recordFactory({
+						this.data[updatedPropertyModel.id] = await storeRecordFactory({
 							...updatedPropertyModel,
 							...{ deviceId: updatedPropertyModel.device.id, parentId: updatedPropertyModel.parent?.id },
 						});
+
+						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[updatedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+						this.meta[updatedPropertyModel.id] = updatedPropertyModel.type;
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
@@ -511,7 +684,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					throw new Error('devices-module.device-properties.update.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.device-properties.update.failed');
 				}
 
@@ -541,13 +714,23 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					throw new Error('devices-module.device-properties.save.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.device-properties.save.failed');
 				}
 
 				this.semaphore.updating.push(payload.id);
 
 				const recordToSave = this.data[payload.id];
+
+				const devicesStore = useDevices();
+
+				const device = devicesStore.findById(recordToSave.device.id);
+
+				if (device === null) {
+					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+
+					throw new Error('devices-module.device-properties.save.failed');
+				}
 
 				try {
 					const apiData: Partial<IDeviceProperty> =
@@ -600,10 +783,14 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					const savedPropertyModel = jsonApiFormatter.deserialize(savedProperty.data) as IDevicePropertyResponseModel;
 
-					this.data[savedPropertyModel.id] = await recordFactory({
+					this.data[savedPropertyModel.id] = await storeRecordFactory({
 						...savedPropertyModel,
 						...{ deviceId: savedPropertyModel.device.id, parentId: savedPropertyModel.parent?.id },
 					});
+
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[savedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+					this.meta[savedPropertyModel.id] = savedPropertyModel.type;
 
 					return this.data[savedPropertyModel.id];
 				} catch (e: any) {
@@ -623,7 +810,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					throw new Error('devices-module.device-properties.delete.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.device-properties.delete.failed');
 				}
 
@@ -631,7 +818,21 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				const recordToDelete = this.data[payload.id];
 
+				const devicesStore = useDevices();
+
+				const device = devicesStore.findById(recordToDelete.device.id);
+
+				if (device === null) {
+					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+
+					throw new Error('devices-module.device-properties.delete.failed');
+				}
+
 				delete this.data[payload.id];
+
+				await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+				delete this.meta[payload.id];
 
 				if (recordToDelete.draft) {
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
@@ -687,7 +888,11 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 				}
 
 				if (payload.routingKey === RoutingKeys.DEVICE_PROPERTY_DOCUMENT_DELETED) {
-					if (body.id in this.data) {
+					await removeRecord(body.id, DB_TABLE_DEVICES_PROPERTIES);
+
+					delete this.meta[body.id];
+
+					if (this.data && body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
@@ -695,9 +900,9 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						return true;
 					}
 
-					if (body.id in this.data) {
-						const record = await recordFactory({
-							...this.data[body.id],
+					if (this.data && body.id in this.data) {
+						const record = await storeRecordFactory({
+							...JSON.parse(JSON.stringify(this.data[body.id])),
 							...{
 								category: body.category,
 								name: body.name,
@@ -722,6 +927,10 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
 							this.data[body.id] = record;
+
+							await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
+
+							this.meta[record.id] = record.type;
 						}
 					} else {
 						const devicesStore = useDevices();
@@ -737,14 +946,119 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 							} catch {
 								return false;
 							}
-						} else {
-							try {
-								await devicesStore.get({ id: body.device });
-							} catch {
-								return false;
-							}
 						}
 					}
+				}
+
+				return true;
+			},
+
+			/**
+			 * Insert data from SSR
+			 *
+			 * @param {IDevicePropertiesInsertDataActionPayload} payload
+			 */
+			async insertData(payload: IDevicePropertiesInsertDataActionPayload) {
+				this.data = this.data ?? {};
+
+				let documents: DevicePropertyDocument[] = [];
+
+				if (Array.isArray(payload.data)) {
+					documents = payload.data;
+				} else {
+					documents = [payload.data];
+				}
+
+				const deviceIds = [];
+
+				for (const doc of documents) {
+					const isValid = jsonSchemaValidator.compile<DevicePropertyDocument>(exchangeDocumentSchema);
+
+					try {
+						if (!isValid(doc)) {
+							return false;
+						}
+					} catch {
+						return false;
+					}
+
+					const record = await storeRecordFactory({
+						...this.data[doc.id],
+						...{
+							id: doc.id,
+							type: {
+								type: doc.type,
+								source: doc.source,
+								parent: 'device',
+								entity: 'property',
+							},
+							category: doc.category,
+							identifier: doc.identifier,
+							name: doc.name,
+							settable: doc.settable,
+							queryable: doc.queryable,
+							dataType: doc.data_type,
+							unit: doc.unit,
+							format: doc.format,
+							invalid: doc.invalid,
+							scale: doc.scale,
+							step: doc.step,
+							valueTransformer: doc.value_transformer,
+							default: doc.default,
+							value: doc.value,
+							deviceId: doc.device,
+							parentId: doc.parent,
+						},
+					});
+
+					if (documents.length === 1) {
+						this.data[doc.id] = record;
+					}
+
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
+
+					this.meta[record.id] = record.type;
+
+					deviceIds.push(doc.device);
+				}
+
+				return true;
+			},
+
+			/**
+			 * Load record from database
+			 *
+			 * @param {IDevicePropertiesLoadRecordActionPayload} payload
+			 */
+			async loadRecord(payload: IDevicePropertiesLoadRecordActionPayload): Promise<boolean> {
+				const record = await getRecord<IDevicePropertyDatabaseRecord>(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+				if (record) {
+					this.data = this.data ?? {};
+					this.data[payload.id] = await storeRecordFactory(record);
+
+					return true;
+				}
+
+				return false;
+			},
+
+			/**
+			 * Load records from database
+			 *
+			 * @param {IDevicePropertiesLoadAllRecordsActionPayload} payload
+			 */
+			async loadAllRecords(payload?: IDevicePropertiesLoadAllRecordsActionPayload): Promise<boolean> {
+				const records = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
+
+				this.data = this.data ?? {};
+
+				for (const record of records) {
+					if (payload?.device && payload?.device.id !== record?.device.id) {
+						continue;
+					}
+
+					this.data[record.id] = await storeRecordFactory(record);
 				}
 
 				return true;

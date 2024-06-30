@@ -500,7 +500,7 @@ const selectedChannel = ref<IChannel | null>(null);
 
 const connectors = computed<IConnectorListItem[]>((): IConnectorListItem[] => {
 	return orderBy<IConnectorListItem>(
-		Object.values(connectorsStore.data)
+		Object.values(connectorsStore.data ?? {})
 			.filter((connector) => !connector.draft)
 			.map((connector) => {
 				if (!isConnectorProperty.value) {

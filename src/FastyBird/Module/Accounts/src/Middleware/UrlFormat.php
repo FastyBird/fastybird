@@ -22,13 +22,13 @@ use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\SlimRouter\Http;
 use Nette\Localization;
-use Nette\Utils;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use function str_replace;
+use function str_starts_with;
 
 /**
  * Response url formatter
@@ -61,13 +61,13 @@ final readonly class UrlFormat implements MiddlewareInterface
 		if (
 			$this->user->isLoggedIn()
 			&& (
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$request->getUri()->getPath(),
 					'/' . Metadata\Constants::ROUTER_API_PREFIX
 					. ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '')
 					. '/v1/session',
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$request->getUri()->getPath(),
 					'/' . Metadata\Constants::ROUTER_API_PREFIX
 					. ($this->usePrefix ? '/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX : '')

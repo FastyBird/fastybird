@@ -73,27 +73,27 @@ class Create extends Console\Command\Command
 			->addArgument(
 				'lastName',
 				Input\InputArgument::OPTIONAL,
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.lastName.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.lastName.title'),
 			)
 			->addArgument(
 				'firstName',
 				Input\InputArgument::OPTIONAL,
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.firstName.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.firstName.title'),
 			)
 			->addArgument(
 				'email',
 				Input\InputArgument::OPTIONAL,
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
 			)
 			->addArgument(
 				'password',
 				Input\InputArgument::OPTIONAL,
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.password.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.password.title'),
 			)
 			->addArgument(
 				'role',
 				Input\InputArgument::OPTIONAL,
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.role.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.role.title'),
 			)
 			->addOption('noconfirm', null, Input\InputOption::VALUE_NONE, 'do not ask for any confirmation')
 			->addOption('injected', null, Input\InputOption::VALUE_NONE, 'do not show all outputs')
@@ -119,7 +119,7 @@ class Create extends Console\Command\Command
 			&& $input->getArgument('lastName') !== ''
 			 ? $input->getArgument('lastName')
 			: $io->ask(
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.lastName.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.lastName.title'),
 			);
 
 		$firstName = $input->hasArgument('firstName')
@@ -127,7 +127,7 @@ class Create extends Console\Command\Command
 			&& $input->getArgument('firstName') !== ''
 			 ? $input->getArgument('firstName')
 			: $io->ask(
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.firstName.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.firstName.title'),
 			);
 
 		$emailAddress = $input->hasArgument('email')
@@ -135,13 +135,13 @@ class Create extends Console\Command\Command
 			&& $input->getArgument('email') !== ''
 			 ? $input->getArgument('email')
 			: $io->ask(
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
 			);
 
 		do {
 			if (!Utils\Validators::isEmail(strval($emailAddress))) {
 				$io->error(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//accounts-module.cmd.accountCreate.validation.email.invalid',
 						['email' => $emailAddress],
 					),
@@ -155,7 +155,7 @@ class Create extends Console\Command\Command
 
 				if ($repeat) {
 					$io->error(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//accounts-module.cmd.accountCreate.validation.email.taken',
 							['email' => $emailAddress],
 						),
@@ -165,7 +165,7 @@ class Create extends Console\Command\Command
 
 			if ($repeat) {
 				$emailAddress = $io->ask(
-					$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
+					(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.email.title'),
 				);
 			}
 		} while ($repeat);
@@ -190,15 +190,15 @@ class Create extends Console\Command\Command
 		} else {
 			do {
 				$roleName = $io->choice(
-					$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.role.title'),
+					(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.role.title'),
 					[
-						'U' => $this->translator->translate(
+						'U' => (string) $this->translator->translate(
 							'//accounts-module.cmd.accountCreate.inputs.role.values.user',
 						),
-						'M' => $this->translator->translate(
+						'M' => (string) $this->translator->translate(
 							'//accounts-module.cmd.accountCreate.inputs.role.values.manager',
 						),
-						'A' => $this->translator->translate(
+						'A' => (string) $this->translator->translate(
 							'//accounts-module.cmd.accountCreate.inputs.role.values.administrator',
 						),
 					],
@@ -269,7 +269,7 @@ class Create extends Console\Command\Command
 			$io->error($ex->getMessage());
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//accounts-module.cmd.accountCreate.validation.account.wasNotCreated',
 					['error' => $ex->getMessage()],
 				),
@@ -283,14 +283,16 @@ class Create extends Console\Command\Command
 			&& $input->getArgument('password') !== ''
 			 ? $input->getArgument('password')
 			: $io->askHidden(
-				$this->translator->translate('//accounts-module.cmd.accountCreate.inputs.password.title'),
+				(string) $this->translator->translate('//accounts-module.cmd.accountCreate.inputs.password.title'),
 			);
 
 		$email = $account->getEmail();
 
 		if ($email === null) {
 			$io->warning(
-				$this->translator->translate('//accounts-module.cmd.accountCreate.validation.identity.noEmail'),
+				(string) $this->translator->translate(
+					'//accounts-module.cmd.accountCreate.validation.identity.noEmail',
+				),
 			);
 
 			return 0;
@@ -321,7 +323,7 @@ class Create extends Console\Command\Command
 			$io->error($ex->getMessage());
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//accounts-module.cmd.accountCreate.validation.identity.wasNotCreated',
 					['error' => $ex->getMessage()],
 				),
@@ -331,7 +333,7 @@ class Create extends Console\Command\Command
 		}
 
 		$io->success(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//accounts-module.cmd.accountCreate.success',
 				['name' => $account->getName()],
 			),

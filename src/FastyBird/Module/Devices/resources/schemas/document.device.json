@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Device type"
     },
+    "source": {
+      "type": "string",
+      "description": "Device source"
+    },
     "category": {
       "type": "string",
       "enum": [
