@@ -46,7 +46,7 @@ final class Loader
 
 			try {
 				$this->gen2components = Utils\ArrayHash::from(
-					(array) Utils\Json::decode($metadata, Utils\Json::FORCE_ARRAY),
+					(array) Utils\Json::decode($metadata, forceArrays: true),
 				);
 			} catch (Utils\JsonException) {
 				throw new Exceptions\InvalidState('Generation 2 components metadata could not be loaded');

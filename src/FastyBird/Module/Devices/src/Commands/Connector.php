@@ -149,14 +149,14 @@ class Connector extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title($this->translator->translate('//devices-module.cmd.connector.title'));
+			$io->title((string) $this->translator->translate('//devices-module.cmd.connector.title'));
 
-			$io->note($this->translator->translate('//devices-module.cmd.connector.subtitle'));
+			$io->note((string) $this->translator->translate('//devices-module.cmd.connector.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//devices-module.cmd.base.questions.continue'),
+				(string) $this->translator->translate('//devices-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -212,7 +212,7 @@ class Connector extends Console\Command\Command
 			);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//devices-module.cmd.connector.messages.error'));
+				$io->error((string) $this->translator->translate('//devices-module.cmd.connector.messages.error'));
 			}
 
 			$this->eventLoop->stop();
@@ -237,7 +237,7 @@ class Connector extends Console\Command\Command
 	): int
 	{
 		if ($input->getOption('quiet') === false) {
-			$io->section($this->translator->translate('//devices-module.cmd.connector.info.preparing'));
+			$io->section((string) $this->translator->translate('//devices-module.cmd.connector.info.preparing'));
 		}
 
 		$connector = $this->whichConnector($io, $input, $mode);
@@ -246,13 +246,13 @@ class Connector extends Console\Command\Command
 			if ($input->getOption('quiet') === false) {
 				if ($mode === Types\ConnectorMode::DISCOVER) {
 					$io->warning(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//devices-module.cmd.connector.messages.noDiscoverableConnectors',
 						),
 					);
 				} else {
 					$io->warning(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//devices-module.cmd.connector.messages.noConnectors',
 						),
 					);
@@ -265,7 +265,7 @@ class Connector extends Console\Command\Command
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->section($this->translator->translate('//devices-module.cmd.connector.info.initialization'));
+			$io->section((string) $this->translator->translate('//devices-module.cmd.connector.info.initialization'));
 		}
 
 		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
@@ -573,7 +573,7 @@ class Connector extends Console\Command\Command
 			if ($connector === null) {
 				if ($input->getOption('quiet') === false) {
 					$io->warning(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//devices-module.cmd.connector.messages.connectorNotFound',
 						),
 					);
@@ -592,7 +592,7 @@ class Connector extends Console\Command\Command
 				if ($control === null) {
 					if ($input->getOption('quiet') === false) {
 						$io->warning(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//devices-module.cmd.connector.messages.notSupportedConnector',
 							),
 						);
@@ -640,20 +640,22 @@ class Connector extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ChoiceQuestion(
-				$this->translator->translate('//devices-module.cmd.connector.questions.selectConnector'),
+				(string) $this->translator->translate('//devices-module.cmd.connector.questions.selectConnector'),
 				array_values($connectors),
 				count($connectors) === 1 ? 0 : null,
 			);
 
 			$question->setErrorMessage(
-				$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+				(string) $this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
 			);
 			$question->setValidator(
 				function (string|int|null $answer) use ($connectors): Documents\Connectors\Connector {
 					if ($answer === null) {
 						throw new Exceptions\Runtime(
 							sprintf(
-								$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+								(string) $this->translator->translate(
+									'//devices-module.cmd.base.messages.answerNotValid',
+								),
 								$answer,
 							),
 						);
@@ -678,7 +680,7 @@ class Connector extends Console\Command\Command
 
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate('//devices-module.cmd.base.messages.answerNotValid'),
 							$answer,
 						),
 					);
@@ -691,7 +693,9 @@ class Connector extends Console\Command\Command
 
 		if (!$connector->isEnabled()) {
 			if ($input->getOption('quiet') === false) {
-				$io->warning($this->translator->translate('//devices-module.cmd.connector.messages.connectorDisabled'));
+				$io->warning(
+					(string) $this->translator->translate('//devices-module.cmd.connector.messages.connectorDisabled'),
+				);
 			}
 
 			return false;

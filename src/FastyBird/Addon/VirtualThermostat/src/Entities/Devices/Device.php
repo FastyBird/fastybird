@@ -25,7 +25,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
-use Nette\Utils;
 use Ramsey\Uuid;
 use TypeError;
 use ValueError;
@@ -33,6 +32,7 @@ use function array_filter;
 use function array_map;
 use function assert;
 use function sprintf;
+use function str_starts_with;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
@@ -338,11 +338,11 @@ class Device extends VirtualEntities\Devices\Device
 		return array_filter(
 			$channel->getActors(),
 			static fn (DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property): bool =>
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 				),
@@ -353,7 +353,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getActors(),
-			static fn ($actor): bool => Utils\Strings::startsWith(
+			static fn ($actor): bool => str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			),
@@ -364,7 +364,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getActors(),
-			static fn ($actor): bool => Utils\Strings::startsWith(
+			static fn ($actor): bool => str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			),
@@ -391,19 +391,19 @@ class Device extends VirtualEntities\Devices\Device
 		return array_filter(
 			$channel->getSensors(),
 			static fn (DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Mapped $property): bool =>
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 				),
@@ -414,7 +414,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getSensors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 			),
@@ -425,7 +425,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getSensors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 			),
@@ -436,7 +436,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getSensors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 			),
@@ -447,7 +447,7 @@ class Device extends VirtualEntities\Devices\Device
 	{
 		return array_filter(
 			$this->getSensors(),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 			),

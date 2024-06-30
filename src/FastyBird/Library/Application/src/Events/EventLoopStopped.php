@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:RedisDbPlugin!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Events
  * @since          1.0.0
  *
@@ -20,7 +20,7 @@ use Symfony\Contracts\EventDispatcher;
 /**
  * Event loop was stopped event
  *
- * @package        FastyBird:RedisDbPlugin!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Events
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

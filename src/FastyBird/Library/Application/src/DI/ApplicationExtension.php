@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     DI
  * @since          1.0.0
  *
@@ -16,9 +16,11 @@
 namespace FastyBird\Library\Application\DI;
 
 use FastyBird\Library\Application\Boot;
-use FastyBird\Library\Application\EventLoop\Wrapper;
+use FastyBird\Library\Application\EventLoop;
 use FastyBird\Library\Application\Helpers;
+use FastyBird\Library\Application\Router;
 use FastyBird\Library\Application\Subscribers;
+use FastyBird\Library\Application\UI;
 use Monolog;
 use Nette;
 use Nette\DI;
@@ -36,7 +38,7 @@ use const DIRECTORY_SEPARATOR;
 /**
  * App application extension container
  *
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     DI
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -141,7 +143,7 @@ class ApplicationExtension extends DI\CompilerExtension
 		 */
 
 		$builder->addDefinition($this->prefix('helpers.eventLoop'), new DI\Definitions\ServiceDefinition())
-			->setType(Wrapper::class);
+			->setType(EventLoop\Wrapper::class);
 
 		if (class_exists('\Doctrine\DBAL\Connection') && class_exists('\Doctrine\ORM\EntityManager')) {
 			$builder->addDefinition($this->prefix('helpers.database'), new DI\Definitions\ServiceDefinition())
@@ -223,6 +225,16 @@ class ApplicationExtension extends DI\CompilerExtension
 			$builder->addDefinition($this->prefix('sentry.hub'), new DI\Definitions\ServiceDefinition())
 				->setType(Sentry\State\Hub::class);
 		}
+
+		/**
+		 * UI
+		 */
+
+		$builder->addDefinition($this->prefix('ui.templateFactory'), new DI\Definitions\ServiceDefinition())
+			->setType(UI\TemplateFactory::class);
+
+		$builder->addDefinition($this->prefix('ui.routes'), new DI\Definitions\ServiceDefinition())
+			->setType(Router\AppRouter::class);
 	}
 
 	/**

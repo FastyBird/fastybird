@@ -68,6 +68,7 @@ use function is_array;
 use function is_float;
 use function is_numeric;
 use function sprintf;
+use function str_starts_with;
 use function strval;
 use function usort;
 
@@ -137,9 +138,9 @@ class Install extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title($this->translator->translate('//virtual-thermostat-addon.cmd.install.title'));
+		$io->title((string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.title'));
 
-		$io->note($this->translator->translate('//virtual-thermostat-addon.cmd.install.subtitle'));
+		$io->note((string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.subtitle'));
 
 		$this->askInstallAction($io);
 
@@ -163,14 +164,14 @@ class Install extends Console\Command\Command
 
 		if ($connector === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.noConnectors'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.noConnectors'),
 			);
 
 			return;
 		}
 
 		$question = new Console\Question\Question(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.provide.device.identifier',
 			),
 		);
@@ -184,7 +185,7 @@ class Install extends Console\Command\Command
 					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.install.messages.identifier.device.used',
 						),
 					);
@@ -215,7 +216,7 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.identifier.device.missing',
 				),
 			);
@@ -346,7 +347,7 @@ class Install extends Console\Command\Command
 
 			if (in_array(Types\HvacMode::HEAT, $modes, true)) {
 				$io->info(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.messages.configureHeaterActors',
 					),
 				);
@@ -389,7 +390,7 @@ class Install extends Console\Command\Command
 						);
 
 						$question = new Console\Question\ConfirmationQuestion(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.install.questions.addAnotherHeater',
 							),
 							false,
@@ -404,7 +405,7 @@ class Install extends Console\Command\Command
 
 			if (in_array(Types\HvacMode::COOL, $modes, true)) {
 				$io->info(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.messages.configureCoolerActors',
 					),
 				);
@@ -447,7 +448,7 @@ class Install extends Console\Command\Command
 						);
 
 						$question = new Console\Question\ConfirmationQuestion(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.install.questions.addAnotherCooler',
 							),
 							false,
@@ -461,7 +462,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.questions.useOpeningSensors',
 				),
 				false,
@@ -507,7 +508,7 @@ class Install extends Console\Command\Command
 						);
 
 						$question = new Console\Question\ConfirmationQuestion(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.install.questions.addAnotherOpeningSensor',
 							),
 							false,
@@ -521,7 +522,7 @@ class Install extends Console\Command\Command
 			}
 
 			$io->info(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.configureRoomTemperatureSensor',
 				),
 			);
@@ -569,7 +570,7 @@ class Install extends Console\Command\Command
 					);
 
 					$question = new Console\Question\ConfirmationQuestion(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.install.questions.addAnotherRoomTemperatureSensor',
 						),
 						false,
@@ -582,7 +583,7 @@ class Install extends Console\Command\Command
 			} while ($continue);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.questions.useFloorTemperatureSensors',
 				),
 				false,
@@ -634,7 +635,7 @@ class Install extends Console\Command\Command
 						);
 
 						$question = new Console\Question\ConfirmationQuestion(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.install.questions.addAnotherFloorTemperatureSensor',
 							),
 							false,
@@ -648,7 +649,7 @@ class Install extends Console\Command\Command
 			}
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.questions.useRoomHumiditySensors',
 				),
 				false,
@@ -697,7 +698,7 @@ class Install extends Console\Command\Command
 						);
 
 						$question = new Console\Question\ConfirmationQuestion(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.install.questions.addAnotherRoomHumiditySensor',
 							),
 							false,
@@ -876,7 +877,7 @@ class Install extends Console\Command\Command
 
 			foreach ($presets as $preset) {
 				$io->info(
-					$this->translator->translate(
+					(string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.messages.preset.' . $preset->value,
 					),
 				);
@@ -961,7 +962,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -978,7 +979,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.device.error',
 				),
 			);
@@ -1056,11 +1057,11 @@ class Install extends Console\Command\Command
 
 		if ($device === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'),
 			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.device'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.device'),
 				false,
 			);
 
@@ -1556,7 +1557,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1573,7 +1574,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.device.error',
 				),
 			);
@@ -1642,20 +1643,22 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'));
+			$io->info(
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'),
+			);
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -1674,7 +1677,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -1691,7 +1694,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.device.error',
 				),
 			);
@@ -1723,7 +1726,9 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'));
+			$io->info(
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noDevices'),
+			);
 
 			return;
 		}
@@ -1753,10 +1758,10 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.hvacModes'),
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.presets'),
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.connector'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.hvacModes'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.presets'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.connector'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -1769,7 +1774,7 @@ class Install extends Console\Command\Command
 							return null;
 						}
 
-						return $this->translator->translate(
+						return (string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.install.answers.mode.' . $item->value,
 						);
 					}, $device->getHvacModes()),
@@ -1777,7 +1782,7 @@ class Install extends Console\Command\Command
 				)),
 				implode(
 					', ',
-					array_map(fn (Types\Preset $item): string => $this->translator->translate(
+					array_map(fn (Types\Preset $item): string => (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . $item->value,
 					), $device->getPresetModes()),
 				),
@@ -1860,7 +1865,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.actor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -1877,7 +1882,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.actor.error',
 				),
 			);
@@ -1904,11 +1909,11 @@ class Install extends Console\Command\Command
 
 		if ($property === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noActors'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noActors'),
 			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.actor'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.actor'),
 				false,
 			);
 
@@ -1953,7 +1958,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.actor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -1970,7 +1975,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.actor.error',
 				),
 			);
@@ -1986,8 +1991,8 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.type'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.type'),
 		]);
 
 		$actors = $device->getActors();
@@ -2000,11 +2005,11 @@ class Install extends Console\Command\Command
 		$actors = array_filter(
 			$actors,
 			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 				),
@@ -2013,18 +2018,18 @@ class Install extends Console\Command\Command
 		foreach ($actors as $index => $property) {
 			$type = 'N/A';
 
-			if (Utils\Strings::startsWith(
+			if (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 				);
-			} elseif (Utils\Strings::startsWith(
+			} elseif (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 				);
 			}
@@ -2051,21 +2056,21 @@ class Install extends Console\Command\Command
 
 		if ($property === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noActors'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noActors'),
 			);
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.messages.remove.actor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -2084,7 +2089,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.actor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2101,7 +2106,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.actor.error',
 				),
 			);
@@ -2177,7 +2182,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.sensor.error',
 				),
 			);
@@ -2231,7 +2236,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.sensor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2248,7 +2253,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.create.sensor.error',
 				),
 			);
@@ -2271,11 +2276,11 @@ class Install extends Console\Command\Command
 
 		if ($property === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noSensors'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noSensors'),
 			);
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.sensor'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.create.sensor'),
 				false,
 			);
 
@@ -2294,7 +2299,7 @@ class Install extends Console\Command\Command
 		$name = $this->askSensorName($io, $property);
 
 		if (
-			Utils\Strings::startsWith(
+			str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 			)
@@ -2310,7 +2315,7 @@ class Install extends Console\Command\Command
 			];
 
 		} elseif (
-			Utils\Strings::startsWith(
+			str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 			)
@@ -2326,7 +2331,7 @@ class Install extends Console\Command\Command
 			];
 
 		} elseif (
-			Utils\Strings::startsWith(
+			str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 			)
@@ -2336,7 +2341,7 @@ class Install extends Console\Command\Command
 			];
 
 		} elseif (
-			Utils\Strings::startsWith(
+			str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 			)
@@ -2359,7 +2364,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.edit.sensor.error',
 				),
 			);
@@ -2391,7 +2396,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.sensor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2408,7 +2413,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.sensor.error',
 				),
 			);
@@ -2424,8 +2429,8 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.data.type'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.name'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.data.type'),
 		]);
 
 		$sensors = $device->getSensors();
@@ -2438,19 +2443,19 @@ class Install extends Console\Command\Command
 		$sensors = array_filter(
 			$sensors,
 			static fn (DevicesEntities\Channels\Properties\Property $property): bool =>
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 				)
-				|| Utils\Strings::startsWith(
+				|| str_starts_with(
 					$property->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 				),
@@ -2459,32 +2464,32 @@ class Install extends Console\Command\Command
 		foreach ($sensors as $index => $property) {
 			$type = 'N/A';
 
-			if (Utils\Strings::startsWith(
+			if (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 				);
-			} elseif (Utils\Strings::startsWith(
+			} elseif (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 				);
-			} elseif (Utils\Strings::startsWith(
+			} elseif (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 				);
-			} elseif (Utils\Strings::startsWith(
+			} elseif (str_starts_with(
 				$property->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 			)) {
-				$type = $this->translator->translate(
+				$type = (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.data.' . Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 				);
 			}
@@ -2511,21 +2516,21 @@ class Install extends Console\Command\Command
 
 		if ($property === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noSensors'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noSensors'),
 			);
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.messages.remove.sensor.confirm',
 				['name' => $property->getName() ?? $property->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -2544,7 +2549,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.sensor.success',
 					['name' => $property->getName() ?? $property->getIdentifier()],
 				),
@@ -2561,7 +2566,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.remove.sensor.error',
 				),
 			);
@@ -2590,7 +2595,7 @@ class Install extends Console\Command\Command
 
 		if ($preset === null) {
 			$io->warning(
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noPresets'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.messages.noPresets'),
 			);
 
 			return;
@@ -2746,7 +2751,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -2763,7 +2768,7 @@ class Install extends Console\Command\Command
 			);
 
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.update.device.error',
 				),
 			);
@@ -2792,7 +2797,9 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.provide.device.name'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.provide.device.name',
+			),
 			$device?->getName(),
 		);
 
@@ -2838,15 +2845,15 @@ class Install extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.mode'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.mode'),
 			[
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::HEAT->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::COOL->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::AUTO->value,
 				),
 			],
@@ -2854,13 +2861,13 @@ class Install extends Console\Command\Command
 		);
 		$question->setMultiselect(true);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer): array {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -2872,7 +2879,7 @@ class Install extends Console\Command\Command
 
 			foreach (explode(',', strval($answer)) as $item) {
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::HEAT->value,
 					)
 					|| $item === '0'
@@ -2881,7 +2888,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::COOL->value,
 					)
 					|| $item === '1'
@@ -2890,7 +2897,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.mode.' . Types\HvacMode::AUTO->value,
 					)
 					|| $item === '2'
@@ -2905,7 +2912,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -2953,10 +2962,14 @@ class Install extends Console\Command\Command
 		};
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.provide.device.unit'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.provide.device.unit',
+			),
 			[
-				0 => $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.unit.celsius'),
-				1 => $this->translator->translate(
+				0 => (string) $this->translator->translate(
+					'//virtual-thermostat-addon.cmd.install.answers.unit.celsius',
+				),
+				1 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.unit.fahrenheit',
 				),
 			],
@@ -2964,13 +2977,13 @@ class Install extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer): Types\Unit {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -2979,7 +2992,7 @@ class Install extends Console\Command\Command
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.unit.celsius',
 				)
 				|| $answer === '0'
@@ -2988,7 +3001,7 @@ class Install extends Console\Command\Command
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.unit.fahrenheit',
 				)
 				|| $answer === '1'
@@ -2998,7 +3011,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3057,27 +3072,27 @@ class Install extends Console\Command\Command
 		);
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.preset'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.preset'),
 			[
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::AWAY->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::ECO->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::HOME->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::COMFORT->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::SLEEP->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::ANTI_FREEZE->value,
 				),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.answers.preset.none',
 				),
 			],
@@ -3085,13 +3100,13 @@ class Install extends Console\Command\Command
 		);
 		$question->setMultiselect(true);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer): array {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3103,7 +3118,7 @@ class Install extends Console\Command\Command
 
 			foreach (explode(',', strval($answer)) as $item) {
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::AWAY->value,
 					)
 					|| $item === '0'
@@ -3112,7 +3127,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::ECO->value,
 					)
 					|| $item === '1'
@@ -3121,7 +3136,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::HOME->value,
 					)
 					|| $item === '2'
@@ -3130,7 +3145,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::COMFORT->value,
 					)
 					|| $item === '3'
@@ -3139,7 +3154,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::SLEEP->value,
 					)
 					|| $item === '4'
@@ -3148,7 +3163,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.' . Types\Preset::ANTI_FREEZE->value,
 					)
 					|| $item === '5'
@@ -3157,7 +3172,7 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					$item === $this->translator->translate(
+					$item === (string) $this->translator->translate(
 						'//virtual-thermostat-addon.cmd.install.answers.preset.none',
 					)
 					|| $item === '6'
@@ -3172,7 +3187,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3198,30 +3215,30 @@ class Install extends Console\Command\Command
 		$types = [];
 
 		if (in_array(Types\HvacMode::HEAT, $device->getHvacModes(), true)) {
-			$types[Types\ChannelPropertyIdentifier::HEATER_ACTOR->value] = $this->translator->translate(
+			$types[Types\ChannelPropertyIdentifier::HEATER_ACTOR->value] = (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.actor.heater',
 			);
 		}
 
 		if (in_array(Types\HvacMode::COOL, $device->getHvacModes(), true)) {
-			$types[Types\ChannelPropertyIdentifier::COOLER_ACTOR->value] = $this->translator->translate(
+			$types[Types\ChannelPropertyIdentifier::COOLER_ACTOR->value] = (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.actor.cooler',
 			);
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.actorType'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.actorType'),
 			array_values($types),
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($types): Types\ChannelPropertyIdentifier {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -3241,7 +3258,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3262,7 +3279,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.provide.actor.name'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.provide.actor.name',
+			),
 			$property?->getName(),
 		);
 
@@ -3301,7 +3320,7 @@ class Install extends Console\Command\Command
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.property.notSupported',
 				),
 			);
@@ -3317,33 +3336,33 @@ class Install extends Console\Command\Command
 	): Types\ChannelPropertyIdentifier
 	{
 		$types = [
-			Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value => $this->translator->translate(
+			Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value => (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.sensor.roomTemperature',
 			),
-			Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value => $this->translator->translate(
+			Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value => (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.sensor.floorTemperature',
 			),
-			Types\ChannelPropertyIdentifier::OPENING_SENSOR->value => $this->translator->translate(
+			Types\ChannelPropertyIdentifier::OPENING_SENSOR->value => (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.sensor.opening',
 			),
-			Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value => $this->translator->translate(
+			Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value => (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.sensor.roomHumidity',
 			),
 		];
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.sensorType'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.sensorType'),
 			array_values($types),
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($types): Types\ChannelPropertyIdentifier {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -3363,7 +3382,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3384,7 +3403,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.provide.sensor.name'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.provide.sensor.name',
+			),
 			$property?->getName(),
 		);
 
@@ -3422,7 +3443,7 @@ class Install extends Console\Command\Command
 
 		if (!$parent instanceof DevicesEntities\Channels\Properties\Dynamic) {
 			$io->error(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.property.notSupported',
 				),
 			);
@@ -3479,7 +3500,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\Question(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.provide.targetTemperature.' . $thermostatMode->value,
 				['unit' => $unit->value],
 			),
@@ -3489,7 +3510,7 @@ class Install extends Console\Command\Command
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3503,7 +3524,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3529,7 +3552,7 @@ class Install extends Console\Command\Command
 	): float
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.provide.maximumFloorTemperature',
 				['unit' => $unit->value],
 			),
@@ -3539,7 +3562,7 @@ class Install extends Console\Command\Command
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3553,7 +3576,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3580,7 +3605,7 @@ class Install extends Console\Command\Command
 	): float
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.provide.heatingThresholdTemperature',
 				['unit' => $unit->value],
 			),
@@ -3590,7 +3615,7 @@ class Install extends Console\Command\Command
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3604,7 +3629,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3631,7 +3658,7 @@ class Install extends Console\Command\Command
 	): float
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.provide.coolingThresholdTemperature',
 				['unit' => $unit->value],
 			),
@@ -3641,7 +3668,7 @@ class Install extends Console\Command\Command
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3655,7 +3682,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3810,7 +3839,7 @@ class Install extends Console\Command\Command
 
 		if (count($devices) === 0) {
 			$io->warning(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.messages.noHardwareDevices',
 				),
 			);
@@ -3831,18 +3860,20 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.mappedDevice'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.select.mappedDevice',
+			),
 			array_values($devices),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer) use ($devices): DevicesEntities\Devices\Device {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -3866,7 +3897,9 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate(
+						'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
+					),
 					$answer,
 				),
 			);
@@ -3986,21 +4019,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.mappedDeviceChannel',
 			),
 			array_values($channels),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|null $answer) use ($channels): DevicesEntities\Channels\Channel {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4024,7 +4057,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4086,14 +4119,14 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.mappedChannelProperty',
 			),
 			array_values($properties),
 			$default,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
@@ -4101,7 +4134,7 @@ class Install extends Console\Command\Command
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4130,7 +4163,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4167,34 +4200,36 @@ class Install extends Console\Command\Command
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate(
+				0 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.create.device',
 				),
-				1 => $this->translator->translate(
+				1 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.update.device',
 				),
-				2 => $this->translator->translate(
+				2 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.remove.device',
 				),
-				3 => $this->translator->translate(
+				3 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.manage.device',
 				),
-				4 => $this->translator->translate('//virtual-thermostat-addon.cmd.install.actions.list.devices'),
-				5 => $this->translator->translate('//virtual-thermostat-addon.cmd.install.actions.nothing'),
+				4 => (string) $this->translator->translate(
+					'//virtual-thermostat-addon.cmd.install.actions.list.devices',
+				),
+				5 => (string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.create.device',
 			)
 			|| $whatToDo === '0'
@@ -4204,7 +4239,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.update.device',
 			)
 			|| $whatToDo === '1'
@@ -4214,7 +4249,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.remove.device',
 			)
 			|| $whatToDo === '2'
@@ -4224,7 +4259,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.manage.device',
 			)
 			|| $whatToDo === '3'
@@ -4234,7 +4269,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.list.devices',
 			)
 			|| $whatToDo === '4'
@@ -4273,36 +4308,36 @@ class Install extends Console\Command\Command
 		assert($device instanceof Entities\Devices\Device);
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate(
+				0 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.create.actor',
 				),
-				1 => $this->translator->translate(
+				1 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.update.actor',
 				),
-				2 => $this->translator->translate(
+				2 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.list.actors',
 				),
-				3 => $this->translator->translate(
+				3 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.remove.actor',
 				),
-				4 => $this->translator->translate(
+				4 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.create.sensor',
 				),
-				5 => $this->translator->translate(
+				5 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.update.sensor',
 				),
-				6 => $this->translator->translate(
+				6 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.list.sensors',
 				),
-				7 => $this->translator->translate(
+				7 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.remove.sensor',
 				),
-				8 => $this->translator->translate(
+				8 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.update.preset',
 				),
-				9 => $this->translator->translate(
+				9 => (string) $this->translator->translate(
 					'//virtual-thermostat-addon.cmd.install.actions.nothing',
 				),
 			],
@@ -4310,13 +4345,13 @@ class Install extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.create.actor',
 			)
 			|| $whatToDo === '0'
@@ -4326,7 +4361,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.update.actor',
 			)
 			|| $whatToDo === '1'
@@ -4336,7 +4371,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.list.actors',
 			)
 			|| $whatToDo === '2'
@@ -4346,7 +4381,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.remove.actor',
 			)
 			|| $whatToDo === '3'
@@ -4356,7 +4391,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.create.sensor',
 			)
 			|| $whatToDo === '4'
@@ -4366,7 +4401,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.update.sensor',
 			)
 			|| $whatToDo === '5'
@@ -4376,7 +4411,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.list.sensors',
 			)
 			|| $whatToDo === '6'
@@ -4386,7 +4421,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.remove.sensor',
 			)
 			|| $whatToDo === '7'
@@ -4396,7 +4431,7 @@ class Install extends Console\Command\Command
 			$this->askManageDeviceAction($io, $device);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.actions.update.preset',
 			)
 			|| $whatToDo === '8'
@@ -4436,7 +4471,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.item.connector',
 			),
 			array_values($connectors),
@@ -4444,14 +4479,14 @@ class Install extends Console\Command\Command
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connectors): VirtualEntities\Connectors\Connector {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4481,7 +4516,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4527,20 +4562,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.install.questions.select.item.device'),
+			(string) $this->translator->translate(
+				'//virtual-thermostat-addon.cmd.install.questions.select.item.device',
+			),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4570,7 +4607,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4612,7 +4649,7 @@ class Install extends Console\Command\Command
 				continue;
 			}
 
-			$presets[$preset->value] = $this->translator->translate(
+			$presets[$preset->value] = (string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.answers.preset.' . $preset->value,
 			);
 		}
@@ -4622,21 +4659,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.presetToUpdate',
 			),
 			array_values($presets),
 			count($presets) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($presets): Types\Preset {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4656,7 +4693,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4709,12 +4746,12 @@ class Install extends Console\Command\Command
 			$actors[$channelActor->getIdentifier()] = sprintf(
 				'%s [%s: %s, %s: %s, %s: %s]',
 				($channelActor->getName() ?? $channelActor->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.device'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.device'),
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				($channelActor->getParent()->getChannel()->getDevice()->getName() ?? $channelActor->getParent()->getChannel()->getDevice()->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.channel'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.channel'),
 				($channelActor->getParent()->getChannel()->getName() ?? $channelActor->getParent()->getChannel()->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.property'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.property'),
 				($channelActor->getParent()->getName() ?? $channelActor->getParent()->getIdentifier()),
 			);
 		}
@@ -4724,21 +4761,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.actorToUpdate',
 			),
 			array_values($actors),
 			count($actors) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($channel, $actors): DevicesEntities\Channels\Properties\Mapped {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4769,7 +4806,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,
@@ -4822,12 +4859,12 @@ class Install extends Console\Command\Command
 			$sensors[$channelSensor->getIdentifier()] = sprintf(
 				'%s [%s: %s, %s: %s, %s: %s]',
 				($channelSensor->getName() ?? $channelSensor->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.device'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.device'),
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				($channelSensor->getParent()->getChannel()->getDevice()->getName() ?? $channelSensor->getParent()->getChannel()->getDevice()->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.channel'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.channel'),
 				($channelSensor->getParent()->getChannel()->getName() ?? $channelSensor->getParent()->getChannel()->getIdentifier()),
-				$this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.property'),
+				(string) $this->translator->translate('//virtual-thermostat-addon.cmd.install.answers.property'),
 				($channelSensor->getParent()->getName() ?? $channelSensor->getParent()->getIdentifier()),
 			);
 		}
@@ -4837,21 +4874,21 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//virtual-thermostat-addon.cmd.install.questions.select.sensorToUpdate',
 			),
 			array_values($sensors),
 			count($sensors) === 1 ? 0 : null,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//virtual-thermostat-addon.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($channel, $sensors): DevicesEntities\Channels\Properties\Mapped {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate(
+							(string) $this->translator->translate(
 								'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 							),
 							$answer,
@@ -4882,7 +4919,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//virtual-thermostat-addon.cmd.base.messages.answerNotValid',
 						),
 						$answer,

@@ -40,7 +40,7 @@
     "fastybird/metadata-library": "dev-main",
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
-    "nette/utils": "^3.2",
+    "nette/utils": "^4.0",
     "orisai/object-mapper": "^0.1",
     "php-on-couch/php-on-couch": "^4.0",
     "phpdocumentor/reflection": "^5.3",

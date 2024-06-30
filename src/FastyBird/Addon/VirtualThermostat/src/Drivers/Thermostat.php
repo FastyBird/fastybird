@@ -35,7 +35,6 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Types as DevicesTypes;
-use Nette\Utils;
 use React\Promise;
 use Throwable;
 use TypeError;
@@ -56,6 +55,7 @@ use function max;
 use function min;
 use function preg_match;
 use function sprintf;
+use function str_starts_with;
 
 /**
  * Thermostat service
@@ -165,14 +165,14 @@ class Thermostat implements VirtualDrivers\Driver
 				? $state->getGet()->getActualValue()
 				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
-			if (Utils\Strings::startsWith(
+			if (str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			)) {
 				$this->heaters[$actor->getId()->toString()] = is_bool($actualValue)
 					? $actualValue
 					: null;
-			} elseif (Utils\Strings::startsWith(
+			} elseif (str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			)) {
@@ -201,7 +201,7 @@ class Thermostat implements VirtualDrivers\Driver
 				: $state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue();
 
 			if (
-				Utils\Strings::startsWith(
+				str_starts_with(
 					$sensor->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 				)
@@ -211,7 +211,7 @@ class Thermostat implements VirtualDrivers\Driver
 					: null;
 			} elseif (
 				$this->hasFloorTemperatureSensors
-				&& Utils\Strings::startsWith(
+				&& str_starts_with(
 					$sensor->getIdentifier(),
 					Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 				)
@@ -221,7 +221,7 @@ class Thermostat implements VirtualDrivers\Driver
 					: null;
 			} elseif (
 				$this->hasOpeningsSensors
-				&& Utils\Strings::startsWith(
+				&& str_starts_with(
 					$sensor->getIdentifier(),
 					Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 				)
@@ -231,7 +231,7 @@ class Thermostat implements VirtualDrivers\Driver
 					: null;
 			} elseif (
 				$this->hasHumiditySensors
-				&& Utils\Strings::startsWith(
+				&& str_starts_with(
 					$sensor->getIdentifier(),
 					Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 				)
@@ -788,7 +788,7 @@ class Thermostat implements VirtualDrivers\Driver
 
 			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::ACTORS->value) {
 				if (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 					)
@@ -814,7 +814,7 @@ class Thermostat implements VirtualDrivers\Driver
 							});
 					}
 				} elseif (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 					)
@@ -847,7 +847,7 @@ class Thermostat implements VirtualDrivers\Driver
 				}
 			} elseif ($channel->getIdentifier() === Types\ChannelIdentifier::SENSORS->value) {
 				if (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 					)
@@ -873,7 +873,7 @@ class Thermostat implements VirtualDrivers\Driver
 							});
 					}
 				} elseif (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 					)
@@ -905,7 +905,7 @@ class Thermostat implements VirtualDrivers\Driver
 						);
 					}
 				} elseif (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 					)
@@ -937,7 +937,7 @@ class Thermostat implements VirtualDrivers\Driver
 						);
 					}
 				} elseif (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 					)
@@ -1065,7 +1065,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
 			assert($actor instanceof DevicesDocuments\Channels\Properties\Mapped);
 
-			if (!Utils\Strings::startsWith(
+			if (!str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			)) {
@@ -1104,7 +1104,7 @@ class Thermostat implements VirtualDrivers\Driver
 		foreach ($this->deviceHelper->getActors($this->device) as $actor) {
 			assert($actor instanceof DevicesDocuments\Channels\Properties\Mapped);
 
-			if (!Utils\Strings::startsWith(
+			if (!str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			)) {

@@ -14,7 +14,7 @@
 	>
 		<fb-app-bar
 			v-if="sessionStore.isSignedIn"
-			@toggleMenu="onToggleMenu"
+			@toggle-menu="onToggleMenu"
 		>
 			<template #logo>
 				<router-link :to="{ name: 'root' }">

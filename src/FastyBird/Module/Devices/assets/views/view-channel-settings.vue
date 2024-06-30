@@ -208,7 +208,7 @@ if (props.id === null) {
 	await channelsStore.add({
 		id: id.value,
 		device: device.value,
-		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic', entity: 'channel' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
@@ -268,7 +268,7 @@ const onAddStaticProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		channel: channelData.value.channel,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'channel' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'channel', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -286,7 +286,7 @@ const onAddDynamicProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		channel: channelData.value.channel,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'channel' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'channel', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -362,17 +362,19 @@ const onRemoveProperty = async (id: string): Promise<void> => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	fetchChannel(id.value).catch((e) => {
-		if (get(e, 'exception.response.status', 0) === 404) {
-			throw new ApplicationError('Channel Not Found', e, { statusCode: 404, message: 'Channel Not Found' });
-		} else {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-		}
-	});
-
-	if (!isLoading.value && channelsStore.findById(id.value) === null) {
-		throw new ApplicationError('Channel Not Found', null, { statusCode: 404, message: 'Channel Not Found' });
-	}
+	fetchChannel(id.value)
+		.then((): void => {
+			if (!isLoading.value && channelsStore.findById(id.value) === null) {
+				throw new ApplicationError('Channel Not Found', null, { statusCode: 404, message: 'Channel Not Found' });
+			}
+		})
+		.catch((e): void => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Channel Not Found', e, { statusCode: 404, message: 'Channel Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
 });
 
 onBeforeUnmount(async (): Promise<void> => {

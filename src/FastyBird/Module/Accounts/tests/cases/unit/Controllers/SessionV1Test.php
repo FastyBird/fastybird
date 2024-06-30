@@ -187,7 +187,7 @@ final class SessionV1Test extends Tests\Cases\Unit\DbTestCase
 
 		$responseBody = (string) $response->getBody();
 
-		$actual = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
+		$actual = Utils\Json::decode($responseBody, forceArrays: true);
 		self::assertTrue(is_array($actual));
 
 		Tests\Tools\JsonAssert::assertFixtureMatch(
@@ -368,7 +368,7 @@ final class SessionV1Test extends Tests\Cases\Unit\DbTestCase
 
 		$responseBody = (string) $response->getBody();
 
-		$actual = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
+		$actual = Utils\Json::decode($responseBody, forceArrays: true);
 		self::assertTrue(is_array($actual));
 
 		Tests\Tools\JsonAssert::assertFixtureMatch(

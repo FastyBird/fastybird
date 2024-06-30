@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
+use FastyBird\Module\Accounts\Events;
 use FastyBird\Module\Accounts\Helpers;
 use FastyBird\Module\Accounts\Hydrators;
 use FastyBird\Module\Accounts\Middleware;
@@ -30,11 +31,16 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
+use FastyBird\Module\Accounts\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
+use Nette\Application as NetteApplication;
 use Nette\DI;
+use Nette\PhpGenerator;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
+use Psr\EventDispatcher;
 use stdClass;
+use Tracy;
 use function array_keys;
 use function array_pop;
 use function assert;
@@ -133,6 +139,9 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		$builder->addDefinition($this->prefix('subscribers.emailEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\EmailEntity::class);
+
+		$builder->addDefinition($this->prefix('subscribers.application'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Application::class);
 
 		$builder->addDefinition($this->prefix('controllers.session'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\SessionV1::class)
@@ -302,6 +311,51 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 				'?->registerRoutes(?)',
 				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
 			);
+		}
+
+		/**
+		 * Events
+		 */
+
+		if ($builder->getByType(EventDispatcher\EventDispatcherInterface::class) !== null) {
+			if ($builder->getByType(NetteApplication\Application::class) !== null) {
+				$dispatcher = $builder->getDefinition(
+					$builder->getByType(EventDispatcher\EventDispatcherInterface::class),
+				);
+
+				$application = $builder->getDefinition($builder->getByType(NetteApplication\Application::class));
+				assert($application instanceof DI\Definitions\ServiceDefinition);
+
+				$application->addSetup('?->onRequest[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+					'@self',
+					$dispatcher,
+					new PhpGenerator\Literal(Events\Request::class),
+				]);
+
+				$application->addSetup('?->onResponse[] = function() {?->dispatch(new ?(...func_get_args()));}', [
+					'@self',
+					$dispatcher,
+					new PhpGenerator\Literal(Events\Response::class),
+				]);
+			}
+		}
+
+		/**
+		 * Tracy
+		 */
+
+		if ($builder->getByType(Tracy\Bar::class) !== null) {
+			$tracyService = $builder->getDefinitionByType(Tracy\Bar::class);
+
+			if ($tracyService instanceof DI\Definitions\ServiceDefinition) {
+				$tracyPanel = $builder->addDefinition(
+					$this->prefix('security.userPanel'),
+					new DI\Definitions\ServiceDefinition(),
+				)
+					->setType(Utilities\UserPanel::class);
+
+				$tracyService->addSetup('addPanel', [$tracyPanel]);
+			}
 		}
 	}
 

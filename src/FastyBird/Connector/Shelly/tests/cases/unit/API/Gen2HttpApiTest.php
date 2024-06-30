@@ -275,7 +275,7 @@ final class Gen2HttpApiTest extends Tests\Cases\Unit\DbTestCase
 						$request->getMethod(),
 					);
 
-					$actual = Utils\Json::decode($request->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
+					$actual = Utils\Json::decode($request->getBody()->getContents(), forceArrays: true);
 					self::assertTrue(is_array($actual));
 
 					$request->getBody()->rewind();

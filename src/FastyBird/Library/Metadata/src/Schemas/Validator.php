@@ -72,7 +72,7 @@ final class Validator
 		if ($result->isValid()) {
 			try {
 				return Utils\ArrayHash::from(
-					(array) Utils\Json::decode(Utils\Json::encode($jsonData), Utils\Json::FORCE_ARRAY),
+					(array) Utils\Json::decode(Utils\Json::encode($jsonData), forceArrays: true),
 				);
 			} catch (Utils\JsonException $ex) {
 				throw new Exceptions\Logic('Failed to encode input data', $ex->getCode(), $ex);

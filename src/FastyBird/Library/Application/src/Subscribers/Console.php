@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Subscribers
  * @since          1.0.0
  *
@@ -24,7 +24,7 @@ use Symfony\Component\EventDispatcher;
 /**
  * Console subscriber
  *
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>

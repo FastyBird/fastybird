@@ -10,6 +10,12 @@ export * from './devices-controls/types';
 export * from './devices-properties/types';
 export * from './properties/types';
 
+export interface IEntityMeta {
+	source: string;
+	type: string;
+	entity: 'connector' | 'device' | 'channel' | 'property' | 'control';
+}
+
 // STORE
 // =====
 

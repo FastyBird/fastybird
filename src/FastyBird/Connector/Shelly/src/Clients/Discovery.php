@@ -550,7 +550,7 @@ final class Discovery
 													Utils\Json::encode(
 														(array) $componentMetadata->offsetGet($inputType),
 													),
-													Utils\Json::FORCE_ARRAY,
+													forceArrays: true,
 												),
 											);
 										}
@@ -575,7 +575,7 @@ final class Discovery
 													],
 													(array) Utils\Json::decode(
 														Utils\Json::encode((array) $configuration),
-														Utils\Json::FORCE_ARRAY,
+														forceArrays: true,
 													),
 												);
 											} else {
@@ -605,7 +605,7 @@ final class Discovery
 														],
 														(array) Utils\Json::decode(
 															Utils\Json::encode((array) $configuration),
-															Utils\Json::FORCE_ARRAY,
+															forceArrays: true,
 														),
 													);
 												}

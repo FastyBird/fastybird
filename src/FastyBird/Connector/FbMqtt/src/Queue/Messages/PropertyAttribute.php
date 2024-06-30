@@ -20,7 +20,6 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
-use Nette\Utils;
 use Orisai\ObjectMapper;
 use TypeError;
 use ValueError;
@@ -31,6 +30,7 @@ use function array_values;
 use function explode;
 use function in_array;
 use function is_numeric;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -151,7 +151,7 @@ final class PropertyAttribute implements Message
 
 			return MetadataTypes\DataType::from($this->value);
 		} elseif ($this->getAttribute() === self::FORMAT) {
-			if (Utils\Strings::contains($this->value, ':')) {
+			if (str_contains($this->value, ':')) {
 				[$start, $end] = explode(':', $this->value) + [null, null];
 
 				$start = $start === '' ? null : $start;
@@ -178,7 +178,7 @@ final class PropertyAttribute implements Message
 				}
 
 				return [$start, $end];
-			} elseif (Utils\Strings::contains($this->value, ',')) {
+			} elseif (str_contains($this->value, ',')) {
 				$value = array_filter(
 					array_map('trim', explode(',', strtolower($this->value))),
 					static fn ($item): bool => $item !== '',

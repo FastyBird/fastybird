@@ -50,7 +50,7 @@ final class Loader
 
 			try {
 				$this->categories = Utils\ArrayHash::from(
-					(array) Utils\Json::decode($metadata, Utils\Json::FORCE_ARRAY),
+					(array) Utils\Json::decode($metadata, forceArrays: true),
 				);
 			} catch (Utils\JsonException) {
 				throw new Exceptions\InvalidState('Categories metadata could not be loaded');
@@ -72,7 +72,7 @@ final class Loader
 
 			try {
 				$this->capabilities = Utils\ArrayHash::from(
-					(array) Utils\Json::decode($metadata, Utils\Json::FORCE_ARRAY),
+					(array) Utils\Json::decode($metadata, forceArrays: true),
 				);
 			} catch (Utils\JsonException) {
 				throw new Exceptions\InvalidState('Capabilities metadata could not be loaded');
@@ -94,7 +94,7 @@ final class Loader
 
 			try {
 				$this->protocols = Utils\ArrayHash::from(
-					(array) Utils\Json::decode($metadata, Utils\Json::FORCE_ARRAY),
+					(array) Utils\Json::decode($metadata, forceArrays: true),
 				);
 			} catch (Utils\JsonException) {
 				throw new Exceptions\InvalidState('Protocols metadata could not be loaded');

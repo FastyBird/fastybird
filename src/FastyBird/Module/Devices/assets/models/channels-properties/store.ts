@@ -1,12 +1,3 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { Jsona } from 'jsona';
-import Ajv from 'ajv/dist/2020';
-import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
-import isEqual from 'lodash.isequal';
-
-import exchangeDocumentSchema from '../../../resources/schemas/document.channel.property.json';
 import {
 	ChannelPropertyDocument,
 	DevicesModuleRoutes as RoutingKeys,
@@ -14,25 +5,45 @@ import {
 	PropertyCategory,
 	PropertyType,
 } from '@fastybird/metadata-library';
+import addFormats from 'ajv-formats';
+import Ajv from 'ajv/dist/2020';
+import axios from 'axios';
+import { Jsona } from 'jsona';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
+import { defineStore } from 'pinia';
+import { v4 as uuid } from 'uuid';
+
+import exchangeDocumentSchema from '../../../resources/schemas/document.channel.property.json';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useChannels } from '../../models';
-import { IChannel, IChannelPropertiesSetStateActionPayload, IPlainRelation } from '../../models/types';
+import {
+	IChannel,
+	IChannelPropertiesInsertDataActionPayload,
+	IChannelPropertiesLoadAllRecordsActionPayload,
+	IChannelPropertiesLoadRecordActionPayload,
+	IChannelPropertiesSetStateActionPayload,
+	IChannelPropertyDatabaseRecord,
+	IChannelPropertyMeta,
+	IPlainRelation,
+} from '../../models/types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CHANNELS_PROPERTIES } from '../../utilities/database';
 
 import {
-	IChannelPropertiesState,
 	IChannelPropertiesActions,
-	IChannelPropertiesGetters,
 	IChannelPropertiesAddActionPayload,
 	IChannelPropertiesEditActionPayload,
 	IChannelPropertiesFetchActionPayload,
 	IChannelPropertiesGetActionPayload,
+	IChannelPropertiesGetters,
 	IChannelPropertiesRemoveActionPayload,
 	IChannelPropertiesResponseJson,
 	IChannelPropertiesSaveActionPayload,
 	IChannelPropertiesSetActionPayload,
 	IChannelPropertiesSocketDataActionPayload,
+	IChannelPropertiesState,
 	IChannelPropertiesUnsetActionPayload,
 	IChannelProperty,
 	IChannelPropertyRecordFactoryPayload,
@@ -41,24 +52,51 @@ import {
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promise<IChannelProperty> => {
+const storeRecordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promise<IChannelProperty> => {
 	const channelsStore = useChannels();
 
-	const channel = channelsStore.findById(data.channelId);
+	let channel = 'channel' in data ? get(data, 'channel', null) : null;
+
+	let channelMeta = data.channelId ? channelsStore.findMeta(data.channelId) : null;
+
+	if (channel === null && channelMeta !== null) {
+		channel = {
+			id: data.channelId as string,
+			type: channelMeta,
+		};
+	}
 
 	if (channel === null) {
-		throw new Error("Channel for property couldn't be loaded from store");
+		if (!('channelId' in data)) {
+			throw new Error("Channel for property couldn't be loaded from store");
+		}
+
+		if (!(await channelsStore.get({ id: data.channelId as string, refresh: false }))) {
+			throw new Error("Channel for property couldn't be loaded from server");
+		}
+
+		channelMeta = channelsStore.findMeta(data.channelId as string);
+
+		if (channelMeta === null) {
+			throw new Error("Channel for property couldn't be loaded from store");
+		}
+
+		channel = {
+			id: data.channelId as string,
+			type: channelMeta,
+		};
 	}
 
 	const record: IChannelProperty = {
 		id: get(data, 'id', uuid().toString()),
-		type: { ...{ parent: 'channel', entity: 'property' }, ...data.type },
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -123,6 +161,62 @@ const recordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promis
 	return record;
 };
 
+const databaseRecordFactory = (record: IChannelProperty): IChannelPropertyDatabaseRecord => {
+	return {
+		id: record.id,
+		type: {
+			type: record.type.type,
+			source: record.type.source,
+			entity: record.type.entity,
+			parent: record.type.parent,
+		},
+
+		category: record.category,
+		identifier: record.identifier,
+		name: record.name,
+		settable: record.settable,
+		queryable: record.queryable,
+		dataType: record.dataType,
+		unit: record.unit,
+		format: record.format,
+		invalid: record.invalid,
+		scale: record.scale,
+		step: record.step,
+		valueTransformer: record.valueTransformer,
+		default: record.default,
+
+		// Static property
+		value: record.value,
+
+		relationshipNames: record.relationshipNames.map((name) => name),
+
+		parent: record.parent
+			? {
+					id: record.channel.id,
+					type: {
+						type: record.channel.type.type,
+						source: record.channel.type.source,
+						entity: record.channel.type.entity,
+						parent: record.channel.type.parent,
+					},
+				}
+			: null,
+		children: record.children.map((children) => ({
+			id: children.id,
+			type: { type: children.type.type, source: children.type.source, entity: children.type.entity, parent: children.type.parent },
+		})),
+
+		channel: {
+			id: record.channel.id,
+			type: {
+				type: record.channel.type.type,
+				source: record.channel.type.source,
+				entity: record.channel.type.entity,
+			},
+		},
+	};
+};
+
 export const useChannelProperties = defineStore<string, IChannelPropertiesState, IChannelPropertiesGetters, IChannelPropertiesActions>(
 	'devices_module_channels_properties',
 	{
@@ -138,36 +232,36 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					deleting: [],
 				},
 
-				firstLoad: [],
-
-				data: {},
+				data: undefined,
+				meta: {},
 			};
 		},
 
 		getters: {
-			firstLoadFinished: (state: IChannelPropertiesState): ((channelId: string) => boolean) => {
-				return (channelId) => state.firstLoad.includes(channelId);
+			getting: (state: IChannelPropertiesState): ((id: IChannelProperty['id']) => boolean) => {
+				return (id: IChannelProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
 
-			getting: (state: IChannelPropertiesState): ((propertyId: string) => boolean) => {
-				return (propertyId) => state.semaphore.fetching.item.includes(propertyId);
+			fetching: (state: IChannelPropertiesState): ((channelId: IChannel['id'] | null) => boolean) => {
+				return (channelId: IChannel['id'] | null): boolean =>
+					channelId !== null ? state.semaphore.fetching.items.includes(channelId) : state.semaphore.fetching.items.length > 0;
 			},
 
-			fetching: (state: IChannelPropertiesState): ((channelId: string | null) => boolean) => {
-				return (channelId) => (channelId !== null ? state.semaphore.fetching.items.includes(channelId) : state.semaphore.fetching.items.length > 0);
-			},
-
-			findById: (state: IChannelPropertiesState): ((id: string) => IChannelProperty | null) => {
-				return (id) => {
-					const property = Object.values(state.data).find((property) => property.id === id);
+			findById: (state: IChannelPropertiesState): ((id: IChannelProperty['id']) => IChannelProperty | null) => {
+				return (id: IChannelProperty['id']): IChannelProperty | null => {
+					const property: IChannelProperty | undefined = Object.values(state.data ?? {}).find(
+						(property: IChannelProperty): boolean => property.id === id
+					);
 
 					return property ?? null;
 				};
 			},
 
-			findByIdentifier: (state: IChannelPropertiesState): ((channel: IChannel, identifier: string) => IChannelProperty | null) => {
-				return (channel: IChannel, identifier) => {
-					const property = Object.values(state.data).find((property) => {
+			findByIdentifier: (
+				state: IChannelPropertiesState
+			): ((channel: IChannel, identifier: IChannelProperty['identifier']) => IChannelProperty | null) => {
+				return (channel: IChannel, identifier: IChannelProperty['identifier']): IChannelProperty | null => {
+					const property: IChannelProperty | undefined = Object.values(state.data ?? {}).find((property: IChannelProperty): boolean => {
 						return property.channel.id === channel.id && property.identifier.toLowerCase() === identifier.toLowerCase();
 					});
 
@@ -175,9 +269,15 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 				};
 			},
 
-			findForChannel: (state: IChannelPropertiesState): ((channelId: string) => IChannelProperty[]) => {
-				return (channelId: string): IChannelProperty[] => {
-					return Object.values(state.data).filter((property) => property.channel.id === channelId);
+			findForChannel: (state: IChannelPropertiesState): ((channelId: IChannel['id']) => IChannelProperty[]) => {
+				return (channelId: IChannel['id']): IChannelProperty[] => {
+					return Object.values(state.data ?? {}).filter((property: IChannelProperty): boolean => property.channel.id === channelId);
+				};
+			},
+
+			findMeta: (state: IChannelPropertiesState): ((id: IChannelProperty['id']) => IChannelPropertyMeta | null) => {
+				return (id: IChannelProperty['id']): IChannelPropertyMeta | null => {
+					return id in state.meta ? state.meta[id] : null;
 				};
 			},
 		},
@@ -189,14 +289,19 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 			 * @param {IChannelPropertiesSetActionPayload} payload
 			 */
 			async set(payload: IChannelPropertiesSetActionPayload): Promise<IChannelProperty> {
-				if (payload.data.id && payload.data.id in this.data) {
-					const record = await recordFactory({ ...this.data[payload.data.id], ...payload.data });
+				if (this.data && payload.data.id && payload.data.id in this.data) {
+					const record = await storeRecordFactory({ ...this.data[payload.data.id], ...payload.data });
 
 					return (this.data[record.id] = record);
 				}
 
-				const record = await recordFactory(payload.data);
+				const record = await storeRecordFactory(payload.data);
 
+				await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_PROPERTIES);
+
+				this.meta[record.id] = record.type;
+
+				this.data = this.data ?? {};
 				return (this.data[record.id] = record);
 			},
 
@@ -205,19 +310,31 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 			 *
 			 * @param {IChannelPropertiesUnsetActionPayload} payload
 			 */
-			unset(payload: IChannelPropertiesUnsetActionPayload): void {
-				if (typeof payload.channel !== 'undefined') {
-					Object.keys(this.data).forEach((id) => {
-						if (id in this.data && this.data[id].channel.id === payload.channel?.id) {
-							delete this.data[id];
+			async unset(payload: IChannelPropertiesUnsetActionPayload): Promise<void> {
+				if (!this.data) {
+					return;
+				}
+
+				if (payload.channel !== undefined) {
+					const items = this.findForChannel(payload.channel.id);
+
+					for (const item of items) {
+						if (item.id in (this.data ?? {})) {
+							await removeRecord(item.id, DB_TABLE_CHANNELS_PROPERTIES);
+
+							delete this.meta[item.id];
+
+							delete (this.data ?? {})[item.id];
 						}
-					});
+					}
 
 					return;
-				} else if (typeof payload.id !== 'undefined') {
-					if (payload.id in this.data) {
-						delete this.data[payload.id];
-					}
+				} else if (payload.id !== undefined) {
+					await removeRecord(payload.id, DB_TABLE_CHANNELS_PROPERTIES);
+
+					delete this.meta[payload.id];
+
+					delete this.data[payload.id];
 
 					return;
 				}
@@ -235,27 +352,30 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					return false;
 				}
 
-				const channelsStore = useChannels();
+				const fromDatabase = await this.loadRecord({ id: payload.id });
 
-				const channel = channelsStore.findById(payload.channel.id);
-
-				if (channel === null) {
-					throw new Error('devices-module.channel-properties.get.failed');
+				if (fromDatabase && payload.refresh === false) {
+					return true;
 				}
 
 				this.semaphore.fetching.item.push(payload.id);
 
 				try {
 					const propertyResponse = await axios.get<IChannelPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${payload.channel.id}/properties/${payload.id}`
+						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties/${payload.id}`
 					);
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IChannelPropertyResponseModel;
 
-					this.data[propertyResponseModel.id] = await recordFactory({
+					this.data = this.data ?? {};
+					this.data[propertyResponseModel.id] = await storeRecordFactory({
 						...propertyResponseModel,
 						...{ channelId: propertyResponseModel.channel.id, parentId: propertyResponseModel.parent?.id },
 					});
+
+					await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(this.data[propertyResponseModel.id]), DB_TABLE_CHANNELS_PROPERTIES);
+
+					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
 					throw new ApiError('devices-module.channel-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
@@ -275,31 +395,49 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					return false;
 				}
 
-				const channelsStore = useChannels();
+				const fromDatabase = await this.loadAllRecords({ channel: payload.channel });
 
-				const channel = channelsStore.findById(payload.channel.id);
-
-				if (channel === null) {
-					throw new Error('devices-module.channel-properties.fetch.failed');
+				if (fromDatabase && payload?.refresh === false) {
+					return true;
 				}
 
 				this.semaphore.fetching.items.push(payload.channel.id);
 
 				try {
 					const propertiesResponse = await axios.get<IChannelPropertiesResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${payload.channel.id}/properties`
+						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties`
 					);
 
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IChannelPropertyResponseModel[];
 
 					for (const property of propertiesResponseModel) {
-						this.data[property.id] = await recordFactory({
+						this.data = this.data ?? {};
+						this.data[property.id] = await storeRecordFactory({
 							...property,
 							...{ channelId: property.channel.id, parentId: property.parent?.id },
 						});
+
+						await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(this.data[property.id]), DB_TABLE_CHANNELS_PROPERTIES);
+
+						this.meta[property.id] = property.type;
 					}
 
-					this.firstLoad.push(payload.channel.id);
+					// Get all current IDs from IndexedDB
+					const allRecords = await getAllRecords<IChannelPropertyDatabaseRecord>(DB_TABLE_CHANNELS_PROPERTIES);
+					const indexedDbIds: string[] = allRecords.filter((record) => record.channel.id === payload.channel.id).map((record) => record.id);
+
+					// Get the IDs from the latest changes
+					const serverIds: string[] = Object.keys(this.data ?? {});
+
+					// Find IDs that are in IndexedDB but not in the server response
+					const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
+
+					// Remove records that are no longer present on the server
+					for (const id of idsToRemove) {
+						await removeRecord(id, DB_TABLE_CHANNELS_PROPERTIES);
+
+						delete this.meta[id];
+					}
 				} catch (e: any) {
 					throw new ApiError('devices-module.channel-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
@@ -315,7 +453,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 			 * @param {IChannelPropertiesAddActionPayload} payload
 			 */
 			async add(payload: IChannelPropertiesAddActionPayload): Promise<IChannelProperty> {
-				const newProperty = await recordFactory({
+				const newProperty = await storeRecordFactory({
 					...{
 						id: payload?.id,
 						type: payload?.type,
@@ -328,6 +466,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				this.semaphore.creating.push(newProperty.id);
 
+				this.data = this.data ?? {};
 				this.data[newProperty.id] = newProperty;
 
 				if (newProperty.draft) {
@@ -388,7 +527,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						}
 
 						const createdProperty = await axios.post<IChannelPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${payload.channel.id}/properties`,
+							`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -396,10 +535,14 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 						const createdPropertyModel = jsonApiFormatter.deserialize(createdProperty.data) as IChannelPropertyResponseModel;
 
-						this.data[createdPropertyModel.id] = await recordFactory({
+						this.data[createdPropertyModel.id] = await storeRecordFactory({
 							...createdPropertyModel,
 							...{ channelId: createdPropertyModel.channel.id, parentId: createdPropertyModel.parent?.id },
 						});
+
+						await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(this.data[createdPropertyModel.id]), DB_TABLE_CHANNELS_PROPERTIES);
+
+						this.meta[createdPropertyModel.id] = createdPropertyModel.type;
 
 						return this.data[createdPropertyModel.id];
 					} catch (e: any) {
@@ -423,7 +566,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					throw new Error('devices-module.channel-properties.update.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.channel-properties.update.failed');
 				}
 
@@ -498,7 +641,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						}
 
 						const updatedProperty = await axios.patch<IChannelPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${updatedRecord.channel.id}/properties/${updatedRecord.id}`,
+							`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${updatedRecord.channel.id}/properties/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -506,10 +649,14 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 						const updatedPropertyModel = jsonApiFormatter.deserialize(updatedProperty.data) as IChannelPropertyResponseModel;
 
-						this.data[updatedPropertyModel.id] = await recordFactory({
+						this.data[updatedPropertyModel.id] = await storeRecordFactory({
 							...updatedPropertyModel,
 							...{ channelId: updatedPropertyModel.channel.id, parentId: updatedPropertyModel.parent?.id },
 						});
+
+						await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(this.data[updatedPropertyModel.id]), DB_TABLE_CHANNELS_PROPERTIES);
+
+						this.meta[updatedPropertyModel.id] = updatedPropertyModel.type;
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
@@ -539,7 +686,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					throw new Error('devices-module.channel-properties.update.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.channel-properties.update.failed');
 				}
 
@@ -569,7 +716,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					throw new Error('devices-module.channel-properties.save.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.channel-properties.save.failed');
 				}
 
@@ -630,7 +777,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					}
 
 					const savedProperty = await axios.post<IChannelPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${recordToSave.channel.id}/properties`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToSave.channel.id}/properties`,
 						jsonApiFormatter.serialize({
 							stuff: apiData,
 						})
@@ -638,10 +785,14 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 					const savedPropertyModel = jsonApiFormatter.deserialize(savedProperty.data) as IChannelPropertyResponseModel;
 
-					this.data[savedPropertyModel.id] = await recordFactory({
+					this.data[savedPropertyModel.id] = await storeRecordFactory({
 						...savedPropertyModel,
 						...{ channelId: savedPropertyModel.channel.id, parentId: savedPropertyModel.parent?.id },
 					});
+
+					await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(this.data[savedPropertyModel.id]), DB_TABLE_CHANNELS_PROPERTIES);
+
+					this.meta[savedPropertyModel.id] = savedPropertyModel.type;
 
 					return this.data[savedPropertyModel.id];
 				} catch (e: any) {
@@ -661,7 +812,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					throw new Error('devices-module.channel-properties.delete.inProgress');
 				}
 
-				if (!Object.keys(this.data).includes(payload.id)) {
+				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
 					throw new Error('devices-module.channel-properties.delete.failed');
 				}
 
@@ -681,13 +832,15 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				delete this.data[payload.id];
 
+				await removeRecord(payload.id, DB_TABLE_CHANNELS_PROPERTIES);
+
+				delete this.meta[payload.id];
+
 				if (recordToDelete.draft) {
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${channel.device.id}/channels/${recordToDelete.channel.id}/properties/${recordToDelete.id}`
-						);
+						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToDelete.channel.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
 						const channelsStore = useChannels();
 
@@ -737,7 +890,11 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 				}
 
 				if (payload.routingKey === RoutingKeys.CHANNEL_PROPERTY_DOCUMENT_DELETED) {
-					if (body.id in this.data) {
+					await removeRecord(body.id, DB_TABLE_CHANNELS_PROPERTIES);
+
+					delete this.meta[body.id];
+
+					if (this.data && body.id in this.data) {
 						delete this.data[body.id];
 					}
 				} else {
@@ -745,8 +902,8 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						return true;
 					}
 
-					if (body.id in this.data) {
-						const record = await recordFactory({
+					if (this.data && body.id in this.data) {
+						const record = await storeRecordFactory({
 							...JSON.parse(JSON.stringify(this.data[body.id])),
 							...{
 								category: body.category,
@@ -772,6 +929,10 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
 							this.data[body.id] = record;
+
+							await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_PROPERTIES);
+
+							this.meta[record.id] = record.type;
 						}
 					} else {
 						const channelsStore = useChannels();
@@ -789,6 +950,117 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 							}
 						}
 					}
+				}
+
+				return true;
+			},
+
+			/**
+			 * Insert data from SSR
+			 *
+			 * @param {IChannelPropertiesInsertDataActionPayload} payload
+			 */
+			async insertData(payload: IChannelPropertiesInsertDataActionPayload) {
+				this.data = this.data ?? {};
+
+				let documents: ChannelPropertyDocument[] = [];
+
+				if (Array.isArray(payload.data)) {
+					documents = payload.data;
+				} else {
+					documents = [payload.data];
+				}
+
+				const channelIds = [];
+
+				for (const doc of documents) {
+					const isValid = jsonSchemaValidator.compile<ChannelPropertyDocument>(exchangeDocumentSchema);
+
+					try {
+						if (!isValid(doc)) {
+							return false;
+						}
+					} catch {
+						return false;
+					}
+
+					const record = await storeRecordFactory({
+						...this.data[doc.id],
+						...{
+							id: doc.id,
+							type: {
+								type: doc.type,
+								source: doc.source,
+								parent: 'channel',
+								entity: 'property',
+							},
+							category: doc.category,
+							identifier: doc.identifier,
+							name: doc.name,
+							settable: doc.settable,
+							queryable: doc.queryable,
+							dataType: doc.data_type,
+							unit: doc.unit,
+							format: doc.format,
+							invalid: doc.invalid,
+							scale: doc.scale,
+							step: doc.step,
+							valueTransformer: doc.value_transformer,
+							default: doc.default,
+							value: doc.value,
+							channelId: doc.channel,
+							parentId: doc.parent,
+						},
+					});
+
+					if (documents.length === 1) {
+						this.data[doc.id] = record;
+					}
+
+					await addRecord<IChannelPropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_PROPERTIES);
+
+					this.meta[record.id] = record.type;
+
+					channelIds.push(doc.channel);
+				}
+
+				return true;
+			},
+
+			/**
+			 * Load record from database
+			 *
+			 * @param {IChannelPropertiesLoadRecordActionPayload} payload
+			 */
+			async loadRecord(payload: IChannelPropertiesLoadRecordActionPayload): Promise<boolean> {
+				const record = await getRecord<IChannelPropertyDatabaseRecord>(payload.id, DB_TABLE_CHANNELS_PROPERTIES);
+
+				if (record) {
+					this.data = this.data ?? {};
+					this.data[payload.id] = await storeRecordFactory(record);
+
+					return true;
+				}
+
+				return false;
+			},
+
+			/**
+			 * Load records from database
+			 *
+			 * @param {IChannelPropertiesLoadAllRecordsActionPayload} payload
+			 */
+			async loadAllRecords(payload?: IChannelPropertiesLoadAllRecordsActionPayload): Promise<boolean> {
+				const records = await getAllRecords<IChannelPropertyDatabaseRecord>(DB_TABLE_CHANNELS_PROPERTIES);
+
+				this.data = this.data ?? {};
+
+				for (const record of records) {
+					if (payload?.channel && payload?.channel.id !== record?.channel.id) {
+						continue;
+					}
+
+					this.data[record.id] = await storeRecordFactory(record);
 				}
 
 				return true;

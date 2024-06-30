@@ -21,7 +21,6 @@ use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Utilities;
-use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -63,7 +62,7 @@ final readonly class Handler
 		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($payload));
 
 		try {
-			$data = Nette\Utils\Json::decode($payload, Nette\Utils\Json::FORCE_ARRAY);
+			$data = Utils\Json::decode($payload, forceArrays: true);
 
 			if (
 				is_array($data)
@@ -74,7 +73,7 @@ final readonly class Handler
 				$this->consume(
 					strval($data['source']),
 					$data['routing_key'],
-					Nette\Utils\Json::encode($data['data']),
+					Utils\Json::encode($data['data']),
 					array_key_exists('sender_id', $data) ? $data['sender_id'] : null,
 				);
 
@@ -88,7 +87,7 @@ final readonly class Handler
 					],
 				);
 			}
-		} catch (Nette\Utils\JsonException $ex) {
+		} catch (Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning(
 				'Received message is not valid json',
@@ -125,7 +124,7 @@ final readonly class Handler
 		}
 
 		try {
-			$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+			$data = Utils\Json::decode($data, forceArrays: true);
 			assert(is_array($data));
 			$data = Utils\ArrayHash::from($data);
 

@@ -95,10 +95,16 @@ final class ClassMetadataFactory
 			throw new Exceptions\InvalidArgument(sprintf('Provided document class: "%s" is non existing', $className));
 		}
 
-		$this->cache->load(
+		/** @var array<class-string<Documents\Document>, Mapping\ClassMetadata<Documents\Document>> $loadedMetadata */
+		$loadedMetadata = $this->cache->load(
 			$this->getCacheKey($className),
 			fn () => $this->loadMetadata($className),
 		);
+
+		$this->loadedMetadata = [
+			...$this->loadedMetadata,
+			...$loadedMetadata,
+		];
 
 		/** @var ClassMetadata<T> $metadata */
 		$metadata = $this->loadedMetadata[$className];
@@ -111,7 +117,7 @@ final class ClassMetadataFactory
 	 *
 	 * @param class-string<T> $name
 	 *
-	 * @return array<class-string<T>>
+	 * @return array<class-string<Documents\Document>, Mapping\ClassMetadata<Documents\Document>>
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Mapping
@@ -146,6 +152,7 @@ final class ClassMetadataFactory
 			$this->doLoadMetadata($class, $parent, $rootDocumentFound, $visited);
 
 			$this->loadedMetadata[$className] = $class;
+			$loaded[$className] = $class;
 
 			$parent = $class;
 
@@ -154,8 +161,6 @@ final class ClassMetadataFactory
 
 				array_unshift($visited, $className);
 			}
-
-			$loaded[] = $className;
 		}
 
 		return $loaded;

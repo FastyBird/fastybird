@@ -243,7 +243,7 @@ const isLoading = computed<boolean>((): boolean => {
 		return false;
 	}
 
-	return connectorsStore.fetching;
+	return connectorsStore.fetching();
 });
 const areDevicesLoading = computed<boolean>((): boolean => {
 	if (devicesStore.fetching(props.id)) {
@@ -270,7 +270,7 @@ const isChannelSettingsRoute = computed<boolean>(
 );
 
 const connectors = computed<IConnector[]>((): IConnector[] => {
-	return Object.values(connectorsStore.data);
+	return connectorsStore.findAll();
 });
 
 const connectorData = computed<IConnectorData | null>((): IConnectorData | null => {
@@ -337,7 +337,7 @@ const connectorData = computed<IConnectorData | null>((): IConnectorData | null 
 });
 
 const page = computed<number>((): number => {
-	const index = Object.values(connectorsStore.data).findIndex(({ id }) => id === props.id);
+	const index = connectorsStore.findAll().findIndex(({ id }) => id === props.id);
 
 	if (index !== -1) {
 		return index + 1;
@@ -429,27 +429,27 @@ const onCloseSettings = (): void => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	fetchConnector(props.id).catch((e) => {
-		if (get(e, 'exception.response.status', 0) === 404) {
-			throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
-		} else {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-		}
-	});
-
-	if (!isLoading.value && connectorsStore.findById(props.id) === null) {
-		throw new ApplicationError('Connector Not Found', null, { statusCode: 404, message: 'Connector Not Found' });
-	}
-
-	if (connectorData.value) {
-		fetchDevices(connectorData.value.connector).catch((e) => {
+	fetchConnector(props.id)
+		.then((): void => {
+			if (!isLoading.value && connectorsStore.findById(props.id) === null) {
+				throw new ApplicationError('Connector Not Found', null, { statusCode: 404, message: 'Connector Not Found' });
+			}
+		})
+		.catch((e: any): void => {
 			if (get(e, 'exception.response.status', 0) === 404) {
 				throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
 			} else {
 				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 			}
 		});
-	}
+
+	fetchDevices(props.id).catch((e: any): void => {
+		if (get(e, 'exception.response.status', 0) === 404) {
+			throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
+		} else {
+			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+		}
+	});
 
 	if (
 		route.name === routeNames.connectorSettings ||
@@ -464,15 +464,25 @@ onBeforeMount(async (): Promise<void> => {
 	}
 });
 
-const fetchConnector = async (id: string): Promise<void> => {
-	if (!isLoading.value && !connectorsStore.firstLoadFinished) {
-		await connectorsStore.get({ id });
+const fetchConnector = async (id: IConnector['id']): Promise<void> => {
+	await connectorsStore.get({ id, refresh: !connectorsStore.firstLoadFinished() });
+
+	const connector = connectorsStore.findById(id);
+
+	if (connector) {
+		await connectorPropertiesStore.fetch({ connector, refresh: false });
+		await connectorControlsStore.fetch({ connector, refresh: false });
 	}
 };
 
-const fetchDevices = async (connector: IConnector): Promise<void> => {
-	if (!areDevicesLoading.value && !devicesStore.firstLoadFinished(connector.id)) {
-		await devicesStore.fetch({ connector });
+const fetchDevices = async (connectorId: IConnector['id']): Promise<void> => {
+	await devicesStore.fetch({ connectorId, refresh: !devicesStore.firstLoadFinished(connectorId) });
+
+	const devices = devicesStore.findForConnector(connectorId);
+
+	for (const device of devices) {
+		await devicePropertiesStore.fetch({ device, refresh: false });
+		await deviceControlsStore.fetch({ device, refresh: false });
 	}
 };
 
@@ -511,19 +521,32 @@ watch(
 	(val: IConnectorData | null): void => {
 		if (val !== null) {
 			meta.title = t('meta.connectors.detail.title', { connector: useEntityTitle(val.connector).value });
-
-			fetchDevices(val.connector).catch((e) => {
-				if (get(e, 'exception.response.status', 0) === 404) {
-					throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
-				} else {
-					throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-				}
-			});
 		}
 
 		if (!isLoading.value && val === null) {
 			throw new ApplicationError('Connector Not Found', null, { statusCode: 404, message: 'Connector Not Found' });
 		}
+	}
+);
+
+watch(
+	(): string => props.id,
+	async (val: string): Promise<void> => {
+		fetchConnector(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
+
+		fetchDevices(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
 	}
 );
 </script>

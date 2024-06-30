@@ -6,7 +6,7 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Boot
  * @since          1.0.0
  *
@@ -46,7 +46,7 @@ use const DIRECTORY_SEPARATOR as DS;
 /**
  * Service application configurator
  *
- * @package        FastyBird:Application!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Boot
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -136,7 +136,7 @@ class Bootstrap
 			define('FB_PUBLIC_DIR', getenv('FB_PUBLIC_DIR'));
 
 		} elseif (!defined('FB_PUBLIC_DIR')) {
-			define('FB_PUBLIC_DIR', FB_APP_DIR . DS . 'www');
+			define('FB_PUBLIC_DIR', FB_APP_DIR . DS . 'public');
 		}
 
 		// Configuring resources dir path

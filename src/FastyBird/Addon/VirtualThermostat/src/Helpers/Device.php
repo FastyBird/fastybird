@@ -26,7 +26,6 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
-use Nette\Utils;
 use TypeError;
 use ValueError;
 use function array_filter;
@@ -35,6 +34,7 @@ use function assert;
 use function floatval;
 use function is_numeric;
 use function sprintf;
+use function str_starts_with;
 
 /**
  * Thermostat helper
@@ -489,11 +489,11 @@ final readonly class Device
 					$property instanceof DevicesDocuments\Channels\Properties\Dynamic
 					|| $property instanceof DevicesDocuments\Channels\Properties\Mapped
 				) && (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 					)
-					|| Utils\Strings::startsWith(
+					|| str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 					)
@@ -509,7 +509,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getActors($device),
-			static fn ($actor): bool => Utils\Strings::startsWith(
+			static fn ($actor): bool => str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::HEATER_ACTOR->value,
 			),
@@ -524,7 +524,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getActors($device),
-			static fn ($actor): bool => Utils\Strings::startsWith(
+			static fn ($actor): bool => str_starts_with(
 				$actor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::COOLER_ACTOR->value,
 			),
@@ -564,19 +564,19 @@ final readonly class Device
 					$property instanceof DevicesDocuments\Channels\Properties\Dynamic
 					|| $property instanceof DevicesDocuments\Channels\Properties\Mapped
 				) && (
-					Utils\Strings::startsWith(
+					str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 					)
-					|| Utils\Strings::startsWith(
+					|| str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 					)
-					|| Utils\Strings::startsWith(
+					|| str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 					)
-					|| Utils\Strings::startsWith(
+					|| str_starts_with(
 						$property->getIdentifier(),
 						Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 					)
@@ -592,7 +592,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getSensors($device),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_TEMPERATURE_SENSOR->value,
 			),
@@ -607,7 +607,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getSensors($device),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::FLOOR_TEMPERATURE_SENSOR->value,
 			),
@@ -622,7 +622,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getSensors($device),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::OPENING_SENSOR->value,
 			),
@@ -637,7 +637,7 @@ final readonly class Device
 	{
 		return array_filter(
 			$this->getSensors($device),
-			static fn ($sensor): bool => Utils\Strings::startsWith(
+			static fn ($sensor): bool => str_starts_with(
 				$sensor->getIdentifier(),
 				Types\ChannelPropertyIdentifier::ROOM_HUMIDITY_SENSOR->value,
 			),

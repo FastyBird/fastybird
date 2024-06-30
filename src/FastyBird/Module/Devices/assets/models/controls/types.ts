@@ -1,11 +1,17 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
+import { IEntityMeta } from '../types';
+
+export interface IControlMeta extends IEntityMeta {
+	parent: 'connector' | 'device' | 'channel';
+	entity: 'control';
+}
 
 // STORE MODELS
 // ============
 
 export interface IControl {
 	id: string;
-	type: { source: string; parent: string; entity: string };
+	type: IControlMeta;
 
 	draft: boolean;
 
@@ -20,7 +26,7 @@ export interface IControl {
 
 export interface IControlRecordFactoryPayload {
 	id?: string;
-	type: { source: string; parent?: string; entity?: string };
+	type: IControlMeta;
 
 	draft?: boolean;
 
@@ -34,13 +40,13 @@ export interface IControlRecordFactoryPayload {
 // =============
 
 export interface IControlsAddActionPayload {
-	id?: string;
-	type: { source: string; parent?: string; entity?: string };
+	id?: IControl['id'];
+	type: IControlMeta;
 
-	draft?: boolean;
+	draft?: IControl['draft'];
 
 	data: {
-		name: string;
+		name: IControl['name'];
 	};
 }
 
@@ -49,7 +55,20 @@ export interface IControlsAddActionPayload {
 
 export interface IControlResponseModel extends TJsonaModel {
 	id: string;
-	type: { source: string; parent: string; entity: string };
+	type: IControlMeta;
+
+	name: string;
+
+	// Relations
+	relationshipNames: string[];
+}
+
+// DATABASE
+// ========
+
+export interface IControlDatabaseRecord {
+	id: string;
+	type: IControlMeta;
 
 	name: string;
 

@@ -102,9 +102,9 @@ class Install extends Console\Command\Command
 	{
 		$io = new Style\SymfonyStyle($input, $output);
 
-		$io->title($this->translator->translate('//fb-mqtt-connector.cmd.install.title'));
+		$io->title((string) $this->translator->translate('//fb-mqtt-connector.cmd.install.title'));
 
-		$io->note($this->translator->translate('//fb-mqtt-connector.cmd.install.subtitle'));
+		$io->note((string) $this->translator->translate('//fb-mqtt-connector.cmd.install.subtitle'));
 
 		$this->askInstallAction($io);
 
@@ -123,7 +123,9 @@ class Install extends Console\Command\Command
 		$protocol = $this->askConnectorProtocol($io);
 
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.identifier'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.connector.identifier',
+			),
 		);
 
 		$question->setValidator(function ($answer) {
@@ -138,7 +140,7 @@ class Install extends Console\Command\Command
 
 				if ($connector !== null) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//fb-mqtt-connector.cmd.install.messages.identifier.connector.used',
 						),
 					);
@@ -172,7 +174,9 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.messages.identifier.connector.missing'),
+				(string) $this->translator->translate(
+					'//fb-mqtt-connector.cmd.install.messages.identifier.connector.missing',
+				),
 			);
 
 			return;
@@ -253,7 +257,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.create.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -269,7 +273,11 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.create.connector.error'));
+			$io->error(
+				(string) $this->translator->translate(
+					'//fb-mqtt-connector.cmd.install.messages.create.connector.error',
+				),
+			);
 
 			return;
 		} finally {
@@ -277,7 +285,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.devices'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.devices'),
 			true,
 		);
 
@@ -307,10 +315,10 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.connector'),
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.connector'),
 				false,
 			);
 
@@ -334,7 +342,7 @@ class Install extends Console\Command\Command
 
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.change.protocol'),
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.change.protocol'),
 				false,
 			);
 
@@ -353,7 +361,7 @@ class Install extends Console\Command\Command
 
 		if ($connector->isEnabled()) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.disable.connector'),
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.disable.connector'),
 				false,
 			);
 
@@ -362,7 +370,7 @@ class Install extends Console\Command\Command
 			}
 		} else {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.enable.connector'),
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.enable.connector'),
 				false,
 			);
 
@@ -517,7 +525,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.update.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -533,7 +541,11 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.update.connector.error'));
+			$io->error(
+				(string) $this->translator->translate(
+					'//fb-mqtt-connector.cmd.install.messages.update.connector.error',
+				),
+			);
 
 			return;
 		} finally {
@@ -541,7 +553,7 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.manage.devices'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.manage.devices'),
 			false,
 		);
 
@@ -566,20 +578,20 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.messages.remove.connector.confirm',
 				['name' => $connector->getName() ?? $connector->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -599,7 +611,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.remove.connector.success',
 					['name' => $connector->getName() ?? $connector->getIdentifier()],
 				),
@@ -615,7 +627,11 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.remove.connector.error'));
+			$io->error(
+				(string) $this->translator->translate(
+					'//fb-mqtt-connector.cmd.install.messages.remove.connector.error',
+				),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -635,7 +651,7 @@ class Install extends Console\Command\Command
 		$connector = $this->askWhichConnector($io);
 
 		if ($connector === null) {
-			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
+			$io->info((string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.noConnectors'));
 
 			return;
 		}
@@ -669,9 +685,9 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.protocol'),
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.devicesCnt'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.data.protocol'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.data.devicesCnt'),
 		]);
 
 		foreach ($connectors as $index => $connector) {
@@ -683,7 +699,7 @@ class Install extends Console\Command\Command
 			$table->addRow([
 				$index + 1,
 				$connector->getName() ?? $connector->getIdentifier(),
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.base.protocol.' . $connector->getProtocolVersion()->value,
 				),
 				count($devices),
@@ -701,7 +717,9 @@ class Install extends Console\Command\Command
 	private function createDevice(Style\SymfonyStyle $io, Entities\Connectors\Connector $connector): void
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.device.identifier'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.device.identifier',
+			),
 		);
 
 		$question->setValidator(function (string|null $answer) {
@@ -713,7 +731,7 @@ class Install extends Console\Command\Command
 					$this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\Device::class) !== null
 				) {
 					throw new Exceptions\Runtime(
-						$this->translator->translate(
+						(string) $this->translator->translate(
 							'//fb-mqtt-connector.cmd.install.messages.identifier.device.used',
 						),
 					);
@@ -744,7 +762,9 @@ class Install extends Console\Command\Command
 
 		if ($identifier === '') {
 			$io->error(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.messages.identifier.device.missing'),
+				(string) $this->translator->translate(
+					'//fb-mqtt-connector.cmd.install.messages.identifier.device.missing',
+				),
 			);
 
 			return;
@@ -768,7 +788,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.create.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -784,7 +804,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.create.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.messages.create.device.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -799,10 +821,10 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
 
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.device'),
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.create.device'),
 				false,
 			);
 
@@ -829,7 +851,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.update.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -845,7 +867,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.update.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.messages.update.device.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -860,20 +884,20 @@ class Install extends Console\Command\Command
 		$device = $this->askWhichDevice($io, $connector);
 
 		if ($device === null) {
-			$io->info($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
+			$io->info((string) $this->translator->translate('//fb-mqtt-connector.cmd.install.messages.noDevices'));
 
 			return;
 		}
 
 		$io->warning(
-			$this->translator->translate(
+			(string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.messages.remove.device.confirm',
 				['name' => $device->getName() ?? $device->getIdentifier()],
 			),
 		);
 
 		$question = new Console\Question\ConfirmationQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.questions.continue'),
 			false,
 		);
 
@@ -893,7 +917,7 @@ class Install extends Console\Command\Command
 			$this->databaseHelper->commitTransaction();
 
 			$io->success(
-				$this->translator->translate(
+				(string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.messages.remove.device.success',
 					['name' => $device->getName() ?? $device->getIdentifier()],
 				),
@@ -909,7 +933,9 @@ class Install extends Console\Command\Command
 				],
 			);
 
-			$io->error($this->translator->translate('//fb-mqtt-connector.cmd.install.messages.remove.device.error'));
+			$io->error(
+				(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.messages.remove.device.error'),
+			);
 		} finally {
 			$this->databaseHelper->clear();
 		}
@@ -934,7 +960,7 @@ class Install extends Console\Command\Command
 		$table = new Console\Helper\Table($io);
 		$table->setHeaders([
 			'#',
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.data.name'),
 		]);
 
 		foreach ($devices as $index => $device) {
@@ -964,26 +990,26 @@ class Install extends Console\Command\Command
 	private function askInstallAction(Style\SymfonyStyle $io): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.create.connector'),
-				1 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.update.connector'),
-				2 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.remove.connector'),
-				3 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.manage.connector'),
-				4 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.list.connectors'),
-				5 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.create.connector'),
+				1 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.update.connector'),
+				2 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.remove.connector'),
+				3 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.manage.connector'),
+				4 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.list.connectors'),
+				5 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.nothing'),
 			],
 			5,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.create.connector',
 			)
 			|| $whatToDo === '0'
@@ -993,7 +1019,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.update.connector',
 			)
 			|| $whatToDo === '1'
@@ -1003,7 +1029,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.remove.connector',
 			)
 			|| $whatToDo === '2'
@@ -1013,7 +1039,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.manage.connector',
 			)
 			|| $whatToDo === '3'
@@ -1023,7 +1049,7 @@ class Install extends Console\Command\Command
 			$this->askInstallAction($io);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.list.connectors',
 			)
 			|| $whatToDo === '4'
@@ -1049,25 +1075,25 @@ class Install extends Console\Command\Command
 	): void
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.questions.whatToDo'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.questions.whatToDo'),
 			[
-				0 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.create.device'),
-				1 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.update.device'),
-				2 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.remove.device'),
-				3 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.list.devices'),
-				4 => $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.nothing'),
+				0 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.create.device'),
+				1 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.update.device'),
+				2 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.remove.device'),
+				3 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.list.devices'),
+				4 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.actions.nothing'),
 			],
 			4,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 
 		$whatToDo = $io->askQuestion($question);
 
 		if (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.create.device',
 			)
 			|| $whatToDo === '0'
@@ -1077,7 +1103,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.update.device',
 			)
 			|| $whatToDo === '1'
@@ -1087,7 +1113,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.remove.device',
 			)
 			|| $whatToDo === '2'
@@ -1097,7 +1123,7 @@ class Install extends Console\Command\Command
 			$this->askManageConnectorAction($io, $connector);
 
 		} elseif (
-			$whatToDo === $this->translator->translate(
+			$whatToDo === (string) $this->translator->translate(
 				'//fb-mqtt-connector.cmd.install.actions.list.devices',
 			)
 			|| $whatToDo === '3'
@@ -1111,27 +1137,29 @@ class Install extends Console\Command\Command
 	private function askConnectorProtocol(Style\SymfonyStyle $io): Types\ProtocolVersion
 	{
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.select.connector.protocol'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.select.connector.protocol',
+			),
 			[
-				0 => $this->translator->translate('//fb-mqtt-connector.cmd.install.answers.protocol.v1'),
+				0 => (string) $this->translator->translate('//fb-mqtt-connector.cmd.install.answers.protocol.v1'),
 			],
 			0,
 		);
 		$question->setErrorMessage(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|null $answer): Types\ProtocolVersion {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
 			}
 
 			if (
-				$answer === $this->translator->translate(
+				$answer === (string) $this->translator->translate(
 					'//fb-mqtt-connector.cmd.install.answers.protocol.v1',
 				)
 				|| $answer === '0'
@@ -1141,7 +1169,7 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
@@ -1159,7 +1187,7 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.name'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.name'),
 			$connector?->getName(),
 		);
 
@@ -1180,14 +1208,16 @@ class Install extends Console\Command\Command
 	): string
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.address'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.connector.address',
+			),
 			$connector?->getServerAddress() ?? FbMqtt\Constants::DEFAULT_SERVER_ADDRESS,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1211,14 +1241,14 @@ class Install extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.port'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.port'),
 			$connector?->getServerPort() ?? FbMqtt\Constants::DEFAULT_SERVER_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1242,14 +1272,16 @@ class Install extends Console\Command\Command
 	): int
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.securedPort'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.connector.securedPort',
+			),
 			$connector?->getServerSecuredPort() ?? FbMqtt\Constants::DEFAULT_SERVER_SECURED_PORT,
 		);
 		$question->setValidator(function (string|null $answer): string {
 			if ($answer === '' || $answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1273,7 +1305,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.username'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.connector.username',
+			),
 			$connector?->getUsername(),
 		);
 
@@ -1294,7 +1328,9 @@ class Install extends Console\Command\Command
 	): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.connector.password'),
+			(string) $this->translator->translate(
+				'//fb-mqtt-connector.cmd.install.questions.provide.connector.password',
+			),
 			$connector?->getPassword(),
 		);
 
@@ -1306,7 +1342,7 @@ class Install extends Console\Command\Command
 	private function askDeviceName(Style\SymfonyStyle $io, Entities\Devices\Device|null $device = null): string|null
 	{
 		$question = new Console\Question\Question(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.device.name'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.provide.device.name'),
 			$device?->getName(),
 		);
 
@@ -1344,19 +1380,19 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.select.item.connector'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.select.item.connector'),
 			array_values($connectors),
 			count($connectors) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(function (string|int|null $answer) use ($connectors): Entities\Connectors\Connector {
 			if ($answer === null) {
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);
@@ -1384,7 +1420,7 @@ class Install extends Console\Command\Command
 
 			throw new Exceptions\Runtime(
 				sprintf(
-					$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+					(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 					$answer,
 				),
 			);
@@ -1429,20 +1465,22 @@ class Install extends Console\Command\Command
 		}
 
 		$question = new Console\Question\ChoiceQuestion(
-			$this->translator->translate('//fb-mqtt-connector.cmd.install.questions.select.item.device'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.install.questions.select.item.device'),
 			array_values($devices),
 			count($devices) === 1 ? 0 : null,
 		);
 
 		$question->setErrorMessage(
-			$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+			(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
 			function (string|int|null $answer) use ($connector, $devices): Entities\Devices\Device {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
-							$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+							(string) $this->translator->translate(
+								'//fb-mqtt-connector.cmd.base.messages.answerNotValid',
+							),
 							$answer,
 						),
 					);
@@ -1471,7 +1509,7 @@ class Install extends Console\Command\Command
 
 				throw new Exceptions\Runtime(
 					sprintf(
-						$this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
+						(string) $this->translator->translate('//fb-mqtt-connector.cmd.base.messages.answerNotValid'),
 						$answer,
 					),
 				);

@@ -56,7 +56,7 @@ final readonly class StateFactory
 		}
 
 		try {
-			$decoded = Utils\Json::decode($raw, Utils\Json::FORCE_ARRAY);
+			$decoded = Utils\Json::decode($raw, forceArrays: true);
 
 			if (!is_array($decoded)) {
 				throw new Exceptions\InvalidArgument('Provided state content is not valid JSON');

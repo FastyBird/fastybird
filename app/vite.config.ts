@@ -45,12 +45,19 @@ export default defineConfig({
 		include: ['vue', 'pinia', 'vue-router', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core', 'element-plus'],
 	},
 	build: {
-		outDir: resolve(__dirname, './../public/dist'),
+		manifest: true,
+		outDir: resolve(__dirname, './../public'),
 	},
 	server: {
+		watch: {
+			usePolling: true,
+		},
+		hmr: {
+			host: 'localhost',
+		},
 		proxy: {
 			'/api': {
-				target: 'http://localhost:8001',
+				target: 'http://localhost',
 				secure: true,
 				changeOrigin: true,
 			},

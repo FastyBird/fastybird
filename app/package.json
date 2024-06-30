@@ -23,15 +23,23 @@
     "url": "https://github.com/FastyBird/interface.git"
   },
   "scripts": {
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "build": "yarn clean && vue-tsc --noEmit --composite false && vite build",
+    "build:dev": "vue-tsc --noEmit --composite false && vite build --watch --mode development",
+    "build:only": "yarn clean && vite build",
+    "types": "vue-tsc --noEmit --composite false",
+    "lint:js": "eslint assets",
+    "lint:js:fix": "eslint assets --fix",
+    "pretty": "yarn pretty:write && yarn pretty:check",
+    "pretty:check": "prettier assets --check",
+    "pretty:write": "prettier assets --write",
     "dev": "vite --host",
-    "preview": "vue-tsc --noEmit && vite build && vite preview --host",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
+    "preview": "vue-tsc --noEmit && vite build && vite preview --host"
   },
   "dependencies": {
     "@fastybird/accounts-module": "1.0.0-dev.20",
     "@fastybird/devices-module": "1.0.0-dev.20",
     "@fastybird/metadata-library": "1.0.0-dev.20",
-    "@fastybird/triggers-module": "1.0.0-dev.20",
     "@fastybird/vue-wamp-v1": "^1.2",
     "@fastybird/web-ui-library": "1.0.0-dev.20",
     "@fastybird/web-ui-icons": "1.0.0-dev.20",

@@ -30,6 +30,7 @@ use function intval;
 use function is_array;
 use function is_numeric;
 use function is_string;
+use function str_contains;
 use function strval;
 use function trim;
 
@@ -63,11 +64,11 @@ final class NumberRange
 	 */
 	public function __construct(string|array $format)
 	{
-		if (is_string($format) && Utils\Strings::contains($format, ':')) {
+		if (is_string($format) && str_contains($format, ':')) {
 			$items = explode(':', $format) + [null, null];
 
 			if (is_string($items[0])) {
-				if (Utils\Strings::contains($items[0], '|')) {
+				if (str_contains($items[0], '|')) {
 					$parts = explode('|', $items[0]) + [null, null];
 
 					if (
@@ -93,7 +94,7 @@ final class NumberRange
 			}
 
 			if (is_string($items[1])) {
-				if (Utils\Strings::contains($items[1], '|')) {
+				if (str_contains($items[1], '|')) {
 					$parts = explode('|', $items[1]) + [null, null];
 
 					if (

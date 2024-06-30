@@ -1,7 +1,7 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { ChannelCategory } from '@fastybird/metadata-library';
+import { ChannelCategory, ChannelDocument } from '@fastybird/metadata-library';
 
 import {
 	IChannelControlResponseData,
@@ -12,24 +12,32 @@ import {
 	IDevice,
 	IDeviceResponseData,
 	IDeviceResponseModel,
+	IEntityMeta,
 	IPlainRelation,
 } from '../../models/types';
+
+export interface IChannelMeta extends IEntityMeta {
+	entity: 'channel';
+}
 
 // STORE
 // =====
 
 export interface IChannelsState {
 	semaphore: IChannelsStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IChannel };
+	firstLoad: IDevice['id'][];
+	data: { [key: IChannel['id']]: IChannel } | undefined;
+	meta: { [key: IChannel['id']]: IChannelMeta };
 }
 
 export interface IChannelsGetters extends _GettersTree<IChannelsState> {
-	firstLoadFinished: (state: IChannelsState) => (deviceId?: string | null) => boolean;
-	getting: (state: IChannelsState) => (channelId: string) => boolean;
-	fetching: (state: IChannelsState) => (deviceId?: string | null) => boolean;
-	findById: (state: IChannelsState) => (id: string) => IChannel | null;
+	firstLoadFinished: (state: IChannelsState) => (deviceId?: IDevice['id'] | null) => boolean;
+	getting: (state: IChannelsState) => (id: IChannel['id']) => boolean;
+	fetching: (state: IChannelsState) => (deviceId?: IDevice['id'] | null) => boolean;
+	findById: (state: IChannelsState) => (id: IChannel['id']) => IChannel | null;
 	findForDevice: (state: IChannelsState) => (deviceId: string) => IChannel[];
+	findAll: (state: IChannelsState) => () => IChannel[];
+	findMeta: (state: IChannelsState) => (id: IChannel['id']) => IChannelMeta | null;
 }
 
 export interface IChannelsActions {
@@ -42,6 +50,9 @@ export interface IChannelsActions {
 	save: (payload: IChannelsSaveActionPayload) => Promise<IChannel>;
 	remove: (payload: IChannelsRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IChannelsSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IChannelsInsertDataActionPayload) => Promise<boolean>;
+	loadRecord: (payload: IChannelsLoadRecordActionPayload) => Promise<boolean>;
+	loadAllRecords: (payload?: IChannelsLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
 // STORE STATE
@@ -61,7 +72,7 @@ interface IChannelsStateSemaphoreFetching {
 
 export interface IChannel {
 	id: string;
-	type: { source: string; type: string; entity: string };
+	type: IChannelMeta;
 
 	draft: boolean;
 
@@ -87,7 +98,7 @@ export interface IChannel {
 
 export interface IChannelRecordFactoryPayload {
 	id?: string;
-	type: { source: string; type: string; entity?: string };
+	type: IChannelMeta;
 
 	category: ChannelCategory;
 	identifier: string;
@@ -100,7 +111,8 @@ export interface IChannelRecordFactoryPayload {
 	controls?: (IPlainRelation | IChannelControlResponseModel)[];
 	properties?: (IPlainRelation | IChannelPropertyResponseModel)[];
 
-	deviceId: string;
+	deviceId?: string;
+	device?: IPlainRelation;
 }
 
 // STORE ACTIONS
@@ -112,57 +124,72 @@ export interface IChannelsSetActionPayload {
 
 export interface IChannelsUnsetActionPayload {
 	device?: IDevice;
-	id?: string;
+	id?: IChannel['id'];
 }
 
 export interface IChannelsGetActionPayload {
-	connector?: IConnector;
-	device?: IDevice;
-	id: string;
+	connectorId?: IConnector['id'];
+	deviceId?: IDevice['id'];
+	id: IChannel['id'];
+	refresh?: boolean;
 }
 
 export interface IChannelsFetchActionPayload {
-	connector?: IConnector;
-	device?: IDevice;
+	connectorId?: IConnector['id'];
+	deviceId?: IDevice['id'];
+	refresh?: boolean;
 }
 
 export interface IChannelsAddActionPayload {
-	id?: string;
-	type: { source: string; type: string; entity?: string };
+	id?: IChannel['id'];
+	type: IChannelMeta;
 
-	draft?: boolean;
+	draft?: IChannel['draft'];
 
 	device: IDevice;
 
 	data: {
-		identifier: string;
-		name?: string | null;
-		comment?: string | null;
+		identifier: IChannel['identifier'];
+		name?: IChannel['name'];
+		comment?: IChannel['comment'];
 	};
 }
 
 export interface IChannelsEditActionPayload {
-	id: string;
+	id: IChannel['id'];
 
 	data: {
-		identifier?: string;
-		name?: string | null;
-		comment?: string | null;
+		identifier?: IChannel['identifier'];
+		name?: IChannel['name'];
+		comment?: IChannel['comment'];
 	};
 }
 
 export interface IChannelsSaveActionPayload {
-	id: string;
+	id: IChannel['id'];
 }
 
 export interface IChannelsRemoveActionPayload {
-	id: string;
+	id: IChannel['id'];
 }
 
 export interface IChannelsSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IChannelsInsertDataActionPayload {
+	data: ChannelDocument | ChannelDocument[];
+}
+
+export interface IChannelsLoadRecordActionPayload {
+	id: IChannel['id'];
+}
+
+export interface IChannelsLoadAllRecordsActionPayload {
+	connectorId?: IConnector['id'];
+	deviceId?: IDevice['id'];
 }
 
 // API RESPONSES JSONS
@@ -203,7 +230,7 @@ interface IChannelResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IChannelResponseModel extends TJsonaModel {
 	id: string;
-	type: { source: string; type: string; entity?: string };
+	type: IChannelMeta;
 
 	category: ChannelCategory;
 	identifier: string;
@@ -216,4 +243,25 @@ export interface IChannelResponseModel extends TJsonaModel {
 	properties: (IPlainRelation | IChannelPropertyResponseModel)[];
 	controls: (IPlainRelation | IChannelControlResponseModel)[];
 	device: IPlainRelation | IDeviceResponseModel;
+}
+
+// DATABASE
+// ========
+
+export interface IChannelDatabaseRecord {
+	id: string;
+	type: IChannelMeta;
+
+	category: ChannelCategory;
+	identifier: string;
+	name: string | null;
+	comment: string | null;
+
+	// Relations
+	relationshipNames: string[];
+
+	controls: IPlainRelation[];
+	properties: IPlainRelation[];
+
+	device: IPlainRelation;
 }

@@ -29,6 +29,7 @@ use function implode;
 use function in_array;
 use function intval;
 use function is_string;
+use function str_contains;
 use function strval;
 use function trim;
 
@@ -61,7 +62,7 @@ final class CombinedEnumItem
 		$dataType = null;
 
 		if (is_string($item)) {
-			if (Utils\Strings::contains($item, '|')) {
+			if (str_contains($item, '|')) {
 				$parts = explode('|', $item) + [null, null];
 
 				if ($parts[0] === null || Types\DataTypeShort::tryFrom(Utils\Strings::lower($parts[0])) === null) {

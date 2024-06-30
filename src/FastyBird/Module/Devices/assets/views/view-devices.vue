@@ -79,7 +79,7 @@ import { FasPlug } from '@fastybird/web-ui-icons';
 import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
 import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
-import { useDevices } from '../models';
+import { useDeviceControls, useDeviceProperties, useDevices } from '../models';
 import { IDevice } from '../models/types';
 import { DevicesPreviewInfo, DevicesListDevices, ViewError } from '../components';
 import { ApplicationError } from '../errors';
@@ -97,12 +97,14 @@ const { routeNames } = useRoutesNames();
 const flashMessage = useFlashMessage();
 
 const devicesStore = useDevices();
+const deviceControlsStore = useDeviceControls();
+const devicePropertiesStore = useDeviceProperties();
 
 const itemsSearch = ref<string>('');
 
-const itemsCount = computed<number>((): number => Object.keys(devicesStore.data).length);
+const itemsCount = computed<number>((): number => devicesStore.findAll().length);
 
-const isLoading = computed<boolean>((): boolean => devicesStore.fetching(null));
+const isLoading = computed<boolean>((): boolean => devicesStore.fetching());
 
 const isPartialDetailRoute = computed<boolean>((): boolean => {
 	return route.matched.find((matched) => matched.name === routeNames.deviceDetail) !== undefined;
@@ -110,7 +112,8 @@ const isPartialDetailRoute = computed<boolean>((): boolean => {
 
 const items = computed<IDevice[]>((): IDevice[] => {
 	return orderBy<IDevice>(
-		Object.values(devicesStore.data)
+		devicesStore
+			.findAll()
 			.filter((device) => !device.draft)
 			.filter((device) => {
 				return itemsSearch.value === '' || useEntityTitle(device).value.toLowerCase().includes(itemsSearch.value.toLowerCase());
@@ -182,12 +185,17 @@ const onRemove = async (id: string): Promise<void> => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	if (!isLoading.value && !devicesStore.firstLoadFinished(null)) {
-		try {
-			await devicesStore.fetch();
-		} catch (e: any) {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+	try {
+		await devicesStore.fetch({ refresh: !devicesStore.firstLoadFinished() });
+
+		const devices = devicesStore.findAll();
+
+		for (const device of devices) {
+			await devicePropertiesStore.fetch({ device, refresh: false });
+			await deviceControlsStore.fetch({ device, refresh: false });
 		}
+	} catch (e: any) {
+		throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 	}
 });
 

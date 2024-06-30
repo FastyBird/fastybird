@@ -39,6 +39,8 @@ use TypeError;
 use ValueError;
 use function assert;
 use function React\Async\await;
+use function str_ends_with;
+use function str_starts_with;
 
 /**
  * Store device state message consumer
@@ -119,9 +121,9 @@ final class StoreDeviceState implements Queue\Consumer
 				$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($device);
 
-				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+				if (str_starts_with($state->getIdentifier(), '_')) {
 					$findDevicePropertyQuery->endWithIdentifier($state->getIdentifier());
-				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+				} elseif (str_ends_with($state->getIdentifier(), '_')) {
 					$findDevicePropertyQuery->startWithIdentifier($state->getIdentifier());
 				} else {
 					$findDevicePropertyQuery->byIdentifier($state->getIdentifier());
@@ -169,9 +171,9 @@ final class StoreDeviceState implements Queue\Consumer
 						$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
 
-						if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+						if (str_starts_with($state->getIdentifier(), '_')) {
 							$findChannelPropertyQuery->endWithIdentifier($state->getIdentifier());
-						} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+						} elseif (str_ends_with($state->getIdentifier(), '_')) {
 							$findChannelPropertyQuery->startWithIdentifier($state->getIdentifier());
 						} else {
 							$findChannelPropertyQuery->byIdentifier($state->getIdentifier());
@@ -217,9 +219,9 @@ final class StoreDeviceState implements Queue\Consumer
 				$findChannelQuery = new Queries\Configuration\FindChannels();
 				$findChannelQuery->forDevice($device);
 
-				if (Utils\Strings::startsWith($state->getIdentifier(), '_')) {
+				if (str_starts_with($state->getIdentifier(), '_')) {
 					$findChannelQuery->endWithIdentifier($state->getIdentifier());
-				} elseif (Utils\Strings::endsWith($state->getIdentifier(), '_')) {
+				} elseif (str_ends_with($state->getIdentifier(), '_')) {
 					$findChannelQuery->startWithIdentifier($state->getIdentifier());
 				} else {
 					$findChannelQuery->byIdentifier($state->getIdentifier());
@@ -235,9 +237,9 @@ final class StoreDeviceState implements Queue\Consumer
 						$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
 						$findChannelPropertyQuery->forChannel($channel);
 
-						if (Utils\Strings::startsWith($sensor->getIdentifier(), '_')) {
+						if (str_starts_with($sensor->getIdentifier(), '_')) {
 							$findChannelPropertyQuery->endWithIdentifier($sensor->getIdentifier());
-						} elseif (Utils\Strings::endsWith($sensor->getIdentifier(), '_')) {
+						} elseif (str_ends_with($sensor->getIdentifier(), '_')) {
 							$findChannelPropertyQuery->startWithIdentifier($sensor->getIdentifier());
 						} else {
 							$findChannelPropertyQuery->byIdentifier($sensor->getIdentifier());

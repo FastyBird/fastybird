@@ -11,6 +11,10 @@
       "type": "string",
       "description": "Channel type"
     },
+    "source": {
+      "type": "string",
+      "description": "Channel source"
+    },
     "category": {
       "type": "string",
       "enum": [

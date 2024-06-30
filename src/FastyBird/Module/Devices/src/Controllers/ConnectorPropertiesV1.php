@@ -40,6 +40,7 @@ use Throwable;
 use function end;
 use function explode;
 use function preg_match;
+use function str_starts_with;
 use function strval;
 
 /**
@@ -170,7 +171,7 @@ final class ConnectorPropertiesV1 extends BaseV1
 					$columnParts = explode('.', $match['key']);
 					$columnKey = end($columnParts);
 
-					if (Utils\Strings::startsWith($columnKey, 'property_')) {
+					if (str_starts_with($columnKey, 'property_')) {
 						throw new JsonApiExceptions\JsonApiError(
 							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 							$this->translator->translate('//devices-module.base.messages.uniqueAttribute.heading'),

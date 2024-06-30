@@ -1,7 +1,7 @@
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { ButtonPayload, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+import { ButtonPayload, ConnectorPropertyDocument, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
 
 import {
 	IConnector,
@@ -10,27 +10,36 @@ import {
 	IPlainRelation,
 	IPropertiesAddActionPayload,
 	IPropertiesEditActionPayload,
+	IPropertiesSetStateActionPayload,
 	IProperty,
+	IPropertyDatabaseRecord,
+	IPropertyMeta,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
 } from '../../models/types';
+
+export interface IConnectorPropertyMeta extends IPropertyMeta {
+	parent: 'connector';
+}
 
 // STORE
 // =====
 
 export interface IConnectorPropertiesState {
 	semaphore: IConnectorPropertiesStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IConnectorProperty };
+	data: { [key: IConnectorProperty['id']]: IConnectorProperty } | undefined;
+	meta: { [key: IConnectorProperty['id']]: IConnectorPropertyMeta };
 }
 
 export interface IConnectorPropertiesGetters extends _GettersTree<IConnectorPropertiesState> {
-	firstLoadFinished: (state: IConnectorPropertiesState) => (connectorId: string) => boolean;
-	getting: (state: IConnectorPropertiesState) => (propertyId: string) => boolean;
-	fetching: (state: IConnectorPropertiesState) => (connectorId: string | null) => boolean;
-	findById: (state: IConnectorPropertiesState) => (id: string) => IConnectorProperty | null;
-	findByIdentifier: (state: IConnectorPropertiesState) => (connector: IConnector, identifier: string) => IConnectorProperty | null;
-	findForConnector: (state: IConnectorPropertiesState) => (connectorId: string) => IConnectorProperty[];
+	getting: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => boolean;
+	fetching: (state: IConnectorPropertiesState) => (connectorId: IConnector['id'] | null) => boolean;
+	findById: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => IConnectorProperty | null;
+	findByIdentifier: (
+		state: IConnectorPropertiesState
+	) => (connector: IConnector, identifier: IConnectorProperty['identifier']) => IConnectorProperty | null;
+	findForConnector: (state: IConnectorPropertiesState) => (connectorId: IConnector['id']) => IConnectorProperty[];
+	findMeta: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => IConnectorPropertyMeta | null;
 }
 
 export interface IConnectorPropertiesActions {
@@ -40,9 +49,13 @@ export interface IConnectorPropertiesActions {
 	fetch: (payload: IConnectorPropertiesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IConnectorPropertiesAddActionPayload) => Promise<IConnectorProperty>;
 	edit: (payload: IConnectorPropertiesEditActionPayload) => Promise<IConnectorProperty>;
+	setState: (payload: IConnectorPropertiesSetStateActionPayload) => Promise<IConnectorProperty>;
 	save: (payload: IConnectorPropertiesSaveActionPayload) => Promise<IConnectorProperty>;
 	remove: (payload: IConnectorPropertiesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IConnectorPropertiesSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IConnectorPropertiesInsertDataActionPayload) => Promise<boolean>;
+	loadRecord: (payload: IConnectorPropertiesLoadRecordActionPayload) => Promise<boolean>;
+	loadAllRecords: (payload?: IConnectorPropertiesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
 // STORE STATE
@@ -64,6 +77,8 @@ interface IConnectorPropertiesStateSemaphoreFetching {
 // ============
 
 export interface IConnectorProperty extends IProperty {
+	type: IConnectorPropertyMeta;
+
 	// Relations
 	connector: IPlainRelation;
 }
@@ -72,8 +87,11 @@ export interface IConnectorProperty extends IProperty {
 // ====================
 
 export interface IConnectorPropertyRecordFactoryPayload extends IPropertyRecordFactoryPayload {
+	type: IConnectorPropertyMeta;
+
 	// Relations
-	connectorId: string;
+	connectorId?: string;
+	connector?: IPlainRelation;
 }
 
 // STORE ACTIONS
@@ -85,36 +103,53 @@ export interface IConnectorPropertiesSetActionPayload {
 
 export interface IConnectorPropertiesUnsetActionPayload {
 	connector?: IConnector;
-	id?: string;
+	id?: IConnectorProperty['id'];
 }
 
 export interface IConnectorPropertiesGetActionPayload {
 	connector: IConnector;
-	id: string;
+	id: IConnectorProperty['id'];
+	refresh?: boolean;
 }
 
 export interface IConnectorPropertiesFetchActionPayload {
 	connector: IConnector;
+	refresh?: boolean;
 }
 
 export interface IConnectorPropertiesAddActionPayload extends IPropertiesAddActionPayload {
+	type: IConnectorPropertyMeta;
 	connector: IConnector;
 }
 
 export type IConnectorPropertiesEditActionPayload = IPropertiesEditActionPayload;
 
+export type IConnectorPropertiesSetStateActionPayload = IPropertiesSetStateActionPayload;
+
 export interface IConnectorPropertiesSaveActionPayload {
-	id: string;
+	id: IConnectorProperty['id'];
 }
 
 export interface IConnectorPropertiesRemoveActionPayload {
-	id: string;
+	id: IConnectorProperty['id'];
 }
 
 export interface IConnectorPropertiesSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IConnectorPropertiesInsertDataActionPayload {
+	data: ConnectorPropertyDocument | ConnectorPropertyDocument[];
+}
+
+export interface IConnectorPropertiesLoadRecordActionPayload {
+	id: IConnectorProperty['id'];
+}
+
+export interface IConnectorPropertiesLoadAllRecordsActionPayload {
+	connector: IConnector;
 }
 
 // API RESPONSES JSONS
@@ -166,6 +201,18 @@ interface IConnectorPropertyResponseDataRelationships extends TJsonApiRelationsh
 // ===================
 
 export interface IConnectorPropertyResponseModel extends IPropertyResponseModel {
+	type: IConnectorPropertyMeta;
+
 	// Relations
 	connector: IPlainRelation | IConnectorResponseModel;
+}
+
+// DATABASE
+// ========
+
+export interface IConnectorPropertyDatabaseRecord extends IPropertyDatabaseRecord {
+	type: IConnectorPropertyMeta;
+
+	// Relations
+	connector: IPlainRelation;
 }

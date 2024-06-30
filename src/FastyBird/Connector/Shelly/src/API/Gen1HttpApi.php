@@ -38,6 +38,8 @@ use function is_array;
 use function is_string;
 use function preg_match;
 use function sprintf;
+use function str_contains;
+use function str_starts_with;
 use function strval;
 
 /**
@@ -725,7 +727,7 @@ final class Gen1HttpApi extends HttpApi
 			);
 		}
 
-		if (Utils\Strings::contains($normalValue, '/')) {
+		if (str_contains($normalValue, '/')) {
 			$normalValueParts = explode('/', $normalValue);
 
 			if (
@@ -813,14 +815,14 @@ final class Gen1HttpApi extends HttpApi
 	): MetadataTypes\DataType
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			str_starts_with($block, Types\BlockDescription::RELAY->value)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return MetadataTypes\DataType::SWITCH;
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			str_starts_with($block, Types\BlockDescription::LIGHT->value)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return MetadataTypes\DataType::SWITCH;
@@ -841,7 +843,7 @@ final class Gen1HttpApi extends HttpApi
 	): array|null
 	{
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::RELAY->value)
+			str_starts_with($block, Types\BlockDescription::RELAY->value)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [
@@ -864,7 +866,7 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::ROLLER->value)
+			str_starts_with($block, Types\BlockDescription::ROLLER->value)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::ROLLER->value
 		) {
 			return [
@@ -897,7 +899,7 @@ final class Gen1HttpApi extends HttpApi
 		}
 
 		if (
-			Utils\Strings::startsWith($block, Types\BlockDescription::LIGHT->value)
+			str_starts_with($block, Types\BlockDescription::LIGHT->value)
 			&& Utils\Strings::lower($description) === Types\SensorDescription::OUTPUT->value
 		) {
 			return [

@@ -23,7 +23,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Events;
 use FastyBird\Plugin\RabbitMq\Exceptions;
 use FastyBird\Plugin\RabbitMq\Utilities;
-use Nette;
 use Nette\Utils;
 use Psr\EventDispatcher;
 use Psr\Log;
@@ -72,13 +71,13 @@ final class Message
 		$this->dispatcher?->dispatch(new Events\BeforeMessageHandled($message));
 
 		try {
-			$data = Nette\Utils\Json::decode($message->content, Nette\Utils\Json::FORCE_ARRAY);
+			$data = Utils\Json::decode($message->content, forceArrays: true);
 
 			if (is_array($data) && $message->hasHeader('source')) {
 				return $this->consume(
 					strval($message->getHeader('source')),
 					$message->routingKey,
-					Nette\Utils\Json::encode($data),
+					Utils\Json::encode($data),
 					$message->hasHeader('sender_id') ? strval($message->getHeader('sender_id')) : null,
 				);
 			} else {
@@ -90,7 +89,7 @@ final class Message
 
 				return self::MESSAGE_REJECT;
 			}
-		} catch (Nette\Utils\JsonException $ex) {
+		} catch (Utils\JsonException $ex) {
 			// Log error action reason
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
@@ -126,7 +125,7 @@ final class Message
 		}
 
 		try {
-			$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+			$data = Utils\Json::decode($data, forceArrays: true);
 			assert(is_array($data));
 			$data = Utils\ArrayHash::from($data);
 

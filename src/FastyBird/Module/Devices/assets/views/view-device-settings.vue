@@ -150,7 +150,6 @@ const devicePropertiesStore = useDeviceProperties();
 const channelsStore = useChannels();
 const channelControlsStore = useChannelControls();
 const channelPropertiesStore = useChannelProperties();
-const propertiesStore = useDeviceProperties();
 
 if (props.id !== null && !validateUuid(props.id)) {
 	throw new Error('Device identifier is not valid');
@@ -186,12 +185,12 @@ const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
 
 const newPropertyId = ref<string | null>(null);
 const newProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
-	newPropertyId.value ? propertiesStore.findById(newPropertyId.value) : null
+	newPropertyId.value ? devicePropertiesStore.findById(newPropertyId.value) : null
 );
 
 const editPropertyId = ref<string | null>(null);
 const editProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
-	editPropertyId.value ? propertiesStore.findById(editPropertyId.value) : null
+	editPropertyId.value ? devicePropertiesStore.findById(editPropertyId.value) : null
 );
 
 const isConnectorSettingsRoute = computed<boolean>((): boolean => {
@@ -240,7 +239,7 @@ if (props.id === null) {
 	await devicesStore.add({
 		id: id.value,
 		connector: connector.value,
-		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic', entity: 'device' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
@@ -378,9 +377,9 @@ const onAddStaticProperty = async (): Promise<void> => {
 		return;
 	}
 
-	const { id } = await propertiesStore.add({
+	const { id } = await devicePropertiesStore.add({
 		device: deviceData.value.device,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -396,9 +395,9 @@ const onAddDynamicProperty = async (): Promise<void> => {
 		return;
 	}
 
-	const { id } = await propertiesStore.add({
+	const { id } = await devicePropertiesStore.add({
 		device: deviceData.value.device,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device' },
+		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -415,14 +414,14 @@ const onPropertyCreated = async (): Promise<void> => {
 
 const onCloseAddProperty = async (canceled: boolean): Promise<void> => {
 	if (canceled && newProperty.value?.draft) {
-		await propertiesStore.remove({ id: newProperty.value.id });
+		await devicePropertiesStore.remove({ id: newProperty.value.id });
 	}
 
 	newPropertyId.value = null;
 };
 
 const onEditProperty = async (id: string): Promise<void> => {
-	const property = propertiesStore.findById(id);
+	const property = devicePropertiesStore.findById(id);
 
 	if (property === null) {
 		return;
@@ -436,7 +435,7 @@ const onCloseEditProperty = async (): Promise<void> => {
 };
 
 const onRemoveProperty = async (id: string): Promise<void> => {
-	const property = propertiesStore.findById(id);
+	const property = devicePropertiesStore.findById(id);
 
 	if (property === null) {
 		return;
@@ -456,7 +455,7 @@ const onRemoveProperty = async (id: string): Promise<void> => {
 				property: useEntityTitle(property).value,
 			});
 
-			propertiesStore.remove({ id: property.id }).catch((e): void => {
+			devicePropertiesStore.remove({ id: property.id }).catch((e): void => {
 				if (get(e, 'exception', null) !== null) {
 					flashMessage.exception(get(e, 'exception', null), errorMessage);
 				} else {
@@ -474,32 +473,32 @@ const onRemoveProperty = async (id: string): Promise<void> => {
 };
 
 onBeforeMount(async (): Promise<void> => {
-	fetchDevice(id.value).catch((e) => {
-		if (get(e, 'exception.response.status', 0) === 404) {
-			throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
-		} else {
-			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-		}
-	});
-
-	if (!isLoading.value && devicesStore.findById(id.value) === null) {
-		throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
-	}
-
-	if (deviceData.value) {
-		fetchChannels(deviceData.value.device).catch((e) => {
+	fetchDevice(id.value)
+		.then((): void => {
+			if (!isLoading.value && devicesStore.findById(id.value) === null) {
+				throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
+			}
+		})
+		.catch((e): void => {
 			if (get(e, 'exception.response.status', 0) === 404) {
 				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
 			} else {
 				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 			}
 		});
-	}
+
+	fetchChannels(id.value).catch((e): void => {
+		if (get(e, 'exception.response.status', 0) === 404) {
+			throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+		} else {
+			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+		}
+	});
 });
 
 onBeforeUnmount(async (): Promise<void> => {
 	if (newProperty.value?.draft) {
-		await propertiesStore.remove({ id: newProperty.value.id });
+		await devicePropertiesStore.remove({ id: newProperty.value.id });
 		newPropertyId.value = null;
 	}
 });
@@ -510,15 +509,25 @@ onUnmounted((): void => {
 	}
 });
 
-const fetchDevice = async (id: string): Promise<void> => {
-	if (!isLoading.value && !devicesStore.firstLoadFinished) {
-		await devicesStore.get({ id });
+const fetchDevice = async (id: IDevice['id']): Promise<void> => {
+	await devicesStore.get({ id, refresh: !devicesStore.firstLoadFinished() });
+
+	const device = devicesStore.findById(id);
+
+	if (device) {
+		await devicePropertiesStore.fetch({ device, refresh: false });
+		await deviceControlsStore.fetch({ device, refresh: false });
 	}
 };
 
-const fetchChannels = async (device: IDevice): Promise<void> => {
-	if (!areChannelsLoading.value && !channelsStore.firstLoadFinished(device.id)) {
-		await channelsStore.fetch({ device });
+const fetchChannels = async (deviceId: IDevice['id']): Promise<void> => {
+	await channelsStore.fetch({ deviceId: deviceId, refresh: !channelsStore.firstLoadFinished(deviceId) });
+
+	const channels = channelsStore.findForDevice(deviceId);
+
+	for (const channel of channels) {
+		await channelPropertiesStore.fetch({ channel, refresh: false });
+		await channelControlsStore.fetch({ channel, refresh: false });
 	}
 };
 
@@ -536,19 +545,32 @@ watch(
 	async (val: IDeviceData | null): Promise<void> => {
 		if (val !== null) {
 			meta.title = t('meta.devices.settings.title', { device: useEntityTitle(val.device).value });
-
-			fetchChannels(val.device).catch((e) => {
-				if (get(e, 'exception.response.status', 0) === 404) {
-					throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
-				} else {
-					throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-				}
-			});
 		}
 
 		if (!isLoading.value && val === null) {
 			throw new ApplicationError('Device Not Found', null, { statusCode: 404, message: 'Device Not Found' });
 		}
+	}
+);
+
+watch(
+	(): string => id.value,
+	async (val: string): Promise<void> => {
+		fetchDevice(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
+
+		fetchChannels(val).catch((e) => {
+			if (get(e, 'exception.response.status', 0) === 404) {
+				throw new ApplicationError('Device Not Found', e, { statusCode: 404, message: 'Device Not Found' });
+			} else {
+				throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+			}
+		});
 	}
 );
 </script>

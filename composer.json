@@ -14,7 +14,7 @@
         {
             "name": "FastyBird s.r.o.",
             "email": "code@fastybird.com",
-            "homepage": "https://www.fastybird.com/"
+            "homepage": "https://www.fastybird.com"
         },
         {
             "name": "Adam Kadlec",
@@ -41,6 +41,7 @@
         "contributte/event-dispatcher": "^0.8",
         "contributte/monolog": "^0.5",
         "contributte/translation": "^2.0",
+        "contributte/vite": "^0.2",
         "cweagans/composer-patches": "^1.7",
         "doctrine/orm": "2.15.*",
         "endroid/qr-code": "4.5",
@@ -63,7 +64,7 @@
         "nette/application": "^3.1",
         "nette/bootstrap": "^3.1",
         "nette/di": "^3.0",
-        "nette/utils": "^3.2",
+        "nette/utils": "^4.0",
         "nettrine/dbal": "^0.8",
         "nettrine/fixtures": "^0.6",
         "nettrine/orm": "^0.8",
@@ -126,6 +127,7 @@
     "autoload": {
         "psr-4": {
             "FastyBird\\Addon\\VirtualThermostat\\": "src/FastyBird/Addon/VirtualThermostat/src/",
+            "FastyBird\\App\\": "app/src/",
             "FastyBird\\Automator\\DateTime\\": "src/FastyBird/Automator/DateTime/src/",
             "FastyBird\\Automator\\DevicesModule\\": "src/FastyBird/Automator/DevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbPluginDevicesModule\\": "src/FastyBird/Bridge/RedisDbPluginDevicesModule/src/",
@@ -163,6 +165,10 @@
             "FastyBird\\Addon\\VirtualThermostat\\Tests\\Fixtures\\": "src/FastyBird/Addon/VirtualThermostat/tests/fixtures",
             "FastyBird\\Addon\\VirtualThermostat\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Addon/VirtualThermostat/tests/fixtures/dummy",
             "FastyBird\\Addon\\VirtualThermostat\\Tests\\Tools\\": "src/FastyBird/Addon/VirtualThermostat/tests/tools",
+            "FastyBird\\App\\Tests\\Cases\\Unit\\": "app/tests/cases/unit",
+            "FastyBird\\App\\Tests\\Fixtures\\": "app/tests/fixtures",
+            "FastyBird\\App\\Tests\\Fixtures\\Dummy\\": "app/tests/fixtures/dummy",
+            "FastyBird\\App\\Tests\\Tools\\": "app/tests/tools",
             "FastyBird\\Automator\\DateTime\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DateTime/tests/cases/unit",
             "FastyBird\\Automator\\DateTime\\Tests\\Tools\\": "src/FastyBird/Automator/DateTime/tests/tools",
             "FastyBird\\Automator\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DevicesModule/tests/cases/unit",
@@ -279,6 +285,7 @@
     "replace": {
         "fastybird/accounts-module": "self.version",
         "fastybird/apikey-plugin": "self.version",
+        "fastybird/application": "self.version",
         "fastybird/application-library": "self.version",
         "fastybird/couchdb-plugin": "self.version",
         "fastybird/date-time-automator": "self.version",

@@ -1019,7 +1019,7 @@ final class Gen2WsApi
 		try {
 			return $this->messageBuilder->create(
 				$message,
-				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+				(array) Utils\Json::decode(Utils\Json::encode($data), forceArrays: true),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\WsError('Could not map payload to message', $ex->getCode(), $ex);

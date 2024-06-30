@@ -62,7 +62,7 @@ final readonly class DocumentFactory
 		if (is_string($data)) {
 			try {
 				/** @var array<string, mixed> $data */
-				$data = Utils\Json::decode($data, Utils\Json::FORCE_ARRAY);
+				$data = Utils\Json::decode($data, forceArrays: true);
 
 			} catch (Utils\JsonException $ex) {
 				throw new Exceptions\MalformedInput('Failed to decode input data', 0, $ex);
@@ -70,7 +70,7 @@ final readonly class DocumentFactory
 		} elseif (is_object($data)) {
 			try {
 				/** @var array<string, mixed> $data */
-				$data = Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY);
+				$data = Utils\Json::decode(Utils\Json::encode($data), forceArrays: true);
 
 			} catch (Utils\JsonException $ex) {
 				throw new Exceptions\MalformedInput('Failed to decode input data', 0, $ex);

@@ -1,7 +1,7 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { ConnectorCategory } from '@fastybird/metadata-library';
+import { ConnectorCategory, ConnectorDocument } from '@fastybird/metadata-library';
 
 import {
 	IConnectorControlResponseData,
@@ -11,8 +11,13 @@ import {
 	IConnectorPropertyResponseModel,
 	IDeviceResponseData,
 	IDeviceResponseModel,
+	IEntityMeta,
 	IPlainRelation,
 } from '../../models/types';
+
+export interface IConnectorMeta extends IEntityMeta {
+	entity: 'connector';
+}
 
 // STORE
 // =====
@@ -20,14 +25,17 @@ import {
 export interface IConnectorsState {
 	semaphore: IConnectorsStateSemaphore;
 	firstLoad: boolean;
-	data: { [key: string]: IConnector };
+	data: { [key: IConnector['id']]: IConnector } | undefined;
+	meta: { [key: IConnector['id']]: IConnectorMeta };
 }
 
 export interface IConnectorsGetters extends _GettersTree<IConnectorsState> {
-	firstLoadFinished: (state: IConnectorsState) => boolean;
-	getting: (state: IConnectorsState) => (id: string) => boolean;
-	fetching: (state: IConnectorsState) => boolean;
-	findById: (state: IConnectorsState) => (id: string) => IConnector | null;
+	firstLoadFinished: (state: IConnectorsState) => () => boolean;
+	getting: (state: IConnectorsState) => (id: IConnector['id']) => boolean;
+	fetching: (state: IConnectorsState) => () => boolean;
+	findById: (state: IConnectorsState) => (id: IConnector['id']) => IConnector | null;
+	findAll: (state: IConnectorsState) => () => IConnector[];
+	findMeta: (state: IConnectorsState) => (id: IConnector['id']) => IConnectorMeta | null;
 }
 
 export interface IConnectorsActions {
@@ -39,6 +47,9 @@ export interface IConnectorsActions {
 	save: (payload: IConnectorsSaveActionPayload) => Promise<IConnector>;
 	remove: (payload: IConnectorsRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IConnectorsSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IConnectorsInsertDataActionPayload) => Promise<boolean>;
+	loadRecord: (payload: IConnectorsLoadRecordActionPayload) => Promise<boolean>;
+	loadAllRecords: () => Promise<boolean>;
 }
 
 // STORE STATE
@@ -58,7 +69,7 @@ interface IConnectorsStateSemaphoreFetching {
 
 export interface IConnector {
 	id: string;
-	type: { source: string; type: string; entity: string };
+	type: IConnectorMeta;
 
 	draft: boolean;
 
@@ -88,7 +99,7 @@ export interface IConnector {
 
 export interface IConnectorRecordFactoryPayload {
 	id?: string;
-	type: { source: string; type: string; entity?: string };
+	type: IConnectorMeta;
 
 	category: ConnectorCategory;
 	identifier: string;
@@ -114,50 +125,58 @@ export interface IConnectorsSetActionPayload {
 }
 
 export interface IConnectorsGetActionPayload {
-	id: string;
-	withDevices?: boolean;
+	id: IConnector['id'];
+	refresh?: boolean;
 }
 
 export interface IConnectorsFetchActionPayload {
-	withDevices?: boolean;
+	refresh?: boolean;
 }
 
 export interface IConnectorsAddActionPayload {
-	id?: string;
-	type: { source: string; type: string; entity?: string };
+	id?: IConnector['id'];
+	type: IConnectorMeta;
 
-	draft?: boolean;
+	draft?: IConnector['draft'];
 
 	data: {
-		identifier: string;
-		name?: string | null;
-		comment?: string | null;
-		enabled?: boolean;
+		identifier: IConnector['identifier'];
+		name?: IConnector['name'];
+		comment?: IConnector['comment'];
+		enabled?: IConnector['enabled'];
 	};
 }
 
 export interface IConnectorsEditActionPayload {
-	id: string;
+	id: IConnector['id'];
 
 	data: {
-		name?: string | null;
-		comment?: string | null;
-		enabled?: boolean;
+		name?: IConnector['name'];
+		comment?: IConnector['comment'];
+		enabled?: IConnector['enabled'];
 	};
 }
 
 export interface IConnectorsSaveActionPayload {
-	id: string;
+	id: IConnector['id'];
 }
 
 export interface IConnectorsRemoveActionPayload {
-	id: string;
+	id: IConnector['id'];
 }
 
 export interface IConnectorsSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IConnectorsInsertDataActionPayload {
+	data: ConnectorDocument | ConnectorDocument[];
+}
+
+export interface IConnectorsLoadRecordActionPayload {
+	id: IConnector['id'];
 }
 
 // API RESPONSES JSONS
@@ -202,7 +221,7 @@ interface IConnectorResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IConnectorResponseModel extends TJsonaModel {
 	id: string;
-	type: { source: string; type: string; entity: string };
+	type: IConnectorMeta;
 
 	category: ConnectorCategory;
 	identifier: string;
@@ -217,4 +236,27 @@ export interface IConnectorResponseModel extends TJsonaModel {
 	properties: (IPlainRelation | IConnectorPropertyResponseModel)[];
 	controls: (IPlainRelation | IConnectorControlResponseModel)[];
 	devices: (IPlainRelation | IDeviceResponseModel)[];
+}
+
+// DATABASE
+// ========
+
+export interface IConnectorDatabaseRecord {
+	id: string;
+	type: IConnectorMeta;
+
+	category: ConnectorCategory;
+	identifier: string;
+	name: string | null;
+	comment: string | null;
+	enabled: boolean;
+
+	// Relations
+	relationshipNames: string[];
+
+	devices: IPlainRelation[];
+	controls: IPlainRelation[];
+	properties: IPlainRelation[];
+
+	owner: string | null;
 }

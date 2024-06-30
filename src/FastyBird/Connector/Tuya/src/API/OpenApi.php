@@ -48,6 +48,9 @@ use function is_array;
 use function md5;
 use function React\Async\await;
 use function sprintf;
+use function str_contains;
+use function str_ends_with;
+use function str_starts_with;
 use function strval;
 use function urldecode;
 use const DIRECTORY_SEPARATOR;
@@ -1090,7 +1093,7 @@ final class OpenApi
 		try {
 			return $this->messageBuilder->create(
 				$message,
-				(array) Utils\Json::decode(Utils\Json::encode($data), Utils\Json::FORCE_ARRAY),
+				(array) Utils\Json::decode(Utils\Json::encode($data), forceArrays: true),
 			);
 		} catch (Exceptions\Runtime $ex) {
 			throw new Exceptions\OpenApiError('Could not map data to message', $ex->getCode(), $ex);
@@ -1313,7 +1316,7 @@ final class OpenApi
 	private function checkResponse(Request $request, Message\ResponseInterface $response): bool
 	{
 		try {
-			$decodedResponse = Utils\Json::decode($response->getBody()->getContents(), Utils\Json::FORCE_ARRAY);
+			$decodedResponse = Utils\Json::decode($response->getBody()->getContents(), forceArrays: true);
 
 			$response->getBody()->rewind();
 
@@ -1347,7 +1350,7 @@ final class OpenApi
 		) {
 			$this->tokenInfo = null;
 
-			if (!Utils\Strings::endsWith(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
+			if (!str_ends_with(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
 				$this->connect(false);
 
 			} else {
@@ -1439,7 +1442,7 @@ final class OpenApi
 	 */
 	private function refreshAccessToken(Request $request): Promise\PromiseInterface|false
 	{
-		if (Utils\Strings::contains(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
+		if (str_contains(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
 			return false;
 		}
 
@@ -1520,7 +1523,7 @@ final class OpenApi
 			);
 
 			try {
-				$decodedResponse = Utils\Json::decode($responseBody, Utils\Json::FORCE_ARRAY);
+				$decodedResponse = Utils\Json::decode($responseBody, forceArrays: true);
 
 			} catch (Utils\JsonException $ex) {
 				$error = new Exceptions\OpenApiCall(
@@ -1626,7 +1629,7 @@ final class OpenApi
 		$accessToken = $this->tokenInfo?->getAccessToken() ?? '';
 
 		$sign = $this->calculateSign(
-			Utils\Strings::startsWith($path, self::GET_ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
+			str_starts_with($path, self::GET_ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
 			$method,
 			$path,
 			$params,
@@ -1639,7 +1642,7 @@ final class OpenApi
 			'Signature-Headers' => 'client_id',
 			'sign' => $sign->getSign(),
 			'sign_method' => 'HMAC-SHA256',
-			'access_token' => Utils\Strings::startsWith($path, self::GET_ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
+			'access_token' => str_starts_with($path, self::GET_ACCESS_TOKEN_API_ENDPOINT) ? '' : $accessToken,
 			't' => $sign->getTimestamp(),
 			'lang' => $this->lang,
 			'dev_lang' => 'php',

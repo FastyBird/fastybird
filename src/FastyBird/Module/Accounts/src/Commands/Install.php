@@ -71,14 +71,14 @@ class Install extends Console\Command\Command
 		$io = new Style\SymfonyStyle($input, $output);
 
 		if ($input->getOption('quiet') === false) {
-			$io->title($this->translator->translate('//accounts-module.cmd.install.title'));
+			$io->title((string) $this->translator->translate('//accounts-module.cmd.install.title'));
 
-			$io->note($this->translator->translate('//accounts-module.cmd.install.subtitle'));
+			$io->note((string) $this->translator->translate('//accounts-module.cmd.install.subtitle'));
 		}
 
 		if ($input->getOption('no-interaction') === false) {
 			$question = new Console\Question\ConfirmationQuestion(
-				$this->translator->translate('//accounts-module.cmd.base.questions.continue'),
+				(string) $this->translator->translate('//accounts-module.cmd.base.questions.continue'),
 				false,
 			);
 
@@ -93,7 +93,7 @@ class Install extends Console\Command\Command
 			$this->initializeDatabase($io, $input, $output);
 
 			if ($input->getOption('quiet') === false) {
-				$io->success($this->translator->translate('//accounts-module.cmd.install.messages.success'));
+				$io->success((string) $this->translator->translate('//accounts-module.cmd.install.messages.success'));
 			}
 
 			return Console\Command\Command::SUCCESS;
@@ -109,7 +109,7 @@ class Install extends Console\Command\Command
 			);
 
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//accounts-module.cmd.install.messages.error'));
+				$io->error((string) $this->translator->translate('//accounts-module.cmd.install.messages.error'));
 			}
 
 			return Console\Command\Command::FAILURE;
@@ -133,7 +133,7 @@ class Install extends Console\Command\Command
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->section($this->translator->translate('//accounts-module.cmd.install.info.database'));
+			$io->section((string) $this->translator->translate('//accounts-module.cmd.install.info.database'));
 		}
 
 		$databaseCmd = $symfonyApp->find('orm:schema-tool:update');
@@ -145,7 +145,9 @@ class Install extends Console\Command\Command
 		if ($result !== Console\Command\Command::SUCCESS) {
 			if ($input->getOption('quiet') === false) {
 				$io->error(
-					$this->translator->translate('//accounts-module.cmd.install.messages.initialisationFailed'),
+					(string) $this->translator->translate(
+						'//accounts-module.cmd.install.messages.initialisationFailed',
+					),
 				);
 			}
 
@@ -160,14 +162,16 @@ class Install extends Console\Command\Command
 
 		if ($result !== 0) {
 			if ($input->getOption('quiet') === false) {
-				$io->error($this->translator->translate('//accounts-module.cmd.install.messages.databaseFailed'));
+				$io->error(
+					(string) $this->translator->translate('//accounts-module.cmd.install.messages.databaseFailed'),
+				);
 			}
 
 			return;
 		}
 
 		if ($input->getOption('quiet') === false) {
-			$io->success($this->translator->translate('//accounts-module.cmd.install.messages.databaseReady'));
+			$io->success((string) $this->translator->translate('//accounts-module.cmd.install.messages.databaseReady'));
 		}
 	}
 

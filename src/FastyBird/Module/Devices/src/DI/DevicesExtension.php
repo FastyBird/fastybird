@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\DI;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Router as ApplicationRouter;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
@@ -38,6 +39,7 @@ use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette;
+use Nette\Application;
 use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
@@ -1064,7 +1066,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		}
 
 		/**
-		 * API ROUTES
+		 * ROUTES
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
@@ -1074,6 +1076,25 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				$builder->getDefinitionByType(Router\ApiRoutes::class),
 				$routerService,
 			]);
+		}
+
+		$appRouterServiceName = $builder->getByType(ApplicationRouter\AppRouter::class);
+		assert(is_string($appRouterServiceName));
+		$appRouterService = $builder->getDefinition($appRouterServiceName);
+		assert($appRouterService instanceof DI\Definitions\ServiceDefinition);
+
+		$appRouterService->addSetup([Router\AppRouter::class, 'createRouter'], [$appRouterService]);
+
+		/**
+		 * UI
+		 */
+
+		$presenterFactoryService = $builder->getDefinitionByType(Application\IPresenterFactory::class);
+
+		if ($presenterFactoryService instanceof DI\Definitions\ServiceDefinition) {
+			$presenterFactoryService->addSetup('setMapping', [[
+				'Devices' => 'FastyBird\Module\Devices\Presenters\*Presenter',
+			]]);
 		}
 
 		/**
