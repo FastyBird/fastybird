@@ -20,7 +20,6 @@
       "@fastybird/accounts-module",
       "@fastybird/devices-module",
       "@fastybird/metadata-library",
-      "@fastybird/triggers-module",
       "@fastybird/web-ui-library",
       "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash",
