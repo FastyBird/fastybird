@@ -179,7 +179,7 @@ const activeIndex = computed<string | undefined>((): string | undefined => {
 		}
 	}
 
-	return;
+	return undefined;
 });
 
 const onSignOut = (): void => {
