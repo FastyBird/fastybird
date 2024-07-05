@@ -90,6 +90,8 @@ fbSimpleAuth:
         doctrine:
             models: true
             mapping: true
+        nette:
+            application: true
 
 # JSON:Api support
 ##################

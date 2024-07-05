@@ -6,6 +6,8 @@ import vue from '@vitejs/plugin-vue';
 import vueI18n from '@intlify/unplugin-vue-i18n/vite';
 import UnoCSS from 'unocss/vite';
 
+import packageAliases from './tools/generateAliases';
+
 // https://vitejs.dev/config/
 export default defineConfig({
 	envPrefix: 'FB_APP_PARAMETER__',
@@ -20,7 +22,6 @@ export default defineConfig({
 			localEnabled: true, // dev environment
 			enabled: false, // build production
 			config: {
-				maxLogNumber: 1000,
 				theme: 'dark',
 			},
 		}),
@@ -29,10 +30,7 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			'@fastybird/accounts-module': resolve(__dirname, './../src/FastyBird/Module/Accounts/assets/entry.ts'),
-			'@fastybird/devices-module': resolve(__dirname, './../src/FastyBird/Module/Devices/assets/entry.ts'),
-			'@fastybird/metadata-library': resolve(__dirname, './../node_modules/@fastybird/metadata-library'),
-			'@fastybird/web-ui-library': resolve(__dirname, './../node_modules/@fastybird/web-ui-library'),
+			...packageAliases,
 		},
 		dedupe: ['vue', 'pinia', 'vue-router', 'vue-i18n', 'vue-meta', 'nprogress', '@vueuse/core', 'element-plus'],
 	},
@@ -57,12 +55,13 @@ export default defineConfig({
 		},
 		proxy: {
 			'/api': {
-				target: 'http://localhost',
-				secure: true,
+				target: process.env.FB_APP_PARAMETER__APPLICATION_TARGET || 'http://localhost',
+				secure: false,
 				changeOrigin: true,
+				timeout: 60000,
 			},
 			'/ws-exchange': {
-				target: 'ws://localhost:8888',
+				target: process.env.FB_APP_PARAMETER__WEBSOCKETS_TARGET || 'ws://ws-server:8888',
 				rewrite: (path: string): string => {
 					const wsPrefix = '/ws-exchange';
 

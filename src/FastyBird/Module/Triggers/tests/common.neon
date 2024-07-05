@@ -111,6 +111,8 @@ fbSimpleAuth:
         middleware: true
         doctrine:
             mapping: true
+        nette:
+            application: true
     services:
         identity: true
 

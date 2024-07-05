@@ -45,7 +45,7 @@
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.17",
     "fastybird/metadata-library": "dev-main",
-    "fastybird/simple-auth": "^0.10",
+    "fastybird/simple-auth": "^0.11",
     "ipub/doctrine-phone": "^1.6",
     "ipub/doctrine-timestampable": "^2.0",
     "ipub/slim-router": "^0.2",
@@ -54,7 +54,7 @@
     "psr/event-dispatcher": "^1.0",
     "react/promise": "^3",
     "symfony/console": "^6.0",
-    "symfony/event-dispatcher": "^5.4",
+    "symfony/event-dispatcher": "^7.0",
     "symplify/vendor-patches": "^11.2"
   },
   "require-dev": {
