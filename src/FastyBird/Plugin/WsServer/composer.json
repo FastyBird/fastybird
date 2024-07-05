@@ -45,7 +45,7 @@
     "react/promise": "^3",
     "react/socket": "^1.12",
     "symfony/console": "^6.0",
-    "symfony/event-dispatcher": "^5.4",
+    "symfony/event-dispatcher": "^7.0",
     "symplify/vendor-patches": "^11.2"
   },
   "require-dev": {

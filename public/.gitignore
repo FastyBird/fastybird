@@ -1,3 +1,5 @@
 .gitignore
 !.gitignore
-dist
+.vite
+assets
+index.html

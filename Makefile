@@ -60,6 +60,20 @@ mutations-infection:
 		--skip-initial-tests \
 		$(ARGS)
 
+# Docker
+
+up:
+	docker-compose up -d
+
+down:
+	docker-compose down
+
+bash:
+	docker-compose exec -u www-data application bash
+
+bash-root:
+	docker-compose exec -u 0 application bash
+
 # Utilities
 
 .SILENT: $(shell grep -h -E '^[a-zA-Z_-]+:.*?$$' $(MAKEFILE_LIST) | sort -u | awk 'BEGIN {FS = ":.*?"}; {printf "%s ", $$1}')
