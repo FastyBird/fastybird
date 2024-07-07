@@ -86,11 +86,13 @@ const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
 const isMounted = ref<boolean>(false);
 
 const identity = computed<IIdentity | null>((): IIdentity | null => {
-	if (sessionStore.account === null || sessionStore.account.email === null) {
+	if (sessionStore.account() === null || sessionStore.account()!.email === null) {
 		return null;
 	}
 
-	const identity = identitiesStore.findForAccount(sessionStore.account.id).find((identity) => identity.uid === sessionStore.account?.email?.address);
+	const identity = identitiesStore
+		.findForAccount(sessionStore.account()!.id)
+		.find((identity) => identity.uid === sessionStore.account()?.email?.address);
 
 	return identity ?? null;
 });

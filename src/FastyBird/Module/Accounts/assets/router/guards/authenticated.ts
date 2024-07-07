@@ -7,7 +7,7 @@ const authenticatedGuard = (to: RouteLocationNormalized): boolean | { name: stri
 	const sessionStore = useSession();
 	const toGuards = get(to.meta, 'guards', []);
 
-	if (!sessionStore.isSignedIn && Array.isArray(toGuards) && toGuards.includes('authenticated')) {
+	if (!sessionStore.isSignedIn() && Array.isArray(toGuards) && toGuards.includes('authenticated')) {
 		return { name: 'accounts_module-sign_in' };
 	}
 };

@@ -1,5 +1,6 @@
 import { IModelPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelationships } from 'jsona/lib/JsonaTypes';
 import { ModelPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
+import get from 'lodash.get';
 
 class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IModelPropertiesMapper {
 	exceptedAttributes: string[];
@@ -8,6 +9,15 @@ class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IMod
 		super();
 
 		this.exceptedAttributes = exceptedAttributes;
+	}
+
+	getType(model: TJsonaModel): string {
+		const typeParts: string[] = [];
+
+		typeParts.push(get(model, 'type.source'));
+		typeParts.push(get(model, 'type.entity'));
+
+		return typeParts.join('/');
 	}
 
 	getAttributes(model: TJsonaModel): { [index: string]: any } {

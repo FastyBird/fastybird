@@ -5,6 +5,11 @@ export * from './identities/types';
 export * from './roles/types';
 export * from './session/types';
 
+export interface IEntityMeta {
+	source: string;
+	entity: 'account' | 'email' | 'identity' | 'role' | 'session';
+}
+
 // STORE
 // =====
 
@@ -21,7 +26,7 @@ export enum SemaphoreTypes {
 
 export interface IPlainRelation {
 	id: string;
-	type: string;
+	type: { source: string; entity: string };
 }
 
 export interface IErrorResponseJson {

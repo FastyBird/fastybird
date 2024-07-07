@@ -47,7 +47,7 @@
     "fastybird/exchange-library": "dev-main",
     "fastybird/json-api": "^0.17",
     "fastybird/metadata-library": "dev-main",
-    "fastybird/simple-auth": "^0.11",
+    "fastybird/simple-auth": "^0.12",
     "ipub/doctrine-timestampable": "^2.0",
     "ipub/slim-router": "^0.2",
     "nettrine/dbal": "^0.8",

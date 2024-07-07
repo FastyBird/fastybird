@@ -117,7 +117,7 @@ final class Account extends JsonApis\JsonApi
 			$this->router->urlFor(
 				Accounts\Constants::ROUTE_NAME_ACCOUNT,
 				[
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -171,7 +171,7 @@ final class Account extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_IDENTITIES,
 					[
-						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -185,7 +185,7 @@ final class Account extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_EMAILS,
 					[
-						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -217,7 +217,7 @@ final class Account extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),
@@ -229,7 +229,7 @@ final class Account extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),

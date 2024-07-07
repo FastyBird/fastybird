@@ -32,8 +32,6 @@ interface Entity extends DoctrineCrud\Entities\IEntity
 
 	public function getId(): Uuid\UuidInterface;
 
-	public function getPlainId(): string;
-
 	/**
 	 * @return array<string, mixed>
 	 */

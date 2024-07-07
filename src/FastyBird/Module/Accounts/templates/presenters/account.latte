@@ -1,0 +1,8 @@
+{block content}{/block}
+
+{block scripts}
+<script>
+    window.__ACCOUNTS_MODULE_ACCOUNT__ = {$account|noescape};
+    window.__ACCOUNTS_MODULE_EMAILS__ = {$emails|noescape};
+</script>
+{/block}

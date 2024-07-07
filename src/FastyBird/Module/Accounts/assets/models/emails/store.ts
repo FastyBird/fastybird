@@ -1,16 +1,19 @@
 import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
+import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 
-import exchangeDocumentSchema from '../../../resources/schemas/document.email.json';
 import { EmailDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
+
+import exchangeDocumentSchema from '../../../resources/schemas/document.email.json';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useAccounts } from '../../models';
+import { IAccount } from '../accounts/types';
 
 import {
 	IEmail,
@@ -29,16 +32,20 @@ import {
 	IEmailsSocketDataActionPayload,
 	IEmailsUnsetActionPayload,
 	IEmailsSetActionPayload,
+	IEmailsInsertDataActionPayload,
+	IEmailsActions,
+	IEmailsGetters,
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = async (data: IEmailRecordFactoryPayload): Promise<IEmail> => {
+const storeRecordFactory = async (data: IEmailRecordFactoryPayload): Promise<IEmail> => {
 	const accountsStore = useAccounts();
 
 	let account = accountsStore.findById(data.accountId);
@@ -57,7 +64,7 @@ const recordFactory = async (data: IEmailRecordFactoryPayload): Promise<IEmail> 
 
 	return {
 		id: get(data, 'id', uuid().toString()),
-		type: get(data, 'type', `${ModuleSource.MODULE_ACCOUNTS}/email`),
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -89,7 +96,7 @@ const recordFactory = async (data: IEmailRecordFactoryPayload): Promise<IEmail> 
 	} as IEmail;
 };
 
-export const useEmails = defineStore('accounts_module_emails', {
+export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmailsActions>('accounts_module_emails', {
 	state: (): IEmailsState => {
 		return {
 			semaphore: {
@@ -109,48 +116,59 @@ export const useEmails = defineStore('accounts_module_emails', {
 	},
 
 	getters: {
-		firstLoadFinished: (state): ((accountId: string) => boolean) => {
-			return (accountId) => state.firstLoad.includes(accountId);
+		firstLoadFinished: (state: IEmailsState): ((accountId: IAccount['id']) => boolean) => {
+			return (accountId: IAccount['id']): boolean => state.firstLoad.includes(accountId);
 		},
 
-		getting: (state): ((emailId: string) => boolean) => {
-			return (emailId) => state.semaphore.fetching.item.includes(emailId);
+		getting: (state: IEmailsState): ((id: IEmail['id']) => boolean) => {
+			return (id: IEmail['id']): boolean => state.semaphore.fetching.item.includes(id);
 		},
 
-		fetching: (state): ((accountId: string | null) => boolean) => {
-			return (accountId) => (accountId !== null ? state.semaphore.fetching.items.includes(accountId) : state.semaphore.fetching.items.length > 0);
+		fetching: (state: IEmailsState): ((accountId: IAccount['id'] | null) => boolean) => {
+			return (accountId: IAccount['id'] | null): boolean =>
+				accountId !== null ? state.semaphore.fetching.items.includes(accountId) : state.semaphore.fetching.items.length > 0;
 		},
 
-		findById: (state): ((id: string) => IEmail | null) => {
-			return (id) => {
+		findById: (state: IEmailsState): ((id: IEmail['id']) => IEmail | null) => {
+			return (id: IEmail['id']): IEmail | null => {
 				const email = Object.values(state.data).find((email) => email.id === id);
 
 				return email ?? null;
 			};
 		},
 
-		findByAddress: (state): ((address: string) => IEmail | null) => {
-			return (address) => {
+		findByAddress: (state: IEmailsState): ((address: IEmail['address']) => IEmail | null) => {
+			return (address: IEmail['address']): IEmail | null => {
 				const email = Object.values(state.data).find((email) => email.address.toLowerCase() === address.toLowerCase());
 
 				return email ?? null;
 			};
 		},
 
-		findForAccount: (state): ((accountId: string) => IEmail[]) => {
-			return (accountId: string): IEmail[] => {
+		findForAccount: (state: IEmailsState): ((accountId: IAccount['id']) => IEmail[]) => {
+			return (accountId: IAccount['id']): IEmail[] => {
 				return Object.values(state.data).filter((email) => email.account.id === accountId);
 			};
 		},
 	},
 
 	actions: {
+		/**
+		 * Set record from via other store
+		 *
+		 * @param {IEmailsSetActionPayload} payload
+		 */
 		async set(payload: IEmailsSetActionPayload): Promise<IEmail> {
-			const record = await recordFactory(payload.data);
+			const record = await storeRecordFactory(payload.data);
 
 			return (this.data[record.id] = record);
 		},
 
+		/**
+		 * Unset record from via other store
+		 *
+		 * @param {IEmailsUnsetActionPayload} payload
+		 */
 		unset(payload: IEmailsUnsetActionPayload): void {
 			if (payload.account !== undefined) {
 				Object.keys(this.data).forEach((id) => {
@@ -171,6 +189,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			throw new Error('You have to provide at least account or email id');
 		},
 
+		/**
+		 * Get one record from server
+		 *
+		 * @param {IEmailsGetActionPayload} payload
+		 */
 		async get(payload: IEmailsGetActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.item.includes(payload.id)) {
 				return false;
@@ -185,7 +208,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 				const emailResponseModel = jsonApiFormatter.deserialize(emailResponse.data) as IEmailResponseModel;
 
-				this.data[emailResponseModel.id] = await recordFactory({
+				this.data[emailResponseModel.id] = await storeRecordFactory({
 					...emailResponseModel,
 					...{ accountId: emailResponseModel.account.id },
 				});
@@ -198,6 +221,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			return true;
 		},
 
+		/**
+		 * Fetch all records from server
+		 *
+		 * @param {IEmailsFetchActionPayload} payload
+		 */
 		async fetch(payload: IEmailsFetchActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.items.includes(payload.account.id)) {
 				return false;
@@ -211,7 +239,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 				const emailsResponseModel = jsonApiFormatter.deserialize(emailsResponse.data) as IEmailResponseModel[];
 
 				for (const email of emailsResponseModel) {
-					this.data[email.id] = await recordFactory({
+					this.data[email.id] = await storeRecordFactory({
 						...email,
 						...{ accountId: email.account.id },
 					});
@@ -227,8 +255,13 @@ export const useEmails = defineStore('accounts_module_emails', {
 			return true;
 		},
 
+		/**
+		 * Add new record
+		 *
+		 * @param {IEmailsAddActionPayload} payload
+		 */
 		async add(payload: IEmailsAddActionPayload): Promise<IEmail> {
-			const newEmail = await recordFactory({
+			const newEmail = await storeRecordFactory({
 				...{
 					id: payload?.id,
 					type: payload?.type,
@@ -257,7 +290,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 					const createdEmailModel = jsonApiFormatter.deserialize(createdEmail.data) as IEmailResponseModel;
 
-					this.data[createdEmailModel.id] = await recordFactory({
+					this.data[createdEmailModel.id] = await storeRecordFactory({
 						...createdEmailModel,
 						...{ accountId: createdEmailModel.account.id },
 					});
@@ -274,6 +307,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			}
 		},
 
+		/**
+		 * Edit existing record
+		 *
+		 * @param {IEmailsEditActionPayload} payload
+		 */
 		async edit(payload: IEmailsEditActionPayload): Promise<IEmail> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.emails.update.inProgress');
@@ -307,7 +345,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 					const updatedEmailModel = jsonApiFormatter.deserialize(updatedEmail.data) as IEmailResponseModel;
 
-					this.data[updatedEmailModel.id] = await recordFactory({
+					this.data[updatedEmailModel.id] = await storeRecordFactory({
 						...updatedEmailModel,
 						...{ accountId: updatedEmailModel.account.id },
 					});
@@ -330,6 +368,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			}
 		},
 
+		/**
+		 * Save draft record on server
+		 *
+		 * @param {IEmailsSaveActionPayload} payload
+		 */
 		async save(payload: IEmailsSaveActionPayload): Promise<IEmail> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.emails.save.inProgress');
@@ -353,7 +396,7 @@ export const useEmails = defineStore('accounts_module_emails', {
 
 				const savedEmailModel = jsonApiFormatter.deserialize(savedEmail.data) as IEmailResponseModel;
 
-				this.data[savedEmailModel.id] = await recordFactory({
+				this.data[savedEmailModel.id] = await storeRecordFactory({
 					...savedEmailModel,
 					...{ accountId: savedEmailModel.account.id },
 				});
@@ -366,6 +409,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			}
 		},
 
+		/**
+		 * Remove existing record from store and server
+		 *
+		 * @param {IEmailsRemoveActionPayload} payload
+		 */
 		async remove(payload: IEmailsRemoveActionPayload): Promise<boolean> {
 			if (this.semaphore.deleting.includes(payload.id)) {
 				throw new Error('accounts-module.emails.delete.inProgress');
@@ -405,6 +453,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			return true;
 		},
 
+		/**
+		 * Validate entity value
+		 *
+		 * @param {IEmailsValidateActionPayload} payload
+		 */
 		async validate(payload: IEmailsValidateActionPayload): Promise<any> {
 			try {
 				const validateResponse = await axios.post(
@@ -424,6 +477,11 @@ export const useEmails = defineStore('accounts_module_emails', {
 			}
 		},
 
+		/**
+		 * Receive data from sockets
+		 *
+		 * @param {IEmailsSocketDataActionPayload} payload
+		 */
 		async socketData(payload: IEmailsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
@@ -462,13 +520,16 @@ export const useEmails = defineStore('accounts_module_emails', {
 					return true;
 				}
 
-				const recordData = await recordFactory({
+				const recordData = await storeRecordFactory({
 					id: body.id,
+					type: {
+						source: body.source,
+						entity: 'email',
+					},
 					address: body.address,
 					default: body.default,
 					verified: body.verified,
 					private: body.private,
-					public: body.public,
 					accountId: body.account,
 				});
 
@@ -476,6 +537,71 @@ export const useEmails = defineStore('accounts_module_emails', {
 					this.data[body.id] = { ...this.data[body.id], ...recordData };
 				} else {
 					this.data[body.id] = recordData;
+				}
+			}
+
+			return true;
+		},
+
+		/**
+		 * Insert data from SSR
+		 *
+		 * @param {IEmailsInsertDataActionPayload} payload
+		 */
+		async insertData(payload: IEmailsInsertDataActionPayload): Promise<boolean> {
+			this.data = this.data ?? {};
+
+			let documents: EmailDocument[] = [];
+
+			if (Array.isArray(payload.data)) {
+				documents = payload.data;
+			} else {
+				documents = [payload.data];
+			}
+
+			const accountIds = [];
+
+			for (const doc of documents) {
+				const isValid = jsonSchemaValidator.compile<EmailDocument>(exchangeDocumentSchema);
+
+				try {
+					if (!isValid(doc)) {
+						return false;
+					}
+				} catch {
+					return false;
+				}
+
+				const record = await storeRecordFactory({
+					...this.data[doc.id],
+					...{
+						id: doc.id,
+						address: doc.address,
+						default: doc.default,
+						public: doc.public,
+						private: doc.private,
+						verified: doc.verified,
+						accountId: doc.account,
+					},
+				});
+
+				if (documents.length === 1) {
+					this.data[doc.id] = record;
+				}
+
+				accountIds.push(doc.account);
+			}
+
+			if (documents.length > 1) {
+				const uniqueAccountIds = [...new Set(accountIds)];
+
+				if (uniqueAccountIds.length > 1) {
+					this.firstLoad = [...new Set(this.firstLoad)];
+				}
+
+				for (const deviceId of uniqueAccountIds) {
+					this.firstLoad.push(deviceId);
+					this.firstLoad = [...new Set(this.firstLoad)];
 				}
 			}
 

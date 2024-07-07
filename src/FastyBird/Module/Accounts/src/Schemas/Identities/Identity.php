@@ -90,8 +90,8 @@ final class Identity extends JsonApis\JsonApi
 			$this->router->urlFor(
 				Accounts\Constants::ROUTE_NAME_ACCOUNT_IDENTITY,
 				[
-					Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getId()->toString(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -135,7 +135,7 @@ final class Identity extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getAccount()->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getAccount()->getId()->toString(),
 					],
 				),
 				false,
@@ -161,8 +161,8 @@ final class Identity extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ACCOUNT_IDENTITY_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getPlainId(),
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ACCOUNT_ID => $resource->getAccount()->getId()->toString(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),

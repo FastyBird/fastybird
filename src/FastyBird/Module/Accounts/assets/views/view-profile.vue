@@ -4,7 +4,7 @@
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
 			v-model:remote-form-reset="remoteFormReset"
-			:account="sessionStore.account!"
+			:account="sessionStore.account()!"
 		/>
 	</el-card>
 
@@ -13,7 +13,7 @@
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
 			v-model:remote-form-reset="remoteFormReset"
-			:account="sessionStore.account!"
+			:account="sessionStore.account()!"
 			:layout="LayoutTypes.PHONE"
 		/>
 

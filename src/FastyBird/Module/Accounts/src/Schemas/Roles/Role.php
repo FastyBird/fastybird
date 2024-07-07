@@ -103,7 +103,7 @@ final class Role extends JsonApis\JsonApi
 			$this->router->urlFor(
 				Accounts\Constants::ROUTE_NAME_ROLE,
 				[
-					Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 				],
 			),
 			false,
@@ -159,7 +159,7 @@ final class Role extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ROLE,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 					],
 				),
 				false,
@@ -170,7 +170,7 @@ final class Role extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ROLE_CHILDREN,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 					],
 				),
 				true,
@@ -202,7 +202,7 @@ final class Role extends JsonApis\JsonApi
 				$this->router->urlFor(
 					Accounts\Constants::ROUTE_NAME_ROLE_RELATIONSHIP,
 					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getPlainId(),
+						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 
 					],

@@ -1,16 +1,19 @@
 import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
+import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 
+import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, IdentityState } from '@fastybird/metadata-library';
+
 import exchangeDocumentSchema from '../../../resources/schemas/document.identity.json';
-import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource, IdentityState } from '@fastybird/metadata-library';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useAccounts } from '../../models';
+import { IAccount } from '../accounts/types';
 
 import {
 	IIdentity,
@@ -28,9 +31,12 @@ import {
 	IIdentitiesSocketDataActionPayload,
 	IIdentitiesUnsetActionPayload,
 	IIdentitiesSetActionPayload,
+	IIdentitiesActions,
+	IIdentitiesGetters,
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
@@ -56,7 +62,7 @@ const recordFactory = async (data: IIdentityRecordFactoryPayload): Promise<IIden
 
 	return {
 		id: get(data, 'id', uuid().toString()),
-		type: get(data, 'type', `${ModuleSource.MODULE_ACCOUNTS}/identity`),
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -75,7 +81,7 @@ const recordFactory = async (data: IIdentityRecordFactoryPayload): Promise<IIden
 	} as IIdentity;
 };
 
-export const useIdentities = defineStore('accounts_module_identities', {
+export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGetters, IIdentitiesActions>('accounts_module_identities', {
 	state: (): IIdentitiesState => {
 		return {
 			semaphore: {
@@ -95,40 +101,51 @@ export const useIdentities = defineStore('accounts_module_identities', {
 	},
 
 	getters: {
-		firstLoadFinished: (state): ((accountId: string) => boolean) => {
-			return (accountId) => state.firstLoad.includes(accountId);
+		firstLoadFinished: (state: IIdentitiesState): ((accountId: IAccount['id']) => boolean) => {
+			return (accountId: IAccount['id']): boolean => state.firstLoad.includes(accountId);
 		},
 
-		getting: (state): ((identityId: string) => boolean) => {
-			return (identityId) => state.semaphore.fetching.item.includes(identityId);
+		getting: (state: IIdentitiesState): ((id: IIdentity['id']) => boolean) => {
+			return (id: IIdentity['id']): boolean => state.semaphore.fetching.item.includes(id);
 		},
 
-		fetching: (state): ((accountId: string | null) => boolean) => {
-			return (accountId) => (accountId !== null ? state.semaphore.fetching.items.includes(accountId) : state.semaphore.fetching.items.length > 0);
+		fetching: (state: IIdentitiesState): ((accountId: IAccount['id'] | null) => boolean) => {
+			return (accountId: IAccount['id'] | null): boolean =>
+				accountId !== null ? state.semaphore.fetching.items.includes(accountId) : state.semaphore.fetching.items.length > 0;
 		},
 
-		findById: (state): ((id: string) => IIdentity | null) => {
-			return (id: string): IIdentity | null => {
+		findById: (state: IIdentitiesState): ((id: IIdentity['id']) => IIdentity | null) => {
+			return (id: IIdentity['id']): IIdentity | null => {
 				const identity = Object.values(state.data).find((identity) => identity.id === id);
 
 				return identity ?? null;
 			};
 		},
 
-		findForAccount: (state): ((accountId: string) => IIdentity[]) => {
-			return (accountId: string): IIdentity[] => {
+		findForAccount: (state: IIdentitiesState): ((accountId: IAccount['id']) => IIdentity[]) => {
+			return (accountId: IAccount['id']): IIdentity[] => {
 				return Object.values(state.data).filter((identity) => identity.account.id === accountId);
 			};
 		},
 	},
 
 	actions: {
+		/**
+		 * Set record from via other store
+		 *
+		 * @param {IIdentitiesUnsetActionPayload} payload
+		 */
 		async set(payload: IIdentitiesSetActionPayload): Promise<IIdentity> {
 			const record = await recordFactory(payload.data);
 
 			return (this.data[record.id] = record);
 		},
 
+		/**
+		 * Unset record from via other store
+		 *
+		 * @param {IIdentitiesUnsetActionPayload} payload
+		 */
 		unset(payload: IIdentitiesUnsetActionPayload): void {
 			if (payload.account !== undefined) {
 				Object.keys(this.data).forEach((id) => {
@@ -149,6 +166,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			throw new Error('You have to provide at least account or identity id');
 		},
 
+		/**
+		 * Get one record from server
+		 *
+		 * @param {IIdentitiesGetActionPayload} payload
+		 */
 		async get(payload: IIdentitiesGetActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.item.includes(payload.id)) {
 				return false;
@@ -176,6 +198,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			return true;
 		},
 
+		/**
+		 * Fetch all records from server
+		 *
+		 * @param {IIdentitiesFetchActionPayload} payload
+		 */
 		async fetch(payload: IIdentitiesFetchActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.items.includes(payload.account.id)) {
 				return false;
@@ -207,6 +234,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			return true;
 		},
 
+		/**
+		 * Add new record
+		 *
+		 * @param {IIdentitiesAddActionPayload} payload
+		 */
 		async add(payload: IIdentitiesAddActionPayload): Promise<IIdentity> {
 			const newIdentity = await recordFactory({
 				...{
@@ -254,6 +286,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			}
 		},
 
+		/**
+		 * Edit existing record
+		 *
+		 * @param {IIdentitiesEditActionPayload} payload
+		 */
 		async edit(payload: IIdentitiesEditActionPayload): Promise<IIdentity> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.identities.update.inProgress');
@@ -310,6 +347,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			}
 		},
 
+		/**
+		 * Save draft record on server
+		 *
+		 * @param {IIdentitiesSaveActionPayload} payload
+		 */
 		async save(payload: IIdentitiesSaveActionPayload): Promise<IIdentity> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.identities.save.inProgress');
@@ -346,6 +388,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			}
 		},
 
+		/**
+		 * Remove existing record from store and server
+		 *
+		 * @param {IIdentitiesRemoveActionPayload} payload
+		 */
 		async remove(payload: IIdentitiesRemoveActionPayload): Promise<boolean> {
 			if (this.semaphore.deleting.includes(payload.id)) {
 				throw new Error('accounts-module.identities.delete.inProgress');
@@ -385,6 +432,11 @@ export const useIdentities = defineStore('accounts_module_identities', {
 			return true;
 		},
 
+		/**
+		 * Receive data from sockets
+		 *
+		 * @param {IIdentitiesSocketDataActionPayload} payload
+		 */
 		async socketData(payload: IIdentitiesSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
@@ -425,6 +477,10 @@ export const useIdentities = defineStore('accounts_module_identities', {
 
 				const recordData = await recordFactory({
 					id: body.id,
+					type: {
+						source: body.source,
+						entity: 'identity',
+					},
 					state: body.state,
 					uid: body.uid,
 					accountId: body.account,

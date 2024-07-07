@@ -1,28 +1,56 @@
+import { _GettersTree } from 'pinia';
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 
 import { IdentityState } from '@fastybird/metadata-library';
 
-import { IAccount, IAccountResponseData, IPlainRelation } from '../../models/types';
+import { IAccount, IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
+
+export interface IIdentityMeta extends IEntityMeta {
+	entity: 'identity';
+}
+
+// STORE
+// =====
+
+export interface IIdentitiesState {
+	semaphore: IIdentitiesStateSemaphore;
+	firstLoad: IIdentity['id'][];
+	data: { [key: IIdentity['id']]: IIdentity };
+}
+
+export interface IIdentitiesGetters extends _GettersTree<IIdentitiesState> {
+	firstLoadFinished: (state: IIdentitiesState) => (accountId: IAccount['id']) => boolean;
+	getting: (state: IIdentitiesState) => (id: IIdentity['id']) => boolean;
+	fetching: (state: IIdentitiesState) => (accountId: IAccount['id'] | null) => boolean;
+	findById: (state: IIdentitiesState) => (id: IIdentity['id']) => IIdentity | null;
+	findForAccount: (state: IIdentitiesState) => (accountId: IAccount['id']) => IIdentity[];
+}
+
+export interface IIdentitiesActions {
+	set: (payload: IIdentitiesSetActionPayload) => Promise<IIdentity>;
+	unset: (payload: IIdentitiesUnsetActionPayload) => void;
+	get: (payload: IIdentitiesGetActionPayload) => Promise<boolean>;
+	fetch: (payload: IIdentitiesFetchActionPayload) => Promise<boolean>;
+	add: (payload: IIdentitiesAddActionPayload) => Promise<IIdentity>;
+	edit: (payload: IIdentitiesEditActionPayload) => Promise<IIdentity>;
+	save: (payload: IIdentitiesSaveActionPayload) => Promise<IIdentity>;
+	remove: (payload: IIdentitiesRemoveActionPayload) => Promise<boolean>;
+	socketData: (payload: IIdentitiesSocketDataActionPayload) => Promise<boolean>;
+}
 
 // STORE STATE
 // ===========
 
-export interface IIdentitiesState {
-	semaphore: IIdentitiesStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IIdentity };
-}
-
 export interface IIdentitiesStateSemaphore {
 	fetching: IIdentitiesStateSemaphoreFetching;
-	creating: string[];
-	updating: string[];
-	deleting: string[];
+	creating: IIdentity['id'][];
+	updating: IIdentity['id'][];
+	deleting: IIdentity['id'][];
 }
 
 interface IIdentitiesStateSemaphoreFetching {
-	items: string[];
-	item: string[];
+	items: IAccount['id'][];
+	item: IIdentity['id'][];
 }
 
 // STORE MODELS
@@ -30,7 +58,7 @@ interface IIdentitiesStateSemaphoreFetching {
 
 export interface IIdentity {
 	id: string;
-	type: string;
+	type: IIdentityMeta;
 
 	draft: boolean;
 
@@ -49,20 +77,20 @@ export interface IIdentity {
 // ====================
 
 export interface IIdentityRecordFactoryPayload {
-	id?: string;
-	type?: string;
+	id?: IIdentity['id'];
+	type: IIdentityMeta;
 
-	draft?: boolean;
+	draft?: IIdentity['draft'];
 
-	state?: IdentityState;
+	state?: IIdentity['state'];
 
-	uid: string;
-	password?: string;
+	uid: IIdentity['uid'];
+	password?: IIdentity['password'];
 
 	// Relations
-	relationshipNames?: string[];
+	relationshipNames?: IIdentity['relationshipNames'];
 
-	accountId: string;
+	accountId: IAccount['id'];
 }
 
 // STORE ACTIONS
@@ -74,12 +102,12 @@ export interface IIdentitiesSetActionPayload {
 
 export interface IIdentitiesUnsetActionPayload {
 	account?: IAccount;
-	id?: string;
+	id?: IIdentity['id'];
 }
 
 export interface IIdentitiesGetActionPayload {
 	account: IAccount;
-	id: string;
+	id: IIdentity['id'];
 }
 
 export interface IIdentitiesFetchActionPayload {
@@ -87,36 +115,36 @@ export interface IIdentitiesFetchActionPayload {
 }
 
 export interface IIdentitiesAddActionPayload {
-	id?: string;
-	type?: string;
+	id?: IIdentity['id'];
+	type: IIdentityMeta;
 
-	draft?: boolean;
+	draft?: IIdentity['draft'];
 
-	account: IAccount;
+	account: IIdentity['account'];
 
 	data: {
-		uid: string;
-		password: string;
+		uid: IIdentity['uid'];
+		password: IIdentity['password'];
 	};
 }
 
 export interface IIdentitiesEditActionPayload {
-	id: string;
+	id: IIdentity['id'];
 
 	data: {
 		password: {
-			current: string;
-			new: string;
+			current: IIdentity['password'];
+			new: IIdentity['password'];
 		};
 	};
 }
 
 export interface IIdentitiesSaveActionPayload {
-	id: string;
+	id: IIdentity['id'];
 }
 
 export interface IIdentitiesRemoveActionPayload {
-	id: string;
+	id: IIdentity['id'];
 }
 
 export interface IIdentitiesSocketDataActionPayload {
@@ -159,7 +187,7 @@ interface IIdentityResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IIdentityResponseModel extends TJsonaModel {
 	id: string;
-	type: string;
+	type: IIdentityMeta;
 
 	state: IdentityState;
 

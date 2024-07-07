@@ -36,11 +36,11 @@
 			<el-dropdown trigger="click">
 				<div class="flex items-center cursor-pointer">
 					<app-gravatar
-						v-if="sessionStore.account?.email"
-						:email="sessionStore.account.email.address"
+						v-if="account?.email"
+						:email="account.email.address"
 						class="w-[32px] rounded-[50%]"
 					/>
-					<span class="text-14px pl-[5px]">{{ sessionStore.account?.name }}</span>
+					<span class="text-14px pl-[5px]">{{ account?.name }}</span>
 				</div>
 
 				<template #dropdown>
@@ -65,14 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { inject, nextTick, ref, watch } from 'vue';
+import { computed, inject, nextTick, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useNamespace, ElButton, ElHeader, ElDropdown, ElDropdownMenu, ElDropdownItem, ElSwitch } from 'element-plus';
 
 import { FasBars, FasSun, FasMoon } from '@fastybird/web-ui-icons';
 import { FB_BREADCRUMBS_TARGET } from '@fastybird/web-ui-library';
-import { useRoutesNames as useAccountsModuleRoutesNames, useSession } from '@fastybird/accounts-module';
+import { IAccount, useRoutesNames as useAccountsModuleRoutesNames, useSession } from '@fastybird/accounts-module';
 
 import { eventBusInjectionKey } from '../plugins';
 import { isDark, toggleDark } from '../composables';
@@ -104,6 +104,8 @@ const sessionStore = useSession();
 const eventBus = inject(eventBusInjectionKey);
 
 const darkMode = ref<boolean>(isDark.value);
+
+const account = computed<IAccount | null>(() => sessionStore.account());
 
 let resolveFn: (value: boolean | PromiseLike<boolean>) => void;
 

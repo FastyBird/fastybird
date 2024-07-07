@@ -1,12 +1,14 @@
 import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
+import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 
+import { RoleDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+
 import exchangeDocumentSchema from '../../../resources/schemas/document.role.json';
-import { RoleDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
@@ -24,10 +26,13 @@ import {
 	IRolesSaveActionPayload,
 	IRolesRemoveActionPayload,
 	IRolesSocketDataActionPayload,
+	IRolesGetters,
+	IRolesActions,
 } from './types';
 import { IPlainRelation } from '../types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
@@ -37,7 +42,7 @@ const jsonApiFormatter = new Jsona({
 const recordFactory = (data: IRoleRecordFactoryPayload): IRole => {
 	const record: IRole = {
 		id: get(data, 'id', uuid().toString()),
-		type: get(data, 'type', `${ModuleSource.MODULE_ACCOUNTS}/role`),
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -55,20 +60,22 @@ const recordFactory = (data: IRoleRecordFactoryPayload): IRole => {
 	};
 
 	record.relationshipNames.forEach((relationName) => {
-		get(data, relationName, []).forEach((relation: any): void => {
-			if (relationName === 'accounts' && get(relation, 'id', null) !== null && get(relation, 'type', null) !== null) {
-				(record[relationName] as IPlainRelation[]).push({
-					id: get(relation, 'id', null) as string,
-					type: get(relation, 'type', null) as string,
-				});
-			}
-		});
+		if (relationName === 'accounts') {
+			get(data, relationName, []).forEach((relation: any): void => {
+				if (get(relation, 'id', null) !== null && get(relation, 'type', null) !== null) {
+					(record[relationName] as IPlainRelation[]).push({
+						id: get(relation, 'id', null),
+						type: get(relation, 'type', null),
+					});
+				}
+			});
+		}
 	});
 
 	return record;
 };
 
-export const useRoles = defineStore('accounts_module_roles', {
+export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesActions>('accounts_module_roles', {
 	state: (): IRolesState => {
 		return {
 			semaphore: {
@@ -88,20 +95,25 @@ export const useRoles = defineStore('accounts_module_roles', {
 	},
 
 	getters: {
-		firstLoadFinished: (state): boolean => {
-			return state.firstLoad;
+		firstLoadFinished: (state: IRolesState): (() => boolean) => {
+			return (): boolean => state.firstLoad;
 		},
 
-		getting: (state): ((roleId: string) => boolean) => {
-			return (roleId) => state.semaphore.fetching.item.includes(roleId);
+		getting: (state: IRolesState): ((id: IRole['id']) => boolean) => {
+			return (id: IRole['id']): boolean => state.semaphore.fetching.item.includes(id);
 		},
 
-		fetching: (state): boolean => {
-			return state.semaphore.fetching.items;
+		fetching: (state: IRolesState): (() => boolean) => {
+			return (): boolean => state.semaphore.fetching.items;
 		},
 	},
 
 	actions: {
+		/**
+		 * Get one record from server
+		 *
+		 * @param {IRolesGetActionPayload} payload
+		 */
 		async get(payload: IRolesGetActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.item.includes(payload.id)) {
 				return false;
@@ -124,6 +136,9 @@ export const useRoles = defineStore('accounts_module_roles', {
 			return true;
 		},
 
+		/**
+		 * Fetch all records from server
+		 */
 		async fetch(): Promise<boolean> {
 			if (this.semaphore.fetching.items) {
 				return false;
@@ -148,6 +163,11 @@ export const useRoles = defineStore('accounts_module_roles', {
 			return true;
 		},
 
+		/**
+		 * Add new record
+		 *
+		 * @param {IAccountsAddActionPayload} payload
+		 */
 		async add(payload: IRolesAddActionPayload): Promise<IRole> {
 			const newRole = recordFactory({
 				...{
@@ -194,6 +214,11 @@ export const useRoles = defineStore('accounts_module_roles', {
 			}
 		},
 
+		/**
+		 * Edit existing record
+		 *
+		 * @param {IRolesEditActionPayload} payload
+		 */
 		async edit(payload: IRolesEditActionPayload): Promise<IRole> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.roles.update.inProgress');
@@ -241,6 +266,11 @@ export const useRoles = defineStore('accounts_module_roles', {
 			}
 		},
 
+		/**
+		 * Save draft record on server
+		 *
+		 * @param {IRolesSaveActionPayload} payload
+		 */
 		async save(payload: IRolesSaveActionPayload): Promise<IRole> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.roles.save.inProgress');
@@ -274,6 +304,11 @@ export const useRoles = defineStore('accounts_module_roles', {
 			}
 		},
 
+		/**
+		 * Remove existing record from store and server
+		 *
+		 * @param {IRolesRemoveActionPayload} payload
+		 */
 		async remove(payload: IRolesRemoveActionPayload): Promise<boolean> {
 			if (this.semaphore.deleting.includes(payload.id)) {
 				throw new Error('accounts-module.roles.delete.inProgress');
@@ -307,6 +342,11 @@ export const useRoles = defineStore('accounts_module_roles', {
 			return true;
 		},
 
+		/**
+		 * Receive data from sockets
+		 *
+		 * @param {IRolesSocketDataActionPayload} payload
+		 */
 		async socketData(payload: IRolesSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
@@ -347,6 +387,10 @@ export const useRoles = defineStore('accounts_module_roles', {
 
 				const recordData = recordFactory({
 					id: body.id,
+					type: {
+						source: body.source,
+						entity: 'role',
+					},
 					name: body.name,
 					description: body.description,
 					anonymous: body.anonymous,

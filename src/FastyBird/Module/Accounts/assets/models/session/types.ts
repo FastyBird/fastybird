@@ -1,13 +1,38 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { IPlainRelation } from '../types';
+import { _GettersTree } from 'pinia';
 
-// STORE STATE
-// ===========
+import { IAccount, IEntityMeta, IIdentity, IPlainRelation } from '../types';
+
+export interface ISessionMeta extends IEntityMeta {
+	entity: 'session';
+}
+
+// STORE
+// =====
 
 export interface ISessionState {
 	semaphore: ISessionStateSemaphore;
 	data: ISession;
 }
+
+export interface ISessionGetters extends _GettersTree<ISessionState> {
+	accessToken: (state: ISessionState) => () => string | null;
+	refreshToken: (state: ISessionState) => () => string | null;
+	accountId: (state: ISessionState) => () => IAccount['id'] | null;
+	account: (state: ISessionState) => () => IAccount | null;
+	isSignedIn: (state: ISessionState) => () => boolean;
+}
+
+export interface ISessionActions {
+	initialize: () => void;
+	clear: () => void;
+	fetch: () => Promise<boolean>;
+	create: (payload: ISessionCreateActionPayload) => Promise<boolean>;
+	refresh: () => Promise<boolean>;
+}
+
+// STORE STATE
+// ===========
 
 interface ISessionStateSemaphore {
 	fetching: boolean;
@@ -21,7 +46,7 @@ export interface ISession {
 	tokenExpiration: string | null;
 	tokenType: string;
 
-	accountId: string | null;
+	accountId: IAccount['id'] | null;
 }
 
 // STORE DATA FACTORIES
@@ -37,8 +62,8 @@ export interface ISessionRecordFactoryPayload {
 // =============
 
 export interface ISessionCreateActionPayload {
-	uid: string;
-	password: string;
+	uid: IIdentity['uid'];
+	password: IIdentity['password'];
 }
 
 // API RESPONSES JSONS
@@ -71,7 +96,7 @@ interface ISessionResponseDataRelationships extends TJsonApiRelationships {
 
 export interface ISessionResponseModel extends TJsonaModel {
 	id: string;
-	type: string;
+	type: ISessionMeta;
 
 	token: string;
 	tokenType: string;

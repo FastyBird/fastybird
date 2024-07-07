@@ -18,6 +18,7 @@ namespace FastyBird\Module\Accounts\DI;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Application\Router as ApplicationRouter;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Module\Accounts\Commands;
@@ -32,6 +33,7 @@ use FastyBird\Module\Accounts\Security;
 use FastyBird\Module\Accounts\Subscribers;
 use FastyBird\Module\Accounts\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
+use Nette\Application;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -40,6 +42,7 @@ use Tracy;
 use function array_keys;
 use function array_pop;
 use function assert;
+use function is_string;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -294,20 +297,39 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		}
 
 		/**
-		 * API ROUTES
+		 * ROUTES
 		 */
 
 		$routerService = $builder->getDefinitionByType(SlimRouterRouting\Router::class);
 
 		if ($routerService instanceof DI\Definitions\ServiceDefinition) {
-			$routerService->addSetup(
-				'?->registerRoutes(?)',
-				[$builder->getDefinitionByType(Router\ApiRoutes::class), $routerService],
-			);
+			$routerService->addSetup('?->registerRoutes(?)', [
+				$builder->getDefinitionByType(Router\ApiRoutes::class),
+				$routerService,
+			]);
+		}
+
+		$appRouterServiceName = $builder->getByType(ApplicationRouter\AppRouter::class);
+		assert(is_string($appRouterServiceName));
+		$appRouterService = $builder->getDefinition($appRouterServiceName);
+		assert($appRouterService instanceof DI\Definitions\ServiceDefinition);
+
+		$appRouterService->addSetup([Router\AppRouter::class, 'createRouter'], [$appRouterService]);
+
+		/**
+		 * UI
+		 */
+
+		$presenterFactoryService = $builder->getDefinitionByType(Application\IPresenterFactory::class);
+
+		if ($presenterFactoryService instanceof DI\Definitions\ServiceDefinition) {
+			$presenterFactoryService->addSetup('setMapping', [[
+				'Accounts' => 'FastyBird\Module\Accounts\Presenters\*Presenter',
+			]]);
 		}
 
 		/**
-		 * Tracy
+		 * DEBUGGING
 		 */
 
 		if ($builder->getByType(Tracy\Bar::class) !== null) {

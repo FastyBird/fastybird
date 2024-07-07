@@ -323,7 +323,8 @@ class Account implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'first_name' => $this->getDetails()->getFirstName(),
 			'last_name' => $this->getDetails()->getLastName(),
 			'middle_name' => $this->getDetails()->getMiddleName(),

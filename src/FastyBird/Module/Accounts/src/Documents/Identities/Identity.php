@@ -19,6 +19,7 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Types;
@@ -89,10 +90,16 @@ final readonly class Identity implements MetadataDocuments\Document
 		return $this->hash;
 	}
 
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return MetadataTypes\Sources\Module::ACCOUNTS;
+	}
+
 	public function toArray(): array
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'account' => $this->getAccount()->toString(),
 			'state' => $this->getState()->value,
 			'uid' => $this->getUid(),

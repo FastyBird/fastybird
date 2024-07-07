@@ -221,8 +221,9 @@ class Email implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
-			'account' => $this->getAccount()->getPlainId(),
+			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
+			'account' => $this->getAccount()->getId()->toString(),
 			'address' => $this->getAddress(),
 			'default' => $this->isDefault(),
 			'verified' => $this->isVerified(),

@@ -92,6 +92,9 @@ fbSimpleAuth:
             mapping: true
         nette:
             application: true
+    application:
+        signInUrl: Accounts:Sign:in
+        homeUrl: App:Default:default
 
 # JSON:Api support
 ##################

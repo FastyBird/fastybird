@@ -20,6 +20,7 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Types;
@@ -171,10 +172,16 @@ final readonly class Account implements MetadataDocuments\Document
 		return $this->children;
 	}
 
+	public function getSource(): MetadataTypes\Sources\Source
+	{
+		return MetadataTypes\Sources\Module::ACCOUNTS;
+	}
+
 	public function toArray(): array
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'first_name' => $this->getFirstName(),
 			'last_name' => $this->getLastName(),
 			'middle_name' => $this->getMiddleName(),
