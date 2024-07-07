@@ -7,7 +7,7 @@ const anonymousGuard = (to: RouteLocationNormalized): boolean | { name: string }
 	const sessionStore = useSession();
 	const toGuards = get(to.meta, 'guards', []);
 
-	if (sessionStore.isSignedIn && Array.isArray(toGuards) && toGuards.includes('anonymous')) {
+	if (sessionStore.isSignedIn() && Array.isArray(toGuards) && toGuards.includes('anonymous')) {
 		return { name: 'root' };
 	}
 };

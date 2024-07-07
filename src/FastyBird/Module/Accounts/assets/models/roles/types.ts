@@ -1,26 +1,50 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+import { _GettersTree } from 'pinia';
 
-import { IAccountResponseData, IPlainRelation } from '../../models/types';
+import { IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
 
-// STORE STATE
-// ===========
+export interface IRoleMeta extends IEntityMeta {
+	entity: 'role';
+}
+
+// STORE
+// =====
 
 export interface IRolesState {
 	semaphore: IRolesStateSemaphore;
 	firstLoad: boolean;
-	data: { [key: string]: IRole };
+	data: { [key: IRole['id']]: IRole };
 }
+
+export interface IRolesGetters extends _GettersTree<IRolesState> {
+	firstLoadFinished: (state: IRolesState) => () => boolean;
+	getting: (state: IRolesState) => (id: IRole['id']) => boolean;
+	fetching: (state: IRolesState) => () => boolean;
+}
+
+export interface IRolesActions {
+	get: (payload: IRolesGetActionPayload) => Promise<boolean>;
+	fetch: () => Promise<boolean>;
+	add: (payload: IRolesAddActionPayload) => Promise<IRole>;
+	edit: (payload: IRolesEditActionPayload) => Promise<IRole>;
+	save: (payload: IRolesSaveActionPayload) => Promise<IRole>;
+	remove: (payload: IRolesRemoveActionPayload) => Promise<boolean>;
+	socketData: (payload: IRolesSocketDataActionPayload) => Promise<boolean>;
+}
+
+// STORE STATE
+// ===========
 
 export interface IRolesStateSemaphore {
 	fetching: IRolesStateSemaphoreFetching;
-	creating: string[];
-	updating: string[];
-	deleting: string[];
+	creating: IRole['id'][];
+	updating: IRole['id'][];
+	deleting: IRole['id'][];
 }
 
 interface IRolesStateSemaphoreFetching {
 	items: boolean;
-	item: string[];
+	item: IRole['id'][];
 }
 
 // STORE MODELS
@@ -28,7 +52,7 @@ interface IRolesStateSemaphoreFetching {
 
 export interface IRole {
 	id: string;
-	type: string;
+	type: IRoleMeta;
 
 	draft: boolean;
 
@@ -49,64 +73,64 @@ export interface IRole {
 // ====================
 
 export interface IRoleRecordFactoryPayload {
-	id?: string;
-	type?: string;
+	id?: IRole['id'];
+	type: IRole['type'];
 
-	draft?: boolean;
+	draft?: IRole['draft'];
 
-	name: string;
-	description?: string | null;
+	name: IRole['name'];
+	description?: IRole['description'];
 
-	anonymous?: boolean;
-	authenticated?: boolean;
-	administrator?: boolean;
+	anonymous?: IRole['anonymous'];
+	authenticated?: IRole['authenticated'];
+	administrator?: IRole['administrator'];
 
 	// Relations
-	relationshipNames?: string[];
+	relationshipNames?: IRole['relationshipNames'];
 }
 
 // STORE ACTIONS
 // =============
 
 export interface IRolesGetActionPayload {
-	id: string;
+	id: IRole['id'];
 }
 
 export interface IRolesAddActionPayload {
-	id?: string;
-	type?: string;
+	id?: IRole['id'];
+	type: IRoleMeta;
 
-	draft?: boolean;
+	draft?: IRole['draft'];
 
 	data: {
-		name: string;
-		description?: string | null;
+		name: IRole['name'];
+		description?: IRole['description'];
 
-		anonymous?: boolean;
-		authenticated?: boolean;
-		administrator?: boolean;
+		anonymous?: IRole['anonymous'];
+		authenticated?: IRole['authenticated'];
+		administrator?: IRole['administrator'];
 	};
 }
 
 export interface IRolesEditActionPayload {
-	id: string;
+	id: IRole['id'];
 
 	data: {
-		name: string;
-		description?: string | null;
+		name: IRole['name'];
+		description?: IRole['description'];
 
-		anonymous?: boolean;
-		authenticated?: boolean;
-		administrator?: boolean;
+		anonymous?: IRole['anonymous'];
+		authenticated?: IRole['authenticated'];
+		administrator?: IRole['administrator'];
 	};
 }
 
 export interface IRolesSaveActionPayload {
-	id: string;
+	id: IRole['id'];
 }
 
 export interface IRolesRemoveActionPayload {
-	id: string;
+	id: IRole['id'];
 }
 
 export interface IRolesSocketDataActionPayload {
@@ -152,7 +176,7 @@ interface IRoleResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IRoleResponseModel extends TJsonaModel {
 	id: string;
-	type: string;
+	type: IRoleMeta;
 
 	name: string;
 	description: string | null;

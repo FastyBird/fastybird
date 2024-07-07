@@ -36,11 +36,6 @@ trait TEntity
 		return $this->id;
 	}
 
-	public function getPlainId(): string
-	{
-		return $this->id->toString();
-	}
-
 	public function getSource(): MetadataTypes\Sources\Source
 	{
 		return MetadataTypes\Sources\Module::ACCOUNTS;

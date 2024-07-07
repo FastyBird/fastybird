@@ -6,16 +6,6 @@
     window.__DEVICES_MODULE_CONNECTORS_PROPERTIES__ = {$connectorsProperties|noescape};
     window.__DEVICES_MODULE_CONNECTORS_CONTROLS__ = {$connectorsControls|noescape};
 
-    {ifset $devices}
-    window.__DEVICES_MODULE_DEVICES__ = {$devices|noescape};
-    {/ifset}
-    {ifset $devicesProperties}
-    window.__DEVICES_MODULE_DEVICES_PROPERTIES__ = {$devicesProperties|noescape};
-    {/ifset}
-    {ifset $devicesControls}
-    window.__DEVICES_MODULE_DEVICES_CONTROLS__ = {$devicesControls|noescape};
-    {/ifset}
-
     {ifset $device}
     window.__DEVICES_MODULE_DEVICE__ = {$device|noescape};
     {/ifset}

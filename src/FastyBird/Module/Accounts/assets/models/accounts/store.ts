@@ -1,18 +1,28 @@
 import { defineStore, Pinia, Store } from 'pinia';
 import axios from 'axios';
 import { Jsona } from 'jsona';
+import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import { v4 as uuid } from 'uuid';
 import { format } from 'date-fns';
 import get from 'lodash.get';
 
+import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix } from '@fastybird/metadata-library';
+
 import exchangeDocumentSchema from '../../../resources/schemas/document.account.json';
-import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useEmails, useIdentities } from '../../models';
-import { IEmail, IEmailResponseModel, IIdentityResponseModel, IPlainRelation } from '../../models/types';
+import {
+	IAccountsActions,
+	IAccountsGetters,
+	IAccountsInsertDataActionPayload,
+	IEmail,
+	IEmailResponseModel,
+	IIdentityResponseModel,
+	IPlainRelation,
+} from '../../models/types';
 
 import {
 	IAccount,
@@ -31,16 +41,17 @@ import {
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
+addFormats(jsonSchemaValidator);
 
 const jsonApiFormatter = new Jsona({
 	modelPropertiesMapper: new JsonApiModelPropertiesMapper(),
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
+const storeRecordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
 	const record: IAccount = {
 		id: get(data, 'id', uuid().toString()),
-		type: get(data, 'type', `${ModuleSource.MODULE_ACCOUNTS}/account`),
+		type: data.type,
 
 		draft: get(data, 'draft', false),
 
@@ -85,54 +96,56 @@ const recordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
 	};
 
 	record.relationshipNames.forEach((relationName) => {
-		get(data, relationName, []).forEach((relation: any): void => {
-			if (
-				relationName === 'emails' ||
-				relationName === 'identities' ||
-				(relationName === 'roles' && get(relation, 'id', null) !== null && get(relation, 'type', null) !== null)
-			) {
-				(record[relationName] as IPlainRelation[]).push({
-					id: get(relation, 'id', null) as string,
-					type: get(relation, 'type', null) as string,
-				});
-			}
-		});
+		if (relationName === 'emails' || relationName === 'identities' || relationName === 'roles') {
+			get(data, relationName, []).forEach((relation: any): void => {
+				if (get(relation, 'id', null) !== null && get(relation, 'type', null) !== null) {
+					(record[relationName] as IPlainRelation[]).push({
+						id: get(relation, 'id', null),
+						type: get(relation, 'type', null),
+					});
+				}
+			});
+		}
 	});
 
 	return record;
 };
 
-const addEmailsRelations = (account: IAccount, emails: IEmailResponseModel[]): void => {
+const addEmailsRelations = async (account: IAccount, emails: (IEmailResponseModel | IPlainRelation)[]): Promise<void> => {
 	const emailsStore = useEmails();
 
-	emails.forEach((email) => {
-		emailsStore.set({
-			data: {
-				...email,
-				...{
-					accountId: account.id,
+	for (const email of emails) {
+		if ('address' in email) {
+			await emailsStore.set({
+				data: {
+					...email,
+					...{
+						accountId: account.id,
+					},
 				},
-			},
-		});
-	});
+			});
+		}
+	}
 };
 
-const addIdentitiesRelations = (account: IAccount, identities: IIdentityResponseModel[]): void => {
+const addIdentitiesRelations = async (account: IAccount, identities: (IIdentityResponseModel | IPlainRelation)[]): Promise<void> => {
 	const identitiesStore = useIdentities();
 
-	identities.forEach((identity) => {
-		identitiesStore.set({
-			data: {
-				...identity,
-				...{
-					accountId: account.id,
+	for (const identity of identities) {
+		if ('uid' in identity) {
+			await identitiesStore.set({
+				data: {
+					...identity,
+					...{
+						accountId: account.id,
+					},
 				},
-			},
-		});
-	});
+			});
+		}
+	}
 };
 
-export const useAccounts = defineStore('accounts_module_accounts', {
+export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters, IAccountsActions>('accounts_module_accounts', {
 	state: (): IAccountsState => {
 		return {
 			semaphore: {
@@ -152,28 +165,38 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 	},
 
 	getters: {
-		findById: (state): ((id: string) => IAccount | null) => {
-			return (id: string): IAccount | null => {
+		findById: (state: IAccountsState): ((id: IAccount['id']) => IAccount | null) => {
+			return (id: IAccount['id']): IAccount | null => {
 				return id in state.data ? state.data[id] : null;
 			};
 		},
 	},
 
 	actions: {
+		/**
+		 * Set record from via other store
+		 *
+		 * @param {IAccountsSetActionPayload} payload
+		 */
 		async set(payload: IAccountsSetActionPayload): Promise<IAccount> {
-			const record = await recordFactory(payload.data);
+			const record = storeRecordFactory(payload.data);
 
 			if ('emails' in payload.data && Array.isArray(payload.data.emails)) {
-				addEmailsRelations(record, payload.data.emails);
+				await addEmailsRelations(record, payload.data.emails);
 			}
 
 			if ('identities' in payload.data && Array.isArray(payload.data.identities)) {
-				addIdentitiesRelations(record, payload.data.identities);
+				await addIdentitiesRelations(record, payload.data.identities);
 			}
 
 			return (this.data[record.id] = record);
 		},
 
+		/**
+		 * Get one record from server
+		 *
+		 * @param {IAccountsGetActionPayload} payload
+		 */
 		async get(payload: IAccountsGetActionPayload): Promise<boolean> {
 			if (this.semaphore.fetching.item.includes(payload.id)) {
 				return false;
@@ -188,10 +211,10 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 				const accountResponseModel = jsonApiFormatter.deserialize(accountResponse.data) as IAccountResponseModel;
 
-				this.data[accountResponseModel.id] = recordFactory(accountResponseModel);
+				this.data[accountResponseModel.id] = storeRecordFactory(accountResponseModel);
 
-				addEmailsRelations(this.data[accountResponseModel.id], accountResponseModel.emails);
-				addIdentitiesRelations(this.data[accountResponseModel.id], accountResponseModel.identities);
+				await addEmailsRelations(this.data[accountResponseModel.id], accountResponseModel.emails);
+				await addIdentitiesRelations(this.data[accountResponseModel.id], accountResponseModel.identities);
 			} catch (e: any) {
 				throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
 			} finally {
@@ -201,6 +224,9 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			return true;
 		},
 
+		/**
+		 * Fetch all records from server
+		 */
 		async fetch(): Promise<boolean> {
 			if (this.semaphore.fetching.items) {
 				return false;
@@ -214,7 +240,7 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 				const accountsResponseModel = jsonApiFormatter.deserialize(accountsResponse.data) as IAccountResponseModel[];
 
 				accountsResponseModel.forEach((account) => {
-					this.data[account.id] = recordFactory(account);
+					this.data[account.id] = storeRecordFactory(account);
 
 					addEmailsRelations(this.data[account.id], account.emails);
 					addIdentitiesRelations(this.data[account.id], account.identities);
@@ -230,8 +256,13 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			return true;
 		},
 
+		/**
+		 * Add new record
+		 *
+		 * @param {IAccountsAddActionPayload} payload
+		 */
 		async add(payload: IAccountsAddActionPayload): Promise<IAccount> {
-			const newAccount = recordFactory({
+			const newAccount = storeRecordFactory({
 				...{ id: payload?.id, type: payload?.type, draft: payload?.draft },
 				...payload.data,
 			});
@@ -255,10 +286,10 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 					const createdAccountModel = jsonApiFormatter.deserialize(createdAccount.data) as IAccountResponseModel;
 
-					this.data[createdAccountModel.id] = recordFactory(createdAccountModel);
+					this.data[createdAccountModel.id] = storeRecordFactory(createdAccountModel);
 
-					addEmailsRelations(this.data[createdAccountModel.id], createdAccountModel.emails);
-					addIdentitiesRelations(this.data[createdAccountModel.id], createdAccountModel.identities);
+					await addEmailsRelations(this.data[createdAccountModel.id], createdAccountModel.emails);
+					await addIdentitiesRelations(this.data[createdAccountModel.id], createdAccountModel.identities);
 
 					return this.data[createdAccountModel.id];
 				} catch (e: any) {
@@ -272,6 +303,11 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			}
 		},
 
+		/**
+		 * Edit existing record
+		 *
+		 * @param {IAccountsEditActionPayload} payload
+		 */
 		async edit(payload: IAccountsEditActionPayload): Promise<IAccount> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.accounts.update.inProgress');
@@ -305,10 +341,10 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 					const updatedAccountModel = jsonApiFormatter.deserialize(updatedAccount.data) as IAccountResponseModel;
 
-					this.data[updatedAccountModel.id] = recordFactory(updatedAccountModel);
+					this.data[updatedAccountModel.id] = storeRecordFactory(updatedAccountModel);
 
-					addEmailsRelations(this.data[updatedAccountModel.id], updatedAccountModel.emails);
-					addIdentitiesRelations(this.data[updatedAccountModel.id], updatedAccountModel.identities);
+					await addEmailsRelations(this.data[updatedAccountModel.id], updatedAccountModel.emails);
+					await addIdentitiesRelations(this.data[updatedAccountModel.id], updatedAccountModel.identities);
 
 					return this.data[updatedAccountModel.id];
 				} catch (e: any) {
@@ -322,6 +358,11 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			}
 		},
 
+		/**
+		 * Save draft record on server
+		 *
+		 * @param {IAccountsSaveActionPayload} payload
+		 */
 		async save(payload: IAccountsSaveActionPayload): Promise<IAccount> {
 			if (this.semaphore.updating.includes(payload.id)) {
 				throw new Error('accounts-module.accounts.save.inProgress');
@@ -345,10 +386,10 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 
 				const savedAccountModel = jsonApiFormatter.deserialize(savedAccount.data) as IAccountResponseModel;
 
-				this.data[savedAccountModel.id] = recordFactory(savedAccountModel);
+				this.data[savedAccountModel.id] = storeRecordFactory(savedAccountModel);
 
-				addEmailsRelations(this.data[savedAccountModel.id], savedAccountModel.emails);
-				addIdentitiesRelations(this.data[savedAccountModel.id], savedAccountModel.identities);
+				await addEmailsRelations(this.data[savedAccountModel.id], savedAccountModel.emails);
+				await addIdentitiesRelations(this.data[savedAccountModel.id], savedAccountModel.identities);
 
 				return this.data[savedAccountModel.id];
 			} catch (e: any) {
@@ -358,6 +399,11 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			}
 		},
 
+		/**
+		 * Remove existing record from store and server
+		 *
+		 * @param {IAccountsRemoveActionPayload} payload
+		 */
 		async remove(payload: IAccountsRemoveActionPayload): Promise<boolean> {
 			if (this.semaphore.deleting.includes(payload.id)) {
 				throw new Error('accounts-module.accounts.delete.inProgress');
@@ -400,6 +446,11 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 			return true;
 		},
 
+		/**
+		 * Receive data from sockets
+		 *
+		 * @param {IAccountsSocketDataActionPayload} payload
+		 */
 		async socketData(payload: IAccountsSocketDataActionPayload): Promise<boolean> {
 			if (
 				![
@@ -446,8 +497,12 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 					return true;
 				}
 
-				const recordData = recordFactory({
+				const recordData = storeRecordFactory({
 					id: body.id,
+					type: {
+						source: body.source,
+						entity: 'account',
+					},
 					details: {
 						firstName: body.first_name,
 						lastName: body.last_name,
@@ -463,6 +518,57 @@ export const useAccounts = defineStore('accounts_module_accounts', {
 					this.data[body.id] = { ...this.data[body.id], ...recordData };
 				} else {
 					this.data[body.id] = recordData;
+				}
+			}
+
+			return true;
+		},
+
+		/**
+		 * Insert data from SSR
+		 *
+		 * @param {IAccountsInsertDataActionPayload} payload
+		 */
+		async insertData(payload: IAccountsInsertDataActionPayload): Promise<boolean> {
+			this.data = this.data ?? {};
+
+			let documents: AccountDocument[] = [];
+
+			if (Array.isArray(payload.data)) {
+				documents = payload.data;
+			} else {
+				documents = [payload.data];
+			}
+
+			for (const doc of documents) {
+				const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
+
+				try {
+					if (!isValid(doc)) {
+						return false;
+					}
+				} catch {
+					return false;
+				}
+
+				const record = storeRecordFactory({
+					...this.data[doc.id],
+					...{
+						id: doc.id,
+						details: {
+							firstName: doc.first_name,
+							lastName: doc.last_name,
+							middleName: doc.middle_name,
+						},
+						language: doc.language,
+						state: doc.state,
+						registered: doc.registered,
+						lastVisit: doc.last_visit,
+					},
+				});
+
+				if (documents.length === 1) {
+					this.data[doc.id] = record;
 				}
 			}
 

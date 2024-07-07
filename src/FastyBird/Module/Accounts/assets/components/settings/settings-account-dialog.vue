@@ -25,10 +25,10 @@
 		</template>
 
 		<settings-account-form
-			v-if="sessionStore.account"
+			v-if="sessionStore.account()"
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
-			:account="sessionStore.account"
+			:account="sessionStore.account()!"
 		/>
 
 		<template #footer>

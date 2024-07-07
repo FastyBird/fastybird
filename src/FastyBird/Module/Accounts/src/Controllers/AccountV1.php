@@ -103,7 +103,7 @@ final class AccountV1 extends BaseV1
 
 		$document = $this->createDocument($request);
 
-		if ($account->getPlainId() !== $document->getResource()->getId()) {
+		if ($account->getId()->toString() !== $document->getResource()->getId()) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
 				$this->translator->translate('//accounts-module.base.messages.invalidIdentifier.heading'),

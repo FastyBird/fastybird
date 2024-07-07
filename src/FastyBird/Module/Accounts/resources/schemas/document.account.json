@@ -7,6 +7,10 @@
       "format": "uuid",
       "description": "Document unique uuid v4 identifier"
     },
+    "source": {
+      "type": "string",
+      "description": "Account source"
+    },
     "first_name": {
       "type": "string"
     },

@@ -1,4 +1,3 @@
-import { ChannelCategory, ChannelDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios, { AxiosResponse } from 'axios';
@@ -7,6 +6,8 @@ import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
 import { defineStore } from 'pinia';
 import { v4 as uuid } from 'uuid';
+
+import { ChannelCategory, ChannelDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.channel.json';
 

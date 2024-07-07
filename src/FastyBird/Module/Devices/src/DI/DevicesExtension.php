@@ -38,7 +38,6 @@ use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
-use Nette;
 use Nette\Application;
 use Nette\Caching;
 use Nette\DI;
@@ -995,7 +994,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	}
 
 	/**
-	 * @throws Nette\DI\MissingServiceException
+	 * @throws DI\MissingServiceException
 	 */
 	public function beforeCompile(): void
 	{

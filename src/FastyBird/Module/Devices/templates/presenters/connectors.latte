@@ -2,9 +2,25 @@
 
 {block scripts}
 <script>
+    {ifset $connectors}
     window.__DEVICES_MODULE_CONNECTORS__ = {$connectors|noescape};
+    {/ifset}
+    {ifset $connectorsProperties}
     window.__DEVICES_MODULE_CONNECTORS_PROPERTIES__ = {$connectorsProperties|noescape};
+    {/ifset}
+    {ifset $connectorsControls}
     window.__DEVICES_MODULE_CONNECTORS_CONTROLS__ = {$connectorsControls|noescape};
+    {/ifset}
+
+    {ifset $connector}
+    window.__DEVICES_MODULE_CONNECTOR__ = {$connector|noescape};
+    {/ifset}
+    {ifset $connectorProperties}
+    window.__DEVICES_MODULE_CONNECTOR_PROPERTIES__ = {$connectorProperties|noescape};
+    {/ifset}
+    {ifset $connectorControls}
+    window.__DEVICES_MODULE_CONNECTOR_CONTROLS__ = {$connectorControls|noescape};
+    {/ifset}
 
     {ifset $devices}
     window.__DEVICES_MODULE_DEVICES__ = {$devices|noescape};

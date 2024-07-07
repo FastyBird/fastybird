@@ -1,26 +1,59 @@
+import { _GettersTree } from 'pinia';
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 
-import { IAccount, IAccountResponseData, IPlainRelation } from '../../models/types';
+import { EmailDocument } from '@fastybird/metadata-library';
+
+import { IAccount, IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
+
+export interface IEmailMeta extends IEntityMeta {
+	entity: 'email';
+}
+
+// STORE
+// =====
+
+export interface IEmailsState {
+	semaphore: IEmailsStateSemaphore;
+	firstLoad: IEmail['id'][];
+	data: { [key: IEmail['id']]: IEmail };
+}
+
+export interface IEmailsGetters extends _GettersTree<IEmailsState> {
+	firstLoadFinished: (state: IEmailsState) => (accountId: IAccount['id']) => boolean;
+	getting: (state: IEmailsState) => (id: IEmail['id']) => boolean;
+	fetching: (state: IEmailsState) => (accountId: IAccount['id'] | null) => boolean;
+	findById: (state: IEmailsState) => (id: IEmail['id']) => IEmail | null;
+	findByAddress: (state: IEmailsState) => (address: IEmail['address']) => IEmail | null;
+	findForAccount: (state: IEmailsState) => (accountId: IAccount['id']) => IEmail[];
+}
+
+export interface IEmailsActions {
+	set: (payload: IEmailsSetActionPayload) => Promise<IEmail>;
+	unset: (payload: IEmailsUnsetActionPayload) => void;
+	get: (payload: IEmailsGetActionPayload) => Promise<boolean>;
+	fetch: (payload: IEmailsFetchActionPayload) => Promise<boolean>;
+	add: (payload: IEmailsAddActionPayload) => Promise<IEmail>;
+	edit: (payload: IEmailsEditActionPayload) => Promise<IEmail>;
+	save: (payload: IEmailsSaveActionPayload) => Promise<IEmail>;
+	remove: (payload: IEmailsRemoveActionPayload) => Promise<boolean>;
+	validate: (payload: IEmailsValidateActionPayload) => Promise<any>;
+	socketData: (payload: IEmailsSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IEmailsInsertDataActionPayload) => Promise<boolean>;
+}
 
 // STORE STATE
 // ===========
 
-export interface IEmailsState {
-	semaphore: IEmailsStateSemaphore;
-	firstLoad: string[];
-	data: { [key: string]: IEmail };
-}
-
 export interface IEmailsStateSemaphore {
 	fetching: IEmailsStateSemaphoreFetching;
-	creating: string[];
-	updating: string[];
-	deleting: string[];
+	creating: IEmail['id'][];
+	updating: IEmail['id'][];
+	deleting: IEmail['id'][];
 }
 
 interface IEmailsStateSemaphoreFetching {
-	items: string[];
-	item: string[];
+	items: IAccount['id'][];
+	item: IEmail['id'][];
 }
 
 // STORE MODELS
@@ -28,7 +61,7 @@ interface IEmailsStateSemaphoreFetching {
 
 export interface IEmail {
 	id: string;
-	type: string;
+	type: IEmailMeta;
 
 	draft: boolean;
 
@@ -52,21 +85,20 @@ export interface IEmail {
 // ====================
 
 export interface IEmailRecordFactoryPayload {
-	id?: string;
-	type?: string;
+	id?: IEmail['id'];
+	type: IEmailMeta;
 
-	draft?: boolean;
+	draft?: IEmail['draft'];
 
-	address: string;
-	default?: boolean;
-	public?: boolean;
-	private?: boolean;
-	verified?: boolean;
+	address: IEmail['address'];
+	default?: IEmail['default'];
+	private?: IEmail['private'];
+	verified?: IEmail['verified'];
 
 	// Relations
-	relationshipNames?: string[];
+	relationshipNames?: IEmail['relationshipNames'];
 
-	accountId: string;
+	accountId: IAccount['id'];
 }
 
 // STORE ACTIONS
@@ -78,12 +110,12 @@ export interface IEmailsSetActionPayload {
 
 export interface IEmailsUnsetActionPayload {
 	account?: IAccount;
-	id?: string;
+	id?: IEmail['id'];
 }
 
 export interface IEmailsGetActionPayload {
 	account: IAccount;
-	id: string;
+	id: IEmail['id'];
 }
 
 export interface IEmailsFetchActionPayload {
@@ -91,45 +123,49 @@ export interface IEmailsFetchActionPayload {
 }
 
 export interface IEmailsAddActionPayload {
-	id?: string;
-	type?: string;
+	id?: IEmail['id'];
+	type: IEmailMeta;
 
-	draft?: boolean;
+	draft?: IEmail['draft'];
 
 	account: IAccount;
 
 	data: {
-		address: string;
-		default?: boolean;
-		private?: boolean;
+		address: IEmail['address'];
+		default?: IEmail['default'];
+		private?: IEmail['private'];
 	};
 }
 
 export interface IEmailsEditActionPayload {
-	id: string;
+	id: IEmail['id'];
 
 	data: {
-		default?: boolean;
-		private?: boolean;
+		default?: IEmail['default'];
+		private?: IEmail['private'];
 	};
 }
 
 export interface IEmailsSaveActionPayload {
-	id: string;
+	id: IEmail['id'];
 }
 
 export interface IEmailsRemoveActionPayload {
-	id: string;
+	id: IEmail['id'];
 }
 
 export interface IEmailsValidateActionPayload {
-	address: string;
+	address: IEmail['address'];
 }
 
 export interface IEmailsSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IEmailsInsertDataActionPayload {
+	data: EmailDocument | EmailDocument[];
 }
 
 // API RESPONSES JSONS
@@ -168,7 +204,7 @@ interface IEmailResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IEmailResponseModel extends TJsonaModel {
 	id: string;
-	type: string;
+	type: IEmailMeta;
 
 	address: string;
 	default: boolean;

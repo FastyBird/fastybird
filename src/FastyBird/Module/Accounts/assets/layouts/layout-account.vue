@@ -35,7 +35,7 @@
 					/>
 
 					<span class="text-large font-600 mr-3"> {{ t('headings.yourProfile') }} </span>
-					<span class="text-sm mr-2"> {{ sessionStore.account?.email?.address || '' }} </span>
+					<span class="text-sm mr-2"> {{ sessionStore.account()?.email?.address || '' }} </span>
 				</div>
 			</template>
 
@@ -69,7 +69,7 @@
 			</template>
 
 			<template #subtitle>
-				{{ sessionStore.account?.email?.address || '' }}
+				{{ sessionStore.account()?.email?.address || '' }}
 			</template>
 		</fb-app-bar-heading>
 
@@ -125,18 +125,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import get from 'lodash.get';
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
 import { RouteRecordName, useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import md5 from 'md5';
 import { ElPageHeader, ElButton, ElBreadcrumbItem, ElAvatar, ElIcon, ElTabs, ElTabPane, TabsPaneContext, ElBreadcrumb } from 'element-plus';
 
 import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
+import { AccountDocument, EmailDocument } from '@fastybird/metadata-library';
 import { FB_BREADCRUMBS_TARGET, FbAppBarHeading, FbBreadcrumbs } from '@fastybird/web-ui-library';
 import { FasUser, FasLock } from '@fastybird/web-ui-icons';
 
 import { useRoutesNames } from '../composables';
-import { useSession } from '../models';
+import { useAccounts, useEmails, useSession } from '../models';
 import { FormResultTypes } from '../types';
 
 enum PanelNames {
@@ -156,6 +158,8 @@ const { t } = useI18n();
 
 const { routeNames } = useRoutesNames();
 const sessionStore = useSession();
+const accountsStore = useAccounts();
+const emailsStore = useEmails();
 const breakpoints = useBreakpoints(breakpointsBootstrapV5);
 
 const isXsBreakpoint = breakpoints.smaller('sm');
@@ -183,7 +187,27 @@ const onSave = (): void => {
 };
 
 const avatarUrl = computed<string>((): string => {
-	return ['//www.gravatar.com/avatar/', md5((sessionStore.account?.email?.address || '').trim().toLowerCase()), '?s=80', '&d=retro', '&r=g'].join('');
+	return ['//www.gravatar.com/avatar/', md5((sessionStore.account()?.email?.address || '').trim().toLowerCase()), '?s=80', '&d=retro', '&r=g'].join(
+		''
+	);
+});
+
+onBeforeMount(async (): Promise<void> => {
+	const ssrAccountData: AccountDocument | null = get(window, '__ACCOUNTS_MODULE_ACCOUNT__', null);
+
+	if (ssrAccountData !== null) {
+		await accountsStore.insertData({
+			data: ssrAccountData,
+		});
+	}
+
+	const ssrEmailsData: EmailDocument[] | null = get(window, '__ACCOUNTS_MODULE_EMAILS__', null);
+
+	if (ssrEmailsData !== null) {
+		await emailsStore.insertData({
+			data: ssrEmailsData,
+		});
+	}
 });
 
 onMounted((): void => {

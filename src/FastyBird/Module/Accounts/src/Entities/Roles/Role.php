@@ -180,14 +180,15 @@ class Role implements Entities\Entity,
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'is_administrator' => $this->isAdministrator(),
 			'is_authenticated' => $this->isAuthenticated(),
 			'is_anonymous' => $this->isAnonymous(),
-			'parent' => $this->getParent()?->getPlainId(),
-			'children' => array_map(static fn (self $role): string => $role->getPlainId(), $this->getChildren()),
+			'parent' => $this->getParent()?->getId()->toString(),
+			'children' => array_map(static fn (self $role): string => $role->getId()->toString(), $this->getChildren()),
 		];
 	}
 

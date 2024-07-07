@@ -98,7 +98,7 @@ final readonly class UrlFormat implements MiddlewareInterface
 				$content,
 			);
 			$content = str_replace(
-				'\/api\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
+				'\/api\/v1\/accounts\/' . $this->user->getAccount()->getId()->toString(),
 				'\/v1\/me',
 				$content,
 			);
@@ -113,7 +113,7 @@ final readonly class UrlFormat implements MiddlewareInterface
 				$content,
 			);
 			$content = str_replace(
-				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/accounts\/' . $this->user->getAccount()->getPlainId(),
+				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/accounts\/' . $this->user->getAccount()->getId()->toString(),
 				'\/api\/' . Metadata\Constants::MODULE_ACCOUNTS_PREFIX . '\/v1\/me',
 				$content,
 			);

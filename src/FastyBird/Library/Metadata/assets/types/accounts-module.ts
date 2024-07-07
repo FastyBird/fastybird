@@ -15,6 +15,7 @@ export enum IdentityState {
 
 export interface AccountDocument {
 	id: string;
+	source: string;
 	first_name: string;
 	last_name: string;
 	middle_name: string;
@@ -28,6 +29,7 @@ export interface AccountDocument {
 
 export interface EmailDocument {
 	id: string;
+	source: string;
 	address: string;
 	default: boolean;
 	verified: boolean;
@@ -38,6 +40,7 @@ export interface EmailDocument {
 
 export interface IdentityDocument {
 	id: string;
+	source: string;
 	state: IdentityState;
 	uid: string;
 	password?: string;
@@ -46,6 +49,7 @@ export interface IdentityDocument {
 
 export interface RoleDocument {
 	id: string;
+	source: string;
 	name: string;
 	description: string;
 	anonymous: boolean;

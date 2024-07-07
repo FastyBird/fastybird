@@ -1,10 +1,32 @@
-// STORE STATE
-// ===========
+import { _GettersTree } from 'pinia';
+
+import { IAccount } from '../accounts/types';
+import { IEmail, IEmailMeta } from '../emails/types';
+import { IIdentity } from '../identities/types';
+
+// STORE
+// =====
 
 export interface IAccountState {
 	semaphore: IAccountStateSemaphore;
 	loaded: boolean;
 }
+
+export interface IAccountGetters extends _GettersTree<IAccountState> {
+	emails: () => () => IEmail[];
+}
+
+export interface IAccountActions {
+	edit: (payload: IAccountEditActionPayload) => Promise<boolean>;
+	addEmail: (payload: IAccountAddEmailActionPayload) => Promise<IEmail>;
+	editEmail: (payload: IAccountEditEmailActionPayload) => Promise<IEmail>;
+	editIdentity: (payload: IAccountEditIdentityActionPayload) => Promise<boolean>;
+	requestReset: (payload: IAccountRequestResetActionPayload) => Promise<boolean>;
+	register: (payload: IAccountRegisterActionPayload) => Promise<boolean>;
+}
+
+// STORE STATE
+// ===========
 
 interface IAccountStateSemaphore {
 	updating: boolean;
@@ -17,62 +39,62 @@ interface IAccountStateSemaphore {
 export interface IAccountEditActionPayload {
 	data: {
 		details: {
-			firstName: string;
-			lastName: string;
-			middleName?: string | null;
+			firstName: IAccount['details']['firstName'];
+			lastName: IAccount['details']['lastName'];
+			middleName?: IAccount['details']['middleName'];
 		};
 
-		language?: string;
+		language?: IAccount['language'];
 
-		weekStart?: number;
-		dateTime: {
-			timezone?: string;
-			dateFormat?: string;
-			timeFormat?: string;
+		weekStart?: IAccount['weekStart'];
+		dateTime?: {
+			timezone?: IAccount['dateTime']['timezone'];
+			dateFormat?: IAccount['dateTime']['dateFormat'];
+			timeFormat?: IAccount['dateTime']['timeFormat'];
 		};
 	};
 }
 
 export interface IAccountAddEmailActionPayload {
-	id?: string;
-	type?: string;
+	id?: IEmail['id'];
+	type: IEmailMeta;
 
-	draft?: boolean;
+	draft?: IEmail['draft'];
 
 	data: {
-		address: string;
-		default?: boolean;
-		private?: boolean;
+		address: IEmail['address'];
+		default?: IEmail['default'];
+		private?: IEmail['private'];
 	};
 }
 
 export interface IAccountEditEmailActionPayload {
-	id: string;
+	id: IEmail['id'];
 
 	data: {
-		default?: boolean;
-		private?: boolean;
+		default?: IEmail['default'];
+		private?: IEmail['private'];
 	};
 }
 
 export interface IAccountEditIdentityActionPayload {
-	id: string;
+	id: IIdentity['id'];
 
 	data: {
 		password: {
-			current: string;
-			new: string;
+			current: IIdentity['password'];
+			new: IIdentity['password'];
 		};
 	};
 }
 
 export interface IAccountRegisterActionPayload {
-	emailAddress: string;
-	firstName: string;
-	lastName: string;
-	password: string;
+	emailAddress: IEmail['address'];
+	firstName: IAccount['details']['firstName'];
+	lastName: IAccount['details']['lastName'];
+	password: IIdentity['password'];
 }
 
 export interface IAccountRequestResetActionPayload {
-	uid: string;
+	uid: IIdentity['uid'];
 }

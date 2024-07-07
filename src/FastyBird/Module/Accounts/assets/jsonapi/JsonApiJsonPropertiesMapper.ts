@@ -1,10 +1,64 @@
 import { IJsonPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelationships } from 'jsona/lib/JsonaTypes';
 import { JsonPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
 
+import {
+	ACCOUNT_DOCUMENT_REG_EXP,
+	EMAIL_DOCUMENT_REG_EXP,
+	IDENTITY_DOCUMENT_REG_EXP,
+	ROLE_DOCUMENT_REG_EXP,
+	SESSION_DOCUMENT_REG_EXP,
+} from './utilities';
+
 const CASE_REG_EXP = '_([a-z0-9])';
 
 class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonPropertiesMapper {
+	accountTypeRegex: RegExp;
+	emailTypeRegex: RegExp;
+	identityTypeRegex: RegExp;
+	roleTypeRegex: RegExp;
+	sessionTypeRegex: RegExp;
+
+	constructor() {
+		super();
+
+		this.accountTypeRegex = new RegExp(ACCOUNT_DOCUMENT_REG_EXP);
+		this.emailTypeRegex = new RegExp(EMAIL_DOCUMENT_REG_EXP);
+		this.identityTypeRegex = new RegExp(IDENTITY_DOCUMENT_REG_EXP);
+		this.roleTypeRegex = new RegExp(ROLE_DOCUMENT_REG_EXP);
+		this.sessionTypeRegex = new RegExp(SESSION_DOCUMENT_REG_EXP);
+	}
+
 	createModel(type: string): TJsonaModel {
+		if (this.accountTypeRegex.test(type)) {
+			const parsedTypes = this.accountTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'account' }, ...parsedTypes?.groups } };
+		}
+
+		if (this.emailTypeRegex.test(type)) {
+			const parsedTypes = this.emailTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'email' }, ...parsedTypes?.groups } };
+		}
+
+		if (this.identityTypeRegex.test(type)) {
+			const parsedTypes = this.identityTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'identity' }, ...parsedTypes?.groups } };
+		}
+
+		if (this.roleTypeRegex.test(type)) {
+			const parsedTypes = this.roleTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'role' }, ...parsedTypes?.groups } };
+		}
+
+		if (this.sessionTypeRegex.test(type)) {
+			const parsedTypes = this.sessionTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'session' }, ...parsedTypes?.groups } };
+		}
+
 		return { type };
 	}
 

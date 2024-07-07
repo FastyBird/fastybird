@@ -1,33 +1,66 @@
+import { _GettersTree } from 'pinia';
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 
-import { AccountState } from '@fastybird/metadata-library';
+import { AccountDocument, AccountState } from '@fastybird/metadata-library';
 
-import { IEmail, IEmailResponseData, IEmailResponseModel, IIdentityResponseData, IIdentityResponseModel, IPlainRelation } from '../../models/types';
+import {
+	IEmail,
+	IEmailResponseData,
+	IEmailResponseModel,
+	IEntityMeta,
+	IIdentityResponseData,
+	IIdentityResponseModel,
+	IPlainRelation,
+	IRoleResponseModel,
+} from '../../models/types';
 
-// STORE STATE
-// ===========
+export interface IAccountMeta extends IEntityMeta {
+	entity: 'account';
+}
+
+// STORE
+// =====
 
 export interface IAccountsState {
 	semaphore: IAccountsStateSemaphore;
 	firstLoad: boolean;
-	data: { [key: string]: IAccount };
+	data: { [key: IAccount['id']]: IAccount };
 }
+
+export interface IAccountsGetters extends _GettersTree<IAccountsState> {
+	findById: (state: IAccountsState) => (id: IAccount['id']) => IAccount | null;
+}
+
+export interface IAccountsActions {
+	set: (payload: IAccountsSetActionPayload) => Promise<IAccount>;
+	get: (payload: IAccountsGetActionPayload) => Promise<boolean>;
+	fetch: () => Promise<boolean>;
+	add: (payload: IAccountsAddActionPayload) => Promise<IAccount>;
+	edit: (payload: IAccountsEditActionPayload) => Promise<IAccount>;
+	save: (payload: IAccountsSaveActionPayload) => Promise<IAccount>;
+	remove: (payload: IAccountsRemoveActionPayload) => Promise<boolean>;
+	socketData: (payload: IAccountsSocketDataActionPayload) => Promise<boolean>;
+	insertData: (payload: IAccountsInsertDataActionPayload) => Promise<boolean>;
+}
+
+// STORE STATE
+// ===========
 
 interface IAccountsStateSemaphore {
 	fetching: IAccountsStateSemaphoreFetching;
-	creating: string[];
-	updating: string[];
-	deleting: string[];
+	creating: IAccount['id'][];
+	updating: IAccount['id'][];
+	deleting: IAccount['id'][];
 }
 
 interface IAccountsStateSemaphoreFetching {
 	items: boolean;
-	item: string[];
+	item: IAccount['id'][];
 }
 
 export interface IAccount {
 	id: string;
-	type: string;
+	type: IAccountMeta;
 
 	draft: boolean;
 
@@ -67,35 +100,35 @@ export interface IAccount {
 // ====================
 
 export interface IAccountRecordFactoryPayload {
-	id?: string;
-	type?: string;
+	id?: IAccount['id'];
+	type: IAccountMeta;
 
 	details: {
-		firstName: string;
-		lastName: string;
-		middleName?: string | null;
+		firstName: IAccount['details']['firstName'];
+		lastName: IAccount['details']['lastName'];
+		middleName?: IAccount['details']['middleName'];
 	};
 
-	language?: string;
+	language?: IAccount['language'];
 
-	weekStart?: number;
+	weekStart?: IAccount['weekStart'];
 	dateTime?: {
-		timezone?: string;
-		dateFormat?: string;
-		timeFormat?: string;
+		timezone?: IAccount['dateTime']['timezone'];
+		dateFormat?: IAccount['dateTime']['dateFormat'];
+		timeFormat?: IAccount['dateTime']['timeFormat'];
 	};
 
-	state?: AccountState;
+	state?: IAccount['state'];
 
-	lastVisit?: string | null;
-	registered?: string | null;
+	lastVisit?: IAccount['lastVisit'];
+	registered?: IAccount['registered'];
 
 	// Relations
-	relationshipNames?: string[];
+	relationshipNames?: IAccount['relationshipNames'];
 
-	emails?: IEmailResponseModel[];
-	identities?: IIdentityResponseModel[];
-	roles?: IPlainRelation[];
+	emails?: (IPlainRelation | IEmailResponseModel)[];
+	identities?: (IPlainRelation | IIdentityResponseModel)[];
+	roles?: (IPlainRelation | IRoleResponseModel)[];
 }
 
 // STORE ACTIONS
@@ -106,66 +139,70 @@ export interface IAccountsSetActionPayload {
 }
 
 export interface IAccountsGetActionPayload {
-	id: string;
+	id: IAccount['id'];
 }
 
 export interface IAccountsAddActionPayload {
-	id?: string;
-	type?: string;
+	id?: IAccount['id'];
+	type: IAccountMeta;
 
-	draft?: boolean;
+	draft?: IAccount['draft'];
 
 	data: {
 		details: {
-			firstName: string;
-			lastName: string;
-			middleName?: string | null;
+			firstName: IAccount['details']['firstName'];
+			lastName: IAccount['details']['lastName'];
+			middleName?: IAccount['details']['middleName'];
 		};
 
-		language?: string;
+		language?: IAccount['language'];
 
-		weekStart?: number;
+		weekStart?: IAccount['weekStart'];
 		dateTime: {
-			timezone?: string;
-			dateFormat?: string;
-			timeFormat?: string;
+			timezone?: IAccount['dateTime']['timezone'];
+			dateFormat?: IAccount['dateTime']['dateFormat'];
+			timeFormat?: IAccount['dateTime']['timeFormat'];
 		};
 	};
 }
 
 export interface IAccountsEditActionPayload {
-	id: string;
+	id: IAccount['id'];
 
 	data: {
 		details: {
-			firstName: string;
-			lastName: string;
-			middleName?: string | null;
+			firstName: IAccount['details']['firstName'];
+			lastName: IAccount['details']['lastName'];
+			middleName?: IAccount['details']['middleName'];
 		};
 
-		language?: string;
+		language?: IAccount['language'];
 
-		weekStart?: number;
+		weekStart?: IAccount['weekStart'];
 		dateTime: {
-			timezone?: string;
-			dateFormat?: string;
-			timeFormat?: string;
+			timezone?: IAccount['dateTime']['timezone'];
+			dateFormat?: IAccount['dateTime']['dateFormat'];
+			timeFormat?: IAccount['dateTime']['timeFormat'];
 		};
 	};
 }
 
 export interface IAccountsSaveActionPayload {
-	id: string;
+	id: IAccount['id'];
 }
 
 export interface IAccountsRemoveActionPayload {
-	id: string;
+	id: IAccount['id'];
 }
 
 export interface IAccountsSocketDataActionPayload {
 	source: string;
 	routingKey: string;
 	data: string;
+}
+
+export interface IAccountsInsertDataActionPayload {
+	data: AccountDocument | AccountDocument[];
 }
 
 // API RESPONSES JSONS
@@ -225,7 +262,7 @@ interface IAccountResponseDataRelationships extends TJsonApiRelationships {
 
 export interface IAccountResponseModel extends TJsonaModel {
 	id: string;
-	type: string;
+	type: IAccountMeta;
 
 	details: {
 		firstName: string;
@@ -250,7 +287,7 @@ export interface IAccountResponseModel extends TJsonaModel {
 	// Relations
 	relationshipNames: string[];
 
-	emails: IEmailResponseModel[];
-	identities: IIdentityResponseModel[];
-	roles: IPlainRelation[];
+	emails: (IPlainRelation | IEmailResponseModel)[];
+	identities: (IPlainRelation | IIdentityResponseModel)[];
+	roles: (IPlainRelation | IRoleResponseModel)[];
 }

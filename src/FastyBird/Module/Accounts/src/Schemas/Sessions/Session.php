@@ -139,7 +139,7 @@ final class Session extends JsonApis\JsonApi
 					[
 						Router\ApiRoutes::URL_ITEM_ID => $resource->getIdentity()
 							->getAccount()
-							->getPlainId(),
+							->getId()->toString(),
 					],
 				),
 				false,

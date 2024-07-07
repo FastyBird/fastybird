@@ -14,9 +14,9 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 	// ///////////////////////////////
 	// Both tokens cookies are present
 	// ///////////////////////////////
-	if (sessionStore.accessToken !== null && sessionStore.refreshToken !== null) {
-		const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(sessionStore.accessToken);
-		const decodedRefreshToken = jwtDecode<{ exp: number; user: string }>(sessionStore.refreshToken);
+	if (sessionStore.accessToken() !== null && sessionStore.refreshToken() !== null) {
+		const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(sessionStore.accessToken()!);
+		const decodedRefreshToken = jwtDecode<{ exp: number; user: string }>(sessionStore.refreshToken()!);
 
 		// Check if refresh token is expired
 		if (new Date().getTime() / 1000 >= new Date(get(decodedRefreshToken, 'exp', 0) * 1000).getTime() / 1000) {
@@ -55,14 +55,14 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 			}
 		}
 
-		if (sessionStore.accountId === null) {
+		if (sessionStore.accountId() === null) {
 			// Session store failed
 			sessionStore.clear();
 
 			return;
 		}
 
-		if (sessionStore.account === null) {
+		if (sessionStore.account() === null) {
 			// ///////////////////////////////////////
 			// Session account is not loaded in store
 			// Try to load session account from server
@@ -91,7 +91,7 @@ const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
 		// /////////////////////////////////////////
 		// Try to refresh session with refresh token
 		// /////////////////////////////////////////
-	} else if (sessionStore.refreshToken !== null) {
+	} else if (sessionStore.refreshToken() !== null) {
 		try {
 			if (!(await sessionStore.refresh())) {
 				// Session refreshing failed

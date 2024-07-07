@@ -19,6 +19,8 @@ import {
 	ISessionState,
 	ISessionResponseModel,
 	ISessionRecordFactoryPayload,
+	ISessionGetters,
+	ISessionActions,
 } from './types';
 
 export const ACCESS_TOKEN_COOKIE_NAME = 'token';
@@ -71,7 +73,7 @@ const recordFactory = (data: ISessionRecordFactoryPayload): ISession => {
 	return state;
 };
 
-export const useSession = defineStore('accounts_module_session', {
+export const useSession = defineStore<string, ISessionState, ISessionGetters, ISessionActions>('accounts_module_session', {
 	state: (): ISessionState => {
 		return {
 			semaphore: {
@@ -91,30 +93,32 @@ export const useSession = defineStore('accounts_module_session', {
 	},
 
 	getters: {
-		accessToken: (state): string | null => {
-			return state.data.accessToken;
+		accessToken: (state: ISessionState): (() => string | null) => {
+			return (): string | null => state.data.accessToken;
 		},
 
-		refreshToken: (state): string | null => {
-			return state.data.refreshToken;
+		refreshToken: (state: ISessionState): (() => string | null) => {
+			return (): string | null => state.data.refreshToken;
 		},
 
-		accountId: (state): string | null => {
-			return state.data.accountId;
+		accountId: (state: ISessionState): (() => IAccount['id'] | null) => {
+			return (): IAccount['id'] | null => state.data.accountId;
 		},
 
-		account: (state): IAccount | null => {
-			if (state.data.accountId === null) {
-				return null;
-			}
+		account: (state: ISessionState): (() => IAccount | null) => {
+			return (): IAccount | null => {
+				if (state.data.accountId === null) {
+					return null;
+				}
 
-			const accountsStore = useAccounts();
+				const accountsStore = useAccounts();
 
-			return accountsStore.findById(state.data.accountId);
+				return accountsStore.findById(state.data.accountId);
+			};
 		},
 
-		isSignedIn: (state): boolean => {
-			return state.data.accountId !== null;
+		isSignedIn: (state: ISessionState): (() => boolean) => {
+			return (): boolean => state.data.accountId !== null;
 		},
 	},
 

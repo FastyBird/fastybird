@@ -9,6 +9,8 @@ import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../..
 import { useAccounts, useEmails, useIdentities, useSession } from '../../models';
 import {
 	IAccount,
+	IAccountActions,
+	IAccountGetters,
 	IAccountResponseJson,
 	IAccountResponseModel,
 	IEmail,
@@ -32,7 +34,7 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-export const useAccount = defineStore('accounts_module_account', {
+export const useAccount = defineStore<string, IAccountState, IAccountGetters, IAccountActions>('accounts_module_account', {
 	state: (): IAccountState => {
 		return {
 			semaphore: {
@@ -44,20 +46,27 @@ export const useAccount = defineStore('accounts_module_account', {
 	},
 
 	getters: {
-		emails: (): IEmail[] => {
-			const sessionStore = useSession();
+		emails: (): (() => IEmail[]) => {
+			return (): IEmail[] => {
+				const sessionStore = useSession();
 
-			if (sessionStore.account === null) {
-				return [];
-			}
+				if (sessionStore.account() === null) {
+					return [];
+				}
 
-			const emailsStore = useEmails();
+				const emailsStore = useEmails();
 
-			return emailsStore.findForAccount(sessionStore.account.id);
+				return emailsStore.findForAccount(sessionStore.account()!.id);
+			};
 		},
 	},
 
 	actions: {
+		/**
+		 * Edit existing record
+		 *
+		 * @param {IAccountEditActionPayload} payload
+		 */
 		async edit(payload: IAccountEditActionPayload): Promise<boolean> {
 			if (this.semaphore.updating) {
 				throw new Error('accounts-module.account.update.inProgress');
@@ -65,7 +74,7 @@ export const useAccount = defineStore('accounts_module_account', {
 
 			const sessionStore = useSession();
 
-			const account = sessionStore.account;
+			const account = sessionStore.account();
 
 			if (account === null) {
 				throw new Error('accounts-module.account.update.failed');
@@ -88,7 +97,7 @@ export const useAccount = defineStore('accounts_module_account', {
 
 				const updatedAccountModel = jsonApiFormatter.deserialize(updatedAccount.data) as IAccountResponseModel;
 
-				accountsStore.set({ data: updatedAccountModel });
+				await accountsStore.set({ data: updatedAccountModel });
 			} catch (e: any) {
 				// Updating record on api failed, we need to refresh record
 				await accountsStore.get({ id: account.id });
@@ -101,6 +110,11 @@ export const useAccount = defineStore('accounts_module_account', {
 			return true;
 		},
 
+		/**
+		 * Add new email under account
+		 *
+		 * @param {IAccountAddEmailActionPayload} payload
+		 */
 		async addEmail(payload: IAccountAddEmailActionPayload): Promise<IEmail> {
 			if (this.semaphore.creating) {
 				throw new Error('accounts-module.account.create.inProgress');
@@ -108,7 +122,7 @@ export const useAccount = defineStore('accounts_module_account', {
 
 			const sessionStore = useSession();
 
-			const account = sessionStore.account;
+			const account = sessionStore.account();
 
 			if (account === null) {
 				throw new Error('accounts-module.account.update.failed');
@@ -122,6 +136,10 @@ export const useAccount = defineStore('accounts_module_account', {
 				data: {
 					...payload.data,
 					...{
+						type: {
+							source: ModuleSource.MODULE_ACCOUNTS,
+							entity: 'email',
+						},
 						accountId: account.id,
 					},
 				},
@@ -163,6 +181,11 @@ export const useAccount = defineStore('accounts_module_account', {
 			}
 		},
 
+		/**
+		 * Edit existing email under account
+		 *
+		 * @param {IAccountEditEmailActionPayload} payload
+		 */
 		async editEmail(payload: IAccountEditEmailActionPayload): Promise<IEmail> {
 			if (this.semaphore.updating) {
 				throw new Error('accounts-module.account.update.inProgress');
@@ -228,6 +251,11 @@ export const useAccount = defineStore('accounts_module_account', {
 			}
 		},
 
+		/**
+		 * Edit existing identity under account
+		 *
+		 * @param {IAccountEditIdentityActionPayload} payload
+		 */
 		async editIdentity(payload: IAccountEditIdentityActionPayload): Promise<boolean> {
 			if (this.semaphore.updating) {
 				throw new Error('accounts-module.account.update.inProgress');
@@ -276,6 +304,11 @@ export const useAccount = defineStore('accounts_module_account', {
 			return true;
 		},
 
+		/**
+		 * Request password reset process
+		 *
+		 * @param {IAccountRequestResetActionPayload} payload
+		 */
 		async requestReset(payload: IAccountRequestResetActionPayload): Promise<boolean> {
 			try {
 				const resetResponse = await axios.post(
@@ -295,6 +328,11 @@ export const useAccount = defineStore('accounts_module_account', {
 			}
 		},
 
+		/**
+		 * Register new account
+		 *
+		 * @param {IAccountRegisterActionPayload} payload
+		 */
 		async register(payload: IAccountRegisterActionPayload): Promise<boolean> {
 			// TODO: Implement
 

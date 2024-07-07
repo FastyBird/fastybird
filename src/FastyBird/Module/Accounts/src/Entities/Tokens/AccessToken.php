@@ -116,7 +116,8 @@ class AccessToken extends SimpleAuthEntities\Tokens\Token implements
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->getPlainId(),
+			'id' => $this->getId()->toString(),
+			'source' => $this->getSource()->value,
 		];
 	}
 

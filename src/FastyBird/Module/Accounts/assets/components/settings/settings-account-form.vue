@@ -198,6 +198,8 @@ import { useI18n } from 'vue-i18n';
 import get from 'lodash.get';
 import { ElForm, ElFormItem, ElInput, ElDivider, ElRow, ElCol, ElSelect, ElOption, ElOptionGroup, FormInstance, FormRules } from 'element-plus';
 
+import { ModuleSource } from '@fastybird/metadata-library';
+
 import { useAccount } from '../../models';
 import { useFlashMessage, useTimezones } from '../../composables';
 import { FormResultTypes, LayoutTypes } from '../../types';
@@ -402,7 +404,7 @@ watch(
 
 				// Email has been changed
 				if (accountForm.emailAddress !== props.account.email?.address) {
-					const storedEmail = accountStore.emails.find((email) => email.address.toLowerCase() === accountForm.emailAddress.toLowerCase());
+					const storedEmail = accountStore.emails().find((email) => email.address.toLowerCase() === accountForm.emailAddress.toLowerCase());
 
 					const emailErrorMessage = t('messages.emailNotEdited');
 
@@ -431,6 +433,10 @@ watch(
 					} else {
 						try {
 							await accountStore.addEmail({
+								type: {
+									source: ModuleSource.MODULE_ACCOUNTS,
+									entity: 'email',
+								},
 								data: {
 									address: accountForm.emailAddress,
 									default: true,
