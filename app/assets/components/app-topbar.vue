@@ -36,11 +36,11 @@
 			<el-dropdown trigger="click">
 				<div class="flex items-center cursor-pointer">
 					<app-gravatar
-						v-if="sessionStore.account?.email"
-						:email="sessionStore.account.email.address"
+						v-if="sessionStore.account()?.email"
+						:email="sessionStore.account()!.email.address"
 						class="w-[32px] rounded-[50%]"
 					/>
-					<span class="text-14px pl-[5px]">{{ sessionStore.account?.name }}</span>
+					<span class="text-14px pl-[5px]">{{ sessionStore.account()?.name }}</span>
 				</div>
 
 				<template #dropdown>

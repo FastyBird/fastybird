@@ -13,7 +13,7 @@
 		class="h-full min-h-full max-h-full w-full min-w-full max-w-full"
 	>
 		<fb-app-bar
-			v-if="sessionStore.isSignedIn"
+			v-if="sessionStore.isSignedIn()"
 			@toggle-menu="onToggleMenu"
 		>
 			<template #logo>
@@ -28,7 +28,7 @@
 		</el-main>
 
 		<el-drawer
-			v-if="sessionStore.isSignedIn"
+			v-if="sessionStore.isSignedIn()"
 			v-model="menuState"
 			:size="'80%'"
 			:class="[ns.e('mobile-menu')]"
@@ -45,7 +45,7 @@
 		class="h-full min-h-full max-h-full w-full min-w-full max-w-full"
 	>
 		<el-aside
-			v-if="sessionStore.isSignedIn"
+			v-if="sessionStore.isSignedIn()"
 			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: menuCollapsed }]"
 			class="bg-menu-background"
 		>
@@ -57,7 +57,7 @@
 			class="flex-1 overflow-hidden"
 		>
 			<app-topbar
-				v-if="sessionStore.isSignedIn"
+				v-if="sessionStore.isSignedIn()"
 				v-model:menu-collapsed="menuCollapsed"
 			/>
 
@@ -148,7 +148,7 @@ onBeforeMount((): void => {
 });
 
 onMounted((): void => {
-	if (sessionStore.isSignedIn) {
+	if (sessionStore.isSignedIn()) {
 		wampV1Client.open();
 	}
 });
