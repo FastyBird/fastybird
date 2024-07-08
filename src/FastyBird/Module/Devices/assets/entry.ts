@@ -4,6 +4,15 @@ import defaultsDeep from 'lodash.defaultsdeep';
 
 import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
+import { registerChannelsStore } from './models/channels';
+import { registerChannelsControlsStore } from './models/channels-controls';
+import { registerChannelsPropertiesStore } from './models/channels-properties';
+import { registerConnectorsStore } from './models/connectors';
+import { registerConnectorsControlsStore } from './models/connectors-controls';
+import { registerConnectorsPropertiesStore } from './models/connectors-properties';
+import { registerDevicesStore } from './models/devices';
+import { registerDevicesControlsStore } from './models/devices-controls';
+import { registerDevicesPropertiesStore } from './models/devices-properties';
 
 import moduleRouter from './router';
 import { IDevicesModuleOptions, InstallFunction } from './types';
@@ -49,6 +58,16 @@ export function createDevicesModule(): InstallFunction {
 
 				options.i18n?.global.setLocaleMessage(locale, mergedMessages);
 			}
+
+			registerChannelsStore(options.store);
+			registerChannelsControlsStore(options.store);
+			registerChannelsPropertiesStore(options.store);
+			registerConnectorsStore(options.store);
+			registerConnectorsControlsStore(options.store);
+			registerConnectorsPropertiesStore(options.store);
+			registerDevicesStore(options.store);
+			registerDevicesControlsStore(options.store);
+			registerDevicesPropertiesStore(options.store);
 		},
 	};
 }

@@ -48,8 +48,6 @@ services:
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
     volumes:
       - ./:/app:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/fpm/php.ini:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/cli/php.ini:delegated
     command: php-fpm
     networks:
       - fastybird
@@ -105,8 +103,6 @@ services:
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
     volumes:
       - ./:/app:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/fpm/php.ini:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/cli/php.ini:delegated
     ports:
       - "${WS_PORT:-8888}:8888"
     command: php /app/bin/fb-console.php fb:ws-server:start
@@ -140,8 +136,6 @@ services:
       FB_APP_PARAMETER__API_PREFIXED_MODULES: ${API_PREFIXED_MODULES:-true}
     volumes:
       - ./:/app:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/fpm/php.ini:delegated
-      - ./.docker/dev/php/conf/php.ini:/etc/php/8.2/cli/php.ini:delegated
     command: php /app/bin/fb-console.php fb:devices-module:exchange -n
     networks:
       - fastybird

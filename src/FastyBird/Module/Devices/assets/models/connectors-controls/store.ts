@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.control.json';
@@ -754,3 +754,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 		},
 	}
 );
+
+export const registerConnectorsControlsStore = (pinia: Pinia): Store => {
+	return useConnectorControls(pinia);
+};

@@ -11,7 +11,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
@@ -178,7 +178,7 @@ const databaseRecordFactory = (record: IDeviceProperty): IDevicePropertyDatabase
 		queryable: record.queryable,
 		dataType: record.dataType,
 		unit: record.unit,
-		format: record.format,
+		format: JSON.parse(JSON.stringify(record.format)),
 		invalid: record.invalid,
 		scale: record.scale,
 		step: record.step,
@@ -1066,3 +1066,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 		},
 	}
 );
+
+export const registerDevicesPropertiesStore = (pinia: Pinia): Store => {
+	return useDeviceProperties(pinia);
+};
