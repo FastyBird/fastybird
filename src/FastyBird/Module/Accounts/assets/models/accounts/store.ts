@@ -205,9 +205,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			this.semaphore.fetching.item.push(payload.id);
 
 			try {
-				const accountResponse = await axios.get<IAccountResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}?include=emails,identities`
-				);
+				const accountResponse = await axios.get<IAccountResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}`);
 
 				const accountResponseModel = jsonApiFormatter.deserialize(accountResponse.data) as IAccountResponseModel;
 
@@ -220,6 +218,18 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} finally {
 				this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const emailsStore = useEmails();
+			promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
+
+			const identitiesStore = useIdentities();
+			promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
+			});
 
 			return true;
 		},
@@ -235,7 +245,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			this.semaphore.fetching.items = true;
 
 			try {
-				const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts?include=emails,identities`);
+				const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`);
 
 				const accountsResponseModel = jsonApiFormatter.deserialize(accountsResponse.data) as IAccountResponseModel[];
 
@@ -252,6 +262,20 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} finally {
 				this.semaphore.fetching.items = false;
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const emailsStore = useEmails();
+			const identitiesStore = useIdentities();
+
+			for (const account of Object.values(this.data ?? {})) {
+				promises.push(emailsStore.fetch({ account }));
+				promises.push(identitiesStore.fetch({ account }));
+			}
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('accounts-module.accounts.fetch.failed', e, 'Fetching accounts failed.');
+			});
 
 			return true;
 		},
@@ -278,7 +302,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} else {
 				try {
 					const createdAccount = await axios.post<IAccountResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts?include=emails,identities`,
+						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`,
 						jsonApiFormatter.serialize({
 							stuff: newAccount,
 						})
@@ -287,11 +311,6 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 					const createdAccountModel = jsonApiFormatter.deserialize(createdAccount.data) as IAccountResponseModel;
 
 					this.data[createdAccountModel.id] = storeRecordFactory(createdAccountModel);
-
-					await addEmailsRelations(this.data[createdAccountModel.id], createdAccountModel.emails);
-					await addIdentitiesRelations(this.data[createdAccountModel.id], createdAccountModel.identities);
-
-					return this.data[createdAccountModel.id];
 				} catch (e: any) {
 					// Record could not be created on api, we have to remove it from database
 					delete this.data[newAccount.id];
@@ -300,6 +319,20 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newAccount.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const emailsStore = useEmails();
+				promises.push(emailsStore.fetch({ account: this.data[newAccount.id] }));
+
+				const identitiesStore = useIdentities();
+				promises.push(identitiesStore.fetch({ account: this.data[newAccount.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('accounts-module.accounts.create.failed', e, 'Create new account failed.');
+				});
+
+				return this.data[newAccount.id];
 			}
 		},
 
@@ -333,7 +366,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} else {
 				try {
 					const updatedAccount = await axios.patch<IAccountResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}?include=emails,identities`,
+						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -342,11 +375,6 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 					const updatedAccountModel = jsonApiFormatter.deserialize(updatedAccount.data) as IAccountResponseModel;
 
 					this.data[updatedAccountModel.id] = storeRecordFactory(updatedAccountModel);
-
-					await addEmailsRelations(this.data[updatedAccountModel.id], updatedAccountModel.emails);
-					await addIdentitiesRelations(this.data[updatedAccountModel.id], updatedAccountModel.identities);
-
-					return this.data[updatedAccountModel.id];
 				} catch (e: any) {
 					// Updating record on api failed, we need to refresh record
 					await this.get({ id: payload.id });
@@ -355,6 +383,20 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const emailsStore = useEmails();
+				promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
+
+				const identitiesStore = useIdentities();
+				promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('accounts-module.accounts.update.failed', e, 'Edit account failed.');
+				});
+
+				return this.data[payload.id];
 			}
 		},
 
@@ -378,7 +420,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 
 			try {
 				const savedAccount = await axios.post<IAccountResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts?include=emails,identities`,
+					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -387,16 +429,25 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 				const savedAccountModel = jsonApiFormatter.deserialize(savedAccount.data) as IAccountResponseModel;
 
 				this.data[savedAccountModel.id] = storeRecordFactory(savedAccountModel);
-
-				await addEmailsRelations(this.data[savedAccountModel.id], savedAccountModel.emails);
-				await addIdentitiesRelations(this.data[savedAccountModel.id], savedAccountModel.identities);
-
-				return this.data[savedAccountModel.id];
 			} catch (e: any) {
 				throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
 			} finally {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const emailsStore = useEmails();
+			promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
+
+			const identitiesStore = useIdentities();
+			promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
+			});
+
+			return this.data[payload.id];
 		},
 
 		/**

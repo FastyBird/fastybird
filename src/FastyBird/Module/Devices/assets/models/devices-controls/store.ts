@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.control.json';
@@ -752,3 +752,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 		},
 	}
 );
+
+export const registerDevicesControlsStore = (pinia: Pinia): Store => {
+	return useDeviceControls(pinia);
+};

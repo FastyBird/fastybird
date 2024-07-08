@@ -6,7 +6,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.channel.control.json';
@@ -752,3 +752,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 		},
 	}
 );
+
+export const registerChannelsControlsStore = (pinia: Pinia): Store => {
+	return useChannelControls(pinia);
+};

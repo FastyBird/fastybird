@@ -11,7 +11,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.json';
@@ -283,9 +283,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			}
 
 			try {
-				const connectorResponse = await axios.get<IConnectorResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}?include=properties,controls`
-				);
+				const connectorResponse = await axios.get<IConnectorResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}`);
 
 				const connectorResponseModel = jsonApiFormatter.deserialize(connectorResponse.data) as IConnectorResponseModel;
 
@@ -295,9 +293,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				await addRecord<IConnectorDatabaseRecord>(databaseRecordFactory(this.data[connectorResponseModel.id]), DB_TABLE_CONNECTORS);
 
 				this.meta[connectorResponseModel.id] = connectorResponseModel.type;
-
-				await addPropertiesRelations(this.data[connectorResponseModel.id], connectorResponseModel.properties);
-				await addControlsRelations(this.data[connectorResponseModel.id], connectorResponseModel.controls);
 			} catch (e: any) {
 				throw new ApiError('devices-module.connectors.get.failed', e, 'Fetching connector failed.');
 			} finally {
@@ -305,6 +300,18 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 				}
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useConnectorProperties();
+			promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
+
+			const controlsStore = useConnectorControls();
+			promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.connectors.get.failed', e, 'Fetching connector failed.');
+			});
 
 			return true;
 		},
@@ -332,9 +339,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			this.firstLoad = false;
 
 			try {
-				const connectorsResponse = await axios.get<IConnectorsResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/connectors?include=properties,controls`
-				);
+				const connectorsResponse = await axios.get<IConnectorsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`);
 
 				const connectorsResponseModel = jsonApiFormatter.deserialize(connectorsResponse.data) as IConnectorResponseModel[];
 
@@ -345,9 +350,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					await addRecord<IConnectorDatabaseRecord>(databaseRecordFactory(this.data[connector.id]), DB_TABLE_CONNECTORS);
 
 					this.meta[connector.id] = connector.type;
-
-					await addPropertiesRelations(this.data[connector.id], connector.properties);
-					await addControlsRelations(this.data[connector.id], connector.controls);
 				}
 
 				this.firstLoad = true;
@@ -376,6 +378,20 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				}
 			}
 
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useConnectorProperties();
+			const controlsStore = useConnectorControls();
+
+			for (const connector of Object.values(this.data ?? {})) {
+				promises.push(propertiesStore.fetch({ connector }));
+				promises.push(controlsStore.fetch({ connector }));
+			}
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.connectors.fetch.failed', e, 'Fetching connectors failed.');
+			});
+
 			return true;
 		},
 
@@ -402,7 +418,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			} else {
 				try {
 					const createdConnector = await axios.post<IConnectorResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`,
 						jsonApiFormatter.serialize({
 							stuff: newConnector,
 						})
@@ -415,11 +431,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					await addRecord<IConnectorDatabaseRecord>(databaseRecordFactory(this.data[createdConnectorModel.id]), DB_TABLE_CONNECTORS);
 
 					this.meta[createdConnectorModel.id] = createdConnectorModel.type;
-
-					await addPropertiesRelations(this.data[createdConnectorModel.id], createdConnectorModel.properties);
-					await addControlsRelations(this.data[createdConnectorModel.id], createdConnectorModel.controls);
-
-					return this.data[createdConnectorModel.id];
 				} catch (e: any) {
 					// Record could not be created on api, we have to remove it from database
 					delete this.data[newConnector.id];
@@ -428,6 +439,20 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newConnector.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useConnectorProperties();
+				promises.push(propertiesStore.fetch({ connector: this.data[newConnector.id] }));
+
+				const controlsStore = useConnectorControls();
+				promises.push(controlsStore.fetch({ connector: this.data[newConnector.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.connectors.create.failed', e, 'Create new connector failed.');
+				});
+
+				return this.data[newConnector.id];
 			}
 		},
 
@@ -461,7 +486,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			} else {
 				try {
 					const updatedConnector = await axios.patch<IConnectorResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -474,11 +499,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 					await addRecord<IConnectorDatabaseRecord>(databaseRecordFactory(this.data[updatedConnectorModel.id]), DB_TABLE_CONNECTORS);
 
 					this.meta[updatedConnectorModel.id] = updatedConnectorModel.type;
-
-					await addPropertiesRelations(this.data[updatedConnectorModel.id], updatedConnectorModel.properties);
-					await addControlsRelations(this.data[updatedConnectorModel.id], updatedConnectorModel.controls);
-
-					return this.data[updatedConnectorModel.id];
 				} catch (e: any) {
 					// Updating record on api failed, we need to refresh record
 					await this.get({ id: payload.id });
@@ -487,6 +507,20 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useConnectorProperties();
+				promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
+
+				const controlsStore = useConnectorControls();
+				promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.connectors.update.failed', e, 'Edit connector failed.');
+				});
+
+				return this.data[payload.id];
 			}
 		},
 
@@ -510,7 +544,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 
 			try {
 				const savedConnector = await axios.post<IConnectorResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/connectors?include=properties,controls`,
+					`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -523,16 +557,25 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				await addRecord<IConnectorDatabaseRecord>(databaseRecordFactory(this.data[savedConnectorModel.id]), DB_TABLE_CONNECTORS);
 
 				this.meta[savedConnectorModel.id] = savedConnectorModel.type;
-
-				await addPropertiesRelations(this.data[savedConnectorModel.id], savedConnectorModel.properties);
-				await addControlsRelations(this.data[savedConnectorModel.id], savedConnectorModel.controls);
-
-				return this.data[savedConnectorModel.id];
 			} catch (e: any) {
 				throw new ApiError('devices-module.connectors.save.failed', e, 'Save draft connector failed.');
 			} finally {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useConnectorProperties();
+			promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
+
+			const controlsStore = useConnectorControls();
+			promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.channels.save.failed', e, 'Save draft channel failed.');
+			});
+
+			return this.data[payload.id];
 		},
 
 		/**
@@ -758,3 +801,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 		},
 	},
 });
+
+export const registerConnectorsStore = (pinia: Pinia): Store => {
+	return useConnectors(pinia);
+};

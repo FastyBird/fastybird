@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import axios, { AxiosResponse } from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
@@ -379,12 +379,10 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				if (payload.connectorId) {
 					deviceResponse = await axios.get<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices/${payload.id}?include=properties,controls`
+						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices/${payload.id}`
 					);
 				} else {
-					deviceResponse = await axios.get<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`
-					);
+					deviceResponse = await axios.get<IDeviceResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`);
 				}
 
 				const deviceResponseModel = jsonApiFormatter.deserialize(deviceResponse.data) as IDeviceResponseModel;
@@ -398,9 +396,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				await addRecord<IDeviceDatabaseRecord>(databaseRecordFactory(this.data[deviceResponseModel.id]), DB_TABLE_DEVICES);
 
 				this.meta[deviceResponseModel.id] = deviceResponseModel.type;
-
-				await addControlsRelations(this.data[deviceResponseModel.id], deviceResponseModel.controls);
-				await addPropertiesRelations(this.data[deviceResponseModel.id], deviceResponseModel.properties);
 			} catch (e: any) {
 				throw new ApiError('devices-module.devices.get.failed', e, 'Fetching device failed.');
 			} finally {
@@ -408,6 +403,18 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 				}
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useDeviceProperties();
+			promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
+
+			const controlsStore = useDeviceControls();
+			promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.devices.get.failed', e, 'Fetching device failed.');
+			});
 
 			return true;
 		},
@@ -441,11 +448,9 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				let devicesResponse: AxiosResponse<IDevicesResponseJson>;
 
 				if (payload?.connectorId) {
-					devicesResponse = await axios.get<IDevicesResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices?include=properties,controls`
-					);
+					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices`);
 				} else {
-					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`);
+					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices`);
 				}
 
 				const devicesResponseModel = jsonApiFormatter.deserialize(devicesResponse.data) as IDeviceResponseModel[];
@@ -462,9 +467,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					this.meta[device.id] = device.type;
 
 					connectorIds.push(device.connector.id);
-
-					await addControlsRelations(this.data[device.id], device.controls);
-					await addPropertiesRelations(this.data[device.id], device.properties);
 				}
 
 				if (payload && payload.connectorId) {
@@ -523,6 +525,31 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				}
 			}
 
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useDeviceProperties();
+			const controlsStore = useDeviceControls();
+
+			if (payload && payload.connectorId) {
+				for (const device of Object.values(this.data ?? {})) {
+					if (device.connector.id !== payload.connectorId) {
+						continue;
+					}
+
+					promises.push(propertiesStore.fetch({ device }));
+					promises.push(controlsStore.fetch({ device }));
+				}
+			} else {
+				for (const device of Object.values(this.data ?? {})) {
+					promises.push(propertiesStore.fetch({ device }));
+					promises.push(controlsStore.fetch({ device }));
+				}
+			}
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.devices.fetch.failed', e, 'Fetching devices failed.');
+			});
+
 			return true;
 		},
 
@@ -556,7 +583,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const createdDevice = await axios.post<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices`,
 						jsonApiFormatter.serialize({
 							stuff: newDevice,
 						})
@@ -572,11 +599,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					await addRecord<IDeviceDatabaseRecord>(databaseRecordFactory(this.data[createdDeviceModel.id]), DB_TABLE_DEVICES);
 
 					this.meta[createdDeviceModel.id] = createdDeviceModel.type;
-
-					await addControlsRelations(this.data[createdDeviceModel.id], createdDeviceModel.controls);
-					await addPropertiesRelations(this.data[createdDeviceModel.id], createdDeviceModel.properties);
-
-					return this.data[createdDeviceModel.id];
 				} catch (e: any) {
 					// Record could not be created on api, we have to remove it from database
 					delete this.data[newDevice.id];
@@ -585,6 +607,20 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newDevice.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useDeviceProperties();
+				promises.push(propertiesStore.fetch({ device: this.data[newDevice.id] }));
+
+				const controlsStore = useDeviceControls();
+				promises.push(controlsStore.fetch({ device: this.data[newDevice.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.devices.create.failed', e, 'Create new device failed.');
+				});
+
+				return this.data[newDevice.id];
 			}
 		},
 
@@ -618,7 +654,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const updatedDevice = await axios.patch<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -634,11 +670,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					await addRecord<IDeviceDatabaseRecord>(databaseRecordFactory(this.data[updatedDeviceModel.id]), DB_TABLE_DEVICES);
 
 					this.meta[updatedDeviceModel.id] = updatedDeviceModel.type;
-
-					await addControlsRelations(this.data[updatedDeviceModel.id], updatedDeviceModel.controls);
-					await addPropertiesRelations(this.data[updatedDeviceModel.id], updatedDeviceModel.properties);
-
-					return this.data[updatedDeviceModel.id];
 				} catch (e: any) {
 					// Updating record on api failed, we need to refresh record
 					await this.get({ id: payload.id });
@@ -647,6 +678,20 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useDeviceProperties();
+				promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
+
+				const controlsStore = useDeviceControls();
+				promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.devices.update.failed', e, 'Edit device failed.');
+				});
+
+				return this.data[payload.id];
 			}
 		},
 
@@ -670,7 +715,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 			try {
 				const savedDevice = await axios.post<IDeviceResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices?include=properties,controls`,
+					`/${ModulePrefix.MODULE_DEVICES}/v1/devices`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -686,16 +731,25 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				await addRecord<IDeviceDatabaseRecord>(databaseRecordFactory(this.data[savedDeviceModel.id]), DB_TABLE_DEVICES);
 
 				this.meta[savedDeviceModel.id] = savedDeviceModel.type;
-
-				await addControlsRelations(this.data[savedDeviceModel.id], savedDeviceModel.controls);
-				await addPropertiesRelations(this.data[savedDeviceModel.id], savedDeviceModel.properties);
-
-				return this.data[savedDeviceModel.id];
 			} catch (e: any) {
 				throw new ApiError('devices-module.devices.save.failed', e, 'Save draft device failed.');
 			} finally {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useDeviceProperties();
+			promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
+
+			const controlsStore = useDeviceControls();
+			promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.devices.save.failed', e, 'Save draft device failed.');
+			});
+
+			return this.data[payload.id];
 		},
 
 		/**
@@ -950,3 +1004,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 		},
 	},
 });
+
+export const registerDevicesStore = (pinia: Pinia): Store => {
+	return useDevices(pinia);
+};

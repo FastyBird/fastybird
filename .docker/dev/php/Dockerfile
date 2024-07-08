@@ -1,33 +1,38 @@
 FROM composer:2.4 AS composer
 
-FROM php:8.2-fpm-alpine
+FROM php:8.2-fpm
 
-ARG PHP_VERSION=8.2
+RUN apt-get update
 
-# Install dependencies
-RUN apk update --no-cache && apk add --no-cache \
-    bash \
-    curl \
-    unzip \
-    zip \
+RUN apt-get install -y  \
     bzip2 \
     python3 \
     g++ \
     make \
-    git \
-    nginx \
-    yarn \
-    icu-dev \
-    gmp-dev \
-    zlib-dev \
-    libxml2-dev \
-    oniguruma-dev \
-    postgresql-dev \
-    curl-dev \
-    linux-headers \
-    libxslt-dev \
+    zlib1g-dev \
+    libicu-dev \
+    libgmp-dev \
     libzip-dev \
-    autoconf
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    curl \
+    wget \
+    openssl  \
+    libssl-dev \
+    libpq-dev \
+    git \
+    cmake \
+    autoconf \
+    libtool \
+    pkg-config \
+    build-essential \
+    libcurl4 \
+    libcurl4-openssl-dev \
+    libxslt1-dev \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-configure intl \
@@ -61,19 +66,14 @@ RUN docker-php-ext-configure intl \
 RUN pecl install apcu \
     && docker-php-ext-enable apcu
 
-# Install YAML extension
-RUN apk add --no-cache yaml-dev \
-    && pecl install yaml \
-    && docker-php-ext-enable yaml
+# Install xDebug extension
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
 
 # Install Composer
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-# Clean up
-RUN rm -rf /var/lib/apk/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/* /var/cache/apk/*
-
-COPY .docker/dev/php/conf/php-fpm.conf      /etc/php${PHP_VERSION}/php-fpm.conf
-COPY .docker/dev/php/conf/php.ini           /etc/php${PHP_VERSION}/php.ini
+COPY .docker/dev/php/conf/php.ini            /usr/local/etc/php/php.ini
 
 # Set the working directory
 WORKDIR /app

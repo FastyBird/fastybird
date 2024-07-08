@@ -11,7 +11,7 @@ import axios from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
@@ -149,7 +149,7 @@ const databaseRecordFactory = (record: IConnectorProperty): IConnectorPropertyDa
 		queryable: record.queryable,
 		dataType: record.dataType,
 		unit: record.unit,
-		format: record.format,
+		format: JSON.parse(JSON.stringify(record.format)),
 		invalid: record.invalid,
 		scale: record.scale,
 		step: record.step,
@@ -993,3 +993,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 		},
 	}
 );
+
+export const registerConnectorsPropertiesStore = (pinia: Pinia): Store => {
+	return useConnectorProperties(pinia);
+};

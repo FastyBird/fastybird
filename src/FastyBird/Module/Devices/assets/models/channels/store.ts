@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Jsona } from 'jsona';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore } from 'pinia';
+import { defineStore, Pinia, Store } from 'pinia';
 import { v4 as uuid } from 'uuid';
 
 import { ChannelCategory, ChannelDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
@@ -367,12 +367,10 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 
 				if (payload.deviceId) {
 					channelResponse = await axios.get<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels/${payload.id}?include=properties,controls`
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels/${payload.id}`
 					);
 				} else {
-					channelResponse = await axios.get<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.id}?include=properties,controls`
-					);
+					channelResponse = await axios.get<IChannelResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.id}`);
 				}
 
 				const channelResponseModel = jsonApiFormatter.deserialize(channelResponse.data) as IChannelResponseModel;
@@ -386,9 +384,6 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				await addRecord<IChannelDatabaseRecord>(databaseRecordFactory(this.data[channelResponseModel.id]), DB_TABLE_CHANNELS);
 
 				this.meta[channelResponseModel.id] = channelResponseModel.type;
-
-				await addPropertiesRelations(this.data[channelResponseModel.id], channelResponseModel.properties);
-				await addControlsRelations(this.data[channelResponseModel.id], channelResponseModel.controls);
 			} catch (e: any) {
 				throw new ApiError('devices-module.channels.get.failed', e, 'Fetching channel failed.');
 			} finally {
@@ -396,6 +391,18 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 				}
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useChannelProperties();
+			promises.push(propertiesStore.fetch({ channel: this.data[payload.id] }));
+
+			const controlsStore = useChannelControls();
+			promises.push(controlsStore.fetch({ channel: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.channels.get.failed', e, 'Fetching channel failed.');
+			});
 
 			return true;
 		},
@@ -427,11 +434,9 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				let channelsResponse: AxiosResponse<IChannelsResponseJson>;
 
 				if (payload?.deviceId) {
-					channelsResponse = await axios.get<IChannelsResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels?include=properties,controls`
-					);
+					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels`);
 				} else {
-					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/channels?include=properties,controls`);
+					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/channels`);
 				}
 
 				const channelsResponseModel = jsonApiFormatter.deserialize(channelsResponse.data) as IChannelResponseModel[];
@@ -450,9 +455,6 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					await addRecord<IChannelDatabaseRecord>(databaseRecordFactory(this.data[channel.id]), DB_TABLE_CHANNELS);
 
 					this.meta[channel.id] = channel.type;
-
-					await addPropertiesRelations(this.data[channel.id], channel.properties);
-					await addControlsRelations(this.data[channel.id], channel.controls);
 				}
 
 				if (payload && payload.deviceId) {
@@ -511,6 +513,31 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				}
 			}
 
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useChannelProperties();
+			const controlsStore = useChannelControls();
+
+			if (payload && payload.deviceId) {
+				for (const channel of Object.values(this.data ?? {})) {
+					if (channel.device.id !== payload.deviceId) {
+						continue;
+					}
+
+					promises.push(propertiesStore.fetch({ channel }));
+					promises.push(controlsStore.fetch({ channel }));
+				}
+			} else {
+				for (const channel of Object.values(this.data ?? {})) {
+					promises.push(propertiesStore.fetch({ channel }));
+					promises.push(controlsStore.fetch({ channel }));
+				}
+			}
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.channels.fetch.failed', e, 'Fetching channels failed.');
+			});
+
 			return true;
 		},
 
@@ -543,7 +570,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 			} else {
 				try {
 					const createdChannel = await axios.post<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/channels?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/channels`,
 						jsonApiFormatter.serialize({
 							stuff: newChannel,
 						})
@@ -559,11 +586,6 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					await addRecord<IChannelDatabaseRecord>(databaseRecordFactory(this.data[createdChannelModel.id]), DB_TABLE_CHANNELS);
 
 					this.meta[createdChannelModel.id] = createdChannelModel.type;
-
-					await addPropertiesRelations(this.data[createdChannelModel.id], createdChannelModel.properties);
-					await addControlsRelations(this.data[createdChannelModel.id], createdChannelModel.controls);
-
-					return this.data[createdChannelModel.id];
 				} catch (e: any) {
 					// Transformer could not be created on api, we have to remove it from database
 					delete this.data[newChannel.id];
@@ -572,6 +594,20 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newChannel.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useChannelProperties();
+				promises.push(propertiesStore.fetch({ channel: this.data[newChannel.id] }));
+
+				const controlsStore = useChannelControls();
+				promises.push(controlsStore.fetch({ channel: this.data[newChannel.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.channels.create.failed', e, 'Create new channel failed.');
+				});
+
+				return this.data[newChannel.id];
 			}
 		},
 
@@ -605,7 +641,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 			} else {
 				try {
 					const updatedChannel = await axios.patch<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${updatedRecord.device.id}/channels/${updatedRecord.id}?include=properties,controls`,
+						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${updatedRecord.device.id}/channels/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -621,11 +657,6 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 					await addRecord<IChannelDatabaseRecord>(databaseRecordFactory(this.data[updatedChannelModel.id]), DB_TABLE_CHANNELS);
 
 					this.meta[updatedChannelModel.id] = updatedChannelModel.type;
-
-					await addPropertiesRelations(this.data[updatedChannelModel.id], updatedChannelModel.properties);
-					await addControlsRelations(this.data[updatedChannelModel.id], updatedChannelModel.controls);
-
-					return this.data[updatedChannelModel.id];
 				} catch (e: any) {
 					const devicesStore = useDevices();
 
@@ -640,6 +671,20 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
+
+				const promises: Promise<boolean>[] = [];
+
+				const propertiesStore = useChannelProperties();
+				promises.push(propertiesStore.fetch({ channel: this.data[payload.id] }));
+
+				const controlsStore = useChannelControls();
+				promises.push(controlsStore.fetch({ channel: this.data[payload.id] }));
+
+				Promise.all(promises).catch((e: any): void => {
+					throw new ApiError('devices-module.channels.update.failed', e, 'Edit channel failed.');
+				});
+
+				return this.data[payload.id];
 			}
 		},
 
@@ -663,7 +708,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 
 			try {
 				const savedChannel = await axios.post<IChannelResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToSave.device.id}/channels?include=properties,controls`,
+					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToSave.device.id}/channels`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -679,16 +724,25 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				await addRecord<IChannelDatabaseRecord>(databaseRecordFactory(this.data[savedChannelModel.id]), DB_TABLE_CHANNELS);
 
 				this.meta[savedChannelModel.id] = savedChannelModel.type;
-
-				await addPropertiesRelations(this.data[savedChannelModel.id], savedChannelModel.properties);
-				await addControlsRelations(this.data[savedChannelModel.id], savedChannelModel.controls);
-
-				return this.data[savedChannelModel.id];
 			} catch (e: any) {
 				throw new ApiError('devices-module.channels.save.failed', e, 'Save draft channel failed.');
 			} finally {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
+
+			const promises: Promise<boolean>[] = [];
+
+			const propertiesStore = useChannelProperties();
+			promises.push(propertiesStore.fetch({ channel: this.data[payload.id] }));
+
+			const controlsStore = useChannelControls();
+			promises.push(controlsStore.fetch({ channel: this.data[payload.id] }));
+
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('devices-module.channels.save.failed', e, 'Save draft channel failed.');
+			});
+
+			return this.data[payload.id];
 		},
 
 		/**
@@ -958,3 +1012,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 		},
 	},
 });
+
+export const registerChannelsStore = (pinia: Pinia): Store => {
+	return useChannels(pinia);
+};
