@@ -13,15 +13,17 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateBranchAliasReleaseWorke
 use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateReplaceReleaseWorker;
 
 return static function (MBConfig $mbConfig): void {
-	$mbConfig->packageDirectories([__DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'FastyBird']);
-	$mbConfig->packageDirectories([__DIR__ . DIRECTORY_SEPARATOR . 'app']);
+	$mbConfig->packageDirectories([
+		__DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'FastyBird',
+		__DIR__ . DIRECTORY_SEPARATOR . 'app',
+	]);
 	$mbConfig->defaultBranch('main');
 
 	$mbConfig->dataToAppend([
 		ComposerJsonManipulator\ValueObject\ComposerJsonSection::REQUIRE => [
 			'fastybird/datetime-factory' => '^0.6',
 			'fastybird/json-api' => '^0.17',
-			'fastybird/simple-auth' => '^0.11',
+			'fastybird/simple-auth' => '^0.12',
 		],
 	]);
 

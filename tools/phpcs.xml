@@ -111,6 +111,12 @@
                 <element key="src/FastyBird/Module/Triggers/tests/fixtures/dummy" value="FastyBird\Module\Triggers\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Module/Triggers/tests/tools" value="FastyBird\Module\Triggers\Tests\Tools"/>
 
+                <element key="src/FastyBird/Module/Ui/src" value="FastyBird\Module\Ui"/>
+                <element key="src/FastyBird/Module/Ui/tests/cases/unit" value="FastyBird\Module\Ui\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Module/Ui/tests/fixtures" value="FastyBird\Module\Ui\Tests\Fixtures"/>
+                <element key="src/FastyBird/Module/Ui/tests/fixtures/dummy" value="FastyBird\Module\Ui\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Module/Ui/tests/tools" value="FastyBird\Module\Ui\Tests\Tools"/>
+
                 <element key="src/FastyBird/Plugin/ApiKey/src" value="FastyBird\Plugin\ApiKey"/>
                 <element key="src/FastyBird/Plugin/ApiKey/tests/cases/unit" value="FastyBird\Plugin\ApiKey\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Plugin/ApiKey/tests/fixtures" value="FastyBird\Plugin\ApiKey\Tests\Fixtures"/>

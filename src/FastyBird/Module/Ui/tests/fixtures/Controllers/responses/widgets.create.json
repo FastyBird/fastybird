@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets"
+  },
+  "data": {
+    "type": "com.fastybird.ui-module/widget/analog-sensor",
+    "id": "329a7ac2-a309-4c39-9d97-c7ba69efe74f",
+    "attributes": {
+      "name": "New analog widget",
+      "params": []
+    },
+    "relationships": {
+      "display": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/display",
+          "related": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/display"
+        },
+        "data": {
+          "type": "com.fastybird.ui-module/display/chart-graph",
+          "id": "46b53cf6-cfb8-430a-b900-2363f8b3e904"
+        }
+      },
+      "data-sources": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/data-sources",
+          "related": {
+            "href": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/data-sources",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      },
+      "groups": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/groups"
+        },
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/group",
+            "id": "c74a16b1-67f4-4ffd-812a-9e5ec4bd5263"
+          },
+          {
+            "type": "com.fastybird.ui-module/group",
+            "id": "d721529e-dec6-47c8-8035-a3484070142b"
+          }
+        ]
+      }
+    },
+    "links": {
+      "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f"
+    }
+  }
+}

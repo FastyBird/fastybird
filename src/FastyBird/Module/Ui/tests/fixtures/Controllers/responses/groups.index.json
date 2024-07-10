@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.ui-module/group",
+      "id": "c74a16b1-67f4-4ffd-812a-9e5ec4bd5263",
+      "attributes": {
+        "name": "House heaters",
+        "comment": null,
+        "priority": 0,
+        "params": []
+      },
+      "relationships": {
+        "dashboard": {
+          "links": {
+            "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/c74a16b1-67f4-4ffd-812a-9e5ec4bd5263/relationships/dashboard",
+            "related": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/dashboard",
+            "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+          }
+        },
+        "widgets": {
+          "links": {
+            "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/c74a16b1-67f4-4ffd-812a-9e5ec4bd5263/relationships/widgets"
+          },
+          "data": []
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/c74a16b1-67f4-4ffd-812a-9e5ec4bd5263"
+      }
+    },
+    {
+      "type": "com.fastybird.ui-module/group",
+      "id": "d721529e-dec6-47c8-8035-a3484070142b",
+      "attributes": {
+        "name": "Main lights",
+        "comment": null,
+        "priority": 0,
+        "params": []
+      },
+      "relationships": {
+        "dashboard": {
+          "links": {
+            "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/d721529e-dec6-47c8-8035-a3484070142b/relationships/dashboard",
+            "related": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/dashboard",
+            "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+          }
+        },
+        "widgets": {
+          "links": {
+            "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/d721529e-dec6-47c8-8035-a3484070142b/relationships/widgets"
+          },
+          "data": []
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/d721529e-dec6-47c8-8035-a3484070142b"
+      }
+    }
+  ]
+}

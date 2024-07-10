@@ -33,7 +33,7 @@ use function sprintf;
 class EntityDiscriminator implements Common\EventSubscriber
 {
 
-	private const INHERITANCE_TYPE = 'SINGLE_TABLE';
+	private const INHERITANCE_TYPE = ['SINGLE_TABLE', 'JOINED'];
 
 	/** @var array<string, string> */
 	private static array $discriminators = [];
@@ -71,7 +71,7 @@ class EntityDiscriminator implements Common\EventSubscriber
 
 		if (
 			$inheritanceType instanceof ORM\Mapping\InheritanceType
-			&& $inheritanceType->value === self::INHERITANCE_TYPE
+			&& in_array($inheritanceType->value, self::INHERITANCE_TYPE, true)
 			&& $discriminatorMapExtension !== []
 		) {
 			$extendedDiscriminatorMap = $discriminatorMap?->value ?? [];

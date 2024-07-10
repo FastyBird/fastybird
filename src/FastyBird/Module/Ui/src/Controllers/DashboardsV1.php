@@ -1,0 +1,389 @@
+<?php declare(strict_types = 1);
+
+/**
+ * DashboardsController.php
+ *
+ * @license        More in LICENSE.md
+ * @copyright      https://www.fastybird.com
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:UIModule!
+ * @subpackage     Controllers
+ * @since          1.0.0
+ *
+ * @date           26.05.20
+ */
+
+namespace FastyBird\Module\Ui\Controllers;
+
+use Doctrine;
+use Exception;
+use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Ui\Controllers;
+use FastyBird\Module\Ui\Exceptions;
+use FastyBird\Module\Ui\Models;
+use FastyBird\Module\Ui\Queries;
+use FastyBird\Module\Ui\Router;
+use FastyBird\Module\Ui\Schemas;
+use FastyBird\Module\Ui\Utilities;
+use Fig\Http\Message\StatusCodeInterface;
+use InvalidArgumentException;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
+use Nette\Utils;
+use Psr\Http\Message;
+use Throwable;
+use function end;
+use function explode;
+use function preg_match;
+use function str_starts_with;
+use function strval;
+
+/**
+ * API dashboards controller
+ *
+ * @package        FastyBird:UIModule!
+ * @subpackage     Controllers
+ *
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ */
+final class DashboardsV1 extends BaseV1
+{
+
+	use Controllers\Finders\TDashboard;
+
+	public function __construct(
+		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
+		private readonly Models\Entities\Dashboards\Manager $dashboardsManager,
+		private readonly Models\Entities\Groups\Repository $groupsRepository,
+		private readonly Models\Entities\Groups\Manager $groupsManager,
+	)
+	{
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function index(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$findQuery = new Queries\Entities\FindDashboards();
+
+		$dashboards = $this->dashboardsRepository->getResultSet($findQuery);
+
+		// @phpstan-ignore-next-line
+		return $this->buildResponse($request, $response, $dashboards);
+	}
+
+	/**
+	 * @throws Exception
+	 * @throws JsonApiExceptions\JsonApi
+	 */
+	public function read(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+
+		return $this->buildResponse($request, $response, $dashboard);
+	}
+
+	/**
+	 * @throws Doctrine\DBAL\Exception
+	 * @throws Exception
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws JsonApiExceptions\JsonApiError
+	 */
+	public function create(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$document = $this->createDocument($request);
+
+		$hydrator = $this->hydratorsContainer->findHydrator($document);
+
+		if ($hydrator !== null) {
+			try {
+				// Start transaction connection to the database
+				$this->getOrmConnection()->beginTransaction();
+
+				$dashboard = $this->dashboardsManager->create($hydrator->hydrate($document));
+
+				// Commit all changes into database
+				$this->getOrmConnection()->commit();
+
+			} catch (JsonApiExceptions\JsonApi $ex) {
+				throw $ex;
+			} catch (DoctrineCrudExceptions\MissingRequiredFieldException $ex) {
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
+					$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+					[
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
+					],
+				);
+			} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
+					$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+					[
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
+					],
+				);
+			} catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $ex) {
+				if (preg_match("%PRIMARY'%", $ex->getMessage(), $match) === 1) {
+					throw new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+						$this->translator->translate('//ui-module.base.messages.uniqueIdentifier.heading'),
+						$this->translator->translate('//ui-module.base.messages.uniqueIdentifier.message'),
+						[
+							'pointer' => '/data/id',
+						],
+					);
+				} elseif (preg_match("%key '(?P<key>.+)_unique'%", $ex->getMessage(), $match) === 1) {
+					$columnParts = explode('.', $match['key']);
+					$columnKey = end($columnParts);
+
+					if (str_starts_with($columnKey, 'dashboard_')) {
+						throw new JsonApiExceptions\JsonApiError(
+							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
+							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+							[
+								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+									Utils\Strings::substring($columnKey, 7),
+								),
+							],
+						);
+					}
+				}
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
+					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+				);
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::UI->value,
+						'type' => 'dashboards-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.notCreated.heading'),
+					$this->translator->translate('//ui-module.base.messages.notCreated.message'),
+				);
+			} finally {
+				// Revert all changes when error occur
+				if ($this->getOrmConnection()->isTransactionActive()) {
+					$this->getOrmConnection()->rollBack();
+				}
+			}
+
+			$response = $this->buildResponse($request, $response, $dashboard);
+
+			return $response->withStatus(StatusCodeInterface::STATUS_CREATED);
+		}
+
+		throw new JsonApiExceptions\JsonApiError(
+			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+			$this->translator->translate('//ui-module.base.messages.invalidType.heading'),
+			$this->translator->translate('//ui-module.base.messages.invalidType.message'),
+			[
+				'pointer' => '/data/type',
+			],
+		);
+	}
+
+	/**
+	 * @throws Doctrine\DBAL\Exception
+	 * @throws Exception
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws JsonApiExceptions\JsonApiError
+	 */
+	public function update(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+
+		$document = $this->createDocument($request);
+
+		$this->validateIdentifier($request, $document);
+
+		$hydrator = $this->hydratorsContainer->findHydrator($document);
+
+		if ($hydrator !== null) {
+			try {
+				// Start transaction connection to the database
+				$this->getOrmConnection()->beginTransaction();
+
+				$dashboard = $this->dashboardsManager->update($dashboard, $hydrator->hydrate($document, $dashboard));
+
+				// Commit all changes into database
+				$this->getOrmConnection()->commit();
+
+			} catch (JsonApiExceptions\JsonApi $ex) {
+				throw $ex;
+			} catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $ex) {
+				if (preg_match("%key '(?P<key>.+)_unique'%", $ex->getMessage(), $match) !== false) {
+					$columnParts = explode('.', $match['key']);
+					$columnKey = end($columnParts);
+
+					if (str_starts_with($columnKey, 'dashboard_')) {
+						throw new JsonApiExceptions\JsonApiError(
+							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
+							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+							[
+								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+									Utils\Strings::substring($columnKey, 7),
+								),
+							],
+						);
+					}
+				}
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
+					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+				);
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::UI->value,
+						'type' => 'dashboards-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					$this->translator->translate('//ui-module.base.messages.notUpdated.heading'),
+					$this->translator->translate('//ui-module.base.messages.notUpdated.message'),
+				);
+			} finally {
+				// Revert all changes when error occur
+				if ($this->getOrmConnection()->isTransactionActive()) {
+					$this->getOrmConnection()->rollBack();
+				}
+			}
+
+			return $this->buildResponse($request, $response, $dashboard);
+		}
+
+		throw new JsonApiExceptions\JsonApiError(
+			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+			$this->translator->translate('//ui-module.base.messages.invalidType.heading'),
+			$this->translator->translate('//ui-module.base.messages.invalidType.message'),
+			[
+				'pointer' => '/data/type',
+			],
+		);
+	}
+
+	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Doctrine\DBAL\Exception
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws InvalidArgumentException
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws JsonApiExceptions\JsonApiError
+	 */
+	public function delete(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$findGroupsQuery = new Queries\Entities\FindGroups();
+			$findGroupsQuery->forDashboard($dashboard);
+
+			foreach ($this->groupsRepository->findAllBy($findGroupsQuery) as $group) {
+				$this->groupsManager->delete($group);
+			}
+
+			// Move dashboard back into warehouse
+			$this->dashboardsManager->delete($dashboard);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::UI->value,
+					'type' => 'dashboards-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
+
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				$this->translator->translate('//ui-module.base.messages.notDeleted.heading'),
+				$this->translator->translate('//ui-module.base.messages.notDeleted.message'),
+			);
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
+
+		return $response->withStatus(StatusCodeInterface::STATUS_NO_CONTENT);
+	}
+
+	/**
+	 * @throws Exception
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws JsonApiExceptions\JsonApi
+	 */
+	public function readRelationship(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+
+		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
+
+		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_GROUPS) {
+			$findGroupsQuery = new Queries\Entities\FindGroups();
+			$findGroupsQuery->forDashboard($dashboard);
+
+			return $this->buildResponse($request, $response, $this->groupsRepository->findAllBy($findGroupsQuery));
+		}
+
+		return parent::readRelationship($request, $response);
+	}
+
+}

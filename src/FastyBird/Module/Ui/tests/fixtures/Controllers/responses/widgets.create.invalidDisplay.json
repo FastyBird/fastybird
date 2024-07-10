@@ -1,0 +1,13 @@
+{
+  "errors": [
+    {
+      "status": "422",
+      "code": "422",
+      "title": "System error",
+      "detail": "Something went wrong, entity could not be created"
+    }
+  ],
+  "jsonapi": {
+    "version": "1.1"
+  }
+}

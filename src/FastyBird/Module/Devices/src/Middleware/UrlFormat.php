@@ -28,7 +28,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use function str_replace;
-use function var_dump;
 
 /**
  * Response routes fixer
@@ -108,8 +107,6 @@ final readonly class UrlFormat implements MiddlewareInterface
 			}
 
 			$response = $response->withBody(Http\Stream::fromBodyString($content));
-		} else {
-			var_dump('MISSING ROUTE');
 		}
 
 		return $response;

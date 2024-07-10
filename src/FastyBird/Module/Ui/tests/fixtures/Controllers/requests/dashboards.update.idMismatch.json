@@ -1,0 +1,10 @@
+{
+  "data" : {
+    "id" : "272379d8-8351-44b6-ad8d-73a0abcb7f9a",
+    "type": "com.fastybird.ui-module/dashboard",
+    "attributes" : {
+      "name" : "Updated name",
+      "comment" : "With comment"
+    }
+  }
+}

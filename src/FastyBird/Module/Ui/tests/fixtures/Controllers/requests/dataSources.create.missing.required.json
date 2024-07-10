@@ -1,0 +1,17 @@
+{
+  "data" : {
+    "id" : "0c96af0b-d5be-4e1b-81e6-0d02415b4d1b",
+    "type" : "com.fastybird.ui-module/data-source/channel-property",
+    "attributes" : {
+      "property" : "099609af-b9f1-4611-9132-616375399fdf"
+    },
+    "relationships" : {
+      "widget" : {
+        "data" : {
+          "id" : "15553443-4564-454d-af04-0dfeef08aa96",
+          "type" : "com.fastybird.ui-module/widget/analog-sensor"
+        }
+      }
+    }
+  }
+}

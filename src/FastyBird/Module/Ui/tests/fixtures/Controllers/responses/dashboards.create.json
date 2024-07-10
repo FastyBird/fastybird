@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/dashboards"
+  },
+  "data": {
+    "type": "com.fastybird.ui-module/dashboard",
+    "id": "7ef34899-74b5-49d3-bf7a-ea7ad45dea38",
+    "attributes": {
+      "name": "Second floor",
+      "comment": null,
+      "priority": 0,
+      "params": []
+    },
+    "relationships": {
+      "groups": {
+        "links": {
+          "self": "/api/ui-module/v1/dashboards/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/groups",
+          "related": {
+            "href": "/api/ui-module/v1/dashboards/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/groups",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      }
+    },
+    "links": {
+      "self": "/api/ui-module/v1/dashboards/7ef34899-74b5-49d3-bf7a-ea7ad45dea38"
+    }
+  }
+}
