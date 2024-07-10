@@ -15,6 +15,7 @@ use Nette;
 use Nette\Utils;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
+use function file_get_contents;
 
 /**
  * @runTestsInSeparateProcesses
@@ -35,13 +36,9 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testRead(string $url, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
-		$request = new ServerRequest(
-			RequestMethodInterface::METHOD_GET,
-			$url
-		);
+		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url);
 
 		$response = $router->handle($request);
 
@@ -104,14 +101,13 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testCreate(string $url, string $body, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_POST,
 			$url,
 			[],
-			$body
+			$body,
 		);
 
 		$response = $router->handle($request);
@@ -138,13 +134,17 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 			],
 			'missingRequired' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.missing.required.json'),
+				file_get_contents(
+					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.missing.required.json',
+				),
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.missing.required.json',
 			],
 			'invalidType' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.invalidType.json'),
+				file_get_contents(
+					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.invalidType.json',
+				),
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
@@ -163,14 +163,13 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testUpdate(string $url, string $body, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_PATCH,
 			$url,
 			[],
-			$body
+			$body,
 		);
 
 		$response = $router->handle($request);
@@ -197,13 +196,17 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 			],
 			'invalidType' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.invalidType.json'),
+				file_get_contents(
+					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.invalidType.json',
+				),
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
 			],
 			'idMismatch' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.idMismatch.json'),
+				file_get_contents(
+					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.idMismatch.json',
+				),
 				StatusCodeInterface::STATUS_BAD_REQUEST,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.identifier.json',
 			],
@@ -222,12 +225,11 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testDelete(string $url, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_DELETE,
-			$url
+			$url,
 		);
 
 		$response = $router->handle($request);

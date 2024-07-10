@@ -15,6 +15,7 @@ use Nette;
 use Nette\Utils;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
+use function file_get_contents;
 
 /**
  * @runTestsInSeparateProcesses
@@ -35,13 +36,9 @@ final class DisplayV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testRead(string $url, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
-		$request = new ServerRequest(
-			RequestMethodInterface::METHOD_GET,
-			$url
-		);
+		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url);
 
 		$response = $router->handle($request);
 
@@ -94,14 +91,13 @@ final class DisplayV1Test extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testUpdate(string $url, string $body, int $statusCode, string $fixture): void
 	{
-		/** @var SlimRouter\Routing\IRouter $router */
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_PATCH,
 			$url,
 			[],
-			$body
+			$body,
 		);
 
 		$response = $router->handle($request);
@@ -115,7 +111,7 @@ final class DisplayV1Test extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @return array<string, array<string|int|null>>
+	 * @return array<string, array<bool|int|string|null>>
 	 */
 	public static function displayUpdate(): array
 	{

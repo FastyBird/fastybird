@@ -19,7 +19,6 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
-use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;

@@ -16,8 +16,9 @@
 namespace FastyBird\Module\Ui\Hydrators\Widgets\DataSources;
 
 use FastyBird\Module\Ui\Entities;
-use Ramsey\Uuid;
 use IPub\JsonAPIDocument;
+use Ramsey\Uuid;
+use function is_scalar;
 
 /**
  * Channel property data source entity hydrator

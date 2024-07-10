@@ -87,11 +87,7 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 		if ($included !== null) {
 			foreach ($included->getAll() as $item) {
 				if ($item->getId() === $relationship->getIdentifier()->getId()) {
-					$result = $this->buildDisplay($item->getType(), $item->getAttributes(), $item->getId());
-
-					if ($result !== null) {
-						return $result;
-					}
+					return $this->buildDisplay($item->getType(), $item->getAttributes(), $item->getId());
 				}
 			}
 		}
@@ -100,7 +96,7 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 	}
 
 	/**
-	 * @return array<mixed>|null
+	 * @return array<mixed>
 	 *
 	 * @throws JsonApiExceptions\JsonApiError
 	 * @throws JsonApiExceptions\InvalidState
@@ -109,7 +105,7 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 		string $type,
 		JsonAPIDocument\Objects\IStandardObject $attributes,
 		string|null $identifier = null,
-	): array|null
+	): array
 	{
 		switch ($type) {
 			case Schemas\Widgets\Display\AnalogValue::SCHEMA_TYPE:
