@@ -1,1 +1,95 @@
-{}
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "source": {
+      "type": "string",
+      "description": "Dashboard source"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Unique human readable identifier"
+    },
+    "name": {
+      "type": "string"
+    },
+    "comment": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
+    },
+    "priority": {
+      "type": "number",
+      "default": 0
+    },
+    "widgets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Widget documents uuid v4 identifiers",
+      "default": []
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "identifier",
+    "name",
+    "comment",
+    "priority",
+    "widgets",
+    "owner"
+  ]
+}
