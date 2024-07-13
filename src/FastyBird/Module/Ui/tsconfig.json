@@ -26,6 +26,7 @@
       "@types/lodash.defaultsdeep",
       "@types/uuid",
       "ajv",
+      "ajv-formats",
       "date-fns",
       "jsona",
       "node",
