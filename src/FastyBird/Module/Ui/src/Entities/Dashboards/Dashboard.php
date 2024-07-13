@@ -51,7 +51,11 @@ class Dashboard implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	private Uuid\UuidInterface $id;
 
-	#[IPubDoctrine\Crud(required: true)]
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'dashboard_identifier', type: 'string', nullable: false)]
+	private string $identifier;
+
+	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(name: 'dashboard_name', type: 'string', nullable: false)]
 	private string $name;
 
@@ -63,24 +67,45 @@ class Dashboard implements Entities\Entity,
 	#[ORM\Column(name: 'dashboard_priority', type: 'integer', nullable: false, options: ['default' => 0])]
 	private int $priority = 0;
 
-	/** @var Common\Collections\Collection<int, Entities\Groups\Group> */
+	/** @var Common\Collections\Collection<int, Entities\Widgets\Widget> */
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\OneToMany(
-		mappedBy: 'dashboard',
-		targetEntity: Entities\Groups\Group::class,
-		cascade: ['persist', 'remove'],
-		orphanRemoval: true,
+	#[ORM\ManyToMany(targetEntity: Entities\Widgets\Widget::class, inversedBy: 'dashboards')]
+	#[ORM\JoinTable(
+		name: 'fb_ui_module_widgets_dashboards',
+		joinColumns: [
+			new ORM\JoinColumn(
+				name: 'dashboard_id',
+				referencedColumnName: 'dashboard_id',
+				onDelete: 'CASCADE',
+			),
+		],
+		inverseJoinColumns: [
+			new ORM\JoinColumn(
+				name: 'widget_id',
+				referencedColumnName: 'widget_id',
+				onDelete: 'CASCADE',
+			),
+		],
 	)]
-	#[ORM\OrderBy(['priority' => 'ASC'])]
-	private Common\Collections\Collection $groups;
+	private Common\Collections\Collection $widgets;
 
-	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
+	public function __construct(
+		string $identifier,
+		string $name,
+		Uuid\UuidInterface|null $id = null,
+	)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
+		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->groups = new Common\Collections\ArrayCollection();
+		$this->widgets = new Common\Collections\ArrayCollection();
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
 	}
 
 	public function getName(): string
@@ -113,51 +138,49 @@ class Dashboard implements Entities\Entity,
 		$this->priority = $priority;
 	}
 
-	/**
-	 * @return array<Entities\Groups\Group>
-	 */
-	public function getGroups(): array
-	{
-		return $this->groups->toArray();
-	}
-
-	/**
-	 * @param array<Entities\Groups\Group> $groups
-	 */
-	public function setDevices(array $groups = []): void
-	{
-		$this->groups = new Common\Collections\ArrayCollection();
-
-		// Process all passed entities...
-		foreach ($groups as $entity) {
-			// ...and assign them to collection
-			$this->addGroup($entity);
-		}
-	}
-
-	public function addGroup(Entities\Groups\Group $group): void
+	public function addWidget(Entities\Widgets\Widget $widget): void
 	{
 		// Check if collection does not contain inserting entity
-		if (!$this->groups->contains($group)) {
+		if (!$this->widgets->contains($widget)) {
 			// ...and assign it to collection
-			$this->groups->add($group);
+			$this->widgets->add($widget);
 		}
 	}
 
-	public function getGroup(string $id): Entities\Groups\Group|null
+	/**
+	 * @return array<Entities\Widgets\Widget>
+	 */
+	public function getWidgets(): array
 	{
-		$found = $this->groups
-			->filter(static fn (Entities\Groups\Group $row): bool => $id === $row->getId()->toString());
+		return $this->widgets->toArray();
+	}
+
+	/**
+	 * @param array<Entities\Widgets\Widget> $widgets
+	 */
+	public function setWidgets(array $widgets = []): void
+	{
+		$this->widgets = new Common\Collections\ArrayCollection();
+
+		foreach ($widgets as $entity) {
+			$this->widgets->add($entity);
+		}
+	}
+
+	public function getWidget(string $id): Entities\Widgets\Widget|null
+	{
+		$found = $this->widgets
+			->filter(static fn (Entities\Widgets\Widget $row): bool => $id === $row->getId()->toString());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	public function removeGroup(Entities\Groups\Group $group): void
+	public function removeWidget(Entities\Widgets\Widget $widget): void
 	{
 		// Check if collection contain removing entity...
-		if ($this->groups->contains($group)) {
+		if ($this->widgets->contains($widget)) {
 			// ...and remove it from collection
-			$this->groups->removeElement($group);
+			$this->widgets->removeElement($widget);
 		}
 	}
 
@@ -168,13 +191,14 @@ class Dashboard implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'priority' => $this->getPriority(),
 
-			'groups' => array_map(
-				static fn (Entities\Groups\Group $group): string => $group->getId()->toString(),
-				$this->getGroups(),
+			'widgets' => array_map(
+				static fn (Entities\Widgets\Widget $widget): string => $widget->getId()->toString(),
+				$this->getWidgets(),
 			),
 
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),

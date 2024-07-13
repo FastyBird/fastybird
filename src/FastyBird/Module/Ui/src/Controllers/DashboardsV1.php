@@ -57,8 +57,7 @@ final class DashboardsV1 extends BaseV1
 	public function __construct(
 		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
 		private readonly Models\Entities\Dashboards\Manager $dashboardsManager,
-		private readonly Models\Entities\Groups\Repository $groupsRepository,
-		private readonly Models\Entities\Groups\Manager $groupsManager,
+		private readonly Models\Entities\Widgets\Repository $widgetsRepository,
 	)
 	{
 	}
@@ -322,13 +321,6 @@ final class DashboardsV1 extends BaseV1
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$findGroupsQuery = new Queries\Entities\FindGroups();
-			$findGroupsQuery->forDashboard($dashboard);
-
-			foreach ($this->groupsRepository->findAllBy($findGroupsQuery) as $group) {
-				$this->groupsManager->delete($group);
-			}
-
 			// Move dashboard back into warehouse
 			$this->dashboardsManager->delete($dashboard);
 
@@ -376,11 +368,11 @@ final class DashboardsV1 extends BaseV1
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_GROUPS) {
-			$findGroupsQuery = new Queries\Entities\FindGroups();
-			$findGroupsQuery->forDashboard($dashboard);
+		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_WIDGETS) {
+			$findWidgetsQuery = new Queries\Entities\FindWidgets();
+			$findWidgetsQuery->inDashboard($dashboard);
 
-			return $this->buildResponse($request, $response, $this->groupsRepository->findAllBy($findGroupsQuery));
+			return $this->buildResponse($request, $response, $this->widgetsRepository->findAllBy($findWidgetsQuery));
 		}
 
 		return parent::readRelationship($request, $response);

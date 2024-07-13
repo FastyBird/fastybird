@@ -52,13 +52,11 @@ use function strval;
 final class GroupsV1 extends BaseV1
 {
 
-	use Controllers\Finders\TDashboard;
 	use Controllers\Finders\TGroup;
 
 	public function __construct(
 		private readonly Models\Entities\Groups\Repository $groupsRepository,
 		private readonly Models\Entities\Groups\Manager $groupsManager,
-		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
 		private readonly Models\Entities\Widgets\Repository $widgetsRepository,
 	)
 	{
@@ -73,19 +71,9 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
+		$findQuery = new Queries\Entities\FindGroups();
 
-			$findQuery = new Queries\Entities\FindGroups();
-			$findQuery->forDashboard($dashboard);
-
-			$groups = $this->groupsRepository->getResultSet($findQuery);
-		} else {
-			$findQuery = new Queries\Entities\FindGroups();
-
-			$groups = $this->groupsRepository->getResultSet($findQuery);
-		}
+		$groups = $this->groupsRepository->getResultSet($findQuery);
 
 		// @phpstan-ignore-next-line
 		return $this->buildResponse($request, $response, $groups);
@@ -100,14 +88,7 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
-
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $dashboard);
-		} else {
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
-		}
+		$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		return $this->buildResponse($request, $response, $group);
 	}
@@ -123,11 +104,6 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
-		}
-
 		$document = $this->createDocument($request);
 
 		$hydrator = $this->hydratorsContainer->findHydrator($document);
@@ -244,14 +220,7 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
-
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $dashboard);
-		} else {
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
-		}
+		$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		$document = $this->createDocument($request);
 
@@ -323,14 +292,7 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
-
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $dashboard);
-		} else {
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
-		}
+		$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		try {
 			// Start transaction connection to the database
@@ -377,28 +339,15 @@ final class GroupsV1 extends BaseV1
 		Message\ResponseInterface $response,
 	): Message\ResponseInterface
 	{
-		if ($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID) !== null) {
-			// At first, try to load dashboard
-			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
-
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)), $dashboard);
-		} else {
-			$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
-		}
+		$group = $this->findGroup(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if ($relationEntity === Schemas\Groups\Group::RELATIONSHIPS_DASHBOARD) {
-			return $this->buildResponse($request, $response, $group->getDashboard());
-		} elseif ($relationEntity === Schemas\Groups\Group::RELATIONSHIPS_WIDGETS) {
+		if ($relationEntity === Schemas\Groups\Group::RELATIONSHIPS_WIDGETS) {
 			$findWidgetsQuery = new Queries\Entities\FindWidgets();
 			$findWidgetsQuery->inGroup($group);
 
-			return $this->buildResponse(
-				$request,
-				$response,
-				$this->widgetsRepository->findAllBy($findWidgetsQuery),
-			);
+			return $this->buildResponse($request, $response, $this->widgetsRepository->findAllBy($findWidgetsQuery));
 		}
 
 		return parent::readRelationship($request, $response);

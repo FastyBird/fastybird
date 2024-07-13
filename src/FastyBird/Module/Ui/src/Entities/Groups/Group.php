@@ -28,11 +28,11 @@ use function array_map;
 
 #[ORM\Entity]
 #[ORM\Table(
-	name: 'fb_ui_module_dashboards_groups',
+	name: 'fb_ui_module_groups',
 	options: [
 		'collate' => 'utf8mb4_general_ci',
 		'charset' => 'utf8mb4',
-		'comment' => 'Dashboard groups',
+		'comment' => 'Widget groups',
 	],
 )]
 #[ORM\Index(columns: ['group_name'], name: 'group_name_idx')]
@@ -51,7 +51,11 @@ class Group implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	private Uuid\UuidInterface $id;
 
-	#[IPubDoctrine\Crud(required: true)]
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'group_identifier', type: 'string', nullable: false)]
+	private string $identifier;
+
+	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(name: 'group_name', type: 'string', nullable: false)]
 	private string $name;
 
@@ -85,33 +89,23 @@ class Group implements Entities\Entity,
 	)]
 	private Common\Collections\Collection $widgets;
 
-	#[IPubDoctrine\Crud(required: true)]
-	#[ORM\ManyToOne(
-		targetEntity: Entities\Dashboards\Dashboard::class,
-		cascade: ['persist'],
-		inversedBy: 'groups',
-	)]
-	#[ORM\JoinColumn(
-		name: 'dashboard_id',
-		referencedColumnName: 'dashboard_id',
-		nullable: false,
-		onDelete: 'CASCADE',
-	)]
-	private Entities\Dashboards\Dashboard $dashboard;
-
 	public function __construct(
-		Entities\Dashboards\Dashboard $dashboard,
+		string $identifier,
 		string $name,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
-		$this->dashboard = $dashboard;
-
+		$this->identifier = $identifier;
 		$this->name = $name;
 
 		$this->widgets = new Common\Collections\ArrayCollection();
+	}
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
 	}
 
 	public function getName(): string
@@ -142,11 +136,6 @@ class Group implements Entities\Entity,
 	public function setPriority(int $priority): void
 	{
 		$this->priority = $priority;
-	}
-
-	public function getDashboard(): Entities\Dashboards\Dashboard
-	{
-		return $this->dashboard;
 	}
 
 	public function addWidget(Entities\Widgets\Widget $widget): void
@@ -202,11 +191,10 @@ class Group implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'comment' => $this->getComment(),
 			'priority' => $this->getPriority(),
-
-			'dashboard' => $this->getDashboard()->getId()->toString(),
 
 			'widgets' => array_map(
 				static fn (Entities\Widgets\Widget $widget): string => $widget->getId()->toString(),

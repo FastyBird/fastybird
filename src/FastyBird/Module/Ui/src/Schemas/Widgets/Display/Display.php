@@ -56,7 +56,9 @@ abstract class Display extends JsonApiSchemas\JsonApi
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		return [];
+		return [
+			'params' => (array) $resource->getParams(),
+		];
 	}
 
 	/**

@@ -32,6 +32,11 @@ use FastyBird\Module\Ui\Schemas;
 abstract class DataSource extends JsonApiHydrators\Hydrator
 {
 
+	/** @var array<int|string, string> */
+	protected array $attributes = [
+		'params',
+	];
+
 	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Widgets\DataSources\DataSource::RELATIONSHIPS_WIDGET,

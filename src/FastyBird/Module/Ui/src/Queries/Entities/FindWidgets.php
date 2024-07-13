@@ -47,6 +47,21 @@ class FindWidgets extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
+	public function inDashboard(Entities\Dashboards\Dashboard $dashboard): void
+	{
+		$this->select[] = static function (ORM\QueryBuilder $qb): void {
+			$qb->join('w.dashboards', 'd');
+		};
+
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($dashboard): void {
+			$qb->andWhere('d.id = :dashboard')->setParameter(
+				'dashboard',
+				$dashboard->getId(),
+				Uuid\Doctrine\UuidBinaryType::NAME,
+			);
+		};
+	}
+
 	public function inGroup(Entities\Groups\Group $group): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {

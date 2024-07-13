@@ -13,30 +13,33 @@
     "type": "com.fastybird.ui-module/dashboard",
     "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c",
     "attributes": {
-      "name": "Main dashboard",
+      "identifier": "main-dashboard",
+      "name": "Updated name",
       "comment": "With comment",
-      "priority": 0,
-      "params": []
+      "priority": 0
     },
     "relationships": {
-      "groups": {
+      "widgets": {
         "links": {
-          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/groups",
-          "related": {
-            "href": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups",
-            "meta": {
-              "count": 2
-            }
-          }
+          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/widgets",
+          "related": "/com.fastybird.ui-module/dashboard/272379d8-8351-44b6-ad8d-73a0abcb7f9c/widgets"
         },
         "data": [
           {
-            "type": "com.fastybird.ui-module/group",
-            "id": "c74a16b1-67f4-4ffd-812a-9e5ec4bd5263"
+            "type": "com.fastybird.ui-module/widget/analog-sensor",
+            "id": "15553443-4564-454d-af04-0dfeef08aa96"
           },
           {
-            "type": "com.fastybird.ui-module/group",
-            "id": "d721529e-dec6-47c8-8035-a3484070142b"
+            "type": "com.fastybird.ui-module/widget/analog-actuator",
+            "id": "1d600901-54e7-43ee-8f5d-a9e22663ddd7"
+          },
+          {
+            "type": "com.fastybird.ui-module/widget/digital-actuator",
+            "id": "5626e7a1-c42c-4a31-9b5d-848e3cf0e82a"
+          },
+          {
+            "type": "com.fastybird.ui-module/widget/digital-actuator",
+            "id": "9a914732-98dc-47f6-bfd1-9d81ca9f8cb6"
           }
         ]
       }

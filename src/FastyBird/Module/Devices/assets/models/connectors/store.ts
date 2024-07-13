@@ -572,7 +572,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
 
 			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.channels.save.failed', e, 'Save draft channel failed.');
+				throw new ApiError('devices-module.connectors.save.failed', e, 'Save draft channel failed.');
 			});
 
 			return this.data[payload.id];

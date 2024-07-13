@@ -55,7 +55,11 @@ abstract class Widget implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	#[IPubDoctrine\Crud(required: true)]
+	#[IPubDoctrine\Crud(required: true, writable: true)]
+	#[ORM\Column(name: 'widget_identifier', type: 'string', nullable: false)]
+	protected string $identifier;
+
+	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\Column(name: 'widget_name', type: 'string', nullable: false)]
 	protected string $name;
 
@@ -66,6 +70,16 @@ abstract class Widget implements Entities\Entity,
 		cascade: ['persist', 'remove'],
 	)]
 	protected Display\Display $display;
+
+	/** @var Common\Collections\Collection<int, Entities\Dashboards\Dashboard> */
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\ManyToMany(
+		targetEntity: Entities\Dashboards\Dashboard::class,
+		mappedBy: 'widgets',
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
+	)]
+	protected Common\Collections\Collection $dashboards;
 
 	/** @var Common\Collections\Collection<int, Entities\Groups\Group> */
 	#[IPubDoctrine\Crud(writable: true)]
@@ -87,17 +101,28 @@ abstract class Widget implements Entities\Entity,
 	)]
 	protected Common\Collections\Collection $dataSources;
 
-	public function __construct(string $name, Uuid\UuidInterface|null $id = null)
+	public function __construct(
+		string $identifier,
+		string $name,
+		Uuid\UuidInterface|null $id = null,
+	)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
+		$this->identifier = $identifier;
 		$this->name = $name;
 
+		$this->dashboards = new Common\Collections\ArrayCollection();
 		$this->groups = new Common\Collections\ArrayCollection();
 		$this->dataSources = new Common\Collections\ArrayCollection();
 	}
 
 	abstract public static function getType(): string;
+
+	public function getIdentifier(): string
+	{
+		return $this->identifier;
+	}
 
 	public function getName(): string
 	{
@@ -172,6 +197,58 @@ abstract class Widget implements Entities\Entity,
 		}
 	}
 
+	public function addDashboard(Entities\Dashboards\Dashboard $dashboard): void
+	{
+		$this->dashboards = new Common\Collections\ArrayCollection();
+
+		$dashboard->addWidget($this);
+
+		// ...and assign it to collection
+		$this->dashboards->add($dashboard);
+	}
+
+	/**
+	 * @return array<Entities\Dashboards\Dashboard>
+	 */
+	public function getDashboards(): array
+	{
+		return $this->dashboards->toArray();
+	}
+
+	/**
+	 * @param array<Entities\Dashboards\Dashboard> $dashboards
+	 */
+	public function setDashboards(array $dashboards = []): void
+	{
+		$this->dashboards = new Common\Collections\ArrayCollection();
+
+		foreach ($dashboards as $entity) {
+			if (!$this->dashboards->contains($entity)) {
+				$entity->addWidget($this);
+
+				// ...and assign them to collection
+				$this->dashboards->add($entity);
+			}
+		}
+	}
+
+	public function getDashboard(string $id): Entities\Dashboards\Dashboard|null
+	{
+		$found = $this->dashboards
+			->filter(static fn (Entities\Dashboards\Dashboard $row): bool => $id === $row->getId()->toString());
+
+		return $found->isEmpty() ? null : $found->first();
+	}
+
+	public function removeDashboard(Entities\Dashboards\Dashboard $dashboard): void
+	{
+		// Check if collection contain removing entity...
+		if ($this->dashboards->contains($dashboard)) {
+			// ...and remove it from collection
+			$this->dashboards->removeElement($dashboard);
+		}
+	}
+
 	public function addGroup(Entities\Groups\Group $group): void
 	{
 		$this->groups = new Common\Collections\ArrayCollection();
@@ -231,9 +308,14 @@ abstract class Widget implements Entities\Entity,
 	{
 		return [
 			'id' => $this->getId()->toString(),
+			'identifier' => $this->getIdentifier(),
 			'name' => $this->getName(),
 			'type' => static::getType(),
 
+			'dashboards' => array_map(
+				static fn (Entities\Dashboards\Dashboard $dashboard): string => $dashboard->getId()->toString(),
+				$this->getDashboards(),
+			),
 			'groups' => array_map(
 				static fn (Entities\Groups\Group $group): string => $group->getId()->toString(),
 				$this->getGroups(),
@@ -242,6 +324,7 @@ abstract class Widget implements Entities\Entity,
 				static fn (Entities\Widgets\DataSources\DataSource $dataSource): string => $dataSource->getId()->toString(),
 				$this->getDataSources(),
 			),
+			'display' => $this->getDisplay()->getId()->toString(),
 
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),

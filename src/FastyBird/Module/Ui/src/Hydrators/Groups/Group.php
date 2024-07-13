@@ -35,13 +35,14 @@ final class Group extends JsonApiHydrators\Hydrator
 
 	/** @var array<int|string, string> */
 	protected array $attributes = [
+		'identifier',
 		'name',
 		'comment',
 	];
 
 	/** @var array<string> */
 	protected array $relationships = [
-		Schemas\Groups\Group::RELATIONSHIPS_DASHBOARD,
+		Schemas\Groups\Group::RELATIONSHIPS_WIDGETS,
 	];
 
 	public function getEntityName(): string

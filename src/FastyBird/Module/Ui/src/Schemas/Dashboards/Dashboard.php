@@ -22,7 +22,6 @@ use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Router;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use function count;
 
 /**
  * Dashboard entity schema
@@ -45,7 +44,7 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	/**
 	 * Define relationships names
 	 */
-	public const RELATIONSHIPS_GROUPS = 'groups';
+	public const RELATIONSHIPS_WIDGETS = 'widgets';
 
 	public function __construct(protected Routing\IRouter $router)
 	{
@@ -74,11 +73,10 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
+			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),
 			'priority' => $resource->getPriority(),
-
-			'params' => (array) $resource->getParams(),
 		];
 	}
 
@@ -114,41 +112,12 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			self::RELATIONSHIPS_GROUPS => [
-				self::RELATIONSHIP_DATA => $resource->getGroups(),
+			self::RELATIONSHIPS_WIDGETS => [
+				self::RELATIONSHIP_DATA => $resource->getWidgets(),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 		];
-	}
-
-	/**
-	 * @param T $resource
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	public function getRelationshipRelatedLink(
-		$resource,
-		string $name,
-	): JsonApi\Contracts\Schema\LinkInterface
-	{
-		if ($name === self::RELATIONSHIPS_GROUPS) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Ui\Constants::ROUTE_NAME_DASHBOARD_GROUPS,
-					[
-						Router\ApiRoutes::URL_DASHBOARD_ID => $resource->getId()->toString(),
-					],
-				),
-				true,
-				[
-					'count' => count($resource->getGroups()),
-				],
-			);
-		}
-
-		return parent::getRelationshipRelatedLink($resource, $name);
 	}
 
 	/**
@@ -161,7 +130,7 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 		string $name,
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
-		if ($name === self::RELATIONSHIPS_GROUPS) {
+		if ($name === self::RELATIONSHIPS_WIDGETS) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(

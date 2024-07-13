@@ -36,6 +36,11 @@ use function is_scalar;
 abstract class Display extends JsonApiHydrators\Hydrator
 {
 
+	/** @var array<int|string, string> */
+	protected array $attributes = [
+		'params',
+	];
+
 	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Widgets\Display\Display::RELATIONSHIPS_WIDGET,

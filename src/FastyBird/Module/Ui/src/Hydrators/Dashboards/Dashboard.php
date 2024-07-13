@@ -18,6 +18,7 @@ namespace FastyBird\Module\Ui\Hydrators\Dashboards;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Hydrators;
+use FastyBird\Module\Ui\Schemas;
 use IPub\JsonAPIDocument;
 use function is_scalar;
 
@@ -35,8 +36,14 @@ final class Dashboard extends JsonApiHydrators\Hydrator
 
 	/** @var array<int|string, string> */
 	protected array $attributes = [
+		'identifier',
 		'name',
 		'comment',
+	];
+
+	/** @var array<string> */
+	protected array $relationships = [
+		Schemas\Dashboards\Dashboard::RELATIONSHIPS_WIDGETS,
 	];
 
 	public function getEntityName(): string

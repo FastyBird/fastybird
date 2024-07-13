@@ -103,36 +103,28 @@ class ApiRoutes
 				$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_RELATIONSHIP);
 			});
 
-			$group->group(
-				'/dashboards/{' . self::URL_DASHBOARD_ID . '}',
-				function (Routing\RouteCollector $group): void {
-					$group->group('/groups', function (Routing\RouteCollector $group): void {
-						/**
-						 * DASHBOARD GROUPS
-						 */
-						$route = $group->get('', [$this->groupsV1Controller, 'index']);
-						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_GROUPS);
+			$group->group('/groups', function (Routing\RouteCollector $group): void {
+				/**
+				 * GROUPS
+				 */
+				$route = $group->get('', [$this->groupsV1Controller, 'index']);
+				$route->setName(Ui\Constants::ROUTE_NAME_GROUPS);
 
-						$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'read']);
-						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_GROUP);
+				$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'read']);
+				$route->setName(Ui\Constants::ROUTE_NAME_GROUP);
 
-						$group->post('', [$this->groupsV1Controller, 'create']);
+				$group->post('', [$this->groupsV1Controller, 'create']);
 
-						$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'update']);
+				$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'update']);
 
-						$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'delete']);
+				$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->groupsV1Controller, 'delete']);
 
-						$route = $group->get(
-							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
-							[
-								$this->groupsV1Controller,
-								'readRelationship',
-							],
-						);
-						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_GROUP_RELATIONSHIP);
-					});
-				},
-			);
+				$route = $group->get('/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}', [
+					$this->groupsV1Controller,
+					'readRelationship',
+				]);
+				$route->setName(Ui\Constants::ROUTE_NAME_GROUP_RELATIONSHIP);
+			});
 
 			$group->group('/widgets', function (Routing\RouteCollector $group): void {
 				/**

@@ -77,9 +77,9 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsGroups' => [
-				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/groups',
+				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/widgets',
 				StatusCodeInterface::STATUS_OK,
-				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.readRelationships.groups.json',
+				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.readRelationships.widgets.json',
 			],
 			'readRelationshipsUnknown' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/unknown',

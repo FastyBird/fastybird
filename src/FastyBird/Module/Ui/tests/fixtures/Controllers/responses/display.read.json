@@ -13,6 +13,12 @@
     "type": "com.fastybird.ui-module/display/chart-graph",
     "id": "467e6d4d-3545-481b-b613-53be7e9aa641",
     "attributes": {
+      "params": {
+        "precision": 0,
+        "stepValue": 0.1,
+        "maximumValue": 40,
+        "minimumValue": 5
+      },
       "minimum_value": 5,
       "maximum_value": 40,
       "step_value": 0.1,

@@ -19,8 +19,8 @@
       "type": "com.fastybird.ui-module/widget/analog-sensor",
       "id": "15553443-4564-454d-af04-0dfeef08aa96",
       "attributes": {
-        "name": "Room temperature",
-        "params": []
+        "identifier": "room-temperature",
+        "name": "Room temperature"
       },
       "relationships": {
         "display": {
@@ -47,6 +47,17 @@
             {
               "type": "com.fastybird.ui-module/data-source/channel-property",
               "id": "764937a7-8565-472e-8e12-fe97cd55a377"
+            }
+          ]
+        },
+        "dashboards": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/dashboards"
+          },
+          "data": [
+            {
+              "type": "com.fastybird.ui-module/dashboard",
+              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
             }
           ]
         },

@@ -24,7 +24,7 @@ use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 
 /**
- * Dashboard group entity schema
+ * Group entity schema
  *
  * @template T of Entities\Groups\Group
  * @extends  JsonApiSchemas\JsonApi<T>
@@ -45,8 +45,6 @@ final class Group extends JsonApiSchemas\JsonApi
 	 * Define relationships names
 	 */
 	public const RELATIONSHIPS_WIDGETS = 'widgets';
-
-	public const RELATIONSHIPS_DASHBOARD = 'dashboard';
 
 	public function __construct(protected Routing\IRouter $router)
 	{
@@ -75,11 +73,10 @@ final class Group extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
+			'identifier' => $resource->getIdentifier(),
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),
 			'priority' => $resource->getPriority(),
-
-			'params' => (array) $resource->getParams(),
 		];
 	}
 
@@ -93,10 +90,9 @@ final class Group extends JsonApiSchemas\JsonApi
 		return new JsonApi\Schema\Link(
 			false,
 			$this->router->urlFor(
-				Ui\Constants::ROUTE_NAME_DASHBOARD_GROUP,
+				Ui\Constants::ROUTE_NAME_GROUP,
 				[
 					Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
-					Router\ApiRoutes::URL_DASHBOARD_ID => $resource->getDashboard()->getId()->toString(),
 				],
 			),
 			false,
@@ -116,11 +112,6 @@ final class Group extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			self::RELATIONSHIPS_DASHBOARD => [
-				self::RELATIONSHIP_DATA => $resource->getDashboard(),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => true,
-			],
 			self::RELATIONSHIPS_WIDGETS => [
 				self::RELATIONSHIP_DATA => $resource->getWidgets(),
 				self::RELATIONSHIP_LINKS_SELF => true,
@@ -134,48 +125,18 @@ final class Group extends JsonApiSchemas\JsonApi
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
-	public function getRelationshipRelatedLink(
-		$resource,
-		string $name,
-	): JsonApi\Contracts\Schema\LinkInterface
-	{
-		if ($name === self::RELATIONSHIPS_DASHBOARD) {
-			return new JsonApi\Schema\Link(
-				false,
-				$this->router->urlFor(
-					Ui\Constants::ROUTE_NAME_DASHBOARD,
-					[
-						Router\ApiRoutes::URL_ITEM_ID => $resource->getDashboard()->getId()->toString(),
-					],
-				),
-				false,
-			);
-		}
-
-		return parent::getRelationshipRelatedLink($resource, $name);
-	}
-
-	/**
-	 * @param T $resource
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
 	public function getRelationshipSelfLink(
 		$resource,
 		string $name,
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
-		if (
-			$name === self::RELATIONSHIPS_DASHBOARD
-			|| $name === self::RELATIONSHIPS_WIDGETS
-		) {
+		if ($name === self::RELATIONSHIPS_WIDGETS) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(
-					Ui\Constants::ROUTE_NAME_DASHBOARD_GROUP_RELATIONSHIP,
+					Ui\Constants::ROUTE_NAME_GROUP_RELATIONSHIP,
 					[
 						Router\ApiRoutes::URL_ITEM_ID => $resource->getId()->toString(),
-						Router\ApiRoutes::URL_DASHBOARD_ID => $resource->getDashboard()->getId()->toString(),
 						Router\ApiRoutes::RELATION_ENTITY => $name,
 					],
 				),

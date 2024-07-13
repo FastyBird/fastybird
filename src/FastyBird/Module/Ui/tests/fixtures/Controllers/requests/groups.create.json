@@ -3,6 +3,7 @@
     "id" : "7ef34899-74b5-49d3-bf7a-ea7ad45dea38",
     "type" : "com.fastybird.ui-module/group",
     "attributes" : {
+      "identifier" : "new-group",
       "name" : "New group"
     },
     "relationships" : {

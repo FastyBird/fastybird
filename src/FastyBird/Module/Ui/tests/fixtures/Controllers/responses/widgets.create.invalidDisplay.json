@@ -3,8 +3,11 @@
     {
       "status": "422",
       "code": "422",
-      "title": "System error",
-      "detail": "Something went wrong, entity could not be created"
+      "title": "Missing attribute",
+      "detail": "Provided request is missing required attribute",
+      "source": {
+        "pointer": "/data/attributes/identifier"
+      }
     }
   ],
   "jsonapi": {

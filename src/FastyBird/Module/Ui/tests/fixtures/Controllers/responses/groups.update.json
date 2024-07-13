@@ -7,31 +7,21 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c"
+    "self": "/api/ui-module/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c"
   },
   "data": {
     "type": "com.fastybird.ui-module/group",
     "id": "89f4a14f-7f78-4216-99b8-584ab9229f1c",
     "attributes": {
-      "name": "Sleeping room",
+      "identifier": "sleeping-room",
+      "name": "Updated name",
       "comment": null,
-      "priority": 0,
-      "params": []
+      "priority": 0
     },
     "relationships": {
-      "dashboard": {
-        "links": {
-          "self": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/dashboard",
-          "related": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296"
-        },
-        "data": {
-          "type": "com.fastybird.ui-module/dashboard",
-          "id": "ab369e71-ada6-4d1a-a5a8-b6ee5cd58296"
-        }
-      },
       "widgets": {
         "links": {
-          "self": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/widgets"
+          "self": "/api/ui-module/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/widgets"
         },
         "data": [
           {
@@ -54,7 +44,7 @@
       }
     },
     "links": {
-      "self": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c"
+      "self": "/api/ui-module/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c"
     }
   }
 }

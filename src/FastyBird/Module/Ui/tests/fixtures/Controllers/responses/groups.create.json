@@ -7,37 +7,27 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups"
+    "self": "/api/ui-module/v1/groups"
   },
   "data": {
     "type": "com.fastybird.ui-module/group",
     "id": "7ef34899-74b5-49d3-bf7a-ea7ad45dea38",
     "attributes": {
+      "identifier": "new-group",
       "name": "New group",
       "comment": null,
-      "priority": 0,
-      "params": []
+      "priority": 0
     },
     "relationships": {
-      "dashboard": {
-        "links": {
-          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/dashboard",
-          "related": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c"
-        },
-        "data": {
-          "type": "com.fastybird.ui-module/dashboard",
-          "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
-        }
-      },
       "widgets": {
         "links": {
-          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/widgets"
+          "self": "/api/ui-module/v1/groups/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/widgets"
         },
         "data": []
       }
     },
     "links": {
-      "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/groups/7ef34899-74b5-49d3-bf7a-ea7ad45dea38"
+      "self": "/api/ui-module/v1/groups/7ef34899-74b5-49d3-bf7a-ea7ad45dea38"
     }
   }
 }

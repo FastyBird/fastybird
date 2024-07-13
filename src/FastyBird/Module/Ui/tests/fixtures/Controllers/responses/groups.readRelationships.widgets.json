@@ -7,7 +7,7 @@
     "version": "1.1"
   },
   "links": {
-    "self": "/api/ui-module/v1/dashboards/ab369e71-ada6-4d1a-a5a8-b6ee5cd58296/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/widgets"
+    "self": "/api/ui-module/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/widgets"
   },
   "data": [
     {

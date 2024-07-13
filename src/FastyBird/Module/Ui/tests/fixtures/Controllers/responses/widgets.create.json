@@ -13,8 +13,8 @@
     "type": "com.fastybird.ui-module/widget/analog-sensor",
     "id": "329a7ac2-a309-4c39-9d97-c7ba69efe74f",
     "attributes": {
-      "name": "New analog widget",
-      "params": []
+      "identifier": "new-analog-widget",
+      "name": "New analog widget"
     },
     "relationships": {
       "display": {
@@ -36,6 +36,12 @@
               "count": 0
             }
           }
+        },
+        "data": []
+      },
+      "dashboards": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/dashboards"
         },
         "data": []
       },

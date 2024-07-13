@@ -89,6 +89,7 @@ abstract class Display implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
+			'params' => (array) $this->getParams(),
 
 			'widget' => $this->getWidget()->getId()->toString(),
 

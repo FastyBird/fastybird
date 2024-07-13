@@ -43,7 +43,8 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 
 	/** @var array<int|string, string> */
 	protected array $attributes = [
-		0 => 'name',
+		0 => 'identifier',
+		1 => 'name',
 
 		'minimum_value' => 'minimumValue',
 		'maximum_value' => 'maximumValue',
@@ -56,7 +57,8 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 	/** @var array<string> */
 	protected array $relationships = [
 		0 => Schemas\Widgets\Widget::RELATIONSHIPS_DISPLAY,
-		1 => Schemas\Widgets\Widget::RELATIONSHIPS_GROUPS,
+		1 => Schemas\Widgets\Widget::RELATIONSHIPS_DASHBOARDS,
+		2 => Schemas\Widgets\Widget::RELATIONSHIPS_GROUPS,
 		Schemas\Widgets\Widget::RELATIONSHIPS_DATA_SOURCES => 'dataSources',
 	];
 
