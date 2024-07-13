@@ -18,7 +18,7 @@
     "resolveJsonModule": true,
     "types": [
       "@fastybird/metadata-library",
-      "@fastybird/web-ui-components",
+      "@fastybird/web-ui-library",
       "@fastybird/web-ui-icons",
       "@intlify/unplugin-vue-i18n/messages",
       "@types/lodash.get",
