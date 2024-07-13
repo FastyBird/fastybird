@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/triggers-module",
-  "version": "1.0.0-dev.21",
+  "version": "1.0.0-dev.20",
   "type": "module",
   "description": "FastyBird IoT module for triggers management & basic automation logic",
   "keywords": [
@@ -47,8 +47,8 @@
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
   },
   "dependencies": {
-    "@fastybird/metadata-library": "1.0.0-dev.21",
-    "@fastybird/web-ui-library": "1.0.0-dev.21",
+    "@fastybird/metadata-library": "1.0.0-dev.20",
+    "@fastybird/web-ui-library": "1.0.0-dev.20",
     "ajv": "^8.12",
     "axios": "^1.6",
     "date-fns": "^3.3",
