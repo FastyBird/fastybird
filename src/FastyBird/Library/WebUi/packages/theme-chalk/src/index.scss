@@ -19,34 +19,34 @@ $--colors: (
 	),
 );
 
-@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+@forward 'element-plus/theme-chalk/src/common/var' with (
 	// do not use same name, it will override.
 	$colors: $--colors,
 	$button-padding-horizontal: ('default': 50px)
 );
 
-@use 'element-plus/theme-chalk/src/index.scss' as *;
-@use 'element-plus/theme-chalk/src/reset.scss' as *;
+@use 'element-plus/theme-chalk/src/index' as *;
+@use 'element-plus/theme-chalk/src/reset' as *;
 
 // Dark theme
-@use './dark.scss';
-@use 'element-plus/theme-chalk/src/dark/css-vars.scss' as *;
+@use './dark';
+@use 'element-plus/theme-chalk/src/dark/css-vars' as *;
 
 // Component styles
-@use 'fb-app-bar.scss';
-@use 'fb-bottom-navigation.scss';
-@use 'fb-breadcrumb-item.scss';
-@use 'fb-component-loading.scss';
-@use 'fb-component-loading-error.scss';
-@use 'fb-dialog.scss';
-@use 'fb-expand-transition.scss';
-@use 'fb-expandable-box.scss';
-@use 'fb-icon-with-child.scss';
-@use 'fb-list.scss';
-@use 'fb-media-item.scss';
-@use 'fb-result.scss';
-@use 'fb-spinner.scss';
-@use 'fb-swipe.scss';
+@use 'fb-app-bar';
+@use 'fb-bottom-navigation';
+@use 'fb-breadcrumb-item';
+@use 'fb-component-loading';
+@use 'fb-component-loading-error';
+@use 'fb-dialog';
+@use 'fb-expand-transition';
+@use 'fb-expandable-box';
+@use 'fb-icon-with-child';
+@use 'fb-list';
+@use 'fb-media-item';
+@use 'fb-result';
+@use 'fb-spinner';
+@use 'fb-swipe';
 
 * {
 	border-color: var(--el-border-color);
