@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o",
+    "totalCount": 4
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first": "/api/ui-module/v1/widgets?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev": "/api/ui-module/v1/widgets?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next": "/api/ui-module/v1/widgets?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last": "/api/ui-module/v1/widgets?page%5Boffset%5D=3&page%5Blimit%5D=1"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.ui-module/widget/analog-sensor",
+      "id": "15553443-4564-454d-af04-0dfeef08aa96",
+      "attributes": {
+        "identifier": "room-temperature",
+        "name": "Room temperature"
+      },
+      "relationships": {
+        "display": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/display",
+            "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/display/chart-graph",
+            "id": "467e6d4d-3545-481b-b613-53be7e9aa641"
+          }
+        },
+        "data-sources": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/data-sources",
+            "related": {
+              "href": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources",
+              "meta": {
+                "count": 1
+              }
+            }
+          },
+          "data": [
+            {
+              "type": "com.fastybird.ui-module/data-source/channel-property",
+              "id": "764937a7-8565-472e-8e12-fe97cd55a377"
+            }
+          ]
+        },
+        "dashboards": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/dashboards"
+          },
+          "data": [
+            {
+              "type": "com.fastybird.ui-module/dashboard",
+              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+            }
+          ]
+        },
+        "groups": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/groups"
+          },
+          "data": [
+            {
+              "type": "com.fastybird.ui-module/group",
+              "id": "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+            }
+          ]
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96"
+      }
+    }
+  ]
+}

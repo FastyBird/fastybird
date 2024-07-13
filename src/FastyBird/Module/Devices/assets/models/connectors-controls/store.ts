@@ -1,4 +1,10 @@
-import { ActionRoutes, ControlAction, ConnectorControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import {
+	ActionRoutes,
+	ExchangeCommand,
+	ConnectorControlDocument,
+	DevicesModuleRoutes as RoutingKeys,
+	ModulePrefix,
+} from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
@@ -563,7 +569,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 						routing_key: ActionRoutes.CONNECTOR_CONTROL,
 						source: control.type.source,
 						data: {
-							action: ControlAction.SET,
+							action: ExchangeCommand.SET,
 							connector: connector.id,
 							control: control.id,
 							expected_value: payload.value,

@@ -6,6 +6,7 @@ export enum ActionRoutes {
 	CHANNEL_CONTROL = 'fb.exchange.action.channel.control',
 	CHANNEL_PROPERTY = 'fb.exchange.action.channel.property',
 	TRIGGER_CONTROL = 'fb.exchange.action.trigger.control',
+	WIDGET_DATA_SOURCE = 'fb.exchange.action.widget.data-source',
 }
 
 export enum MessageRoutes {
@@ -129,4 +130,34 @@ export enum TriggersModuleRoutes {
 	TRIGGER_CONDITION_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.trigger.condition',
 }
 
-export enum UiModuleRoutes {}
+export enum UiModuleRoutes {
+	// Dashboards
+	DASHBOARD_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.dashboard',
+	DASHBOARD_DOCUMENT_CREATED = 'fb.exchange.module.document.created.dashboard',
+	DASHBOARD_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.dashboard',
+	DASHBOARD_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.dashboard',
+
+	// Groups
+	GROUP_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.group',
+	GROUP_DOCUMENT_CREATED = 'fb.exchange.module.document.created.group',
+	GROUP_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.group',
+	GROUP_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.group',
+
+	// Widgets
+	WIDGET_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.widget',
+	WIDGET_DOCUMENT_CREATED = 'fb.exchange.module.document.created.widget',
+	WIDGET_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.widget',
+	WIDGET_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.widget',
+
+	// Widget's display
+	WIDGET_DISPLAY_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.widget.display',
+	WIDGET_DISPLAY_DOCUMENT_CREATED = 'fb.exchange.module.document.created.widget.display',
+	WIDGET_DISPLAY_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.widget.display',
+	WIDGET_DISPLAY_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.widget.display',
+
+	// Widget's data sources
+	WIDGET_DATA_SOURCE_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.widget.data-source',
+	WIDGET_DATA_SOURCE_DOCUMENT_CREATED = 'fb.exchange.module.document.created.widget.data-source',
+	WIDGET_DATA_SOURCE_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.widget.data-source',
+	WIDGET_DATA_SOURCE_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.widget.data-source',
+}

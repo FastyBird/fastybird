@@ -1,0 +1,9 @@
+{
+  "data" : {
+    "id" : "55553443-4564-454d-af04-0dfeef08aa96",
+    "type" : "com.fastybird.ui-module/widget/analog-sensor",
+    "attributes" : {
+      "name" : "Updated widget"
+    }
+  }
+}

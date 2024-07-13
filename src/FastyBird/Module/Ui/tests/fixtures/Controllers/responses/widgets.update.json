@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96?include=display,data-sources"
+  },
+  "data": {
+    "type": "com.fastybird.ui-module/widget/analog-sensor",
+    "id": "15553443-4564-454d-af04-0dfeef08aa96",
+    "attributes": {
+      "identifier": "room-temperature",
+      "name": "Updated widget"
+    },
+    "relationships": {
+      "display": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/display",
+          "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+        },
+        "data": {
+          "type": "com.fastybird.ui-module/display/chart-graph",
+          "id": "467e6d4d-3545-481b-b613-53be7e9aa641"
+        }
+      },
+      "data-sources": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/data-sources",
+          "related": {
+            "href": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/data-source/channel-property",
+            "id": "764937a7-8565-472e-8e12-fe97cd55a377"
+          }
+        ]
+      },
+      "dashboards": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/dashboards"
+        },
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/dashboard",
+            "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+          }
+        ]
+      },
+      "groups": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/groups"
+        },
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/group",
+            "id": "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+          }
+        ]
+      }
+    },
+    "links": {
+      "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96"
+    }
+  },
+  "included": [
+    {
+      "type": "com.fastybird.ui-module/display/chart-graph",
+      "id": "467e6d4d-3545-481b-b613-53be7e9aa641",
+      "attributes": {
+        "params": {
+          "precision": 0,
+          "stepValue": 0.1,
+          "maximumValue": 40,
+          "minimumValue": 5
+        },
+        "minimum_value": 5,
+        "maximum_value": 40,
+        "step_value": 0.1,
+        "enable_min_max": false,
+        "precision": 0
+      },
+      "relationships": {
+        "widget": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display/relationships/widget",
+            "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/widget/analog-sensor",
+            "id": "15553443-4564-454d-af04-0dfeef08aa96"
+          }
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+      }
+    },
+    {
+      "type": "com.fastybird.ui-module/data-source/channel-property",
+      "id": "764937a7-8565-472e-8e12-fe97cd55a377",
+      "attributes": {
+        "params": [],
+        "channel": "81e0d8e1-f640-47d3-b471-6f139ed31bb9",
+        "property": "459fd862-886a-44c8-8e38-d0ac7338e09e"
+      },
+      "relationships": {
+        "widget": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources/764937a7-8565-472e-8e12-fe97cd55a377/relationships/widget",
+            "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/widget/analog-sensor",
+            "id": "15553443-4564-454d-af04-0dfeef08aa96"
+          }
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources/764937a7-8565-472e-8e12-fe97cd55a377"
+      }
+    }
+  ]
+}

@@ -79,7 +79,7 @@ onBeforeMount(async (): Promise<void> => {
 		});
 	}
 
-	const ssrConnectorData: DeviceDocument | DeviceDocument[] | null = get(window, '__DEVICES_MODULE_CONNECTOR__', null);
+	const ssrConnectorData: ConnectorDocument | ConnectorDocument[] | null = get(window, '__DEVICES_MODULE_CONNECTOR__', null);
 
 	if (ssrConnectorData !== null) {
 		await connectorsStore.insertData({

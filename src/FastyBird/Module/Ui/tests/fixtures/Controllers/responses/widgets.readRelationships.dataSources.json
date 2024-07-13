@@ -1,0 +1,19 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/data-sources",
+    "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.ui-module/data-source/channel-property",
+      "id": "764937a7-8565-472e-8e12-fe97cd55a377"
+    }
+  ]
+}

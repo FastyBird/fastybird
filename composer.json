@@ -151,6 +151,7 @@
             "FastyBird\\Module\\Accounts\\": "src/FastyBird/Module/Accounts/src/",
             "FastyBird\\Module\\Devices\\": "src/FastyBird/Module/Devices/src/",
             "FastyBird\\Module\\Triggers\\": "src/FastyBird/Module/Triggers/src/",
+            "FastyBird\\Module\\Ui\\": "src/FastyBird/Module/Ui/src/",
             "FastyBird\\Plugin\\ApiKey\\": "src/FastyBird/Plugin/ApiKey/src/",
             "FastyBird\\Plugin\\CouchDb\\": "src/FastyBird/Plugin/CouchDb/src/",
             "FastyBird\\Plugin\\RabbitMq\\": "src/FastyBird/Plugin/RabbitMq/src/",
@@ -221,6 +222,10 @@
             "FastyBird\\Module\\Triggers\\Tests\\Fixtures\\": "src/FastyBird/Module/Triggers/tests/fixtures",
             "FastyBird\\Module\\Triggers\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/Triggers/tests/fixtures/dummy",
             "FastyBird\\Module\\Triggers\\Tests\\Tools\\": "src/FastyBird/Module/Triggers/tests/tools",
+            "FastyBird\\Module\\Ui\\Tests\\Cases\\Unit\\": "src/FastyBird/Module/Ui/tests/cases/unit",
+            "FastyBird\\Module\\Ui\\Tests\\Fixtures\\": "src/FastyBird/Module/Ui/tests/fixtures",
+            "FastyBird\\Module\\Ui\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Module/Ui/tests/fixtures/dummy",
+            "FastyBird\\Module\\Ui\\Tests\\Tools\\": "src/FastyBird/Module/Ui/tests/tools",
             "FastyBird\\Plugin\\ApiKey\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/ApiKey/tests/cases/unit",
             "FastyBird\\Plugin\\ApiKey\\Tests\\Tools\\": "src/FastyBird/Plugin/ApiKey/tests/tools",
             "FastyBird\\Plugin\\CouchDb\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/CouchDb/tests/cases/unit",
@@ -236,6 +241,7 @@
         }
     },
     "extra": {
+        "enable-patching": false,
         "patches": {
             "contributte/monolog": {
                 "Bug: invalid callback definition": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/contributte-monolog-src-loggerholder-php.patch"
@@ -243,13 +249,13 @@
             "dg/bypass-finals": {
                 "Bug: mkdir check": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/dg-bypass-finals-src-nativewrapper-php.patch"
             },
+            "doctrine/dbal": {
+                "Bug: PDO:Quote null patch": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-dbal-src-connection-php.patch"
+            },
             "doctrine/orm": {
                 "Bug: Ramsey uuid not working - Part 1": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-basicentitypersister-php.patch",
                 "Bug: Ramsey uuid not working - Part 2": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-persisters-entity-joinedsubclasspersister-php.patch",
                 "Feature: Dynamic discriminator map": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-orm-lib-doctrine-orm-mapping-classmetadatafactory-php.patch"
-            },
-            "doctrine/dbal": {
-                "Bug: PDO:Quote null patch": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/doctrine-dbal-src-connection-php.patch"
             },
             "nettrine/orm": {
                 "Enable connection overrides": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/nettrine-orm-src-managerregistry-php.patch"
@@ -263,8 +269,7 @@
             "softcreatr/jsonpath": {
                 "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
             }
-        },
-        "enable-patching": false
+        }
     },
     "config": {
         "sort-packages": true,
@@ -306,6 +311,7 @@
         "fastybird/tools-library": "self.version",
         "fastybird/triggers-module": "self.version",
         "fastybird/tuya-connector": "self.version",
+        "fastybird/ui-module": "self.version",
         "fastybird/viera-connector": "self.version",
         "fastybird/virtual-connector": "self.version",
         "fastybird/virtual-thermostat-addon": "self.version",

@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+  },
+  "data": {
+    "type": "com.fastybird.ui-module/display/chart-graph",
+    "id": "467e6d4d-3545-481b-b613-53be7e9aa641",
+    "attributes": {
+      "params": {
+        "precision": 0,
+        "stepValue": 0.1,
+        "maximumValue": 40,
+        "minimumValue": 5
+      },
+      "minimum_value": 5,
+      "maximum_value": 40,
+      "step_value": 0.1,
+      "enable_min_max": false,
+      "precision": 0
+    },
+    "relationships": {
+      "widget": {
+        "links": {
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display/relationships/widget",
+          "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96"
+        },
+        "data": {
+          "type": "com.fastybird.ui-module/widget/analog-sensor",
+          "id": "15553443-4564-454d-af04-0dfeef08aa96"
+        }
+      }
+    },
+    "links": {
+      "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+    }
+  }
+}

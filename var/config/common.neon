@@ -49,6 +49,7 @@ extensions:
     fbAccountsModule                                : FastyBird\Module\Accounts\DI\AccountsExtension
     fbDevicesModule                                 : FastyBird\Module\Devices\DI\DevicesExtension
     fbTriggersModule                                : FastyBird\Module\Triggers\DI\TriggersExtension
+    fbUiModule                                      : FastyBird\Module\Ui\DI\UiExtension
     # FastyBird connectors
     fbFbMqttConnector                               : FastyBird\Connector\FbMqtt\DI\FbMqttExtension
     fbHomeKitConnector                              : FastyBird\Connector\HomeKit\DI\HomeKitExtension
@@ -146,6 +147,9 @@ fbDevicesModule:
     exchange: %modules.exchange%
 
 fbTriggersModule:
+    apiPrefix: %api.prefixed.modules%
+
+fbUiModule:
     apiPrefix: %api.prefixed.modules%
 
 # Application

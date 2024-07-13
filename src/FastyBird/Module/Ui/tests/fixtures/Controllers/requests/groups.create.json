@@ -1,0 +1,18 @@
+{
+  "data" : {
+    "id" : "7ef34899-74b5-49d3-bf7a-ea7ad45dea38",
+    "type" : "com.fastybird.ui-module/group",
+    "attributes" : {
+      "identifier" : "new-group",
+      "name" : "New group"
+    },
+    "relationships" : {
+      "dashboard" : {
+        "data" : {
+          "id" : "272379d8-8351-44b6-ad8d-73a0abcb7f9c",
+          "type" : "com.fastybird.ui-module/dashboard"
+        }
+      }
+    }
+  }
+}

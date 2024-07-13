@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o",
+    "totalCount": 3
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/groups?page%5Boffset%5D=1&page%5Blimit%5D=1",
+    "first": "/api/ui-module/v1/groups?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "prev": "/api/ui-module/v1/groups?page%5Boffset%5D=0&page%5Blimit%5D=1",
+    "next": "/api/ui-module/v1/groups?page%5Boffset%5D=2&page%5Blimit%5D=1",
+    "last": "/api/ui-module/v1/groups?page%5Boffset%5D=2&page%5Blimit%5D=1"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.ui-module/group",
+      "id": "d721529e-dec6-47c8-8035-a3484070142b",
+      "attributes": {
+        "identifier": "main-lights",
+        "name": "Main lights",
+        "comment": null,
+        "priority": 0
+      },
+      "relationships": {
+        "widgets": {
+          "links": {
+            "self": "/api/ui-module/v1/groups/d721529e-dec6-47c8-8035-a3484070142b/relationships/widgets"
+          },
+          "data": []
+        }
+      },
+      "links": {
+        "self": "/api/ui-module/v1/groups/d721529e-dec6-47c8-8035-a3484070142b"
+      }
+    }
+  ]
+}

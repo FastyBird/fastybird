@@ -1,0 +1,13 @@
+{
+  "data" : {
+    "id" : "467e6d4d-3545-481b-b613-53be7e9aa641",
+    "type" : "com.fastybird.ui-module/display/chart-graph",
+    "attributes" : {
+      "enable_min_max" : true,
+      "maximum_value" : 60,
+      "minimum_value" : 5,
+      "precision" : 0,
+      "step_value" : 0.1
+    }
+  }
+}

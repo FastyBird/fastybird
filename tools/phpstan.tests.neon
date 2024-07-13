@@ -27,6 +27,7 @@ includes:
     - ../src/FastyBird/Module/Accounts/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Module/Devices/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Module/Triggers/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Module/Ui/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Plugin/ApiKey/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Plugin/CouchDb/tools/phpstan.config.tests.neon

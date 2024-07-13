@@ -128,72 +128,8 @@ export enum ControlAction {
 	SET = 'set',
 }
 
-export interface ConnectorControlAction {
-	action: ControlAction;
-	control: string;
-	connector: string;
-	expected_value?: null | string | number | boolean;
-}
-
-export interface DeviceControlAction {
-	action: ControlAction;
-	control: string;
-	device: string;
-	expected_value?: null | string | number | boolean;
-}
-
-export interface ChannelControlAction {
-	action: ControlAction;
-	control: string;
-	channel: string;
-	expected_value?: null | string | number | boolean;
-}
-
-export interface TriggerControlAction {
-	action: ControlAction;
-	control: string;
-	trigger: string;
-	expected_value?: null | string | number | boolean;
-}
-
-export interface ConnectorPropertyAction {
-	action: PropertyAction;
-	connector: string;
-	property: string;
-	set?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
-	write?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
-}
-
-export interface DevicePropertyAction {
-	action: PropertyAction;
-	device: string;
-	property: string;
-	set?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
-	write?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
-}
-
-export interface ChannelPropertyAction {
-	action: PropertyAction;
-	channel: string;
-	property: string;
-	set?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
-	write?: {
-		expected_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-		actual_value?: string | number | boolean | ButtonPayload | CoverPayload | SwitchPayload;
-	};
+export enum ExchangeCommand {
+	SET = 'set',
+	GET = 'get',
+	REPORT = 'report',
 }

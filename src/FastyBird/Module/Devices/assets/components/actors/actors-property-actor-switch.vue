@@ -39,7 +39,7 @@ import { ElIcon, ElSwitch } from 'element-plus';
 
 import { FasCheck, FasBan } from '@fastybird/web-ui-icons';
 import { FbSpinner } from '@fastybird/web-ui-library';
-import { ActionRoutes, DataType, ModulePrefix, PropertyAction, SwitchPayload } from '@fastybird/metadata-library';
+import { ActionRoutes, DataType, ModulePrefix, ExchangeCommand, SwitchPayload } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '../../composables';
@@ -151,7 +151,7 @@ const onToggleState = async (): Promise<void> => {
 			routing_key: props.channel !== undefined ? ActionRoutes.CHANNEL_PROPERTY : ActionRoutes.DEVICE_PROPERTY,
 			source: props.property.type.source,
 			data: {
-				action: PropertyAction.SET,
+				action: ExchangeCommand.SET,
 				device: props.device?.id,
 				channel: props.channel?.id,
 				property: props.property.id,
