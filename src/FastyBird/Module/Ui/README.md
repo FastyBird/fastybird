@@ -28,7 +28,8 @@ extension for managing visual components and widgets used for IoT controls and u
 
 ### Features:
 
-- Dashboards management
+- Dashboards with pages management
+- Groups management
 - Widgets management
 - [{JSON:API}](https://jsonapi.org/) schemas for full api access
 - User access [check & validation](https://github.com/FastyBird/simple-auth)
@@ -42,8 +43,7 @@ in [PHP](https://www.php.net) on top of the [Nette framework](https://nette.org)
 
 ## Requirements
 
-PHP part of [FastyBird](https://www.fastybird.com) UI module is tested against PHP 8.2 and require installed [BCMath Arbitrary Precision Mathematics](https://www.php.net/manual/en/book.bc.php) and [Process Control](https://www.php.net/manual/en/book.pcntl.php)
-PHP extensions.
+PHP part of [FastyBird](https://www.fastybird.com) UI module is tested against PHP 8.2 and require installed [Process Control](https://www.php.net/manual/en/book.pcntl.php) PHP extensions.
 
 JavaScript part of [FastyBird](https://www.fastybird.com) UI module is tested
 against [ECMAScript 6](https://www.w3schools.com/JS/js_es6.asp)
