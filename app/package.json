@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/application",
-  "version": "1.0.0-dev.20",
+  "version": "1.0.0-dev.21",
   "type": "module",
   "description": "FastyBird IoT application user interface",
   "keywords": [
@@ -37,12 +37,12 @@
     "preview": "vue-tsc --noEmit && vite build && vite preview --host"
   },
   "dependencies": {
-    "@fastybird/accounts-module": "1.0.0-dev.20",
-    "@fastybird/devices-module": "1.0.0-dev.20",
-    "@fastybird/metadata-library": "1.0.0-dev.20",
+    "@fastybird/accounts-module": "1.0.0-dev.21",
+    "@fastybird/devices-module": "1.0.0-dev.21",
+    "@fastybird/metadata-library": "1.0.0-dev.21",
     "@fastybird/vue-wamp-v1": "^1.2",
-    "@fastybird/web-ui-library": "1.0.0-dev.20",
-    "@fastybird/web-ui-icons": "1.0.0-dev.20",
+    "@fastybird/web-ui-library": "1.0.0-dev.21",
+    "@fastybird/web-ui-icons": "1.0.0-dev.21",
     "@iconify/iconify": "^3.1",
     "@iconify/vue": "^4.1",
     "@sentry/tracing": "^7.113",
