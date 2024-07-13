@@ -21,6 +21,7 @@
       "@fastybird/web-ui-library",
       "@fastybird/web-ui-icons",
       "@intlify/unplugin-vue-i18n/messages",
+      "@types/md5",
       "@types/lodash.get",
       "@types/lodash.defaultsdeep",
       "@types/uuid",
