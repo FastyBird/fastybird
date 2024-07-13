@@ -41,6 +41,11 @@
   },
   {
     "organization": "FastyBird",
+    "name": "ui-module",
+    "local-path": "src/FastyBird/Module/Ui"
+  },
+  {
+    "organization": "FastyBird",
     "name": "fb-mqtt-connector",
     "local-path": "src/FastyBird/Connector/FbMqtt"
   },
