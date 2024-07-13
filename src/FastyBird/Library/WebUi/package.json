@@ -1,7 +1,7 @@
 {
   "name": "@fastybird/web-ui",
   "private": true,
-  "version": "1.0.0-dev.21",
+  "version": "1.0.0-dev.20",
   "description": "FastyBird IoT application theme library",
   "keywords": [
     "fastybird",
