@@ -20,9 +20,10 @@ $--colors: (
 );
 
 @forward 'element-plus/theme-chalk/src/common/var' with (
-	// do not use same name, it will override.
 	$colors: $--colors,
-	$button-padding-horizontal: ('default': 50px)
+	$button-padding-horizontal: (
+		'default': 50px,
+	)
 );
 
 @use 'element-plus/theme-chalk/src/index' as *;
