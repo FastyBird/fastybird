@@ -114,9 +114,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		$builder->addDefinition($this->prefix('models.identitiesRepository'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Entities\Identities\IdentitiesRepository::class);
 
-		$builder->addDefinition($this->prefix('models.rolesRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Roles\RolesRepository::class);
-
 		// Database managers
 		$builder->addDefinition($this->prefix('models.accountsManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Entities\Accounts\AccountsManager::class);
@@ -126,9 +123,6 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 
 		$builder->addDefinition($this->prefix('models.identitiesManager'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\Entities\Identities\IdentitiesManager::class);
-
-		$builder->addDefinition($this->prefix('models.rolesManager'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\Entities\Roles\RolesManager::class);
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\ModuleEntities::class);

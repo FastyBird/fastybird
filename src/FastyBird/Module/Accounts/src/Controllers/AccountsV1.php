@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
+use Casbin;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
@@ -30,6 +31,8 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Types;
 use FastyBird\Module\Accounts\Utilities;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -64,6 +67,8 @@ final class AccountsV1 extends BaseV1
 		private readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
 		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
 		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
+		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
+		private readonly Casbin\Enforcer $enforcer,
 	)
 	{
 	}
@@ -384,6 +389,8 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 */
@@ -401,7 +408,25 @@ final class AccountsV1 extends BaseV1
 		if ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_IDENTITIES) {
 			return $this->buildResponse($request, $response, $account->getIdentities());
 		} elseif ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_ROLES) {
-			return $this->buildResponse($request, $response, $account->getRoles());
+			$roles = $this->enforcer->getRolesForUser($account->getId()->toString());
+
+			$policies = [];
+
+			foreach ($roles as $role) {
+				$findPoliciesQuery = new SimpleAuthQueries\FindPolicies();
+				$findPoliciesQuery->byValue(0, $role);
+
+				$policy = $this->policiesRepository->findOneBy(
+					$findPoliciesQuery,
+					Entities\Roles\Role::class,
+				);
+
+				if ($policy !== null) {
+					$policies[] = $policy;
+				}
+			}
+
+			return $this->buildResponse($request, $response, $policies);
 		}
 
 		if ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_EMAILS) {

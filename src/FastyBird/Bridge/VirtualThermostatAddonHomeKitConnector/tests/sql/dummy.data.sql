@@ -85,3 +85,12 @@ IGNORE INTO `fb_devices_module_channels_properties` (`property_id`, `channel_id`
 (_binary 0x0455176d22b0422296a37b691a5a326b, _binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, _binary 0x17627f14ebbf4bc188fde8fc32d3e5de, 'generic', 'target_temperature', null, 1, 0, 'float', null, '7:35', null, null, null, null, null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'mapped'),
 (_binary 0x8c105aa844ea4c27903cc67dd679d1ba, _binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, null, 'generic', 'TemperatureDisplayUnits', null, 1, 0, 'enum', null, '0,1', null, null, null, null, null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dynamic'),
 (_binary 0x16c60f151183421ea6f08e7b9ab50ce0, _binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, null, 'generic', 'name', null, 0, 0, 'string', null, null, null, null, null, 'Office Thermostat', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'variable');
+
+INSERT
+IGNORE INTO `fb_security_policies` (`policy_id`, `policy_type`, `policy_v0`, `policy_v1`, `policy_v2`, `policy_v3`, `policy_v4`, `policy_v5`, `policy_policy_type`) VALUES
+(_binary 0xb12082a40f5f4f3fb4e8c0d0ca209613, 'p', 'administrator', null, null, null, null, null, 'policy'),
+(_binary 0xf5fc546183c94344ab43824619faaa91, 'p', 'manager', null, null, null, null, null, 'policy'),
+(_binary 0x110e9e3b0d724827974906f89c368bc1, 'p', 'user', null, null, null, null, null, 'policy'),
+(_binary 0x46f0644f91eb4877a3b032ab29189794, 'p', 'visitor', null, null, null, null, null, 'policy'),
+(_binary 0x253fcd3a59b847288d6d017b02bc10e2, 'g', '5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34', 'administrator', null, null, null, null, 'policy'),
+(_binary 0x15592686e28a4208bc1dc7134ff472cc, 'g', 'efbfbdef-bfbd-68ef-bfbd-770b40efbfbd', 'user', null, null, null, null, 'policy');

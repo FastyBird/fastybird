@@ -13,7 +13,7 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
-final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Cases\Unit\BaseTestCase
+final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -24,21 +24,19 @@ final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Ca
 	 */
 	public function testServicesRegistration(): void
 	{
-		$container = $this->createContainer();
+		self::assertNotNull($this->getContainer()->getByType(Builders\Builder::class, false));
 
-		self::assertNotNull($container->getByType(Builders\Builder::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Build::class, false));
 
-		self::assertNotNull($container->getByType(Commands\Build::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Controllers\BridgesV1::class, false));
 
-		self::assertNotNull($container->getByType(Controllers\BridgesV1::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Thermostat::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Devices\Thermostat::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\Channels\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Schemas\Devices\Thermostat::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Thermostat::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Thermostat::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\Channels\Thermostat::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Devices\Thermostat::class, false));
-
-		self::assertNotNull($container->getByType(Router\ApiRoutes::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));
 	}
 
 }

@@ -96,6 +96,8 @@ fbSimpleAuth:
         doctrine:
             mapping: true
             models: true
+        casbin:
+            database: true
         nette:
             application: true
 

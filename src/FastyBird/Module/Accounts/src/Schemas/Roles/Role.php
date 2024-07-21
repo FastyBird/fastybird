@@ -20,9 +20,9 @@ use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function count;
@@ -53,7 +53,7 @@ final class Role extends JsonApis\JsonApi
 	public const RELATIONSHIPS_CHILDREN = 'children';
 
 	public function __construct(
-		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
+		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
 		private readonly Routing\IRouter $router,
 	)
 	{
@@ -84,10 +84,6 @@ final class Role extends JsonApis\JsonApi
 		return [
 			'name' => $resource->getName(),
 			'comment' => $resource->getComment(),
-
-			'anonymous' => $resource->isAnonymous(),
-			'authenticated' => $resource->isAuthenticated(),
-			'administrator' => $resource->isAdministrator(),
 		];
 	}
 
@@ -224,7 +220,10 @@ final class Role extends JsonApis\JsonApi
 		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->forParent($resource);
 
-		return $this->rolesRepository->findAllBy($findQuery);
+		return $this->policiesRepository->findAllBy(
+			$findQuery,
+			Entities\Roles\Role::class,
+		);
 	}
 
 }

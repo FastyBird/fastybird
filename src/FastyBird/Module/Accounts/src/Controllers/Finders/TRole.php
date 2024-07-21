@@ -16,12 +16,12 @@
 namespace FastyBird\Module\Accounts\Controllers\Finders;
 
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use Fig\Http\Message\StatusCodeInterface;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Psr\Http\Message;
 use Ramsey\Uuid;
@@ -29,13 +29,14 @@ use function strval;
 
 /**
  * @property-read Localization\ITranslator $translator
- * @property-read Models\Entities\Roles\RolesRepository $rolesRepository
+ * @property-read SimpleAuthModels\Policies\Repository $policiesRepository
  */
 trait TRole
 {
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws JsonApiExceptions\JsonApi
 	 */
 	protected function findRole(
@@ -53,7 +54,7 @@ trait TRole
 		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->byId(Uuid\Uuid::fromString(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID))));
 
-		$role = $this->rolesRepository->findOneBy($findQuery);
+		$role = $this->policiesRepository->findOneBy($findQuery, Entities\Roles\Role::class);
 
 		if ($role === null) {
 			throw new JsonApiExceptions\JsonApiError(

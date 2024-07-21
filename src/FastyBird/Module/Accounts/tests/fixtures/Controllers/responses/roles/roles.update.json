@@ -14,10 +14,7 @@
     "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61",
     "attributes" : {
       "name" : "user",
-      "comment" : "Authenticated with update",
-      "anonymous" : false,
-      "authenticated" : true,
-      "administrator" : false
+      "comment" : "Authenticated with update"
     },
     "relationships" : {
       "children" : {

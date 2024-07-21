@@ -2,6 +2,7 @@
 
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Commands;
 
+use Casbin;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use Error;
@@ -49,7 +50,7 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 
 		$identitiesManager = $this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class);
 
-		$rolesRepository = $this->getContainer()->getByType(Models\Entities\Roles\RolesRepository::class);
+		$enforcer = $this->getContainer()->getByType(Casbin\Enforcer::class);
 
 		$identitiesRepository = $this->getContainer()->getByType(
 			Models\Entities\Identities\IdentitiesRepository::class,
@@ -65,9 +66,9 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 			$emailsRepository,
 			$emailsManager,
 			$identitiesManager,
-			$rolesRepository,
 			$translator,
 			$managerRegistry,
+			$enforcer,
 		));
 
 		$command = $application->get(Commands\Accounts\Create::NAME);

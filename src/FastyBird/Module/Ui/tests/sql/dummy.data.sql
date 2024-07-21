@@ -50,3 +50,12 @@ IGNORE INTO `fb_ui_module_widgets_groups` (`group_id`, `widget_id`) VALUES
 (_binary 0x89F4A14F7F78421699B8584AB9229F1C, _binary 0x1D60090154E743EE8F5DA9E22663DDD7),
 (_binary 0x89F4A14F7F78421699B8584AB9229F1C, _binary 0x5626E7A1C42C4A319B5D848E3CF0E82A),
 (_binary 0x89F4A14F7F78421699B8584AB9229F1C, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6);
+
+INSERT
+IGNORE INTO `fb_security_policies` (`policy_id`, `policy_type`, `policy_v0`, `policy_v1`, `policy_v2`, `policy_v3`, `policy_v4`, `policy_v5`, `policy_policy_type`) VALUES
+(_binary 0xb12082a40f5f4f3fb4e8c0d0ca209613, 'p', 'administrator', null, null, null, null, null, 'policy'),
+(_binary 0xf5fc546183c94344ab43824619faaa91, 'p', 'manager', null, null, null, null, null, 'policy'),
+(_binary 0x110e9e3b0d724827974906f89c368bc1, 'p', 'user', null, null, null, null, null, 'policy'),
+(_binary 0x46f0644f91eb4877a3b032ab29189794, 'p', 'visitor', null, null, null, null, null, 'policy'),
+(_binary 0x253fcd3a59b847288d6d017b02bc10e2, 'g', '5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34', 'administrator', null, null, null, null, 'policy'),
+(_binary 0x15592686e28a4208bc1dc7134ff472cc, 'g', 'efbfbdef-bfbd-68ef-bfbd-770b40efbfbd', 'user', null, null, null, null, 'policy');

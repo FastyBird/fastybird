@@ -82,6 +82,10 @@ class EntityDiscriminator implements Common\EventSubscriber
 				}
 			}
 
+			if (!in_array($classReflection->name, $extendedDiscriminatorMap, true)) {
+				$extendedDiscriminatorMap[$this->getShortName($classReflection->name)] = $classReflection->name;
+			}
+
 			foreach ($extendedDiscriminatorMap as $name => $classString) {
 				$metadata->addDiscriminatorMapClass($name, $classString);
 			}
@@ -164,6 +168,17 @@ class EntityDiscriminator implements Common\EventSubscriber
 				$rc->getName(),
 			));
 		}
+	}
+
+	private function getShortName(string $className): string
+	{
+		if (! str_contains($className, '\\')) {
+			return strtolower($className);
+		}
+
+		$parts = explode('\\', $className);
+
+		return strtolower(end($parts));
 	}
 
 }

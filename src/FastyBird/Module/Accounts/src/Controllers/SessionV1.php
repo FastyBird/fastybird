@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
+use Casbin;
 use DateTimeImmutable;
 use Doctrine;
 use Exception;
@@ -26,7 +27,7 @@ use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Security;
-use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
+use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
@@ -55,14 +56,12 @@ use function strval;
 final class SessionV1 extends BaseV1
 {
 
-	/**
-	 * @param SimpleAuthModels\Tokens\TokensManager<SimpleAuthEntities\Tokens\Token> $tokensManager
-	 */
 	public function __construct(
-		private readonly SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
-		private readonly SimpleAuthModels\Tokens\TokensManager $tokensManager,
+		private readonly SimpleAuthModels\Tokens\Repository $tokensRepository,
+		private readonly SimpleAuthModels\Tokens\Manager $tokensManager,
 		private readonly SimpleAuthSecurity\TokenReader $tokenReader,
 		private readonly SimpleAuthSecurity\TokenBuilder $tokenBuilder,
+		private readonly Casbin\Enforcer $enforcer,
 	)
 	{
 	}
@@ -186,7 +185,9 @@ final class SessionV1 extends BaseV1
 				'entity' => Entities\Tokens\AccessToken::class,
 				'token' => $this->createToken(
 					$this->user->getId() ?? Uuid\Uuid::uuid4(),
-					$this->user->getRoles(),
+					$this->enforcer->getRolesForUser(
+						$this->user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+					),
 					$validTill,
 				),
 				'validTill' => $validTill,
@@ -272,7 +273,7 @@ final class SessionV1 extends BaseV1
 			);
 		}
 
-		$refreshToken = $this->tokenRepository->findOneByToken(
+		$refreshToken = $this->tokensRepository->findOneByToken(
 			(string) $attributes->get('refresh'),
 			Entities\Tokens\RefreshToken::class,
 		);
@@ -321,7 +322,9 @@ final class SessionV1 extends BaseV1
 				'entity' => Entities\Tokens\AccessToken::class,
 				'token' => $this->createToken(
 					$this->user->getId() ?? Uuid\Uuid::uuid4(),
-					$this->user->getRoles(),
+					$this->enforcer->getRolesForUser(
+						$this->user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
+					),
 					$validTill,
 				),
 				'validTill' => $validTill,
@@ -491,7 +494,7 @@ final class SessionV1 extends BaseV1
 		$findToken = new SimpleAuthQueries\FindTokens();
 		$findToken->byToken($token->toString());
 
-		$accessToken = $this->tokenRepository->findOneBy($findToken, Entities\Tokens\AccessToken::class);
+		$accessToken = $this->tokensRepository->findOneBy($findToken, Entities\Tokens\AccessToken::class);
 
 		if (
 			$this->user->getAccount() !== null

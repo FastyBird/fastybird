@@ -12,7 +12,7 @@ use FastyBird\Addon\VirtualThermostat\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
-final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\BaseTestCase
+final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
 
 	/**
@@ -23,25 +23,23 @@ final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\BaseTestCase
 	 */
 	public function testServicesRegistration(): void
 	{
-		$container = $this->createContainer();
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Devices\Device::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Configuration::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Actors::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Sensors::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Channels\Preset::class, false));
 
-		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Configuration::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Actors::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Schemas\Channels\Preset::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Device::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Configuration::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Actors::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Sensors::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Channels\Preset::class, false));
 
-		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Configuration::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Actors::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Sensors::class, false));
-		self::assertNotNull($container->getByType(Hydrators\Channels\Preset::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Drivers\ThermostatFactory::class, false));
 
-		self::assertNotNull($container->getByType(Drivers\ThermostatFactory::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Helpers\Device::class, false));
 
-		self::assertNotNull($container->getByType(Helpers\Device::class, false));
-
-		self::assertNotNull($container->getByType(Commands\Install::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Commands\Install::class, false));
 	}
 
 }

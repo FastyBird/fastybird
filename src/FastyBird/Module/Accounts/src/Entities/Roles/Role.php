@@ -17,25 +17,22 @@ namespace FastyBird\Module\Accounts\Entities\Roles;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Accounts\Entities;
-use FastyBird\SimpleAuth\Constants as SimpleAuthConstants;
+use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
+use FastyBird\SimpleAuth\Types as SimpleAuthTypes;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Ramsey\Uuid;
 use function array_map;
+use function assert;
 use function in_array;
+use function is_string;
 
 #[ORM\Entity]
-#[ORM\Table(
-	name: 'fb_accounts_module_acl_roles',
-	options: [
-		'collate' => 'utf8mb4_general_ci',
-		'charset' => 'utf8mb4',
-		'comment' => 'ACL roles',
-	],
-)]
-#[ORM\UniqueConstraint(name: 'role_name_unique', columns: ['parent_id', 'role_name'])]
-class Role implements Entities\Entity,
+#[ORM\UniqueConstraint(name: 'policy_name_unique', columns: ['parent_id', 'policy_v0'])]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class Role extends SimpleAuthEntities\Policies\Policy implements Entities\Entity,
 	DoctrineTimestampable\Entities\IEntityCreated,
 	DoctrineTimestampable\Entities\IEntityUpdated
 {
@@ -44,23 +41,17 @@ class Role implements Entities\Entity,
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
-	#[ORM\Id]
-	#[ORM\Column(name: 'role_id', type: Uuid\Doctrine\UuidBinaryType::NAME)]
-	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
-	protected Uuid\UuidInterface $id;
-
-	#[ORM\Column(name: 'role_name', type: 'string', length: 100, nullable: false)]
-	private string $name;
+	public const TYPE = 'user_role';
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\Column(name: 'role_comment', type: 'string', nullable: false)]
+	#[ORM\Column(name: 'policy_comment', type: 'string', nullable: false)]
 	private string $comment;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
 	#[ORM\JoinColumn(
 		name: 'parent_id',
-		referencedColumnName: 'role_id',
+		referencedColumnName: 'policy_id',
 		nullable: true,
 		onDelete: 'set null',
 	)]
@@ -72,18 +63,29 @@ class Role implements Entities\Entity,
 	private Common\Collections\Collection $children;
 
 	public function __construct(
-		string $name,
+		string $v0,
 		string $comment,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
-		// @phpstan-ignore-next-line
-		$this->id = $id ?? Uuid\Uuid::uuid4();
+		parent::__construct(SimpleAuthTypes\PolicyType::POLICY, $id);
 
-		$this->name = $name;
-		$this->comment = $comment;
+		$this->setV0($v0);
+		$this->setComment($comment);
 
 		$this->children = new Common\Collections\ArrayCollection();
+	}
+
+	public function getName(): string
+	{
+		assert(is_string($this->getV0()));
+
+		return $this->getV0();
+	}
+
+	public function setName(string $name): void
+	{
+		$this->setV0($name);
 	}
 
 	public function getComment(): string
@@ -145,35 +147,6 @@ class Role implements Entities\Entity,
 		}
 	}
 
-	public function isAnonymous(): bool
-	{
-		return $this->name === SimpleAuthConstants::ROLE_ANONYMOUS;
-	}
-
-	public function isAuthenticated(): bool
-	{
-		return in_array($this->name, [
-			SimpleAuthConstants::ROLE_MANAGER,
-			SimpleAuthConstants::ROLE_USER,
-			SimpleAuthConstants::ROLE_VISITOR,
-		], true);
-	}
-
-	public function isAdministrator(): bool
-	{
-		return $this->name === SimpleAuthConstants::ROLE_ADMINISTRATOR;
-	}
-
-	public function getName(): string
-	{
-		return $this->name;
-	}
-
-	public function setName(string $name): void
-	{
-		$this->name = $name;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -182,11 +155,8 @@ class Role implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'source' => $this->getSource()->value,
-			'name' => $this->getName(),
+			'name' => $this->getV0(),
 			'comment' => $this->getComment(),
-			'is_administrator' => $this->isAdministrator(),
-			'is_authenticated' => $this->isAuthenticated(),
-			'is_anonymous' => $this->isAnonymous(),
 			'parent' => $this->getParent()?->getId()->toString(),
 			'children' => array_map(static fn (self $role): string => $role->getId()->toString(), $this->getChildren()),
 		];

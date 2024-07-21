@@ -15,10 +15,7 @@
       "id" : "337a0518-664b-40ef-bfbd-efbfbd7914ef",
       "attributes" : {
         "name" : "administrator",
-        "comment" : "Administrator",
-        "anonymous" : false,
-        "authenticated" : false,
-        "administrator" : true
+        "comment" : "Administrator"
       },
       "relationships" : {
         "children" : {
@@ -53,10 +50,7 @@
       "id" : "89f4a14f-7f78-4216-99b8-584ab9229f1c",
       "attributes" : {
         "name" : "manager",
-        "comment" : "Manager",
-        "anonymous" : false,
-        "authenticated" : true,
-        "administrator" : false
+        "comment" : "Manager"
       },
       "relationships" : {
         "children" : {
@@ -96,10 +90,7 @@
       "id" : "efbfbd04-0158-efbf-bdef-bfbd4defbfbd",
       "attributes" : {
         "name" : "guest",
-        "comment" : "Guest",
-        "anonymous" : true,
-        "authenticated" : false,
-        "administrator" : false
+        "comment" : "Guest"
       },
       "relationships" : {
         "children" : {
@@ -129,10 +120,7 @@
       "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61",
       "attributes" : {
         "name" : "user",
-        "comment" : "User",
-        "anonymous" : false,
-        "authenticated" : true,
-        "administrator" : false
+        "comment" : "User"
       },
       "relationships" : {
         "children" : {
