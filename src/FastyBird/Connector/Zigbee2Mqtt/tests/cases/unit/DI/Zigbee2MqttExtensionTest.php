@@ -7,6 +7,7 @@ use FastyBird\Connector\Zigbee2Mqtt\API;
 use FastyBird\Connector\Zigbee2Mqtt\Clients;
 use FastyBird\Connector\Zigbee2Mqtt\Commands;
 use FastyBird\Connector\Zigbee2Mqtt\Connector;
+use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Hydrators;
 use FastyBird\Connector\Zigbee2Mqtt\Models;
@@ -17,6 +18,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Tests;
 use FastyBird\Connector\Zigbee2Mqtt\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -24,8 +26,10 @@ final class Zigbee2MqttExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

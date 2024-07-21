@@ -18,18 +18,6 @@
       "type": "string",
       "default": null
     },
-    "anonymous": {
-      "type": "boolean",
-      "default": false
-    },
-    "authenticated": {
-      "type": "boolean",
-      "default": false
-    },
-    "administrator": {
-      "type": "boolean",
-      "default": false
-    },
     "parent": {
       "oneOf": [
         {

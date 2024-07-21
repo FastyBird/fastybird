@@ -7,6 +7,7 @@ use FastyBird\Connector\Sonoff\API;
 use FastyBird\Connector\Sonoff\Clients;
 use FastyBird\Connector\Sonoff\Commands;
 use FastyBird\Connector\Sonoff\Connector;
+use FastyBird\Connector\Sonoff\Exceptions;
 use FastyBird\Connector\Sonoff\Helpers;
 use FastyBird\Connector\Sonoff\Hydrators;
 use FastyBird\Connector\Sonoff\Queue;
@@ -17,6 +18,7 @@ use FastyBird\Connector\Sonoff\Tests;
 use FastyBird\Connector\Sonoff\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class SonoffExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -24,8 +26,10 @@ final class SonoffExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

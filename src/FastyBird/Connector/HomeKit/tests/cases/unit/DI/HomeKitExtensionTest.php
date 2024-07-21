@@ -7,6 +7,7 @@ use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Commands;
 use FastyBird\Connector\HomeKit\Connector;
 use FastyBird\Connector\HomeKit\Controllers;
+use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Hydrators;
 use FastyBird\Connector\HomeKit\Middleware;
@@ -19,6 +20,7 @@ use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 use function in_array;
 
 final class HomeKitExtensionTest extends Tests\Cases\Unit\DbTestCase
@@ -27,8 +29,10 @@ final class HomeKitExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

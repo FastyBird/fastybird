@@ -21,8 +21,12 @@ use FastyBird\Library\Application\Entities\Mapping\DiscriminatorEntry;
 use FastyBird\Library\Application\Exceptions;
 use ReflectionClass;
 use function array_keys;
+use function end;
+use function explode;
 use function in_array;
 use function sprintf;
+use function str_contains;
+use function strtolower;
 
 /**
  * @package        FastyBird:ApplicationLibrary!
@@ -172,7 +176,7 @@ class EntityDiscriminator implements Common\EventSubscriber
 
 	private function getShortName(string $className): string
 	{
-		if (! str_contains($className, '\\')) {
+		if (!str_contains($className, '\\')) {
 			return strtolower($className);
 		}
 

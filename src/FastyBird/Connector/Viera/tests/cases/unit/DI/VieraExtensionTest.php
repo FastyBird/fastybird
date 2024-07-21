@@ -7,6 +7,7 @@ use FastyBird\Connector\Viera\API;
 use FastyBird\Connector\Viera\Clients;
 use FastyBird\Connector\Viera\Commands;
 use FastyBird\Connector\Viera\Connector;
+use FastyBird\Connector\Viera\Exceptions;
 use FastyBird\Connector\Viera\Helpers;
 use FastyBird\Connector\Viera\Hydrators;
 use FastyBird\Connector\Viera\Queue;
@@ -17,6 +18,7 @@ use FastyBird\Connector\Viera\Tests;
 use FastyBird\Connector\Viera\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class VieraExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -24,8 +26,10 @@ final class VieraExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

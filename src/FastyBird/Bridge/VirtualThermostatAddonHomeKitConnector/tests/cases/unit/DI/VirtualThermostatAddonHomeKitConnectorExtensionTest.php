@@ -6,12 +6,14 @@ use Error;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Builders;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Commands;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Controllers;
+use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Exceptions;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Hydrators;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Router;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Schemas;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -19,8 +21,10 @@ final class VirtualThermostatAddonHomeKitConnectorExtensionTest extends Tests\Ca
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

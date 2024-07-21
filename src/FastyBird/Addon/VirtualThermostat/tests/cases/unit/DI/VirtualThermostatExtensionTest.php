@@ -5,12 +5,14 @@ namespace FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit\DI;
 use Error;
 use FastyBird\Addon\VirtualThermostat\Commands;
 use FastyBird\Addon\VirtualThermostat\Drivers;
+use FastyBird\Addon\VirtualThermostat\Exceptions;
 use FastyBird\Addon\VirtualThermostat\Helpers;
 use FastyBird\Addon\VirtualThermostat\Hydrators;
 use FastyBird\Addon\VirtualThermostat\Schemas;
 use FastyBird\Addon\VirtualThermostat\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -18,8 +20,10 @@ final class VirtualThermostatExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

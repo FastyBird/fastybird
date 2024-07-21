@@ -7,6 +7,7 @@ use FastyBird\Connector\FbMqtt\API;
 use FastyBird\Connector\FbMqtt\Clients;
 use FastyBird\Connector\FbMqtt\Commands;
 use FastyBird\Connector\FbMqtt\Connector;
+use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Hydrators;
 use FastyBird\Connector\FbMqtt\Queue;
@@ -16,6 +17,7 @@ use FastyBird\Connector\FbMqtt\Tests;
 use FastyBird\Connector\FbMqtt\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class FbMqttExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -23,8 +25,10 @@ final class FbMqttExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{
@@ -41,7 +45,9 @@ final class FbMqttExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\DeviceProperty::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\ExtensionAttribute::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\WriteV1DevicePropertyState::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\WriteV1ChannelPropertyState::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Queue\Consumers\WriteV1ChannelPropertyState::class, false),
+		);
 		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Queue\Queue::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Helpers\MessageBuilder::class, false));

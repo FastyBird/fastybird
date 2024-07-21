@@ -7,6 +7,7 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Commands;
 use FastyBird\Connector\Tuya\Connector;
+use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Queue;
@@ -17,6 +18,7 @@ use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class TuyaExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -24,8 +26,10 @@ final class TuyaExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

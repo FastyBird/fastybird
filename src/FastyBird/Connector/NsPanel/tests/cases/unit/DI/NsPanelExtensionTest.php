@@ -8,6 +8,7 @@ use FastyBird\Connector\NsPanel\Clients;
 use FastyBird\Connector\NsPanel\Commands;
 use FastyBird\Connector\NsPanel\Connector;
 use FastyBird\Connector\NsPanel\Controllers;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
@@ -21,6 +22,7 @@ use FastyBird\Connector\NsPanel\Tests;
 use FastyBird\Connector\NsPanel\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class NsPanelExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -28,8 +30,10 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

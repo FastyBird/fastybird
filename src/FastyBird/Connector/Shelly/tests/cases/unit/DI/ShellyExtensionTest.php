@@ -7,6 +7,7 @@ use FastyBird\Connector\Shelly\API;
 use FastyBird\Connector\Shelly\Clients;
 use FastyBird\Connector\Shelly\Commands;
 use FastyBird\Connector\Shelly\Connector;
+use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Hydrators;
 use FastyBird\Connector\Shelly\Queue;
@@ -17,6 +18,7 @@ use FastyBird\Connector\Shelly\Tests;
 use FastyBird\Connector\Shelly\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class ShellyExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -24,8 +26,10 @@ final class ShellyExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

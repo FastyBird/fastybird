@@ -7,6 +7,7 @@ use FastyBird\Connector\Virtual\Commands;
 use FastyBird\Connector\Virtual\Connector;
 use FastyBird\Connector\Virtual\Devices;
 use FastyBird\Connector\Virtual\Drivers;
+use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Hydrators;
 use FastyBird\Connector\Virtual\Queue;
@@ -16,6 +17,7 @@ use FastyBird\Connector\Virtual\Tests;
 use FastyBird\Connector\Virtual\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class VirtualExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -23,8 +25,10 @@ final class VirtualExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{

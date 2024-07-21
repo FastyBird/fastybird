@@ -13,6 +13,14 @@
 php:
     date.timezone: Europe/Prague
 
+parameters:
+    database:
+        version: 5.7
+        host: 127.0.0.1
+        port: 3306
+        driver: pdo_mysql
+        memory: false
+
 extensions:
     contributteTranslation              : Contributte\Translation\DI\TranslationExtension
     nettrineCache                       : Nettrine\Cache\DI\CacheExtension
@@ -51,11 +59,11 @@ contributteTranslation:
 
 nettrineDbal:
     connection:
-        serverVersion: 5.7
-        host: 127.0.0.1
-        port: 3306
-        driver: pdo_mysql
-        memory: false
+        serverVersion: %database.version%
+        host: %database.host%
+        port: %database.port%
+        driver: %database.driver%
+        memory: %database.memory%
         dbname: testdb
         user: root
         password: root

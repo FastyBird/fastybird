@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
-use Casbin;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
@@ -29,7 +28,6 @@ use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
-use FastyBird\SimpleAuth\Queries\FindPolicies;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;

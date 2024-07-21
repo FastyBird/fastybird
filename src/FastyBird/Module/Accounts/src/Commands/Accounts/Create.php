@@ -23,8 +23,11 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
+use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Types;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Nette\Utils;
 use Symfony\Component\Console;
@@ -55,8 +58,9 @@ class Create extends Console\Command\Command
 		private readonly Models\Entities\Emails\EmailsManager $emailsManager,
 		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
 		private readonly Localization\Translator $translator,
-		private readonly Persistence\ManagerRegistry $managerRegistry,
 		private readonly Casbin\Enforcer $enforcer,
+		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
+		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
 	)
 	{
@@ -104,6 +108,8 @@ class Create extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Doctrine\DBAL\Exception
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\Runtime
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
@@ -171,15 +177,23 @@ class Create extends Console\Command\Command
 		} while ($repeat);
 
 		$repeat = true;
-		$userRole = null;
 
-		if (
-			$input->hasArgument('role')
-			&& in_array($input->getArgument('role'), $this->enforcer->getAllRoles(), true)
+		if ($input->hasArgument('role') && in_array($input->getArgument('role'), [
+			SimpleAuth\Constants::ROLE_USER,
+			SimpleAuth\Constants::ROLE_MANAGER,
+			SimpleAuth\Constants::ROLE_ADMINISTRATOR,
+		], true)
 		) {
-			$io->error('Entered unknown role name.');
+			$findRoleQuery = new Queries\Entities\FindRoles();
+			$findRoleQuery->byName($input->getArgument('role'));
 
-			return 1;
+			$role = $this->policiesRepository->findOneBy($findRoleQuery, Entities\Roles\Role::class);
+
+			if ($role === null) {
+				$io->error('Entered unknown role name.');
+
+				return 1;
+			}
 		} else {
 			do {
 				$roleName = $io->choice(
@@ -213,9 +227,13 @@ class Create extends Console\Command\Command
 						break;
 				}
 
-				if (in_array($roleName, $this->enforcer->getAllRoles(), true)) {
+				$findRoleQuery = new Queries\Entities\FindRoles();
+				$findRoleQuery->byName(strval($roleName));
+
+				$role = $this->policiesRepository->findOneBy($findRoleQuery, Entities\Roles\Role::class);
+
+				if ($role !== null) {
 					$repeat = false;
-					$userRole = $roleName;
 				}
 			} while ($repeat);
 		}
@@ -246,9 +264,7 @@ class Create extends Console\Command\Command
 			// Create new email entity
 			$this->emailsManager->create($create);
 
-			if ($userRole !== null) {
-				$this->enforcer->addRoleForUser($account->getId()->toString(), strval($userRole));
-			}
+			$this->enforcer->addRoleForUser($account->getId()->toString(), $role->getName());
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();

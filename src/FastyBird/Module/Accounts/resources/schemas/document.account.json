@@ -77,14 +77,6 @@
       ],
       "default": null
     },
-    "roles": {
-      "type": "array",
-      "minItems": 1,
-      "uniqueItems": true,
-      "items": {
-        "type": "string"
-      }
-    },
     "parent": {
       "oneOf": [
         {
@@ -118,7 +110,6 @@
     "registered",
     "last_visit",
     "email",
-    "language",
-    "roles"
+    "language"
   ]
 }

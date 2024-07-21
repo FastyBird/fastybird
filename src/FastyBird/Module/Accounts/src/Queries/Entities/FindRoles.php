@@ -45,6 +45,13 @@ class FindRoles extends SimpleAuthQueries\FindPolicies
 		};
 	}
 
+	public function byName(string $name): void
+	{
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($name): void {
+			$qb->andWhere('p.v0 = :name')->setParameter('name', $name);
+		};
+	}
+
 	/**
 	 * @param array<string> $names
 	 */

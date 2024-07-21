@@ -7,6 +7,7 @@ use FastyBird\Connector\Modbus\API;
 use FastyBird\Connector\Modbus\Clients;
 use FastyBird\Connector\Modbus\Commands;
 use FastyBird\Connector\Modbus\Connector;
+use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers;
 use FastyBird\Connector\Modbus\Hydrators;
 use FastyBird\Connector\Modbus\Queue;
@@ -16,6 +17,7 @@ use FastyBird\Connector\Modbus\Tests;
 use FastyBird\Connector\Modbus\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use RuntimeException;
 
 final class ModbusExtensionTest extends Tests\Cases\Unit\DbTestCase
 {
@@ -23,8 +25,10 @@ final class ModbusExtensionTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Nette\DI\MissingServiceException
 	 * @throws Error
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Nette\DI\MissingServiceException
+	 * @throws RuntimeException
 	 */
 	public function testServicesRegistration(): void
 	{
