@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
-use Casbin;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
@@ -25,10 +24,11 @@ use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Hydrators;
 use FastyBird\Module\Accounts\Models;
+use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
-use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
@@ -52,7 +52,7 @@ final class AccountV1 extends BaseV1
 		private readonly Hydrators\Accounts\ProfileAccount $accountHydrator,
 		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
 		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
-		private readonly Casbin\Enforcer $enforcer,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -211,13 +211,13 @@ final class AccountV1 extends BaseV1
 		} elseif ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_IDENTITIES) {
 			return $this->buildResponse($request, $response, $account->getIdentities());
 		} elseif ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_ROLES) {
-			$roles = $this->enforcer->getRolesForUser($account->getId()->toString());
+			$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($account->getId()->toString());
 
 			$policies = [];
 
 			foreach ($roles as $role) {
-				$findPoliciesQuery = new SimpleAuthQueries\FindPolicies();
-				$findPoliciesQuery->byValue(0, $role);
+				$findPoliciesQuery = new Queries\Entities\FindRoles();
+				$findPoliciesQuery->byName($role);
 
 				$policy = $this->policiesRepository->findOneBy(
 					$findPoliciesQuery,

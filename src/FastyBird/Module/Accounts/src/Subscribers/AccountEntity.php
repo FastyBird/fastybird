@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\Subscribers;
 
-use Casbin;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
@@ -23,6 +22,8 @@ use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Nette;
 use function array_merge;
 use function count;
@@ -54,7 +55,9 @@ final class AccountEntity implements Common\EventSubscriber
 		SimpleAuth\Constants::ROLE_ANONYMOUS,
 	];
 
-	public function __construct(private readonly Casbin\Enforcer $enforcer)
+	public function __construct(
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
+	)
 	{
 	}
 
@@ -73,6 +76,7 @@ final class AccountEntity implements Common\EventSubscriber
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
 	 * @throws Exceptions\InvalidState
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -83,8 +87,10 @@ final class AccountEntity implements Common\EventSubscriber
 		foreach ($uow->getScheduledEntityInsertions() as $object) {
 			if (
 				$object instanceof Entities\Accounts\Account
-				&& $this->enforcer->getUsersForRole(SimpleAuth\Constants::ROLE_ADMINISTRATOR) === []
-				&& !$this->enforcer->hasRoleForUser(
+				&& $this->enforcerFactory->getEnforcer()->getUsersForRole(
+					SimpleAuth\Constants::ROLE_ADMINISTRATOR,
+				) === []
+				&& !$this->enforcerFactory->getEnforcer()->hasRoleForUser(
 					$object->getId()->toString(),
 					SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 				)
@@ -96,6 +102,7 @@ final class AccountEntity implements Common\EventSubscriber
 
 	/**
 	 * @throws Exceptions\AccountRoleInvalid
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	public function onFlush(ORM\Event\OnFlushEventArgs $eventArgs): void
 	{
@@ -112,11 +119,11 @@ final class AccountEntity implements Common\EventSubscriber
 			 * If new account is without any role
 			 * we have to assign default roles
 			 */
-			$roles = $this->enforcer->getRolesForUser($object->getId()->toString());
+			$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($object->getId()->toString());
 
 			if ($roles === []) {
 				foreach (Accounts\Constants::USER_ACCOUNT_DEFAULT_ROLES as $role) {
-					$this->enforcer->addRoleForUser($object->getId()->toString(), $role);
+					$this->enforcerFactory->getEnforcer()->addRoleForUser($object->getId()->toString(), $role);
 				}
 			}
 

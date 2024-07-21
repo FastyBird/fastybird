@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
-use Casbin;
 use DateTimeImmutable;
 use Doctrine;
 use Exception;
@@ -61,7 +60,7 @@ final class SessionV1 extends BaseV1
 		private readonly SimpleAuthModels\Tokens\Manager $tokensManager,
 		private readonly SimpleAuthSecurity\TokenReader $tokenReader,
 		private readonly SimpleAuthSecurity\TokenBuilder $tokenBuilder,
-		private readonly Casbin\Enforcer $enforcer,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -185,7 +184,7 @@ final class SessionV1 extends BaseV1
 				'entity' => Entities\Tokens\AccessToken::class,
 				'token' => $this->createToken(
 					$this->user->getId() ?? Uuid\Uuid::uuid4(),
-					$this->enforcer->getRolesForUser(
+					$this->enforcerFactory->getEnforcer()->getRolesForUser(
 						$this->user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 					),
 					$validTill,
@@ -322,7 +321,7 @@ final class SessionV1 extends BaseV1
 				'entity' => Entities\Tokens\AccessToken::class,
 				'token' => $this->createToken(
 					$this->user->getId() ?? Uuid\Uuid::uuid4(),
-					$this->enforcer->getRolesForUser(
+					$this->enforcerFactory->getEnforcer()->getRolesForUser(
 						$this->user->getId()?->toString() ?? SimpleAuth\Constants::USER_ANONYMOUS,
 					),
 					$validTill,

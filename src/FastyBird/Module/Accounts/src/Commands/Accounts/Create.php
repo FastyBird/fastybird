@@ -15,7 +15,6 @@
 
 namespace FastyBird\Module\Accounts\Commands\Accounts;
 
-use Casbin;
 use Doctrine;
 use Doctrine\DBAL\Connection;
 use Doctrine\Persistence;
@@ -27,6 +26,7 @@ use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Types;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Nette\Utils;
@@ -58,7 +58,7 @@ class Create extends Console\Command\Command
 		private readonly Models\Entities\Emails\EmailsManager $emailsManager,
 		private readonly Models\Entities\Identities\IdentitiesManager $identitiesManager,
 		private readonly Localization\Translator $translator,
-		private readonly Casbin\Enforcer $enforcer,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 		string|null $name = null,
@@ -264,7 +264,7 @@ class Create extends Console\Command\Command
 			// Create new email entity
 			$this->emailsManager->create($create);
 
-			$this->enforcer->addRoleForUser($account->getId()->toString(), $role->getName());
+			$this->enforcerFactory->getEnforcer()->addRoleForUser($account->getId()->toString(), $role->getName());
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();

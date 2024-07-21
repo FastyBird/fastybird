@@ -15,15 +15,16 @@
 
 namespace FastyBird\Module\Accounts\Schemas\Accounts;
 
-use Casbin;
 use DateTimeInterface;
 use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Router;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -62,7 +63,7 @@ final class Account extends JsonApis\JsonApi
 	public function __construct(
 		protected readonly Routing\IRouter $router,
 		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
-		private readonly Casbin\Enforcer $enforcer,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -140,6 +141,7 @@ final class Account extends JsonApis\JsonApi
 	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws SimpleAuthExceptions\InvalidState
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -257,10 +259,11 @@ final class Account extends JsonApis\JsonApi
 	 *
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	private function getRoles(Entities\Accounts\Account $account): array
 	{
-		$roles = $this->enforcer->getRolesForUser($account->getId()->toString());
+		$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($account->getId()->toString());
 
 		$policies = [];
 

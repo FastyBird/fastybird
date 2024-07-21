@@ -2,7 +2,6 @@
 
 namespace FastyBird\Module\Accounts\Tests\Cases\Unit\Commands;
 
-use Casbin;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use Error;
@@ -15,6 +14,7 @@ use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Tests;
 use FastyBird\SimpleAuth;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use RuntimeException;
@@ -51,7 +51,7 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 
 		$identitiesManager = $this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class);
 
-		$enforcer = $this->getContainer()->getByType(Casbin\Enforcer::class);
+		$enforcerFactory = $this->getContainer()->getByType(SimpleAuthSecurity\EnforcerFactory::class);
 
 		$policiesRepository = $this->getContainer()->getByType(SimpleAuthModels\Policies\Repository::class);
 
@@ -70,7 +70,7 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 			$emailsManager,
 			$identitiesManager,
 			$translator,
-			$enforcer,
+			$enforcerFactory,
 			$policiesRepository,
 			$managerRegistry,
 		));
