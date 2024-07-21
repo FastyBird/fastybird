@@ -18,12 +18,3 @@ IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector
 (_binary 0x1ad67aa5cc344c94b0f7a2ebe099a71c, _binary 0x63a28696cbea475784d7156e52ade4d3, 'variable', 'mode', 'Mode', 0, 0, 'string', NULL, NULL, NULL, NULL, 'lan', '2023-10-10 20:00:00', '2023-10-10 20:00:00'),
 (_binary 0xbf424644ae94483a8474d8d539311c7d, _binary 0x63a28696cbea475784d7156e52ade4d3, 'variable', 'username', 'Username', 0, 0, 'string', NULL, NULL, NULL, NULL, 'other@username.com', '2023-10-10 20:00:00', '2023-10-10 20:00:00'),
 (_binary 0x0b78122520d34240a22927a1dbc14dac, _binary 0x63a28696cbea475784d7156e52ade4d3, 'variable', 'password', 'Password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'dBCQZohQNR2U4rW9', '2023-10-10 20:00:00', '2023-10-10 20:00:00');
-
-INSERT
-IGNORE INTO `fb_security_policies` (`policy_id`, `policy_type`, `policy_v0`, `policy_v1`, `policy_v2`, `policy_v3`, `policy_v4`, `policy_v5`, `policy_policy_type`) VALUES
-(_binary 0xb12082a40f5f4f3fb4e8c0d0ca209613, 'p', 'administrator', null, null, null, null, null, 'policy'),
-(_binary 0xf5fc546183c94344ab43824619faaa91, 'p', 'manager', null, null, null, null, null, 'policy'),
-(_binary 0x110e9e3b0d724827974906f89c368bc1, 'p', 'user', null, null, null, null, null, 'policy'),
-(_binary 0x46f0644f91eb4877a3b032ab29189794, 'p', 'visitor', null, null, null, null, null, 'policy'),
-(_binary 0x253fcd3a59b847288d6d017b02bc10e2, 'g', '5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34', 'administrator', null, null, null, null, 'policy'),
-(_binary 0x15592686e28a4208bc1dc7134ff472cc, 'g', 'efbfbdef-bfbd-68ef-bfbd-770b40efbfbd', 'user', null, null, null, null, 'policy');
