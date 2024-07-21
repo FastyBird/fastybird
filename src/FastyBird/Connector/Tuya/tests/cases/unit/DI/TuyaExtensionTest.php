@@ -7,7 +7,6 @@ use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
 use FastyBird\Connector\Tuya\Commands;
 use FastyBird\Connector\Tuya\Connector;
-use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Hydrators;
 use FastyBird\Connector\Tuya\Queue;
@@ -18,61 +17,60 @@ use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Writers;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
-use RuntimeException;
 
-final class TuyaExtensionTest extends Tests\Cases\Unit\DbTestCase
+final class TuyaExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Error
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws RuntimeException
+	 * @throws Error
 	 */
 	public function testServicesRegistration(): void
 	{
-		self::assertCount(2, $this->getContainer()->findByType(Writers\WriterFactory::class));
+		$container = $this->createContainer();
 
-		self::assertNotNull($this->getContainer()->getByType(Clients\LocalFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Clients\CloudFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Clients\DiscoveryFactory::class, false));
+		self::assertCount(2, $container->findByType(Writers\WriterFactory::class));
 
-		self::assertNotNull($this->getContainer()->getByType(Services\DatagramFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Services\HttpClientFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Services\SocketClientFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Services\WebSocketClientFactory::class, false));
+		self::assertNotNull($container->getByType(Clients\LocalFactory::class, false));
+		self::assertNotNull($container->getByType(Clients\CloudFactory::class, false));
+		self::assertNotNull($container->getByType(Clients\DiscoveryFactory::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(API\ConnectionManager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(API\OpenApiFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(API\OpenPulsarFactory::class, false));
-		self::assertNotNull($this->getContainer()->getByType(API\LocalApiFactory::class, false));
+		self::assertNotNull($container->getByType(Services\DatagramFactory::class, false));
+		self::assertNotNull($container->getByType(Services\HttpClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\SocketClientFactory::class, false));
+		self::assertNotNull($container->getByType(Services\WebSocketClientFactory::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\StoreCloudDevice::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\StoreLocalDevice::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\StoreDeviceConnectionState::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\StoreChannelPropertyState::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Consumers::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Queue\Queue::class, false));
+		self::assertNotNull($container->getByType(API\ConnectionManager::class, false));
+		self::assertNotNull($container->getByType(API\OpenApiFactory::class, false));
+		self::assertNotNull($container->getByType(API\OpenPulsarFactory::class, false));
+		self::assertNotNull($container->getByType(API\LocalApiFactory::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\Properties::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\Controls::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\StoreCloudDevice::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\StoreLocalDevice::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\StoreDeviceConnectionState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\StoreChannelPropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers\WriteChannelPropertyState::class, false));
+		self::assertNotNull($container->getByType(Queue\Consumers::class, false));
+		self::assertNotNull($container->getByType(Queue\Queue::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Connectors\Connector::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Schemas\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Subscribers\Properties::class, false));
+		self::assertNotNull($container->getByType(Subscribers\Controls::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Connectors\Connector::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Hydrators\Devices\Device::class, false));
+		self::assertNotNull($container->getByType(Schemas\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Schemas\Devices\Device::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Helpers\MessageBuilder::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Connectors\Connector::class, false));
+		self::assertNotNull($container->getByType(Hydrators\Devices\Device::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Commands\Execute::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Commands\Discover::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Commands\Install::class, false));
+		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 
-		self::assertNotNull($this->getContainer()->getByType(Connector\ConnectorFactory::class, false));
+		self::assertNotNull($container->getByType(Commands\Execute::class, false));
+		self::assertNotNull($container->getByType(Commands\Discover::class, false));
+		self::assertNotNull($container->getByType(Commands\Install::class, false));
+
+		self::assertNotNull($container->getByType(Connector\ConnectorFactory::class, false));
 	}
 
 }
