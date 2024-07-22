@@ -47,7 +47,7 @@ jobs:
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
-      run: "${{ matrix.package.local-path }} make tests"
+      run: "cd ${{ matrix.package.local-path }} && make tests"
 
     strategy:
       fail-fast: false
