@@ -48,6 +48,7 @@ jobs:
     with:
       php: "${{ matrix.php-version }}"
       run: "cd ${{ matrix.package.local-path }} && make tests"
+      composer: "cd ${{ matrix.package.local-path }} && composer install --no-interaction --no-progress --prefer-dist"
 
     strategy:
       fail-fast: false
