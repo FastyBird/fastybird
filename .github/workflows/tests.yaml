@@ -16,46 +16,19 @@ env:
   COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ORGANIZATION_ACCESS_TOKEN }}"}}'
 
 jobs:
-  monorepo_matrix:
-    name: "Create list of packages for split"
-    runs-on: "${{ matrix.operating-system }}"
-
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ "ubuntu-latest" ]
-
-    # This step is needed, so the output gets to the next defined job
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.content }}
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v4"
-
-      - name: "Read matrix configuration"
-        id: "set-matrix"
-        uses: "juliangruber/read-file-action@v1"
-        with:
-          path: "./.github/workflows/monorepo-matrix.json"
-
   tests:
     name: "PHP Tests"
-    needs: [ "monorepo_matrix" ]
 
     uses: "fastybird/.github/.github/workflows/phpunit.yaml@main"
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
-      run: "cd ${{ matrix.package.local-path }} && make tests"
-      composer: "cd ${{ matrix.package.local-path }} && composer install --no-interaction --no-progress --prefer-dist"
 
     strategy:
       fail-fast: false
       matrix:
         php-version: [ "8.2" ]
         operating-system: [ "ubuntu-latest" ]
-        package: ${{fromJson(needs.monorepo_matrix.outputs.matrix)}}
 
   code-coverage:
     name: "PHP Tests With Code Coverage"
