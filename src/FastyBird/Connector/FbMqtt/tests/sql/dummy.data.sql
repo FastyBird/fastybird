@@ -7,8 +7,8 @@ IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector
 (_binary 0x7C055B2B60C3401793DBE9478D8AA662, _binary 0x37b86cdc376b4d4c9683aa4f41daa13a, 'variable', 'protocol', NULL, 0, 0, 'string', NULL, NULL, NULL, NULL, 'v1', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
-IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `connector_id`) VALUES
-(_binary 0x69786D15FD0C4D9F937833287C2009FA, 'fb-mqtt-connector', 'first-device', 'First device', NULL, NULL, '2020-03-19 14:03:48', '2020-03-22 20:12:07', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x37b86cdc376b4d4c9683aa4f41daa13a);
+IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `connector_id`) VALUES
+(_binary 0x69786D15FD0C4D9F937833287C2009FA, 'fb-mqtt-connector', 'first-device', 'First device', NULL, NULL, '2020-03-19 14:03:48', '2020-03-22 20:12:07', _binary 0x37b86cdc376b4d4c9683aa4f41daa13a);
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, `property_type`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_value`, `created_at`, `updated_at`) VALUES
