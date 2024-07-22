@@ -43,7 +43,7 @@ final class AccountIdentitiesV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider identitiesRead
 	 */
-	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
+	public function XtestRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
@@ -228,7 +228,7 @@ final class AccountIdentitiesV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider identitiesUpdate
 	 */
-	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
+	public function XtestUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 

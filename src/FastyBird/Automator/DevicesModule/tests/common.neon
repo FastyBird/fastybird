@@ -96,6 +96,8 @@ fbSimpleAuth:
         middleware: true
         doctrine:
             mapping: true
+        casbin:
+            database: true
         nette:
             application: true
     services:

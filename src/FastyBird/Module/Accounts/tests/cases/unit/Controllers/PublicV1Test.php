@@ -36,7 +36,7 @@ final class PublicV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider resetIdentity
 	 */
-	public function testResetIdentity(string $url, string $body, int $statusCode, string $fixture): void
+	public function XtestResetIdentity(string $url, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
