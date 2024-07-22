@@ -35,7 +35,7 @@ final class AccessTest extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider permissionAnnotation
 	 */
-	public function XtestPermissionAnnotation(
+	public function testPermissionAnnotation(
 		string $url,
 		string $method,
 		string $body,

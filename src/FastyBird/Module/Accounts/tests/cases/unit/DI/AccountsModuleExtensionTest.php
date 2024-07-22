@@ -31,7 +31,7 @@ final class AccountsModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws RuntimeException
 	 * @throws Error
 	 */
-	public function XtestServicesRegistration(): void
+	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Middleware\Access::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Middleware\UrlFormat::class, false));
