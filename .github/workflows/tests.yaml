@@ -42,7 +42,6 @@ jobs:
   tests:
     name: "PHP Tests"
     needs: [ "monorepo_matrix" ]
-    runs-on: "${{ matrix.operating-system }}"
 
     uses: "fastybird/.github/.github/workflows/phpunit.yaml@main"
     secrets: inherit
@@ -60,7 +59,6 @@ jobs:
   code-coverage:
     name: "PHP Tests With Code Coverage"
     needs: [ "tests" ]
-    runs-on: "${{ matrix.operating-system }}"
 
     if: "github.event_name == 'push'"
 
@@ -78,7 +76,6 @@ jobs:
   mutations:
     name: "PHP Tests For Mutants"
     needs: [ "tests" ]
-    runs-on: "${{ matrix.operating-system }}"
 
     if: "github.event_name == 'push'"
 
