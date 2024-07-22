@@ -14,7 +14,7 @@ env:
   composer-install: "composer update --no-interaction --no-progress --prefer-dist --prefer-stable"
 
 jobs:
-  build_matrix:
+  monorepo_matrix:
     name: "Create list of packages for split"
     runs-on: "${{ matrix.operating-system }}"
 
@@ -40,13 +40,13 @@ jobs:
   split_monorepo:
     name: "Update package"
     runs-on: "${{ matrix.operating-system }}"
-    needs: [ "build_matrix" ]
+    needs: [ "monorepo_matrix" ]
 
     strategy:
       fail-fast: false
       matrix:
         operating-system: [ "ubuntu-latest" ]
-        package: ${{fromJson(needs.build_matrix.outputs.matrix)}}
+        package: ${{fromJson(needs.monorepo_matrix.outputs.matrix)}}
 
     steps:
       - name: "Checkout"
