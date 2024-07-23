@@ -22,7 +22,7 @@
         "identifier": "first-device",
         "name": "First device",
         "comment": null,
-        "owner": "455354e8-96bd-4c29-84e7-9f10e1d4db4b",
+        "owner": null,
         "created_at": "2020-03-19T14:03:48+01:00",
         "updated_at": "2020-03-22T20:12:07+01:00"
       },

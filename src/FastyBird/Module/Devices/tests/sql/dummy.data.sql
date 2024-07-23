@@ -13,11 +13,11 @@ IGNORE INTO `fb_devices_module_connectors_properties` (`property_id`, `connector
 (_binary 0x28cb8a0fb33d4398bf6c5d1a0594524c, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E, 'variable', 'password', 'password', 0, 0, 'string', NULL, NULL, NULL, NULL, 'secret_password', '2020-03-20 09:18:20', '2020-03-20 09:18:20');
 
 INSERT
-IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `connector_id`) VALUES
-(_binary 0x69786D15FD0C4D9F937833287C2009FA, 'dummy', 'first-device', 'First device', NULL, NULL, '2020-03-19 14:03:48', '2020-03-22 20:12:07', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
-(_binary 0xBF4CD8702AAC45F0A85EE1CEFD2D6D9A, 'dummy', 'second-device', NULL, NULL, NULL, '2020-03-20 21:54:32', '2020-03-20 21:54:32', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
-(_binary 0xE36A27881EF84CDFAB094735F191A509, 'dummy', 'third-device', 'Third device', 'Custom comment', NULL, '2020-03-20 21:56:41', '2020-03-20 21:56:41', '455354e8-96bd-4c29-84e7-9f10e1d4db4b', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
-(_binary 0xA1036FF86EE84405AAED58BAE0814596, 'dummy', 'child-device', 'Child device', 'This is child', NULL, '2020-03-20 21:56:41', '2020-03-20 21:56:41', NULL, _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E);
+IGNORE INTO `fb_devices_module_devices` (`device_id`, `device_type`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `connector_id`) VALUES
+(_binary 0x69786D15FD0C4D9F937833287C2009FA, 'dummy', 'first-device', 'First device', NULL, NULL, '2020-03-19 14:03:48', '2020-03-22 20:12:07', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
+(_binary 0xBF4CD8702AAC45F0A85EE1CEFD2D6D9A, 'dummy', 'second-device', NULL, NULL, NULL, '2020-03-20 21:54:32', '2020-03-20 21:54:32', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
+(_binary 0xE36A27881EF84CDFAB094735F191A509, 'dummy', 'third-device', 'Third device', 'Custom comment', NULL, '2020-03-20 21:56:41', '2020-03-20 21:56:41', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E),
+(_binary 0xA1036FF86EE84405AAED58BAE0814596, 'dummy', 'child-device', 'Child device', 'This is child', NULL, '2020-03-20 21:56:41', '2020-03-20 21:56:41', _binary 0x17C59DFA2EDD438E8C49FAA4E38E5A5E);
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_children` (`parent_device`, `child_device`) VALUES

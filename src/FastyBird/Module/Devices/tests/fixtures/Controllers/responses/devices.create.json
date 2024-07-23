@@ -17,7 +17,7 @@
       "identifier": "new-device",
       "name": "Newly created device",
       "comment": null,
-      "owner": "5e79efbf-bd0d-5b7c-46ef-bfbdefbfbd34",
+      "owner": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00"
     },

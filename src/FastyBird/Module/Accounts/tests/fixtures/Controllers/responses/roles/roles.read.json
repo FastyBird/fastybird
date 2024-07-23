@@ -14,10 +14,7 @@
     "id" : "efbfbdef-bfbd-efbf-bd0f-efbfbd5c4f61",
     "attributes" : {
       "name" : "user",
-      "comment" : "User",
-      "anonymous" : false,
-      "authenticated" : true,
-      "administrator" : false
+      "comment" : "User"
     },
     "relationships" : {
       "children" : {

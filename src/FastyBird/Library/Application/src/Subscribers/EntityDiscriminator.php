@@ -21,8 +21,12 @@ use FastyBird\Library\Application\Entities\Mapping\DiscriminatorEntry;
 use FastyBird\Library\Application\Exceptions;
 use ReflectionClass;
 use function array_keys;
+use function end;
+use function explode;
 use function in_array;
 use function sprintf;
+use function str_contains;
+use function strtolower;
 
 /**
  * @package        FastyBird:ApplicationLibrary!
@@ -80,6 +84,10 @@ class EntityDiscriminator implements Common\EventSubscriber
 				if (!in_array($className, $extendedDiscriminatorMap, true)) {
 					$extendedDiscriminatorMap[$name] = $className;
 				}
+			}
+
+			if (!in_array($classReflection->name, $extendedDiscriminatorMap, true)) {
+				$extendedDiscriminatorMap[$this->getShortName($classReflection->name)] = $classReflection->name;
 			}
 
 			foreach ($extendedDiscriminatorMap as $name => $classString) {
@@ -164,6 +172,17 @@ class EntityDiscriminator implements Common\EventSubscriber
 				$rc->getName(),
 			));
 		}
+	}
+
+	private function getShortName(string $className): string
+	{
+		if (!str_contains($className, '\\')) {
+			return strtolower($className);
+		}
+
+		$parts = explode('\\', $className);
+
+		return strtolower(end($parts));
 	}
 
 }

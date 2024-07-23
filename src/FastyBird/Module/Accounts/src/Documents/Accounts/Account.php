@@ -47,7 +47,6 @@ final readonly class Account implements MetadataDocuments\Document
 {
 
 	/**
-	 * @param array<int, string> $roles
 	 * @param array<int, Uuid\UuidInterface> $children
 	 */
 	public function __construct(
@@ -88,11 +87,6 @@ final readonly class Account implements MetadataDocuments\Document
 		])]
 		#[ObjectMapper\Modifiers\FieldName('last_visit')]
 		private DateTimeInterface|null $lastVisit = null,
-		#[ObjectMapper\Rules\ArrayOf(
-			item: new ObjectMapper\Rules\StringValue(notEmpty: true),
-			minItems: 1,
-		)]
-		private array $roles = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ApplicationObjectMapper\Rules\UuidValue(),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -151,14 +145,6 @@ final readonly class Account implements MetadataDocuments\Document
 		return $this->lastVisit;
 	}
 
-	/**
-	 * @return array<string>
-	 */
-	public function getRoles(): array
-	{
-		return $this->roles;
-	}
-
 	public function getParent(): Uuid\UuidInterface|null
 	{
 		return $this->parent;
@@ -190,7 +176,6 @@ final readonly class Account implements MetadataDocuments\Document
 			'language' => $this->getLanguage(),
 			'registered' => $this->getRegistered()?->format(DateTimeInterface::ATOM),
 			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),
-			'roles' => $this->getRoles(),
 			'parent' => $this->getParent()?->toString(),
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),

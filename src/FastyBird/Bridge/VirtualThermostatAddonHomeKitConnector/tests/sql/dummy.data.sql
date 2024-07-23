@@ -9,13 +9,13 @@ IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id
 (_binary 0xe7c9e5834af14b86b647f179207e6456, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'reboot', '2024-02-04 22:00:00', '2024-02-04 22:00:00');
 
 INSERT
-IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `device_type`) VALUES
-(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'virtual-thermostat-addon'),
-(_binary 0x8eab9ed0c3834941a3d97c501fe091b2, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-living-room', 'Thermostat - Living Room', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'virtual-thermostat-addon'),
-(_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-one', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'dummy'),
-(_binary 0xe10c43a9fa3b463e983104ba23025479, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-two', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'dummy'),
-(_binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'virtual-thermostat-addon-bridge'),
-(_binary 0x45716d9eb19446a98dca5a66cc12a996, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-living-room', 'Thermostat - Living Room - Corrupted', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', null, 'virtual-thermostat-addon-bridge');
+IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `device_type`) VALUES
+(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon'),
+(_binary 0x8eab9ed0c3834941a3d97c501fe091b2, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-living-room', 'Thermostat - Living Room', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon'),
+(_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-one', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
+(_binary 0xe10c43a9fa3b463e983104ba23025479, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-two', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
+(_binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge'),
+(_binary 0x45716d9eb19446a98dca5a66cc12a996, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-living-room', 'Thermostat - Living Room - Corrupted', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_children` (`parent_device`, `child_device`) VALUES

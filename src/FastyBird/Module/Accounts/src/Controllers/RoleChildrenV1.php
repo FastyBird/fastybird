@@ -18,9 +18,11 @@ namespace FastyBird\Module\Accounts\Controllers;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts\Controllers;
+use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
-use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Psr\Http\Message;
 
@@ -40,7 +42,7 @@ final class RoleChildrenV1 extends BaseV1
 
 	use Controllers\Finders\TRole;
 
-	public function __construct(private readonly Models\Entities\Roles\RolesRepository $rolesRepository)
+	public function __construct(private readonly SimpleAuthModels\Policies\Repository $policiesRepository)
 	{
 	}
 
@@ -50,6 +52,7 @@ final class RoleChildrenV1 extends BaseV1
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
@@ -62,7 +65,10 @@ final class RoleChildrenV1 extends BaseV1
 		$findQuery = new Queries\Entities\FindRoles();
 		$findQuery->forParent($role);
 
-		$children = $this->rolesRepository->getResultSet($findQuery);
+		$children = $this->policiesRepository->getResultSet(
+			$findQuery,
+			Entities\Roles\Role::class,
+		);
 
 		// @phpstan-ignore-next-line
 		return $this->buildResponse($request, $response, $children);

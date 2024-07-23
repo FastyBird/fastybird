@@ -15,50 +15,28 @@
 
 namespace FastyBird\Module\Accounts\Queries\Entities;
 
-use Closure;
+use Doctrine\DBAL;
 use Doctrine\ORM;
 use FastyBird\Module\Accounts\Entities;
-use IPub\DoctrineOrmQuery;
+use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
 use Ramsey\Uuid;
 
 /**
  * Find roles entities query
  *
- * @extends  DoctrineOrmQuery\QueryObject<Entities\Roles\Role>
+ * @extends  SimpleAuthQueries\FindPolicies<Entities\Roles\Role>
  *
  * @package        FastyBird:AccountsModule!
  * @subpackage     Queries
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class FindRoles extends DoctrineOrmQuery\QueryObject
+class FindRoles extends SimpleAuthQueries\FindPolicies
 {
-
-	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $filter = [];
-
-	/** @var array<Closure(ORM\QueryBuilder $qb): void> */
-	private array $select = [];
-
-	public function byId(Uuid\UuidInterface $id): void
-	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($id): void {
-			$qb->andWhere('r.id = :id')
-				->setParameter('id', $id->getBytes());
-		};
-	}
-
-	public function byName(string $name): void
-	{
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($name): void {
-			$qb->andWhere('r.name = :name')
-				->setParameter('name', $name);
-		};
-	}
 
 	public function forParent(Entities\Roles\Role $role): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
-			$qb->join('r.parent', 'parent');
+			$qb->join('p.parent', 'parent');
 		};
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($role): void {
@@ -67,39 +45,21 @@ class FindRoles extends DoctrineOrmQuery\QueryObject
 		};
 	}
 
-	/**
-	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
-	 */
-	protected function doCreateQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
+	public function byName(string $name): void
 	{
-		return $this->createBasicDql($repository);
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($name): void {
+			$qb->andWhere('p.v0 = :name')->setParameter('name', $name);
+		};
 	}
 
 	/**
-	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
+	 * @param array<string> $names
 	 */
-	private function createBasicDql(ORM\EntityRepository $repository): ORM\QueryBuilder
+	public function byNames(array $names): void
 	{
-		$qb = $repository->createQueryBuilder('r');
-
-		foreach ($this->select as $modifier) {
-			$modifier($qb);
-		}
-
-		foreach ($this->filter as $modifier) {
-			$modifier($qb);
-		}
-
-		return $qb;
-	}
-
-	/**
-	 * @param ORM\EntityRepository<Entities\Roles\Role> $repository
-	 */
-	protected function doCreateCountQuery(ORM\EntityRepository $repository): ORM\QueryBuilder
-	{
-		return $this->createBasicDql($repository)
-			->select('COUNT(r.id)');
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($names): void {
+			$qb->andWhere('p.v0 IN (:names)')->setParameter('names', $names, DBAL\ArrayParameterType::STRING);
+		};
 	}
 
 }

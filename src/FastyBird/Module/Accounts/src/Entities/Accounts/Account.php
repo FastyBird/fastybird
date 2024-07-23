@@ -24,9 +24,7 @@ use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function array_map;
 use function assert;
-use function in_array;
 
 #[ORM\Entity]
 #[ORM\Table(
@@ -97,28 +95,6 @@ class Account implements Entities\Entity,
 	)]
 	protected Common\Collections\Collection $emails;
 
-	/** @var Common\Collections\Collection<int, Entities\Roles\Role> */
-	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\ManyToMany(targetEntity: Entities\Roles\Role::class)]
-	#[ORM\JoinTable(
-		name: 'fb_accounts_module_accounts_roles',
-		joinColumns: [
-			new ORM\JoinColumn(
-				name: 'account_id',
-				referencedColumnName: 'account_id',
-				onDelete: 'CASCADE',
-			),
-		],
-		inverseJoinColumns: [
-			new ORM\JoinColumn(
-				name: 'role_id',
-				referencedColumnName: 'role_id',
-				onDelete: 'CASCADE',
-			),
-		],
-	)]
-	protected Common\Collections\Collection $roles;
-
 	public function __construct(Uuid\UuidInterface|null $id = null)
 	{
 		// @phpstan-ignore-next-line
@@ -128,7 +104,6 @@ class Account implements Entities\Entity,
 
 		$this->emails = new Common\Collections\ArrayCollection();
 		$this->identities = new Common\Collections\ArrayCollection();
-		$this->roles = new Common\Collections\ArrayCollection();
 	}
 
 	public function isActivated(): bool
@@ -257,59 +232,6 @@ class Account implements Entities\Entity,
 	}
 
 	/**
-	 * @return array<Entities\Roles\Role>
-	 */
-	public function getRoles(): array
-	{
-		return $this->roles->toArray();
-	}
-
-	/**
-	 * @param array<Entities\Roles\Role> $roles
-	 */
-	public function setRoles(array $roles): void
-	{
-		$this->roles = new Common\Collections\ArrayCollection();
-
-		foreach ($roles as $entity) {
-			$this->addRole($entity);
-		}
-
-		foreach ($this->roles as $entity) {
-			if (!in_array($entity, $roles, true)) {
-				$this->roles->removeElement($entity);
-			}
-		}
-	}
-
-	public function addRole(Entities\Roles\Role $role): void
-	{
-		// Check if collection does not contain inserting entity
-		if (!$this->roles->contains($role)) {
-			// ...and assign it to collection
-			$this->roles->add($role);
-		}
-	}
-
-	public function removeRole(Entities\Roles\Role $role): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->roles->contains($role)) {
-			// ...and remove it from collection
-			$this->roles->removeElement($role);
-		}
-	}
-
-	public function hasRole(string $role): bool
-	{
-		$role = $this->roles
-			->filter(static fn (Entities\Roles\Role $row): bool => $role === $row->getName())
-			->first();
-
-		return $role !== false;
-	}
-
-	/**
 	 * TODO: Should be refactored
 	 */
 	public function getLanguage(): string
@@ -332,7 +254,6 @@ class Account implements Entities\Entity,
 			'state' => $this->getState()->value,
 			'registered' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'last_visit' => $this->getLastVisit()?->format(DateTimeInterface::ATOM),
-			'roles' => array_map(static fn (Entities\Roles\Role $role): string => $role->getName(), $this->getRoles()),
 			'language' => $this->getLanguage(),
 		];
 	}

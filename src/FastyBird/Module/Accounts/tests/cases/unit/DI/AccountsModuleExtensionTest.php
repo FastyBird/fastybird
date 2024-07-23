@@ -50,14 +50,12 @@ final class AccountsModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Entities\Identities\IdentitiesRepository::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Roles\RolesRepository::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Accounts\AccountsManager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Emails\EmailsManager::class, false));
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class, false),
 		);
-		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Roles\RolesManager::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Controllers\AccountV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\AccountEmailsV1::class, false));

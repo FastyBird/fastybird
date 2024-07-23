@@ -13,6 +13,8 @@ use FastyBird\Module\Accounts\Models;
 use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Tests;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette;
 use RuntimeException;
@@ -49,7 +51,9 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 
 		$identitiesManager = $this->getContainer()->getByType(Models\Entities\Identities\IdentitiesManager::class);
 
-		$rolesRepository = $this->getContainer()->getByType(Models\Entities\Roles\RolesRepository::class);
+		$enforcerFactory = $this->getContainer()->getByType(SimpleAuthSecurity\EnforcerFactory::class);
+
+		$policiesRepository = $this->getContainer()->getByType(SimpleAuthModels\Policies\Repository::class);
 
 		$identitiesRepository = $this->getContainer()->getByType(
 			Models\Entities\Identities\IdentitiesRepository::class,
@@ -65,8 +69,9 @@ final class CreateAccountTest extends Tests\Cases\Unit\DbTestCase
 			$emailsRepository,
 			$emailsManager,
 			$identitiesManager,
-			$rolesRepository,
 			$translator,
+			$enforcerFactory,
+			$policiesRepository,
 			$managerRegistry,
 		));
 

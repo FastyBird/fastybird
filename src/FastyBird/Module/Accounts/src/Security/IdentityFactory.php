@@ -35,7 +35,7 @@ readonly class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 {
 
 	public function __construct(
-		private SimpleAuthModels\Tokens\TokenRepository $tokenRepository,
+		private SimpleAuthModels\Tokens\Repository $tokensRepository,
 	)
 	{
 	}
@@ -51,7 +51,7 @@ readonly class IdentityFactory implements SimpleAuthSecurity\IIdentityFactory
 		$findToken = new SimpleAuthQueries\FindTokens();
 		$findToken->byToken($token->toString());
 
-		$accessToken = $this->tokenRepository->findOneBy($findToken, Entities\Tokens\AccessToken::class);
+		$accessToken = $this->tokensRepository->findOneBy($findToken, Entities\Tokens\AccessToken::class);
 
 		if ($accessToken instanceof Entities\Tokens\AccessToken) {
 			return $accessToken->getIdentity();

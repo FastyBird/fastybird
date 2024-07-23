@@ -18,13 +18,12 @@ namespace FastyBird\Module\Accounts\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
-use FastyBird\Module\Accounts\Models;
-use FastyBird\Module\Accounts\Queries;
 use FastyBird\SimpleAuth;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Nette;
 use function array_merge;
 use function count;
@@ -44,21 +43,8 @@ final class AccountEntity implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @var array<string> */
-	private array $singleRoles = [
-		SimpleAuth\Constants::ROLE_ADMINISTRATOR,
-		SimpleAuth\Constants::ROLE_USER,
-	];
-
-	/** @var array<string> */
-	private array $notAssignableRoles = [
-		SimpleAuth\Constants::ROLE_VISITOR,
-		SimpleAuth\Constants::ROLE_ANONYMOUS,
-	];
-
 	public function __construct(
-		private readonly Models\Entities\Accounts\AccountsRepository $accountsRepository,
-		private readonly Models\Entities\Roles\RolesRepository $rolesRepository,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -77,8 +63,8 @@ final class AccountEntity implements Common\EventSubscriber
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
@@ -89,8 +75,13 @@ final class AccountEntity implements Common\EventSubscriber
 		foreach ($uow->getScheduledEntityInsertions() as $object) {
 			if (
 				$object instanceof Entities\Accounts\Account
-				&& $this->getAdministrator() === null
-				&& !$object->hasRole(SimpleAuth\Constants::ROLE_ADMINISTRATOR)
+				&& $this->enforcerFactory->getEnforcer()->getUsersForRole(
+					SimpleAuth\Constants::ROLE_ADMINISTRATOR,
+				) === []
+				&& !$this->enforcerFactory->getEnforcer()->hasRoleForUser(
+					$object->getId()->toString(),
+					SimpleAuth\Constants::ROLE_ADMINISTRATOR,
+				)
 			) {
 				throw new Exceptions\InvalidState('First account have to be an administrator account');
 			}
@@ -98,9 +89,8 @@ final class AccountEntity implements Common\EventSubscriber
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\AccountRoleInvalid
-	 * @throws Exceptions\InvalidState
+	 * @throws SimpleAuthExceptions\InvalidState
 	 */
 	public function onFlush(ORM\Event\OnFlushEventArgs $eventArgs): void
 	{
@@ -117,21 +107,26 @@ final class AccountEntity implements Common\EventSubscriber
 			 * If new account is without any role
 			 * we have to assign default roles
 			 */
-			if (count($object->getRoles()) === 0) {
-				$object->setRoles($this->getDefaultRoles(Accounts\Constants::USER_ACCOUNT_DEFAULT_ROLES));
+			$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($object->getId()->toString());
+
+			if ($roles === []) {
+				foreach (Accounts\Constants::DEFAULT_ROLES as $role) {
+					$this->enforcerFactory->getEnforcer()->addRoleForUser($object->getId()->toString(), $role);
+					$this->enforcerFactory->getEnforcer()->invalidateCache();
+				}
 			}
 
-			foreach ($object->getRoles() as $role) {
+			foreach ($roles as $role) {
 				/**
 				 * Special roles like administrator or user
 				 * can not be assigned to account with other roles
 				 */
 				if (
-					in_array($role->getName(), $this->singleRoles, true)
-					&& count($object->getRoles()) > 1
+					in_array($role, Accounts\Constants::SINGLE_ROLES, true)
+					&& count($roles) > 1
 				) {
 					throw new Exceptions\AccountRoleInvalid(
-						sprintf('Role %s could not be combined with other roles', $role->getName()),
+						sprintf('Role %s could not be combined with other roles', $role),
 					);
 				}
 
@@ -139,64 +134,13 @@ final class AccountEntity implements Common\EventSubscriber
 				 * Special roles like visitor or guest
 				 * can not be assigned to account
 				 */
-				if (in_array($role->getName(), $this->notAssignableRoles, true)) {
+				if (in_array($role, Accounts\Constants::NOT_ASSIGNABLE_ROLES, true)) {
 					throw new Exceptions\AccountRoleInvalid(
-						sprintf('Role %s could not be assigned to account', $role->getName()),
+						sprintf('Role %s could not be assigned to account', $role),
 					);
 				}
 			}
 		}
-	}
-
-	/**
-	 * @param array<string> $roleNames
-	 *
-	 * @return array<Entities\Roles\Role>
-	 *
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function getDefaultRoles(array $roleNames): array
-	{
-		$roles = [];
-
-		foreach ($roleNames as $roleName) {
-			$findRole = new Queries\Entities\FindRoles();
-			$findRole->byName($roleName);
-
-			$role = $this->rolesRepository->findOneBy($findRole);
-
-			if ($role === null) {
-				throw new Exceptions\InvalidState(sprintf('Role %s is not created', $roleName));
-			}
-
-			$roles[] = $role;
-		}
-
-		return $roles;
-	}
-
-	/**
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Exceptions\InvalidState
-	 */
-	private function getAdministrator(): Entities\Accounts\Account|null
-	{
-		$findRole = new Queries\Entities\FindRoles();
-		$findRole->byName(SimpleAuth\Constants::ROLE_ADMINISTRATOR);
-
-		$role = $this->rolesRepository->findOneBy($findRole);
-
-		if ($role === null) {
-			throw new Exceptions\InvalidState(
-				sprintf('Role %s is not created', SimpleAuth\Constants::ROLE_ADMINISTRATOR),
-			);
-		}
-
-		$findAccount = new Queries\Entities\FindAccounts();
-		$findAccount->inRole($role);
-
-		return $this->accountsRepository->findOneBy($findAccount);
 	}
 
 }

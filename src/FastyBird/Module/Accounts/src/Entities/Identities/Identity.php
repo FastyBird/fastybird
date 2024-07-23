@@ -25,7 +25,6 @@ use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
-use function array_map;
 use function strval;
 
 #[ORM\Entity]
@@ -186,10 +185,7 @@ class Identity implements Entities\Entity,
 	 */
 	public function getRoles(): array
 	{
-		return array_map(
-			static fn (Entities\Roles\Role $role): string => $role->getName(),
-			$this->account->getRoles(),
-		);
+		return [];
 	}
 
 	public function invalidate(): void

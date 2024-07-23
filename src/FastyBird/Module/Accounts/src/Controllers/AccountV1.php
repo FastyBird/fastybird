@@ -24,10 +24,14 @@ use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Hydrators;
 use FastyBird\Module\Accounts\Models;
+use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Psr\Http\Message;
 use Throwable;
 use function strtolower;
@@ -47,6 +51,8 @@ final class AccountV1 extends BaseV1
 	public function __construct(
 		private readonly Hydrators\Accounts\ProfileAccount $accountHydrator,
 		private readonly Models\Entities\Accounts\AccountsManager $accountsManager,
+		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
 	{
 	}
@@ -183,6 +189,8 @@ final class AccountV1 extends BaseV1
 	}
 
 	/**
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 *
@@ -203,7 +211,25 @@ final class AccountV1 extends BaseV1
 		} elseif ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_IDENTITIES) {
 			return $this->buildResponse($request, $response, $account->getIdentities());
 		} elseif ($relationEntity === Schemas\Accounts\Account::RELATIONSHIPS_ROLES) {
-			return $this->buildResponse($request, $response, $account->getRoles());
+			$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($account->getId()->toString());
+
+			$policies = [];
+
+			foreach ($roles as $role) {
+				$findPoliciesQuery = new Queries\Entities\FindRoles();
+				$findPoliciesQuery->byName($role);
+
+				$policy = $this->policiesRepository->findOneBy(
+					$findPoliciesQuery,
+					Entities\Roles\Role::class,
+				);
+
+				if ($policy !== null) {
+					$policies[] = $policy;
+				}
+			}
+
+			return $this->buildResponse($request, $response, $policies);
 		}
 
 		return parent::readRelationship($request, $response);

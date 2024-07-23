@@ -20,7 +20,12 @@ use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
+use FastyBird\SimpleAuth\Models as SimpleAuthModels;
+use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use function count;
@@ -54,7 +59,11 @@ final class Account extends JsonApis\JsonApi
 
 	public const RELATIONSHIPS_EMAILS = 'emails';
 
-	public function __construct(protected readonly Routing\IRouter $router)
+	public function __construct(
+		protected readonly Routing\IRouter $router,
+		private readonly SimpleAuthModels\Policies\Repository $policiesRepository,
+		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
+	)
 	{
 	}
 
@@ -129,6 +138,10 @@ final class Account extends JsonApis\JsonApi
 	 *
 	 * @return iterable<string, array<int, (array<Entities\Identities\Identity>|array<Entities\Roles\Role>|array<Entities\Emails\Email>|bool)>>
 	 *
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws SimpleAuthExceptions\InvalidState
+	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
 	public function getRelationships(
@@ -143,7 +156,7 @@ final class Account extends JsonApis\JsonApi
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
 			self::RELATIONSHIPS_ROLES => [
-				self::RELATIONSHIP_DATA => $resource->getRoles(),
+				self::RELATIONSHIP_DATA => $this->getRoles($resource),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => false,
 			],
@@ -238,6 +251,36 @@ final class Account extends JsonApis\JsonApi
 		}
 
 		return parent::getRelationshipSelfLink($resource, $name);
+	}
+
+	/**
+	 * @return array<int, Entities\Roles\Role>
+	 *
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws SimpleAuthExceptions\InvalidState
+	 */
+	private function getRoles(Entities\Accounts\Account $account): array
+	{
+		$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($account->getId()->toString());
+
+		$policies = [];
+
+		foreach ($roles as $role) {
+			$findRolesQuery = new Queries\Entities\FindRoles();
+			$findRolesQuery->byName($role);
+
+			$policy = $this->policiesRepository->findOneBy(
+				$findRolesQuery,
+				Entities\Roles\Role::class,
+			);
+
+			if ($policy !== null) {
+				$policies[] = $policy;
+			}
+		}
+
+		return $policies;
 	}
 
 }

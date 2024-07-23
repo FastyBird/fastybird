@@ -8,9 +8,9 @@ IGNORE INTO `fb_devices_module_connectors_controls` (`control_id`, `connector_id
 (_binary 0xe7c9e5834af14b86b647f179207e6456, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'reboot', '2023-10-15 11:00:00', '2023-10-15 11:00:00');
 
 INSERT
-IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `owner`, `device_type`) VALUES
-(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'virtual-thermostat-addon'),
-(_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device', 'Actor & Sensor device', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', null, 'dummy');
+IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_category`, `device_identifier`, `device_name`, `device_comment`, `params`, `created_at`, `updated_at`, `device_type`) VALUES
+(_binary 0x552cea8a0e8141d9be2f839b079f315e, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'virtual-thermostat-addon'),
+(_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device', 'Actor & Sensor device', null, null, '2023-10-15 11:00:00', '2023-10-15 11:00:00', 'dummy');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, `parent_id`, `property_category`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_step`, `property_value`, `property_default`, `params`, `created_at`, `updated_at`, `property_type`) VALUES
