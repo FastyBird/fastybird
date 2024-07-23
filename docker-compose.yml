@@ -160,20 +160,6 @@ services:
     networks:
       - fastybird
 
-  # CASBIN AUTHORIZATION
-  casbin-server:
-    image: casbin/casbin-server
-    environment:
-      - CASBIN_MODEL=/etc/casbin/model.conf
-      - CASBIN_POLICY=/etc/casbin/policy.csv
-    volumes:
-      - ./var/config/casbin/model.conf:/etc/casbin/model.conf:delegated
-      - ./var/config/casbin/policy.csv:/etc/casbin/policy.csv:delegated
-    ports:
-      - "${CASBIN_PORT:-4000}:4000"
-    networks:
-      - fastybird
-
   # REDIS STORAGE
   redis:
     container_name: fastybird-redis
