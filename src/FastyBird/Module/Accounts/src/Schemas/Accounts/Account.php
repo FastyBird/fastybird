@@ -20,15 +20,14 @@ use FastyBird\JsonApi\Schemas as JsonApis;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
+use FastyBird\Module\Accounts\Queries;
 use FastyBird\Module\Accounts\Router;
 use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
-use FastyBird\SimpleAuth\Queries as SimpleAuthQueries;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
-use function assert;
 use function count;
 use function intval;
 use function strval;
@@ -268,14 +267,13 @@ final class Account extends JsonApis\JsonApi
 		$policies = [];
 
 		foreach ($roles as $role) {
-			$findPoliciesQuery = new SimpleAuthQueries\FindPolicies();
-			$findPoliciesQuery->byValue(0, $role);
+			$findRolesQuery = new Queries\Entities\FindRoles();
+			$findRolesQuery->byName($role);
 
 			$policy = $this->policiesRepository->findOneBy(
-				$findPoliciesQuery,
+				$findRolesQuery,
 				Entities\Roles\Role::class,
 			);
-			assert($policy instanceof Entities\Roles\Role || $policy === null);
 
 			if ($policy !== null) {
 				$policies[] = $policy;

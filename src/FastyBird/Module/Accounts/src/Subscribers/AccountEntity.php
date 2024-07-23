@@ -43,18 +43,6 @@ final class AccountEntity implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	/** @var array<string> */
-	private array $singleRoles = [
-		SimpleAuth\Constants::ROLE_ADMINISTRATOR,
-		SimpleAuth\Constants::ROLE_USER,
-	];
-
-	/** @var array<string> */
-	private array $notAssignableRoles = [
-		SimpleAuth\Constants::ROLE_VISITOR,
-		SimpleAuth\Constants::ROLE_ANONYMOUS,
-	];
-
 	public function __construct(
 		private readonly SimpleAuthSecurity\EnforcerFactory $enforcerFactory,
 	)
@@ -122,8 +110,9 @@ final class AccountEntity implements Common\EventSubscriber
 			$roles = $this->enforcerFactory->getEnforcer()->getRolesForUser($object->getId()->toString());
 
 			if ($roles === []) {
-				foreach (Accounts\Constants::USER_ACCOUNT_DEFAULT_ROLES as $role) {
+				foreach (Accounts\Constants::DEFAULT_ROLES as $role) {
 					$this->enforcerFactory->getEnforcer()->addRoleForUser($object->getId()->toString(), $role);
+					$this->enforcerFactory->getEnforcer()->invalidateCache();
 				}
 			}
 
@@ -133,7 +122,7 @@ final class AccountEntity implements Common\EventSubscriber
 				 * can not be assigned to account with other roles
 				 */
 				if (
-					in_array($role, $this->singleRoles, true)
+					in_array($role, Accounts\Constants::SINGLE_ROLES, true)
 					&& count($roles) > 1
 				) {
 					throw new Exceptions\AccountRoleInvalid(
@@ -145,7 +134,7 @@ final class AccountEntity implements Common\EventSubscriber
 				 * Special roles like visitor or guest
 				 * can not be assigned to account
 				 */
-				if (in_array($role, $this->notAssignableRoles, true)) {
+				if (in_array($role, Accounts\Constants::NOT_ASSIGNABLE_ROLES, true)) {
 					throw new Exceptions\AccountRoleInvalid(
 						sprintf('Role %s could not be assigned to account', $role),
 					);

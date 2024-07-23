@@ -264,7 +264,9 @@ class Create extends Console\Command\Command
 			// Create new email entity
 			$this->emailsManager->create($create);
 
+			$this->enforcerFactory->getEnforcer()->deleteRolesForUser($account->getId()->toString());
 			$this->enforcerFactory->getEnforcer()->addRoleForUser($account->getId()->toString(), $role->getName());
+			$this->enforcerFactory->getEnforcer()->invalidateCache();
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();

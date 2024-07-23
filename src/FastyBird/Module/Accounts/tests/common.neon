@@ -108,6 +108,8 @@ fbSimpleAuth:
             database: true
         nette:
             application: true
+    casbin:
+        policy: %appDir%/policy.csv
 
 fbJsonApi:
     meta:

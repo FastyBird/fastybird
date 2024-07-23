@@ -15,12 +15,14 @@
 
 namespace FastyBird\Module\Accounts\Controllers;
 
+use Casbin\Exceptions as CasbinExceptions;
 use Doctrine;
 use Exception;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Hydrators;
@@ -30,19 +32,27 @@ use FastyBird\Module\Accounts\Router;
 use FastyBird\Module\Accounts\Schemas;
 use FastyBird\Module\Accounts\Types;
 use FastyBird\Module\Accounts\Utilities;
+use FastyBird\SimpleAuth\Exceptions as SimpleAuthExceptions;
 use FastyBird\SimpleAuth\Models as SimpleAuthModels;
 use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
+use IPub\JsonAPIDocument;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use Throwable;
+use function array_filter;
+use function array_map;
+use function count;
 use function end;
 use function explode;
+use function in_array;
+use function is_string;
 use function preg_match;
+use function sprintf;
 use function str_starts_with;
 use function strtolower;
 use function strval;
@@ -134,6 +144,7 @@ final class AccountsV1 extends BaseV1
 				// Store item into database
 				$account = $this->accountsManager->create($createData);
 
+				$this->assignAccountToRoles($document, $account);
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -256,10 +267,11 @@ final class AccountsV1 extends BaseV1
 			$this->getOrmConnection()->beginTransaction();
 
 			if ($document->getResource()->getType() === Schemas\Accounts\Account::SCHEMA_TYPE) {
-				$updateAccountData = $this->accountHydrator->hydrate($document, $account);
+				$updateData = $this->accountHydrator->hydrate($document, $account);
 
-				$account = $this->accountsManager->update($account, $updateAccountData);
+				$account = $this->accountsManager->update($account, $updateData);
 
+				$this->assignAccountToRoles($document, $account);
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
@@ -357,6 +369,9 @@ final class AccountsV1 extends BaseV1
 
 				$this->identitiesManager->update($identity, $updateIdentity);
 			}
+
+			$this->enforcerFactory->getEnforcer()->deleteUser($account->getId()->toString());
+			$this->enforcerFactory->getEnforcer()->invalidateCache();
 
 			// Commit all changes into database
 			$this->getOrmConnection()->commit();
@@ -465,6 +480,80 @@ final class AccountsV1 extends BaseV1
 		}
 
 		return $account;
+	}
+
+	/**
+	 * @throws CasbinExceptions\CasbinException
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\AccountRoleInvalid
+	 * @throws SimpleAuthExceptions\InvalidState
+	 */
+	private function assignAccountToRoles(JsonAPIDocument\IDocument $document, Entities\Accounts\Account $account): void
+	{
+		$relationships = $document->getResource()->getRelationships();
+
+		$assignRoles = [];
+
+		$hasRoleRelation = false;
+
+		foreach ($relationships->getAll() as $relationship) {
+			if ($relationship->getData() instanceof JsonAPIDocument\Objects\IResourceIdentifierCollection) {
+				foreach ($relationship->getData()->getAll() as $resource) {
+					if ($resource->getType() === Schemas\Roles\Role::SCHEMA_TYPE && is_string($resource->getId())) {
+						$hasRoleRelation = true;
+
+						$findRolesQuery = new Queries\Entities\FindRoles();
+						$findRolesQuery->byId(Uuid\Uuid::fromString($resource->getId()));
+
+						$assignRoles[] = $this->policiesRepository->findOneBy(
+							$findRolesQuery,
+							Entities\Roles\Role::class,
+						);
+					}
+				}
+			}
+		}
+
+		if ($hasRoleRelation) {
+			$assignRoles = array_filter(
+				$assignRoles,
+				static fn (Entities\Roles\Role|null $role) => $role !== null,
+			);
+
+			foreach ($assignRoles as $assignRole) {
+				/**
+				 * Special roles like administrator or user
+				 * can not be assigned to account with other roles
+				 */
+				if (
+					in_array($assignRole->getName(), Accounts\Constants::SINGLE_ROLES, true)
+					&& count($assignRoles) > 1
+				) {
+					throw new Exceptions\AccountRoleInvalid(
+						sprintf('Role %s could not be combined with other roles', $assignRole->getName()),
+					);
+				}
+
+				/**
+				 * Special roles like visitor or guest
+				 * can not be assigned to account
+				 */
+				if (in_array($assignRole->getName(), Accounts\Constants::NOT_ASSIGNABLE_ROLES, true)) {
+					throw new Exceptions\AccountRoleInvalid(
+						sprintf('Role %s could not be assigned to account', $assignRole->getName()),
+					);
+				}
+			}
+
+			$this->enforcerFactory->getEnforcer()->deleteRolesForUser($account->getId()->toString());
+			$this->enforcerFactory->getEnforcer()->addRolesForUser(
+				$account->getId()->toString(),
+				array_map(static fn (Entities\Roles\Role $role): string => $role->getName(), $assignRoles),
+			);
+
+			$this->enforcerFactory->getEnforcer()->invalidateCache();
+		}
 	}
 
 }

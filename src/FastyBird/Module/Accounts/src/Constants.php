@@ -83,12 +83,18 @@ final class Constants
 	 * ACCOUNTS DEFAULT ROLES
 	 */
 
-	public const USER_ACCOUNT_DEFAULT_ROLES = [
+	public const DEFAULT_ROLES = [
 		SimpleAuth\Constants::ROLE_USER,
 	];
 
-	public const MODULE_ACCOUNT_DEFAULT_ROLES = [
+	public const SINGLE_ROLES = [
+		SimpleAuth\Constants::ROLE_ADMINISTRATOR,
 		SimpleAuth\Constants::ROLE_USER,
+	];
+
+	public const NOT_ASSIGNABLE_ROLES = [
+		SimpleAuth\Constants::ROLE_VISITOR,
+		SimpleAuth\Constants::ROLE_ANONYMOUS,
 	];
 
 	/**

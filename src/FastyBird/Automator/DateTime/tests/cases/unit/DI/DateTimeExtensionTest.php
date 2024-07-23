@@ -3,13 +3,11 @@
 namespace FastyBird\Automator\DateTime\Tests\Cases\Unit\DI;
 
 use Error;
-use FastyBird\Automator\DateTime\Exceptions;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
 use FastyBird\Automator\DateTime\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
-use RuntimeException;
 
 /**
  * @runTestsInSeparateProcesses

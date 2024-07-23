@@ -3,14 +3,12 @@
 namespace FastyBird\Automator\DevicesModule\Tests\Cases\Unit\DI;
 
 use Error;
-use FastyBird\Automator\DevicesModule\Exceptions;
 use FastyBird\Automator\DevicesModule\Hydrators;
 use FastyBird\Automator\DevicesModule\Schemas;
 use FastyBird\Automator\DevicesModule\Subscribers;
 use FastyBird\Automator\DevicesModule\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
-use RuntimeException;
 
 /**
  * @runTestsInSeparateProcesses
