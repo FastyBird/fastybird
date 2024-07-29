@@ -49,7 +49,7 @@ class ApiRoutes
 		private readonly Controllers\DisplayV1 $displayV1Controller,
 		private readonly Controllers\DataSourcesV1 $dataSourceV1Controller,
 		private readonly Middleware\Access $uiAccessControlMiddleware,
-		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
+		private readonly SimpleAuthMiddleware\Authorization $authorizationMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
 	{
@@ -72,7 +72,7 @@ class ApiRoutes
 			}
 		});
 
-		$routes->addMiddleware($this->accessControlMiddleware);
+		$routes->addMiddleware($this->authorizationMiddleware);
 		$routes->addMiddleware($this->userMiddleware);
 		$routes->addMiddleware($this->uiAccessControlMiddleware);
 	}

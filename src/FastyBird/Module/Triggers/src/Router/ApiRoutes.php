@@ -47,7 +47,7 @@ class ApiRoutes
 		private readonly Controllers\ConditionsV1 $conditionsV1Controller,
 		private readonly Controllers\TriggerControlsV1 $controlsV1Controller,
 		private readonly Middleware\Access $triggersAccessControlMiddleware,
-		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
+		private readonly SimpleAuthMiddleware\Authorization $authorizationMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
 	{
@@ -70,7 +70,7 @@ class ApiRoutes
 			}
 		});
 
-		$routes->addMiddleware($this->accessControlMiddleware);
+		$routes->addMiddleware($this->authorizationMiddleware);
 		$routes->addMiddleware($this->userMiddleware);
 		$routes->addMiddleware($this->triggersAccessControlMiddleware);
 	}

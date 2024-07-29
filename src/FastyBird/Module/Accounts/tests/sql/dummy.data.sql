@@ -36,7 +36,7 @@ VALUES (_binary 0x77331268EFBFBD3449EFBFBDEFBFBD04, _binary 0x5E79EFBFBD0D5B7C46
        (_binary 0xFF99F3C470B943F99EF6C9B33B43ABCB, _binary 0xFAE8D7817E2C43189C8543BA637D14C5, 'clark.kent@fastybird.com', 'active', '2017-05-03 11:27:34', '2019-05-29 07:14:00', '11b9174dbbc8f3f5ce3b3d270a3c73eedbe33832489aaa70fe0f370566bcd2f12a1a15041b318b57fd6ce6bb82471d9e2d7bc753064491bf418f9f9c3de21fcf', '{"salt": "89bwo"}');
 
 INSERT
-IGNORE INTO `fb_security_policies` (`policy_id`, `parent_id`, `policy_type`, `policy_v0`, `policy_v1`, `policy_comment`, `created_at`, `updated_at`, `policy_policy_type`)
+IGNORE INTO `fb_security_policies` (`policy_id`, `parent_id`, `ptype`, `v0`, `v1`, `policy_comment`, `created_at`, `updated_at`, `policy_type`)
 VALUES (_binary 0xEFBFBD040158EFBFBDEFBFBD4DEFBFBD, NULL, 'p', 'guest', NULL, 'Guest', '2020-06-03 12:00:00', '2020-06-03 12:00:00', 'user_role'),
        (_binary 0xEFBFBDEFBFBDEFBFBD0FEFBFBD5C4F61, _binary 0xEFBFBD040158EFBFBDEFBFBD4DEFBFBD, 'p', 'user', NULL, 'User', '2020-06-03 12:00:00', '2020-06-03 12:00:00', 'user_role'),
        (_binary 0x89F4A14F7F78421699B8584AB9229F1C, _binary 0xEFBFBDEFBFBDEFBFBD0FEFBFBD5C4F61, 'p', 'manager', NULL, 'Manager', '2020-06-03 12:00:00', '2020-06-03 12:00:00', 'user_role'),
