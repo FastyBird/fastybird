@@ -65,7 +65,7 @@ class ApiRoutes
 		private readonly Controllers\ConnectorControlsV1 $connectorControlsV1Controller,
 		private readonly Middleware\Access $devicesAccessControlMiddleware,
 		private readonly Middleware\UrlFormat $urlFormatlMiddleware,
-		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
+		private readonly SimpleAuthMiddleware\Authorization $accessControlMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
 	{

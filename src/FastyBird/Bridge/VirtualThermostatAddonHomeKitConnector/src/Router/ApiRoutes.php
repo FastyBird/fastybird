@@ -41,7 +41,7 @@ class ApiRoutes
 		private readonly bool $usePrefix,
 		private readonly Controllers\BridgesV1 $bridgesV1Controller,
 		private readonly DevicesMiddleware\Access $devicesAccessControlMiddleware,
-		private readonly SimpleAuthMiddleware\Access $accessControlMiddleware,
+		private readonly SimpleAuthMiddleware\Authorization $authorizationMiddleware,
 		private readonly SimpleAuthMiddleware\User $userMiddleware,
 	)
 	{
@@ -67,7 +67,7 @@ class ApiRoutes
 			}
 		});
 
-		$routes->addMiddleware($this->accessControlMiddleware);
+		$routes->addMiddleware($this->authorizationMiddleware);
 		$routes->addMiddleware($this->userMiddleware);
 		$routes->addMiddleware($this->devicesAccessControlMiddleware);
 	}
