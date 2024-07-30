@@ -51,7 +51,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class NotificationsV1 extends BaseV1
@@ -119,7 +118,6 @@ final class NotificationsV1 extends BaseV1
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
@@ -261,7 +259,6 @@ final class NotificationsV1 extends BaseV1
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
@@ -343,7 +340,6 @@ final class NotificationsV1 extends BaseV1
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function delete(

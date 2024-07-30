@@ -34,11 +34,17 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider groupsRead
 	 */
-	public function testRead(string $url, int $statusCode, string $fixture): void
+	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
-		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url);
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
+
+		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url, $headers);
 
 		$response = $router->handle($request);
 
@@ -58,36 +64,42 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'readAll' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.index.json',
 			],
 			'readAllPaging' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups?page[offset]=1&page[limit]=1',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.index.paging.json',
 			],
 			'readOne' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.read.json',
 			],
 			'readOneUnknown' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/69786d15-fd0c-4d9f-9378-33287c2009af',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsWidgets' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/widgets',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.readRelationships.widgets.json',
 			],
 			'readRelationshipsUnknown' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c/relationships/unknown',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
@@ -104,14 +116,20 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider groupsCreate
 	 */
-	public function testCreate(string $url, string $body, int $statusCode, string $fixture): void
+	public function testCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_POST,
 			$url,
-			[],
+			$headers,
 			$body,
 		);
 
@@ -133,12 +151,14 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'create' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.create.json'),
 				StatusCodeInterface::STATUS_CREATED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.create.json',
 			],
 			'missingRequired' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/groups.create.missing.required.json',
 				),
@@ -147,6 +167,7 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			],
 			'invalidType' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.create.invalidType.json'),
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
@@ -164,14 +185,20 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider groupsUpdate
 	 */
-	public function testUpdate(string $url, string $body, int $statusCode, string $fixture): void
+	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_PATCH,
 			$url,
-			[],
+			$headers,
 			$body,
 		);
 
@@ -194,6 +221,7 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			'update' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.update.json'),
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.update.json',
@@ -201,6 +229,7 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			'invalidType' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.update.invalidType.json'),
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.type.json',
@@ -208,6 +237,7 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			'idMismatch' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.update.idMismatch.json'),
 				StatusCodeInterface::STATUS_BAD_REQUEST,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/invalid.identifier.json',
@@ -215,6 +245,7 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			'notFound' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/88f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/groups.update.notFound.json'),
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
@@ -232,13 +263,20 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider groupsDelete
 	 */
-	public function testDelete(string $url, int $statusCode, string $fixture): void
+	public function testDelete(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_DELETE,
 			$url,
+			$headers,
 		);
 
 		$response = $router->handle($request);
@@ -260,12 +298,14 @@ final class GroupsV1Test extends Tests\Cases\Unit\DbTestCase
 			'delete' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/89f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NO_CONTENT,
 				__DIR__ . '/../../../fixtures/Controllers/responses/groups.delete.json',
 			],
 			'deleteUnknown' => [
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/groups/88f4a14f-7f78-4216-99b8-584ab9229f1c',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],

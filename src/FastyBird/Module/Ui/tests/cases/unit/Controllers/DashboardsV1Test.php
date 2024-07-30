@@ -34,11 +34,17 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider dashboardsRead
 	 */
-	public function testRead(string $url, int $statusCode, string $fixture): void
+	public function testRead(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
 
-		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url);
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
+
+		$request = new ServerRequest(RequestMethodInterface::METHOD_GET, $url, $headers);
 
 		$response = $router->handle($request);
 
@@ -58,31 +64,37 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'readAll' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.index.json',
 			],
 			'readAllPaging' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards?page[offset]=1&page[limit]=1',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.index.paging.json',
 			],
 			'readOne' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.read.json',
 			],
 			'readOneUnknown' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/69786d15-fd0c-4d9f-9378-33287c2009af',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
 			'readRelationshipsGroups' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/widgets',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.readRelationships.widgets.json',
 			],
 			'readRelationshipsUnknown' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/unknown',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/relation.unknown.json',
 			],
@@ -99,14 +111,20 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider dashboardsCreate
 	 */
-	public function testCreate(string $url, string $body, int $statusCode, string $fixture): void
+	public function testCreate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_POST,
 			$url,
-			[],
+			$headers,
 			$body,
 		);
 
@@ -128,12 +146,14 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'create' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.json'),
 				StatusCodeInterface::STATUS_CREATED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.create.json',
 			],
 			'missingRequired' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.missing.required.json',
 				),
@@ -142,6 +162,7 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 			],
 			'invalidType' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.create.invalidType.json',
 				),
@@ -161,14 +182,20 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider dashboardsUpdate
 	 */
-	public function testUpdate(string $url, string $body, int $statusCode, string $fixture): void
+	public function testUpdate(string $url, string|null $token, string $body, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_PATCH,
 			$url,
-			[],
+			$headers,
 			$body,
 		);
 
@@ -190,12 +217,14 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'update' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.json'),
 				StatusCodeInterface::STATUS_OK,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.update.json',
 			],
 			'invalidType' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.invalidType.json',
 				),
@@ -204,6 +233,7 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 			],
 			'idMismatch' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
+				'Bearer ' . self::VALID_TOKEN,
 				file_get_contents(
 					__DIR__ . '/../../../fixtures/Controllers/requests/dashboards.update.idMismatch.json',
 				),
@@ -223,13 +253,20 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 	 *
 	 * @dataProvider dashboardsDelete
 	 */
-	public function testDelete(string $url, int $statusCode, string $fixture): void
+	public function testDelete(string $url, string|null $token, int $statusCode, string $fixture): void
 	{
 		$router = $this->getContainer()->getByType(SlimRouter\Routing\IRouter::class);
+
+		$headers = [];
+
+		if ($token !== null) {
+			$headers['authorization'] = $token;
+		}
 
 		$request = new ServerRequest(
 			RequestMethodInterface::METHOD_DELETE,
 			$url,
+			$headers,
 		);
 
 		$response = $router->handle($request);
@@ -250,11 +287,13 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 		return [
 			'delete' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NO_CONTENT,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.delete.json',
 			],
 			'deleteUnknown' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/69786d15-fd0c-4d9f-9378-33287c2009af',
+				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],

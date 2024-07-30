@@ -51,7 +51,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class ConnectorPropertiesV1 extends BaseV1
@@ -112,7 +111,6 @@ final class ConnectorPropertiesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
@@ -234,7 +232,6 @@ final class ConnectorPropertiesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
@@ -315,7 +312,6 @@ final class ConnectorPropertiesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function delete(

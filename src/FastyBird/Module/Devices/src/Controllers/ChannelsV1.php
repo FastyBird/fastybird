@@ -47,7 +47,6 @@ use function strval;
  * @package        FastyBird:DevicesModule!
  * @subpackage     Controllers
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class ChannelsV1 extends BaseV1
@@ -120,7 +119,6 @@ final class ChannelsV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
@@ -244,7 +242,6 @@ final class ChannelsV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
@@ -326,7 +323,6 @@ final class ChannelsV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function delete(

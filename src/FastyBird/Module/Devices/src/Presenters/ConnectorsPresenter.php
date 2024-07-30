@@ -33,7 +33,6 @@ use ValueError;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 class ConnectorsPresenter extends BasePresenter
@@ -96,6 +95,8 @@ class ConnectorsPresenter extends BasePresenter
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function actionSetting(string $id, string|null $deviceId = null, string|null $channelId = null): void
 	{

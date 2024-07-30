@@ -32,7 +32,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class ChannelPropertyChildrenV1 extends BaseV1

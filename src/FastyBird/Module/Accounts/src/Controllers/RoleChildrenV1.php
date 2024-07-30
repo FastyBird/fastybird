@@ -34,7 +34,6 @@ use Psr\Http\Message;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class RoleChildrenV1 extends BaseV1

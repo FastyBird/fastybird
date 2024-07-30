@@ -53,6 +53,8 @@ use function strval;
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @Secured\User(loggedIn)
  */
 final class AccountEmailsV1 extends BaseV1
 {
@@ -72,9 +74,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
@@ -95,9 +94,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function read(
 		Message\ServerRequestInterface $request,
@@ -120,9 +116,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws RuntimeException
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function create(
 		Message\ServerRequestInterface $request,
@@ -261,9 +254,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws RuntimeException
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function update(
 		Message\ServerRequestInterface $request,
@@ -335,9 +325,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function delete(
 		Message\ServerRequestInterface $request,
@@ -394,9 +381,6 @@ final class AccountEmailsV1 extends BaseV1
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function readRelationship(
 		Message\ServerRequestInterface $request,

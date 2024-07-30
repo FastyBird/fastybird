@@ -33,7 +33,6 @@ use ValueError;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 class ChannelsPresenter extends BasePresenter
@@ -66,6 +65,8 @@ class ChannelsPresenter extends BasePresenter
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function actionAdd(string $id): void
 	{
@@ -92,6 +93,8 @@ class ChannelsPresenter extends BasePresenter
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function actionEdit(string $id, string $channelId): void
 	{

@@ -44,7 +44,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class RolesV1 extends BaseV1
@@ -102,7 +101,6 @@ final class RolesV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(

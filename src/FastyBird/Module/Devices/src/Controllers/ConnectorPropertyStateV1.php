@@ -40,7 +40,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class ConnectorPropertyStateV1 extends BaseV1

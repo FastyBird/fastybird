@@ -51,7 +51,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
+ * @Secured\User(loggedIn)
  * @Secured\Role(manager,administrator)
  */
 final class IdentitiesV1 extends BaseV1
@@ -115,9 +115,6 @@ final class IdentitiesV1 extends BaseV1
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
 		Message\ServerRequestInterface $request,
