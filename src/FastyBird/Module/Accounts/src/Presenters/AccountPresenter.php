@@ -35,7 +35,6 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 class AccountPresenter extends BasePresenter

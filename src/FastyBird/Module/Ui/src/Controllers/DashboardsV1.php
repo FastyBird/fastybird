@@ -48,6 +48,8 @@ use function strval;
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @Secured\User(loggedIn)
  */
 final class DashboardsV1 extends BaseV1
 {
@@ -97,6 +99,8 @@ final class DashboardsV1 extends BaseV1
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
 		Message\ServerRequestInterface $request,
@@ -213,6 +217,8 @@ final class DashboardsV1 extends BaseV1
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
 		Message\ServerRequestInterface $request,
@@ -309,6 +315,8 @@ final class DashboardsV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function delete(
 		Message\ServerRequestInterface $request,

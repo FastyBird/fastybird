@@ -65,7 +65,7 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
+ * @Secured\User(loggedIn)
  * @Secured\Role(manager,administrator)
  */
 final class AccountsV1 extends BaseV1

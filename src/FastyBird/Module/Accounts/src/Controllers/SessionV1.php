@@ -73,7 +73,6 @@ final class SessionV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws SimpleAuthExceptions\UnauthorizedAccess
 	 *
-	 * @Secured
 	 * @Secured\User(loggedIn)
 	 */
 	public function read(
@@ -95,7 +94,6 @@ final class SessionV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 *
-	 * @Secured
 	 * @Secured\User(guest)
 	 */
 	public function create(
@@ -249,7 +247,6 @@ final class SessionV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 *
-	 * @Secured
 	 * @Secured\User(guest)
 	 */
 	public function update(
@@ -391,7 +388,6 @@ final class SessionV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws SimpleAuthExceptions\UnauthorizedAccess
 	 *
-	 * @Secured
 	 * @Secured\User(loggedIn)
 	 */
 	public function delete(
@@ -446,7 +442,6 @@ final class SessionV1 extends BaseV1
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 *
-	 * @Secured
 	 * @Secured\User(loggedIn)
 	 */
 	public function readRelationship(

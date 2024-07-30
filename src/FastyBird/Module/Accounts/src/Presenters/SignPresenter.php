@@ -23,7 +23,6 @@ namespace FastyBird\Module\Accounts\Presenters;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(guest)
  */
 class SignPresenter extends BasePresenter

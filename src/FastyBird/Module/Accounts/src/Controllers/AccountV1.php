@@ -44,6 +44,8 @@ use function strval;
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @Secured\User(loggedIn)
  */
 final class AccountV1 extends BaseV1
 {
@@ -60,9 +62,6 @@ final class AccountV1 extends BaseV1
 	/**
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function read(
 		Message\ServerRequestInterface $request,
@@ -75,30 +74,11 @@ final class AccountV1 extends BaseV1
 	}
 
 	/**
-	 * @throws JsonApiExceptions\JsonApiError
-	 */
-	private function findAccount(): Entities\Accounts\Account
-	{
-		if ($this->user->getAccount() === null) {
-			throw new JsonApiExceptions\JsonApiError(
-				StatusCodeInterface::STATUS_FORBIDDEN,
-				$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-				$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
-			);
-		}
-
-		return $this->user->getAccount();
-	}
-
-	/**
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws Exception
 	 * @throws Exceptions\Runtime
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function update(
 		Message\ServerRequestInterface $request,
@@ -172,9 +152,6 @@ final class AccountV1 extends BaseV1
 	/**
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function delete(
 		Message\ServerRequestInterface $request,
@@ -193,9 +170,6 @@ final class AccountV1 extends BaseV1
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
-	 *
-	 * @Secured
-	 * @Secured\User(loggedIn)
 	 */
 	public function readRelationship(
 		Message\ServerRequestInterface $request,
@@ -233,6 +207,22 @@ final class AccountV1 extends BaseV1
 		}
 
 		return parent::readRelationship($request, $response);
+	}
+
+	/**
+	 * @throws JsonApiExceptions\JsonApiError
+	 */
+	private function findAccount(): Entities\Accounts\Account
+	{
+		if ($this->user->getAccount() === null) {
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_FORBIDDEN,
+				$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
+				$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+			);
+		}
+
+		return $this->user->getAccount();
 	}
 
 }

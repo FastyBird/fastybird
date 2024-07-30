@@ -49,7 +49,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 class DevicesV1 extends BaseV1
@@ -124,7 +123,6 @@ class DevicesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function create(
@@ -248,7 +246,6 @@ class DevicesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
@@ -354,7 +351,6 @@ class DevicesV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
 	 *
-	 * @Secured
 	 * @Secured\Role(manager,administrator)
 	 */
 	public function delete(

@@ -33,7 +33,6 @@ use ValueError;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 class DevicesPresenter extends BasePresenter
@@ -98,6 +97,8 @@ class DevicesPresenter extends BasePresenter
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function actionSetting(string $id): void
 	{

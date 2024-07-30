@@ -37,6 +37,8 @@ use function strval;
  * @subpackage     Controllers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ *
+ * @Secured\User(loggedIn)
  */
 final class DisplayV1 extends BaseV1
 {
@@ -70,6 +72,8 @@ final class DisplayV1 extends BaseV1
 	 * @throws Exception
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
 	 */
 	public function update(
 		Message\ServerRequestInterface $request,

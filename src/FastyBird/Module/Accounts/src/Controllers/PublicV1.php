@@ -57,7 +57,6 @@ final class PublicV1 extends BaseV1
 	/**
 	 * @throws InvalidArgumentException
 	 *
-	 * @Secured
 	 * @Secured\User(guest)
 	 */
 	public function register(
@@ -78,7 +77,6 @@ final class PublicV1 extends BaseV1
 	 * @throws DoctrineCrudExceptions\InvalidArgumentException
 	 * @throws Exception
 	 *
-	 * @Secured
 	 * @Secured\User(guest)
 	 */
 	public function resetIdentity(

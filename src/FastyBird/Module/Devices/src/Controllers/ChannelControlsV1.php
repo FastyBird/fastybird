@@ -36,7 +36,6 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  *
- * @Secured
  * @Secured\User(loggedIn)
  */
 final class ChannelControlsV1 extends BaseV1
