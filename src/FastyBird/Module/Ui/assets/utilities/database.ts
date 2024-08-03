@@ -1,6 +1,7 @@
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { IGroupDatabaseRecord } from '../models/groups/types';
 import { IDashboardDatabaseRecord } from '../models/dashboards/types';
+import { ITabDatabaseRecord } from '../models/tabs/types';
 import { IWidgetDataSourceDatabaseRecord } from '../models/widgets-data-sources/types';
 import { IWidgetDisplayDatabaseRecord } from '../models/widgets-display/types';
 import { IWidgetDatabaseRecord } from '../models/widgets/types';
@@ -9,6 +10,7 @@ const DB_NAME = 'widgets_module';
 const DB_VERSION = 1;
 
 export const DB_TABLE_DASHBOARDS = 'dashboards';
+export const DB_TABLE_TABS = 'tabs';
 export const DB_TABLE_GROUPS = 'groups';
 export const DB_TABLE_WIDGETS = 'widgets';
 export const DB_TABLE_WIDGETS_DISPLAY = 'widgets_display';
@@ -16,6 +18,7 @@ export const DB_TABLE_WIDGETS_DATA_SOURCES = 'widgets_data_sources';
 
 type StoreName =
 	| typeof DB_TABLE_DASHBOARDS
+	| typeof DB_TABLE_TABS
 	| typeof DB_TABLE_GROUPS
 	| typeof DB_TABLE_WIDGETS
 	| typeof DB_TABLE_WIDGETS_DISPLAY
@@ -25,6 +28,10 @@ interface StorageDbSchema extends DBSchema {
 	[DB_TABLE_DASHBOARDS]: {
 		key: string;
 		value: IDashboardDatabaseRecord;
+	};
+	[DB_TABLE_TABS]: {
+		key: string;
+		value: ITabDatabaseRecord;
 	};
 	[DB_TABLE_GROUPS]: {
 		key: string;
@@ -57,6 +64,7 @@ export const initDB = async (): Promise<IDBPDatabase<StorageDbSchema>> => {
 			// List all store names you expect
 			const storeNames: StoreName[] = [
 				DB_TABLE_DASHBOARDS,
+				DB_TABLE_TABS,
 				DB_TABLE_GROUPS,
 				DB_TABLE_WIDGETS,
 				DB_TABLE_WIDGETS_DISPLAY,
