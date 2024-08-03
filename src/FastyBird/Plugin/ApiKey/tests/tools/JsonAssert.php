@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\ApiKey\Tests\Tools;
+namespace FastyBird\Plugin\ApiKey\Tests\Tools;
 
 use Closure;
 use Nette;
@@ -50,11 +50,11 @@ class JsonAssert
 		$decodedExpectedJson = self::jsonDecode($expectedJson, 'Expected-json');
 		$decodedInput = self::jsonDecode($actualJson, 'Actual-json');
 
+		self::recursiveSort($decodedExpectedJson);
+		self::recursiveSort($decodedInput);
+
 		try {
-			TestCase::assertJsonStringEqualsJsonString(
-				Utils\Json::encode($decodedExpectedJson),
-				Utils\Json::encode($decodedInput),
-			);
+			TestCase::assertEquals($decodedExpectedJson, $decodedInput);
 
 		} catch (ExpectationFailedException) {
 			throw new ExpectationFailedException(
@@ -97,6 +97,49 @@ class JsonAssert
 	private static function makeJsonPretty(string $jsonString): string
 	{
 		return Utils\Json::encode(Utils\Json::decode($jsonString), pretty: true);
+	}
+
+	/**
+	 * @throws Utils\JsonException
+	 */
+	private static function recursiveSort(mixed &$array): void
+	{
+		if (!is_array($array)) {
+			return;
+		}
+
+		foreach ($array as &$value) {
+			if (is_array($value)) {
+				self::recursiveSort($value);
+			}
+		}
+
+		// Sort by keys for associative arrays
+		if (self::isAssoc($array)) {
+			ksort($array);
+
+		} else {
+			// Sort by values for indexed arrays
+			usort($array, function ($a, $b): int {
+				if (is_array($a) && is_array($b)) {
+					return strcmp(Utils\Json::encode($a), Utils\Json::encode($b));
+				}
+
+				return strcmp($a, $b);
+			});
+		}
+	}
+
+	/**
+	 * @param array<mixed> $array
+	 *
+	 * @return bool
+	 */
+	private static function isAssoc(array $array): bool
+	{
+		if ($array === []) return false;
+
+		return array_keys($array) !== range(0, count($array) - 1);
 	}
 
 }

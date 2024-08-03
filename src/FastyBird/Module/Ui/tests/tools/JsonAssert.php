@@ -50,14 +50,11 @@ class JsonAssert
 		$decodedExpectedJson = self::jsonDecode($expectedJson, 'Expected-json');
 		$decodedInput = self::jsonDecode($actualJson, 'Actual-json');
 
-		self::sortArray($decodedExpectedJson);
-		self::sortArray($decodedInput);
+		self::recursiveSort($decodedExpectedJson);
+		self::recursiveSort($decodedInput);
 
 		try {
-			TestCase::assertJsonStringEqualsJsonString(
-				Utils\Json::encode( $decodedExpectedJson),
-				Utils\Json::encode($decodedInput),
-			);
+			TestCase::assertEquals($decodedExpectedJson, $decodedInput);
 
 		} catch (ExpectationFailedException) {
 			throw new ExpectationFailedException(
@@ -103,16 +100,46 @@ class JsonAssert
 	}
 
 	/**
-	 * @param array<mixed> $array
+	 * @throws Utils\JsonException
 	 */
-	private static function sortArray(array &$array)
+	private static function recursiveSort(mixed &$array): void
 	{
-		array_walk_recursive($array, function (&$value) {
+		if (!is_array($array)) {
+			return;
+		}
+
+		foreach ($array as &$value) {
 			if (is_array($value)) {
-				self::sortArray($value);
+				self::recursiveSort($value);
 			}
-		});
-		ksort($array);
+		}
+
+		// Sort by keys for associative arrays
+		if (self::isAssoc($array)) {
+			ksort($array);
+
+		} else {
+			// Sort by values for indexed arrays
+			usort($array, function ($a, $b): int {
+				if (is_array($a) && is_array($b)) {
+					return strcmp(Utils\Json::encode($a), Utils\Json::encode($b));
+				}
+
+				return strcmp($a, $b);
+			});
+		}
+	}
+
+	/**
+	 * @param array<mixed> $array
+	 *
+	 * @return bool
+	 */
+	private static function isAssoc(array $array): bool
+	{
+		if ($array === []) return false;
+
+		return array_keys($array) !== range(0, count($array) - 1);
 	}
 
 }
