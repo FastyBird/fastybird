@@ -125,7 +125,15 @@ class JsonAssert
 					return strcmp(Utils\Json::encode($a), Utils\Json::encode($b));
 				}
 
-				return strcmp($a, $b);
+				if (is_array($a)) {
+					return strcmp(Utils\Json::encode($a), strval($b));
+				}
+
+				if (is_array($b)) {
+					return strcmp(strval($a), Utils\Json::encode($b));
+				}
+
+				return strcmp(strval($a), strval($b));
 			});
 		}
 	}
