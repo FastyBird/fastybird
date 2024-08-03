@@ -50,10 +50,13 @@ class JsonAssert
 		$decodedExpectedJson = self::jsonDecode($expectedJson, 'Expected-json');
 		$decodedInput = self::jsonDecode($actualJson, 'Actual-json');
 
+		self::sortArray($decodedExpectedJson);
+		self::sortArray($decodedInput);
+
 		try {
 			TestCase::assertJsonStringEqualsJsonString(
-				Utils\Json::encode(is_array($decodedExpectedJson) ? self::recursiveSort($decodedExpectedJson) : $decodedExpectedJson),
-				Utils\Json::encode(is_array($decodedInput) ? self::recursiveSort($decodedInput) : $decodedInput),
+				Utils\Json::encode( $decodedExpectedJson),
+				Utils\Json::encode($decodedInput),
 			);
 
 		} catch (ExpectationFailedException) {
@@ -101,23 +104,15 @@ class JsonAssert
 
 	/**
 	 * @param array<mixed> $array
-	 * @return array<mixed>
 	 */
-	private static function recursiveSort(array $array): array
+	private static function sortArray(array &$array)
 	{
-		$result = [];
-
-		foreach ($array as $key => $value) {
+		array_walk_recursive($array, function (&$value) {
 			if (is_array($value)) {
-				$result[$key] = self::recursiveSort($value);
-			} else {
-				$result[$key] = $value;
+				self::sortArray($value);
 			}
-		}
-
-		ksort($result);
-
-		return $result;
+		});
+		ksort($array);
 	}
 
 }
