@@ -3,8 +3,8 @@
 namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Tools;
 
 use Closure;
-use Nette\StaticClass;
 use Nette;
+use Nette\StaticClass;
 use Nette\Utils;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +51,10 @@ class JsonAssert
 		$decodedInput = self::jsonDecode($actualJson, 'Actual-json');
 
 		try {
-			TestCase::assertEquals($decodedExpectedJson, $decodedInput);
+			TestCase::assertJsonStringEqualsJsonString(
+				Utils\Json::encode($decodedExpectedJson),
+				Utils\Json::encode($decodedInput),
+			);
 
 		} catch (ExpectationFailedException) {
 			throw new ExpectationFailedException(
@@ -93,7 +96,7 @@ class JsonAssert
 	 */
 	private static function makeJsonPretty(string $jsonString): string
 	{
-		return Utils\Json::encode(Utils\Json::decode($jsonString), Utils\Json::PRETTY);
+		return Utils\Json::encode(Utils\Json::decode($jsonString), pretty: true);
 	}
 
 }
