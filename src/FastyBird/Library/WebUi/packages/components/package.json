@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-components",
-  "version": "1.0.0-dev.21",
+  "version": "1.0.0-dev.22",
   "type": "module",
   "description": "FastyBird IoT application UI components",
   "homepage": "https://www.fastybird.com",
@@ -42,9 +42,9 @@
   "dependencies": {
     "@ctrl/tinycolor": "^4.0",
     "@element-plus/icons-vue": "^2.3",
-    "@fastybird/web-ui-icons": "1.0.0-dev.21",
-    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.21",
-    "@fastybird/web-ui-utils": "1.0.0-dev.21",
+    "@fastybird/web-ui-icons": "1.0.0-dev.22",
+    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.22",
+    "@fastybird/web-ui-utils": "1.0.0-dev.22",
     "@popperjs/core": "^2.11",
     "@vueuse/core": "^10.9",
     "async-validator": "^4.2",
