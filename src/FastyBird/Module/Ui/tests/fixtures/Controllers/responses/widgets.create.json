@@ -39,9 +39,9 @@
         },
         "data": []
       },
-      "dashboards": {
+      "tabs": {
         "links": {
-          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/dashboards"
+          "self": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/relationships/tabs"
         },
         "data": []
       },

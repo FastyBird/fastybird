@@ -57,7 +57,7 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 	/** @var array<string> */
 	protected array $relationships = [
 		0 => Schemas\Widgets\Widget::RELATIONSHIPS_DISPLAY,
-		1 => Schemas\Widgets\Widget::RELATIONSHIPS_DASHBOARDS,
+		1 => Schemas\Widgets\Widget::RELATIONSHIPS_TABS,
 		2 => Schemas\Widgets\Widget::RELATIONSHIPS_GROUPS,
 		Schemas\Widgets\Widget::RELATIONSHIPS_DATA_SOURCES => 'dataSources',
 	];

@@ -36,6 +36,12 @@ final class Constants
 
 	public const ROUTE_NAME_DASHBOARD_RELATIONSHIP = 'dashboard.relationship';
 
+	public const ROUTE_NAME_DASHBOARD_TABS = 'dashboard.tabs';
+
+	public const ROUTE_NAME_DASHBOARD_TAB = 'dashboard.tab';
+
+	public const ROUTE_NAME_DASHBOARD_TAB_RELATIONSHIP = 'dashboard.tab.relationship';
+
 	public const ROUTE_NAME_GROUPS = 'dashboard.groups';
 
 	public const ROUTE_NAME_GROUP = 'dashboard.group';

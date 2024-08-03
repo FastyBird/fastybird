@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
+use FastyBird\Module\Ui\Entities\Dashboards\Tabs\Tab;
 use FastyBird\Module\Ui\Exceptions;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
@@ -71,15 +72,16 @@ abstract class Widget implements Entities\Entity,
 	)]
 	protected Display\Display $display;
 
-	/** @var Common\Collections\Collection<int, Entities\Dashboards\Dashboard> */
+	/** @var Common\Collections\Collection<int, Tab> */
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\ManyToMany(
-		targetEntity: Entities\Dashboards\Dashboard::class,
+		targetEntity: Entities\Dashboards\Tabs\Tab::class,
 		mappedBy: 'widgets',
 		cascade: ['persist', 'remove'],
 		orphanRemoval: true,
 	)]
-	protected Common\Collections\Collection $dashboards;
+	#[ORM\OrderBy(['priority' => 'ASC'])]
+	protected Common\Collections\Collection $tabs;
 
 	/** @var Common\Collections\Collection<int, Entities\Groups\Group> */
 	#[IPubDoctrine\Crud(writable: true)]
@@ -89,6 +91,7 @@ abstract class Widget implements Entities\Entity,
 		cascade: ['persist', 'remove'],
 		orphanRemoval: true,
 	)]
+	#[ORM\OrderBy(['priority' => 'ASC'])]
 	protected Common\Collections\Collection $groups;
 
 	/** @var Common\Collections\Collection<int, Entities\Widgets\DataSources\DataSource> */
@@ -99,6 +102,7 @@ abstract class Widget implements Entities\Entity,
 		cascade: ['persist', 'remove'],
 		orphanRemoval: true,
 	)]
+	#[ORM\OrderBy(['id' => 'ASC'])]
 	protected Common\Collections\Collection $dataSources;
 
 	public function __construct(
@@ -112,7 +116,7 @@ abstract class Widget implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->dashboards = new Common\Collections\ArrayCollection();
+		$this->tabs = new Common\Collections\ArrayCollection();
 		$this->groups = new Common\Collections\ArrayCollection();
 		$this->dataSources = new Common\Collections\ArrayCollection();
 	}
@@ -197,55 +201,55 @@ abstract class Widget implements Entities\Entity,
 		}
 	}
 
-	public function addDashboard(Entities\Dashboards\Dashboard $dashboard): void
+	public function addTab(Entities\Dashboards\Tabs\Tab $tab): void
 	{
-		$this->dashboards = new Common\Collections\ArrayCollection();
+		$this->tabs = new Common\Collections\ArrayCollection();
 
-		$dashboard->addWidget($this);
+		$tab->addWidget($this);
 
 		// ...and assign it to collection
-		$this->dashboards->add($dashboard);
+		$this->tabs->add($tab);
 	}
 
 	/**
-	 * @return array<Entities\Dashboards\Dashboard>
+	 * @return array<Tab>
 	 */
-	public function getDashboards(): array
+	public function getTabs(): array
 	{
-		return $this->dashboards->toArray();
+		return $this->tabs->toArray();
 	}
 
 	/**
-	 * @param array<Entities\Dashboards\Dashboard> $dashboards
+	 * @param array<Tab> $tabs
 	 */
-	public function setDashboards(array $dashboards = []): void
+	public function setTabs(array $tabs = []): void
 	{
-		$this->dashboards = new Common\Collections\ArrayCollection();
+		$this->tabs = new Common\Collections\ArrayCollection();
 
-		foreach ($dashboards as $entity) {
-			if (!$this->dashboards->contains($entity)) {
+		foreach ($tabs as $entity) {
+			if (!$this->tabs->contains($entity)) {
 				$entity->addWidget($this);
 
 				// ...and assign them to collection
-				$this->dashboards->add($entity);
+				$this->tabs->add($entity);
 			}
 		}
 	}
 
-	public function getDashboard(string $id): Entities\Dashboards\Dashboard|null
+	public function getTab(string $id): Entities\Dashboards\Tabs\Tab|null
 	{
-		$found = $this->dashboards
-			->filter(static fn (Entities\Dashboards\Dashboard $row): bool => $id === $row->getId()->toString());
+		$found = $this->tabs
+			->filter(static fn (Entities\Dashboards\Tabs\Tab $row): bool => $id === $row->getId()->toString());
 
 		return $found->isEmpty() ? null : $found->first();
 	}
 
-	public function removeDashboard(Entities\Dashboards\Dashboard $dashboard): void
+	public function removeTab(Entities\Dashboards\Tabs\Tab $tab): void
 	{
 		// Check if collection contain removing entity...
-		if ($this->dashboards->contains($dashboard)) {
+		if ($this->tabs->contains($tab)) {
 			// ...and remove it from collection
-			$this->dashboards->removeElement($dashboard);
+			$this->tabs->removeElement($tab);
 		}
 	}
 
@@ -312,9 +316,9 @@ abstract class Widget implements Entities\Entity,
 			'name' => $this->getName(),
 			'type' => static::getType(),
 
-			'dashboards' => array_map(
-				static fn (Entities\Dashboards\Dashboard $dashboard): string => $dashboard->getId()->toString(),
-				$this->getDashboards(),
+			'tabs' => array_map(
+				static fn (Entities\Dashboards\Tabs\Tab $tab): string => $tab->getId()->toString(),
+				$this->getTabs(),
 			),
 			'groups' => array_map(
 				static fn (Entities\Groups\Group $group): string => $group->getId()->toString(),

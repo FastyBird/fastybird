@@ -9,6 +9,7 @@ use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Hydrators;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Schemas;
+use FastyBird\Module\Ui\Subscribers;
 use FastyBird\Module\Ui\Tests;
 use Nette;
 use RuntimeException;
@@ -30,6 +31,7 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 	public function testServicesRegistration(): void
 	{
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Repository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Tabs\Repository::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Groups\Repository::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Repository::class, false));
 		self::assertNotNull(
@@ -37,6 +39,7 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		);
 
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Manager::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Tabs\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Groups\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Displays\Manager::class, false));
@@ -48,9 +51,11 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DataSourcesV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DisplayV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\GroupsV1::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Controllers\TabsV1::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Controllers\WidgetsV1::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Dashboards\Dashboard::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Schemas\Dashboards\Tabs\Tab::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Groups\Group::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Widgets\AnalogActuator::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Widgets\AnalogSensor::class, false));
@@ -68,6 +73,7 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		);
 
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Dashboards\Dashboard::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Hydrators\Dashboards\Tabs\Tab::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Groups\Group::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\AnalogActuator::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\AnalogSensor::class, false));
@@ -83,6 +89,8 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull(
 			$this->getContainer()->getByType(Hydrators\Widgets\DataSources\ChannelProperty::class, false),
 		);
+
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\DashboardEntity::class, false));
 	}
 
 }

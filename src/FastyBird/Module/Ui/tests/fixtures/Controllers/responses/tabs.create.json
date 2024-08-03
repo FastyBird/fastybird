@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/tabs"
+  },
+  "data": {
+    "type": "com.fastybird.ui-module/tab",
+    "id": "b6e2e213-8015-4fe5-a154-c0dbef3f42be",
+    "attributes": {
+      "identifier": "new-tab",
+      "name": "New Tab",
+      "comment": null,
+      "priority": 0
+    },
+    "relationships": {
+      "dashboard": {
+        "links": {
+          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+        },
+        "data": {
+          "type": "com.fastybird.ui-module/dashboard",
+          "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+        }
+      },
+      "widgets": {
+        "links": {
+          "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/tabs/b6e2e213-8015-4fe5-a154-c0dbef3f42be/relationships/widgets"
+        },
+        "data": []
+      }
+    },
+    "links": {
+      "self": "/api/ui-module/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/tabs/b6e2e213-8015-4fe5-a154-c0dbef3f42be"
+    }
+  }
+}

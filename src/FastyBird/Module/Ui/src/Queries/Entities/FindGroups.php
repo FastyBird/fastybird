@@ -22,7 +22,7 @@ use IPub\DoctrineOrmQuery;
 use Ramsey\Uuid;
 
 /**
- * Find dashboard group entities query
+ * Find group entities query
  *
  * @template T of Entities\Groups\Group
  * @extends  DoctrineOrmQuery\QueryObject<T>
@@ -44,21 +44,6 @@ class FindGroups extends DoctrineOrmQuery\QueryObject
 	{
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($id): void {
 			$qb->andWhere('g.id = :id')->setParameter('id', $id, Uuid\Doctrine\UuidBinaryType::NAME);
-		};
-	}
-
-	public function forDashboard(Entities\Dashboards\Dashboard $dashboard): void
-	{
-		$this->select[] = static function (ORM\QueryBuilder $qb): void {
-			$qb->join('g.dashboard', 'dashboard');
-		};
-
-		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($dashboard): void {
-			$qb->andWhere('dashboard.id = :dashboard')->setParameter(
-				'dashboard',
-				$dashboard->getId(),
-				Uuid\Doctrine\UuidBinaryType::NAME,
-			);
 		};
 	}
 

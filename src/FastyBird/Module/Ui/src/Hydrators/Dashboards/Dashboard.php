@@ -43,7 +43,7 @@ final class Dashboard extends JsonApiHydrators\Hydrator
 
 	/** @var array<string> */
 	protected array $relationships = [
-		Schemas\Dashboards\Dashboard::RELATIONSHIPS_WIDGETS,
+		Schemas\Dashboards\Dashboard::RELATIONSHIPS_TABS,
 	];
 
 	public function getEntityName(): string

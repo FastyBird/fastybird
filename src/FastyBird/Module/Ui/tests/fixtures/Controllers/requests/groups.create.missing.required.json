@@ -4,14 +4,6 @@
     "type" : "com.fastybird.ui-module/group",
     "attributes" : {
       "comment" : "Some content"
-    },
-    "relationships" : {
-      "dashboard" : {
-        "data" : {
-          "id" : "272379d8-8351-44b6-ad8d-73a0abcb7f9c",
-          "type" : "com.fastybird.ui-module/dashboard"
-        }
-      }
     }
   }
 }

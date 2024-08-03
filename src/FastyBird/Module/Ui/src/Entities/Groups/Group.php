@@ -87,6 +87,7 @@ class Group implements Entities\Entity,
 			),
 		],
 	)]
+	#[ORM\OrderBy(['id' => 'ASC'])]
 	private Common\Collections\Collection $widgets;
 
 	public function __construct(

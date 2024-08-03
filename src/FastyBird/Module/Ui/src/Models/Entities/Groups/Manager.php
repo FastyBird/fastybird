@@ -26,7 +26,7 @@ use Psr\EventDispatcher;
 use function assert;
 
 /**
- * Dashboards groups entities manager
+ * Groups entities manager
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Models

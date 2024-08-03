@@ -44,6 +44,7 @@ class ApiRoutes
 	public function __construct(
 		private readonly bool $usePrefix,
 		private readonly Controllers\DashboardsV1 $dashboardsV1Controller,
+		private readonly Controllers\TabsV1 $tabsV1Controller,
 		private readonly Controllers\GroupsV1 $groupsV1Controller,
 		private readonly Controllers\WidgetsV1 $widgetsV1Controller,
 		private readonly Controllers\DisplayV1 $displayV1Controller,
@@ -102,6 +103,37 @@ class ApiRoutes
 				]);
 				$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_RELATIONSHIP);
 			});
+
+			$group->group(
+				'/dashboards/{' . self::URL_DASHBOARD_ID . '}',
+				function (Routing\RouteCollector $group): void {
+					$group->group('/tabs', function (Routing\RouteCollector $group): void {
+						/**
+						 * DASHBOARD TABS
+						 */
+						$route = $group->get('', [$this->tabsV1Controller, 'index']);
+						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_TABS);
+
+						$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->tabsV1Controller, 'read']);
+						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_TAB);
+
+						$group->post('', [$this->tabsV1Controller, 'create']);
+
+						$group->patch('/{' . self::URL_ITEM_ID . '}', [$this->tabsV1Controller, 'update']);
+
+						$group->delete('/{' . self::URL_ITEM_ID . '}', [$this->tabsV1Controller, 'delete']);
+
+						$route = $group->get(
+							'/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}',
+							[
+								$this->tabsV1Controller,
+								'readRelationship',
+							],
+						);
+						$route->setName(Ui\Constants::ROUTE_NAME_DASHBOARD_TAB_RELATIONSHIP);
+					});
+				},
+			);
 
 			$group->group('/groups', function (Routing\RouteCollector $group): void {
 				/**

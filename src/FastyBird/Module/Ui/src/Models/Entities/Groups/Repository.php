@@ -29,7 +29,7 @@ use Throwable;
 use function is_array;
 
 /**
- * Dashboard group repository
+ * Group repository
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Models

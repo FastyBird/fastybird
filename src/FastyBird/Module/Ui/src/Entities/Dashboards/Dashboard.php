@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
+use FastyBird\Module\Ui\Entities\Dashboards\Tabs\Tab;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -67,27 +68,16 @@ class Dashboard implements Entities\Entity,
 	#[ORM\Column(name: 'dashboard_priority', type: 'integer', nullable: false, options: ['default' => 0])]
 	private int $priority = 0;
 
-	/** @var Common\Collections\Collection<int, Entities\Widgets\Widget> */
+	/** @var Common\Collections\Collection<int, Tab> */
 	#[IPubDoctrine\Crud(writable: true)]
-	#[ORM\ManyToMany(targetEntity: Entities\Widgets\Widget::class, inversedBy: 'dashboards')]
-	#[ORM\JoinTable(
-		name: 'fb_ui_module_widgets_dashboards',
-		joinColumns: [
-			new ORM\JoinColumn(
-				name: 'dashboard_id',
-				referencedColumnName: 'dashboard_id',
-				onDelete: 'CASCADE',
-			),
-		],
-		inverseJoinColumns: [
-			new ORM\JoinColumn(
-				name: 'widget_id',
-				referencedColumnName: 'widget_id',
-				onDelete: 'CASCADE',
-			),
-		],
+	#[ORM\OneToMany(
+		mappedBy: 'dashboard',
+		targetEntity: Tabs\Tab::class,
+		cascade: ['persist', 'remove'],
+		orphanRemoval: true,
 	)]
-	private Common\Collections\Collection $widgets;
+	#[ORM\OrderBy(['priority' => 'ASC'])]
+	protected Common\Collections\Collection $tabs;
 
 	public function __construct(
 		string $identifier,
@@ -100,7 +90,7 @@ class Dashboard implements Entities\Entity,
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->widgets = new Common\Collections\ArrayCollection();
+		$this->tabs = new Common\Collections\ArrayCollection();
 	}
 
 	public function getIdentifier(): string
@@ -138,49 +128,34 @@ class Dashboard implements Entities\Entity,
 		$this->priority = $priority;
 	}
 
-	public function addWidget(Entities\Widgets\Widget $widget): void
+	/**
+	 * @return array<Tab>
+	 */
+	public function getTabs(): array
+	{
+		return $this->tabs->toArray();
+	}
+
+	/**
+	 * @param array<Tab> $tabs
+	 */
+	public function setTabs(array $tabs = []): void
+	{
+		$this->tabs = new Common\Collections\ArrayCollection();
+
+		// Process all passed entities...
+		foreach ($tabs as $entity) {
+			// ...and assign them to collection
+			$this->addTab($entity);
+		}
+	}
+
+	public function addTab(Tabs\Tab $tab): void
 	{
 		// Check if collection does not contain inserting entity
-		if (!$this->widgets->contains($widget)) {
+		if (!$this->tabs->contains($tab)) {
 			// ...and assign it to collection
-			$this->widgets->add($widget);
-		}
-	}
-
-	/**
-	 * @return array<Entities\Widgets\Widget>
-	 */
-	public function getWidgets(): array
-	{
-		return $this->widgets->toArray();
-	}
-
-	/**
-	 * @param array<Entities\Widgets\Widget> $widgets
-	 */
-	public function setWidgets(array $widgets = []): void
-	{
-		$this->widgets = new Common\Collections\ArrayCollection();
-
-		foreach ($widgets as $entity) {
-			$this->widgets->add($entity);
-		}
-	}
-
-	public function getWidget(string $id): Entities\Widgets\Widget|null
-	{
-		$found = $this->widgets
-			->filter(static fn (Entities\Widgets\Widget $row): bool => $id === $row->getId()->toString());
-
-		return $found->isEmpty() ? null : $found->first();
-	}
-
-	public function removeWidget(Entities\Widgets\Widget $widget): void
-	{
-		// Check if collection contain removing entity...
-		if ($this->widgets->contains($widget)) {
-			// ...and remove it from collection
-			$this->widgets->removeElement($widget);
+			$this->tabs->add($tab);
 		}
 	}
 
@@ -196,9 +171,9 @@ class Dashboard implements Entities\Entity,
 			'comment' => $this->getComment(),
 			'priority' => $this->getPriority(),
 
-			'widgets' => array_map(
-				static fn (Entities\Widgets\Widget $widget): string => $widget->getId()->toString(),
-				$this->getWidgets(),
+			'tabs' => array_map(
+				static fn (Tabs\Tab $tab): string => $tab->getId()->toString(),
+				$this->getTabs(),
 			),
 
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),

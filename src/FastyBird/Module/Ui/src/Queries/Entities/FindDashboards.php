@@ -50,7 +50,8 @@ class FindDashboards extends DoctrineOrmQuery\QueryObject
 	public function forWidget(Entities\Widgets\Widget $widget): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
-			$qb->join('g.widgets', 'widget');
+			$qb->join('d.tabs', 'tab');
+			$qb->join('tab.widgets', 'widget');
 		};
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($widget): void {

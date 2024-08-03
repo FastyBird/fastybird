@@ -26,6 +26,7 @@ use FastyBird\Module\Ui\Middleware;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Router;
 use FastyBird\Module\Ui\Schemas;
+use FastyBird\Module\Ui\Subscribers;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\DI;
 use Nette\Schema;
@@ -110,6 +111,18 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			->setType(Models\Entities\Dashboards\Manager::class);
 
 		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.tabs'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Dashboards\Tabs\Repository::class);
+
+		$builder->addDefinition(
+			$this->prefix('models.entities.managers.tabs'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Dashboards\Tabs\Manager::class);
+
+		$builder->addDefinition(
 			$this->prefix('models.entities.repositories.groups'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -152,11 +165,23 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			->setType(Models\Entities\Widgets\Displays\Manager::class);
 
 		/**
+		 * SUBSCRIBERS
+		 */
+
+		$builder->addDefinition($this->prefix('subscribers.dashboardEntity'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\DashboardEntity::class);
+
+		/**
 		 * API CONTROLLERS
 		 */
 
 		$builder->addDefinition($this->prefix('controllers.dashboards'), new DI\Definitions\ServiceDefinition())
 			->setType(Controllers\DashboardsV1::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
+		$builder->addDefinition($this->prefix('controllers.tabs'), new DI\Definitions\ServiceDefinition())
+			->setType(Controllers\TabsV1::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
@@ -186,6 +211,9 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 
 		$builder->addDefinition($this->prefix('schemas.dashboard'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Dashboards\Dashboard::class);
+
+		$builder->addDefinition($this->prefix('schemas.tabs'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Dashboards\Tabs\Tab::class);
 
 		$builder->addDefinition($this->prefix('schemas.group'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Groups\Group::class);
@@ -238,6 +266,9 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 
 		$builder->addDefinition($this->prefix('hydrators.dashboard'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Dashboards\Dashboard::class);
+
+		$builder->addDefinition($this->prefix('hydrators.tabs'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Dashboards\Tabs\Tab::class);
 
 		$builder->addDefinition($this->prefix('hydrators.group'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Groups\Group::class);
