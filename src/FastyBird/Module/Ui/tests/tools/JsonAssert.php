@@ -52,8 +52,8 @@ class JsonAssert
 
 		try {
 			TestCase::assertJsonStringEqualsJsonString(
-				Utils\Json::encode($decodedExpectedJson),
-				Utils\Json::encode($decodedInput),
+				Utils\Json::encode(is_array($decodedExpectedJson) ? self::recursiveSort($decodedExpectedJson) : $decodedExpectedJson),
+				Utils\Json::encode(is_array($decodedInput) ? self::recursiveSort($decodedInput) : $decodedInput),
 			);
 
 		} catch (ExpectationFailedException) {
@@ -97,6 +97,27 @@ class JsonAssert
 	private static function makeJsonPretty(string $jsonString): string
 	{
 		return Utils\Json::encode(Utils\Json::decode($jsonString), pretty: true);
+	}
+
+	/**
+	 * @param array<mixed> $array
+	 * @return array<mixed>
+	 */
+	private static function recursiveSort(array $array): array
+	{
+		$result = [];
+
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				$result[$key] = self::recursiveSort($value);
+			} else {
+				$result[$key] = $value;
+			}
+		}
+
+		ksort($result);
+
+		return $result;
 	}
 
 }
