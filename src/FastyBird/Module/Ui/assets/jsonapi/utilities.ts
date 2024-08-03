@@ -1,4 +1,6 @@
 export const DASHBOARD_DOCUMENT_REG_EXP = '^(?<source>[a-z0-9.-]+)/dashboard$';
+export const TAB_DOCUMENT_REG_EXP = '^(?<source>[a-z0-9.-]+)/tab$';
+
 export const GROUP_DOCUMENT_REG_EXP = '^(?<source>[a-z0-9.-]+)/group$';
 
 export const WIDGET_DOCUMENT_REG_EXP = '^(?<source>[a-z0-9.-]+)/widget/(?<type>[a-z0-9-]+)$';

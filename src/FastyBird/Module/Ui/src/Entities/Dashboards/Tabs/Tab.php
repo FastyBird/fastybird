@@ -36,6 +36,7 @@ use function array_map;
 	],
 )]
 #[ORM\Index(columns: ['tab_name'], name: 'tab_name_idx')]
+#[ORM\UniqueConstraint(name: 'tab_identifier_unique', columns: ['tab_identifier', 'dashboard_id'])]
 class Tab implements Entities\Entity,
 	Entities\EntityParams,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
@@ -55,9 +56,9 @@ class Tab implements Entities\Entity,
 	#[ORM\Column(name: 'tab_identifier', type: 'string', nullable: false)]
 	private string $identifier;
 
-	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\Column(name: 'tab_name', type: 'string', nullable: false)]
-	private string $name;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'tab_name', type: 'string', nullable: true, options: ['default' => null])]
+	private string|null $name;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'tab_comment', type: 'text', nullable: true, options: ['default' => null])]
@@ -107,7 +108,6 @@ class Tab implements Entities\Entity,
 	public function __construct(
 		Entities\Dashboards\Dashboard $dashboard,
 		string $identifier,
-		string $name,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
@@ -116,7 +116,6 @@ class Tab implements Entities\Entity,
 		$this->dashboard = $dashboard;
 
 		$this->identifier = $identifier;
-		$this->name = $name;
 
 		$this->widgets = new Common\Collections\ArrayCollection();
 	}
@@ -126,12 +125,12 @@ class Tab implements Entities\Entity,
 		return $this->identifier;
 	}
 
-	public function getName(): string
+	public function getName(): string|null
 	{
 		return $this->name;
 	}
 
-	public function setName(string $name): void
+	public function setName(string|null $name): void
 	{
 		$this->name = $name;
 	}

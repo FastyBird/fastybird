@@ -72,11 +72,7 @@ final class DashboardEntity implements Common\EventSubscriber
 		$foundTab = $this->tabsRepository->findOneBy($findTabQuery);
 
 		if ($foundTab === null) {
-			$tab = new Entities\Dashboards\Tabs\Tab(
-				$entity,
-				'default',
-				'Default',
-			);
+			$tab = new Entities\Dashboards\Tabs\Tab($entity, 'default');
 
 			$entity->addTab($tab);
 		}

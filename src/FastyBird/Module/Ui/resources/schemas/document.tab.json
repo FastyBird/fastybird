@@ -9,7 +9,7 @@
     },
     "source": {
       "type": "string",
-      "description": "Dashboard source"
+      "description": "Tab source"
     },
     "identifier": {
       "type": "string",
@@ -41,14 +41,18 @@
       "type": "number",
       "default": 0
     },
-    "tabs": {
+    "dashboard": {
+      "type": "string",
+      "description": "Dashboard document uuid v4 identifier"
+    },
+    "widgets": {
       "type": "array",
       "uniqueItems": true,
       "items": {
         "type": "string",
         "format": "uuid"
       },
-      "description": "Tab documents uuid v4 identifiers",
+      "description": "Widget documents uuid v4 identifiers",
       "default": []
     },
     "owner": {
@@ -97,7 +101,8 @@
     "name",
     "comment",
     "priority",
-    "tabs",
+    "dashboard",
+    "widgets",
     "owner"
   ]
 }

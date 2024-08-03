@@ -2,10 +2,24 @@ export interface DashboardDocument {
 	id: string;
 	source: string;
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
-	widgets: string[];
+	tabs: TabDocument['id'][];
+	owner: string | null;
+	createdAt: Date | null;
+	updatedAt: Date | null;
+}
+
+export interface TabDocument {
+	id: string;
+	source: string;
+	identifier: string;
+	name: string | null;
+	comment: string | null;
+	priority: number;
+	dashboard: DashboardDocument['id'];
+	widgets: WidgetDocument['id'][];
 	owner: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -15,10 +29,10 @@ export interface GroupDocument {
 	id: string;
 	source: string;
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
-	widgets: string[];
+	widgets: WidgetDocument['id'][];
 	owner: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -29,12 +43,12 @@ export interface WidgetDocument {
 	type: string;
 	source: string;
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
-	display: string;
-	data_sources: string[];
-	dashboard: string[];
-	groups: string[];
+	display: WidgetDisplayDocument['id'];
+	data_sources: WidgetDataSourceDocument['id'][];
+	tabs: TabDocument['id'][];
+	groups: GroupDocument['id'][];
 	owner: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -46,7 +60,7 @@ export interface WidgetDisplayDocument {
 	source: string;
 	identifier: string;
 	params: object;
-	widget: string;
+	widget: WidgetDocument['id'];
 	owner: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -58,7 +72,7 @@ export interface WidgetDataSourceDocument {
 	source: string;
 	identifier: string;
 	params: object;
-	widget: string;
+	widget: WidgetDocument['id'];
 	owner: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;

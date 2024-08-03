@@ -5,13 +5,13 @@ import { WidgetDocument } from '@fastybird/metadata-library';
 
 import {
 	IWidgetDataSourceResponseModel,
-	IDashboardResponseModel,
+	ITabResponseModel,
 	IGroupResponseModel,
 	IWidgetDisplayResponseModel,
 	IEntityMeta,
 	IPlainRelation,
 	IWidgetDataSourceResponseData,
-	IDashboardResponseData,
+	ITabResponseData,
 	IWidgetDisplayResponseData,
 } from '../../models/types';
 
@@ -20,7 +20,7 @@ export interface IWidgetMeta extends IEntityMeta {
 	entity: 'widget';
 }
 
-type RelationshipName = 'display' | 'dataSources' | 'dashboards' | 'groups';
+type RelationshipName = 'display' | 'dataSources' | 'tabs' | 'groups';
 
 // STORE
 // =====
@@ -85,7 +85,7 @@ export interface IWidget {
 
 	display: IPlainRelation;
 	dataSources: IPlainRelation[];
-	dashboards: IPlainRelation[];
+	tabs: IPlainRelation[];
 	groups: IPlainRelation[];
 
 	owner: string | null;
@@ -110,7 +110,7 @@ export interface IWidgetRecordFactoryPayload {
 
 	display?: IPlainRelation | IWidgetDisplayResponseModel;
 	dataSources?: (IPlainRelation | IWidgetDataSourceResponseModel)[];
-	dashboards?: (IPlainRelation | IDashboardResponseModel)[];
+	tabs?: (IPlainRelation | ITabResponseModel)[];
 	groups?: (IPlainRelation | IGroupResponseModel)[];
 
 	owner?: string | null;
@@ -181,12 +181,12 @@ export interface IWidgetsLoadRecordActionPayload {
 
 export interface IWidgetResponseJson extends TJsonApiBody {
 	data: IWidgetResponseData;
-	included?: (IWidgetDisplayResponseData | IWidgetDataSourceResponseData | IDashboardResponseData | IWidgetResponseData)[];
+	included?: (IWidgetDisplayResponseData | IWidgetDataSourceResponseData | ITabResponseData | IWidgetResponseData)[];
 }
 
 export interface IWidgetsResponseJson extends TJsonApiBody {
 	data: IWidgetResponseData[];
-	included?: (IWidgetDisplayResponseData | IWidgetDataSourceResponseData | IDashboardResponseData | IWidgetResponseData)[];
+	included?: (IWidgetDisplayResponseData | IWidgetDataSourceResponseData | ITabResponseData | IWidgetResponseData)[];
 }
 
 export interface IWidgetResponseData extends TJsonApiData {
@@ -207,7 +207,7 @@ interface IWidgetResponseDataAttributes {
 interface IWidgetResponseDataRelationships extends TJsonApiRelationships {
 	display: TJsonApiRelation;
 	data_sources: TJsonApiRelation;
-	dashboards: TJsonApiRelation;
+	tabs: TJsonApiRelation;
 	groups: TJsonApiRelation;
 }
 
@@ -227,7 +227,7 @@ export interface IWidgetResponseModel extends TJsonaModel {
 	// Relations
 	display: IPlainRelation | IWidgetDisplayResponseModel;
 	dataSources: (IPlainRelation | IWidgetDataSourceResponseModel)[];
-	dashboards: (IPlainRelation | IDashboardResponseModel)[];
+	tabs: (IPlainRelation | ITabResponseModel)[];
 	groups: (IPlainRelation | IGroupResponseModel)[];
 }
 
@@ -247,7 +247,7 @@ export interface IWidgetDatabaseRecord {
 
 	display: IPlainRelation;
 	dataSources: IPlainRelation[];
-	dashboards: IPlainRelation[];
+	tabs: IPlainRelation[];
 	groups: IPlainRelation[];
 
 	owner: string | null;

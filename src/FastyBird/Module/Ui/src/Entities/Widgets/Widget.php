@@ -60,9 +60,9 @@ abstract class Widget implements Entities\Entity,
 	#[ORM\Column(name: 'widget_identifier', type: 'string', nullable: false)]
 	protected string $identifier;
 
-	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\Column(name: 'widget_name', type: 'string', nullable: false)]
-	protected string $name;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'widget_name', type: 'string', nullable: true, options: ['default' => null])]
+	protected string|null $name;
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\OneToOne(
@@ -107,14 +107,12 @@ abstract class Widget implements Entities\Entity,
 
 	public function __construct(
 		string $identifier,
-		string $name,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->identifier = $identifier;
-		$this->name = $name;
 
 		$this->tabs = new Common\Collections\ArrayCollection();
 		$this->groups = new Common\Collections\ArrayCollection();
@@ -128,12 +126,12 @@ abstract class Widget implements Entities\Entity,
 		return $this->identifier;
 	}
 
-	public function getName(): string
+	public function getName(): string|null
 	{
 		return $this->name;
 	}
 
-	public function setName(string $name): void
+	public function setName(string|null $name): void
 	{
 		$this->name = $name;
 	}

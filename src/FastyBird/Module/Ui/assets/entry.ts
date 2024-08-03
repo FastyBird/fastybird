@@ -6,6 +6,7 @@ import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
 import { registerDashboardsStore } from './models/dashboards';
 import { registerGroupsStore } from './models/groups';
+import { registerTabsStore } from './models/tabs';
 import { registerWidgetsStore } from './models/widgets';
 import { registerWidgetDataSourcesStore } from './models/widgets-data-sources';
 import { registerWidgetDisplayStore } from './models/widgets-display';
@@ -46,6 +47,7 @@ export function createDevicesModule(): InstallFunction {
 			}
 
 			registerDashboardsStore(options.store);
+			registerTabsStore(options.store);
 			registerGroupsStore(options.store);
 			registerWidgetsStore(options.store);
 			registerWidgetDataSourcesStore(options.store);

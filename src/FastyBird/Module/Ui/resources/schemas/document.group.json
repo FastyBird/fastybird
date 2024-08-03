@@ -16,7 +16,15 @@
       "description": "Unique human readable identifier"
     },
     "name": {
-      "type": "string"
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
     },
     "comment": {
       "oneOf": [

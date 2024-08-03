@@ -62,7 +62,7 @@ const storeRecordFactory = (data: IWidgetRecordFactoryPayload): IWidget => {
 		name: get(data, 'name', null),
 		comment: get(data, 'comment', null),
 
-		relationshipNames: ['display', 'dataSources', 'dashboards', 'groups'],
+		relationshipNames: ['display', 'dataSources', 'tabs', 'groups'],
 
 		display: {
 			id: 'N/A',
@@ -73,7 +73,7 @@ const storeRecordFactory = (data: IWidgetRecordFactoryPayload): IWidget => {
 			},
 		},
 		dataSources: [],
-		dashboards: [],
+		tabs: [],
 		groups: [],
 
 		owner: get(data, 'owner', null),
@@ -134,9 +134,9 @@ const databaseRecordFactory = (record: IWidget): IWidgetDatabaseRecord => {
 			type: { type: dataSource.type.type, source: dataSource.type.source, entity: dataSource.type.entity },
 		})),
 
-		dashboards: record.dashboards.map((dashboard) => ({
-			id: dashboard.id,
-			type: { source: dashboard.type.source, entity: dashboard.type.entity },
+		tabs: record.tabs.map((tab) => ({
+			id: tab.id,
+			type: { source: tab.type.source, entity: tab.type.entity },
 		})),
 		groups: record.groups.map((group) => ({
 			id: group.id,
