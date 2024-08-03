@@ -16,6 +16,9 @@ use Nette\Utils;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
 use function file_get_contents;
+use function is_array;
+use function str_replace;
+use function strval;
 
 /**
  * @runTestsInSeparateProcesses
@@ -86,11 +89,11 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 				StatusCodeInterface::STATUS_NOT_FOUND,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/notFound.json',
 			],
-			'readRelationshipsGroups' => [
-				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/widgets',
+			'readRelationshipsTabs' => [
+				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/tabs',
 				'Bearer ' . self::VALID_TOKEN,
 				StatusCodeInterface::STATUS_OK,
-				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.readRelationships.widgets.json',
+				__DIR__ . '/../../../fixtures/Controllers/responses/dashboards.readRelationships.tabs.json',
 			],
 			'readRelationshipsUnknown' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/dashboards/272379d8-8351-44b6-ad8d-73a0abcb7f9c/relationships/unknown',
@@ -132,9 +135,37 @@ final class DashboardsV1Test extends Tests\Cases\Unit\DbTestCase
 
 		self::assertTrue($response instanceof SlimRouterHttp\Response);
 		self::assertSame($statusCode, $response->getStatusCode());
+
+		$responseBody = (string) $response->getBody();
+
+		$actual = Utils\Json::decode($responseBody, forceArrays: true);
+		self::assertTrue(is_array($actual));
+
 		Tests\Tools\JsonAssert::assertFixtureMatch(
 			$fixture,
-			(string) $response->getBody(),
+			$responseBody,
+			static function (string $expectation) use ($actual): string {
+				if (
+					isset($actual['data'])
+					&& is_array($actual['data'])
+					&& isset($actual['data']['relationships'])
+					&& is_array($actual['data']['relationships'])
+					&& isset($actual['data']['relationships']['tabs'])
+					&& is_array($actual['data']['relationships']['tabs'])
+					&& isset($actual['data']['relationships']['tabs']['data'])
+					&& is_array($actual['data']['relationships']['tabs']['data'])
+					&& isset($actual['data']['relationships']['tabs']['data'][0])
+					&& isset($actual['data']['relationships']['tabs']['data'][0]['id'])
+				) {
+					$expectation = str_replace(
+						'__ENTITY_ID__',
+						strval($actual['data']['relationships']['tabs']['data'][0]['id']),
+						$expectation,
+					);
+				}
+
+				return $expectation;
+			},
 		);
 	}
 

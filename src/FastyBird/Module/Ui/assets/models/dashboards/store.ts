@@ -60,9 +60,9 @@ const storeRecordFactory = (data: IDashboardRecordFactoryPayload): IDashboard =>
 		comment: get(data, 'comment', null),
 		priority: get(data, 'priority', 0),
 
-		relationshipNames: ['widgets'],
+		relationshipNames: ['tabs'],
 
-		widgets: [],
+		tabs: [],
 
 		owner: get(data, 'owner', null),
 
@@ -100,9 +100,9 @@ const databaseRecordFactory = (record: IDashboard): IDashboardDatabaseRecord => 
 
 		relationshipNames: record.relationshipNames.map((name) => name),
 
-		widgets: record.widgets.map((widget) => ({
-			id: widget.id,
-			type: { source: widget.type.source, entity: widget.type.entity },
+		tabs: record.tabs.map((tab) => ({
+			id: tab.id,
+			type: { source: tab.type.source, entity: tab.type.entity },
 		})),
 
 		owner: record.owner,

@@ -7,12 +7,14 @@ import {
 	WIDGET_DOCUMENT_REG_EXP,
 	WIDGET_DISPLAY_DOCUMENT_REG_EXP,
 	WIDGET_DATA_SOURCE_DOCUMENT_REG_EXP,
+	TAB_DOCUMENT_REG_EXP,
 } from './utilities';
 
 const CASE_REG_EXP = '_([a-z0-9])';
 
 class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonPropertiesMapper {
 	dashboardTypeRegex: RegExp;
+	tabTypeRegex: RegExp;
 	groupTypeRegex: RegExp;
 	widgetTypeRegex: RegExp;
 	widgetDisplayTypeRegex: RegExp;
@@ -22,6 +24,7 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 		super();
 
 		this.dashboardTypeRegex = new RegExp(DASHBOARD_DOCUMENT_REG_EXP);
+		this.tabTypeRegex = new RegExp(TAB_DOCUMENT_REG_EXP);
 		this.groupTypeRegex = new RegExp(GROUP_DOCUMENT_REG_EXP);
 		this.widgetTypeRegex = new RegExp(WIDGET_DOCUMENT_REG_EXP);
 		this.widgetDisplayTypeRegex = new RegExp(WIDGET_DISPLAY_DOCUMENT_REG_EXP);
@@ -33,6 +36,12 @@ class JsonApiJsonPropertiesMapper extends JsonPropertiesMapper implements IJsonP
 			const parsedTypes = this.dashboardTypeRegex.exec(type);
 
 			return { type: { ...{ source: 'N/A', entity: 'dashboard' }, ...parsedTypes?.groups } };
+		}
+
+		if (this.tabTypeRegex.test(type)) {
+			const parsedTypes = this.tabTypeRegex.exec(type);
+
+			return { type: { ...{ source: 'N/A', entity: 'tab' }, ...parsedTypes?.groups } };
 		}
 
 		if (this.groupTypeRegex.test(type)) {

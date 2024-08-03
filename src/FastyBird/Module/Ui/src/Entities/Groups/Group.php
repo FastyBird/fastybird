@@ -55,9 +55,9 @@ class Group implements Entities\Entity,
 	#[ORM\Column(name: 'group_identifier', type: 'string', nullable: false)]
 	private string $identifier;
 
-	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\Column(name: 'group_name', type: 'string', nullable: false)]
-	private string $name;
+	#[IPubDoctrine\Crud(writable: true)]
+	#[ORM\Column(name: 'group_name', type: 'string', nullable: true, options: ['default' => null])]
+	private string|null $name;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'group_comment', type: 'text', nullable: true, options: ['default' => null])]
@@ -87,18 +87,17 @@ class Group implements Entities\Entity,
 			),
 		],
 	)]
+	#[ORM\OrderBy(['id' => 'ASC'])]
 	private Common\Collections\Collection $widgets;
 
 	public function __construct(
 		string $identifier,
-		string $name,
 		Uuid\UuidInterface|null $id = null,
 	)
 	{
 		$this->id = $id ?? Uuid\Uuid::uuid4();
 
 		$this->identifier = $identifier;
-		$this->name = $name;
 
 		$this->widgets = new Common\Collections\ArrayCollection();
 	}
@@ -108,12 +107,12 @@ class Group implements Entities\Entity,
 		return $this->identifier;
 	}
 
-	public function getName(): string
+	public function getName(): string|null
 	{
 		return $this->name;
 	}
 
-	public function setName(string $name): void
+	public function setName(string|null $name): void
 	{
 		$this->name = $name;
 	}

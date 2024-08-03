@@ -16,7 +16,15 @@
       "description": "Unique human readable identifier"
     },
     "name": {
-      "type": "string"
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "default": null
     },
     "comment": {
       "oneOf": [
@@ -42,6 +50,26 @@
     "display": {
       "type": "string",
       "description": "Display document uuid v4 identifiers"
+    },
+    "tabs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Tabs documents uuid v4 identifiers",
+      "default": []
+    },
+    "groups": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "description": "Groups documents uuid v4 identifiers",
+      "default": []
     },
     "owner": {
       "oneOf": [
@@ -89,6 +117,8 @@
     "name",
     "comment",
     "data_sources",
+    "tabs",
+    "groups",
     "display",
     "owner"
   ]

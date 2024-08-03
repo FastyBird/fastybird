@@ -41,7 +41,7 @@ abstract class Widget extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_DISPLAY = 'display';
 
-	public const RELATIONSHIPS_DASHBOARDS = 'dashboards';
+	public const RELATIONSHIPS_TABS = 'tabs';
 
 	public const RELATIONSHIPS_GROUPS = 'groups';
 
@@ -111,8 +111,8 @@ abstract class Widget extends JsonApiSchemas\JsonApi
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
-			self::RELATIONSHIPS_DASHBOARDS => [
-				self::RELATIONSHIP_DATA => $resource->getDashboards(),
+			self::RELATIONSHIPS_TABS => [
+				self::RELATIONSHIP_DATA => $resource->getTabs(),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => false,
 			],
@@ -177,7 +177,7 @@ abstract class Widget extends JsonApiSchemas\JsonApi
 		if (
 			$name === self::RELATIONSHIPS_DISPLAY
 			|| $name === self::RELATIONSHIPS_DATA_SOURCES
-			|| $name === self::RELATIONSHIPS_DASHBOARDS
+			|| $name === self::RELATIONSHIPS_TABS
 			|| $name === self::RELATIONSHIPS_GROUPS
 		) {
 			return new JsonApi\Schema\Link(

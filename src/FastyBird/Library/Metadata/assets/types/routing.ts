@@ -137,6 +137,12 @@ export enum UiModuleRoutes {
 	DASHBOARD_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.dashboard',
 	DASHBOARD_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.dashboard',
 
+	// Tabs
+	TAB_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.tab',
+	TAB_DOCUMENT_CREATED = 'fb.exchange.module.document.created.tab',
+	TAB_DOCUMENT_UPDATED = 'fb.exchange.module.document.updated.tab',
+	TAB_DOCUMENT_DELETED = 'fb.exchange.module.document.deleted.tab',
+
 	// Groups
 	GROUP_DOCUMENT_REPORTED = 'fb.exchange.module.document.reported.group',
 	GROUP_DOCUMENT_CREATED = 'fb.exchange.module.document.created.group',

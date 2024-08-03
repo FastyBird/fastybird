@@ -59,7 +59,7 @@ final class WidgetsV1 extends BaseV1
 	public function __construct(
 		private readonly Models\Entities\Widgets\Repository $widgetsRepository,
 		private readonly Models\Entities\Widgets\Manager $widgetsManager,
-		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
+		private readonly Models\Entities\Dashboards\Tabs\Repository $tabsRepository,
 		private readonly Models\Entities\Groups\Repository $groupsRepository,
 		private readonly Models\Entities\Widgets\DataSources\Repository $dataSourcesRepository,
 		private readonly Models\Entities\Widgets\DataSources\Manager $dataSourcesManager,
@@ -388,14 +388,14 @@ final class WidgetsV1 extends BaseV1
 
 		if ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_DISPLAY) {
 			return $this->buildResponse($request, $response, $widget->getDisplay());
-		} elseif ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_DASHBOARDS) {
-			$findDashboardsQuery = new Queries\Entities\FindDashboards();
-			$findDashboardsQuery->forWidget($widget);
+		} elseif ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_TABS) {
+			$findTabsQuery = new Queries\Entities\FindTabs();
+			$findTabsQuery->forWidget($widget);
 
 			return $this->buildResponse(
 				$request,
 				$response,
-				$this->dashboardsRepository->findAllBy($findDashboardsQuery),
+				$this->tabsRepository->findAllBy($findTabsQuery),
 			);
 		} elseif ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_GROUPS) {
 			$findGroupsQuery = new Queries\Entities\FindGroups();

@@ -44,7 +44,7 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	/**
 	 * Define relationships names
 	 */
-	public const RELATIONSHIPS_WIDGETS = 'widgets';
+	public const RELATIONSHIPS_TABS = 'tabs';
 
 	public function __construct(protected Routing\IRouter $router)
 	{
@@ -112,8 +112,8 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	): iterable
 	{
 		return [
-			self::RELATIONSHIPS_WIDGETS => [
-				self::RELATIONSHIP_DATA => $resource->getWidgets(),
+			self::RELATIONSHIPS_TABS => [
+				self::RELATIONSHIP_DATA => $resource->getTabs(),
 				self::RELATIONSHIP_LINKS_SELF => true,
 				self::RELATIONSHIP_LINKS_RELATED => true,
 			],
@@ -130,7 +130,7 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 		string $name,
 	): JsonApi\Contracts\Schema\LinkInterface
 	{
-		if ($name === self::RELATIONSHIPS_WIDGETS) {
+		if ($name === self::RELATIONSHIPS_TABS) {
 			return new JsonApi\Schema\Link(
 				false,
 				$this->router->urlFor(

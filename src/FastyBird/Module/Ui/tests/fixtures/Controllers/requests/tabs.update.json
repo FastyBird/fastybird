@@ -1,0 +1,9 @@
+{
+  "data" : {
+    "id" : "3333dd94-0605-45b5-ac51-c08cfb604e64",
+    "type" : "com.fastybird.ui-module/tab",
+    "attributes" : {
+      "name" : "Updated name"
+    }
+  }
+}

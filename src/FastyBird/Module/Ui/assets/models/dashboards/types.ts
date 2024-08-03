@@ -3,13 +3,13 @@ import { _GettersTree } from 'pinia';
 
 import { DashboardDocument } from '@fastybird/metadata-library';
 
-import { IWidgetResponseData, IWidgetResponseModel, IEntityMeta, IPlainRelation } from '../../models/types';
+import { ITabResponseData, ITabResponseModel, IEntityMeta, IPlainRelation } from '../../models/types';
 
 export interface IDashboardMeta extends IEntityMeta {
 	entity: 'dashboard';
 }
 
-type RelationshipName = 'widgets';
+type RelationshipName = 'tabs';
 
 // STORE
 // =====
@@ -66,14 +66,14 @@ export interface IDashboard {
 	draft: boolean;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 
 	// Relations
 	relationshipNames: RelationshipName[];
 
-	widgets: IPlainRelation[];
+	tabs: IPlainRelation[];
 
 	owner: string | null;
 
@@ -89,14 +89,14 @@ export interface IDashboardRecordFactoryPayload {
 	type: IDashboardMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment?: string | null;
 	priority?: number;
 
 	// Relations
 	relationshipNames?: RelationshipName[];
 
-	widgets?: (IPlainRelation | IWidgetResponseModel)[];
+	tabs?: (IPlainRelation | ITabResponseModel)[];
 
 	owner?: string | null;
 }
@@ -168,12 +168,12 @@ export interface IDashboardsLoadRecordActionPayload {
 
 export interface IDashboardResponseJson extends TJsonApiBody {
 	data: IDashboardResponseData;
-	included?: IWidgetResponseData[];
+	included?: ITabResponseData[];
 }
 
 export interface IDashboardsResponseJson extends TJsonApiBody {
 	data: IDashboardResponseData[];
-	included?: IWidgetResponseData[];
+	included?: ITabResponseData[];
 }
 
 export interface IDashboardResponseData extends TJsonApiData {
@@ -185,7 +185,7 @@ export interface IDashboardResponseData extends TJsonApiData {
 
 interface IDashboardResponseDataAttributes {
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -194,7 +194,7 @@ interface IDashboardResponseDataAttributes {
 }
 
 interface IDashboardResponseDataRelationships extends TJsonApiRelationships {
-	widgets: TJsonApiRelation;
+	tabs: TJsonApiRelation;
 }
 
 // API RESPONSE MODELS
@@ -205,7 +205,7 @@ export interface IDashboardResponseModel extends TJsonaModel {
 	type: IDashboardMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -213,7 +213,7 @@ export interface IDashboardResponseModel extends TJsonaModel {
 	owner: string | null;
 
 	// Relations
-	widgets: (IPlainRelation | IWidgetResponseModel)[];
+	tabs: (IPlainRelation | ITabResponseModel)[];
 }
 
 // DATABASE
@@ -224,14 +224,14 @@ export interface IDashboardDatabaseRecord {
 	type: IDashboardMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 
 	// Relations
 	relationshipNames: RelationshipName[];
 
-	widgets: IPlainRelation[];
+	tabs: IPlainRelation[];
 
 	owner: string | null;
 }

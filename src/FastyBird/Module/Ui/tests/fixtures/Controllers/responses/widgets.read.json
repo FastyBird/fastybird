@@ -44,14 +44,14 @@
           }
         ]
       },
-      "dashboards": {
+      "tabs": {
         "links": {
-          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/dashboards"
+          "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/tabs"
         },
         "data": [
           {
-            "type": "com.fastybird.ui-module/dashboard",
-            "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+            "type": "com.fastybird.ui-module/tab",
+            "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
           }
         ]
       },

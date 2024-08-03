@@ -1,4 +1,5 @@
 export * from './dashboards/types';
+export * from './tabs/types';
 export * from './groups/types';
 export * from './widgets/types';
 export * from './widgets-display/types';
@@ -6,7 +7,7 @@ export * from './widgets-data-sources/types';
 
 export interface IEntityMeta {
 	source: string;
-	entity: 'dashboard' | 'group' | 'widget' | 'display' | 'data-source';
+	entity: 'dashboard' | 'tab' | 'group' | 'widget' | 'display' | 'data-source';
 }
 
 // STORE

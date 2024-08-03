@@ -4,6 +4,11 @@ IGNORE INTO `fb_ui_module_dashboards` (`dashboard_id`, `dashboard_identifier`, `
 (_binary 0xAB369E71ADA64D1AA5A8B6EE5CD58296, 'first-floor', 'First floor', NULL, 0, '[]', '2020-05-28 11:03:50', '2020-05-28 11:03:50');
 
 INSERT
+IGNORE INTO `fb_ui_module_tabs` (`tab_id`, `dashboard_id`, `tab_identifier`, `tab_name`, `tab_comment`, `tab_priority`, `params`, `created_at`, `updated_at`) VALUES
+(_binary 0x3333dd94060545b5ac51c08cfb604e64, _binary 0x272379D8835144B6AD8D73A0ABCB7F9C, 'default', 'Default', NULL, 0, '[]', '2020-05-28 11:04:40', '2020-05-28 12:29:32'),
+(_binary 0x751b30ba187c477cb1f12da7656abbb5, _binary 0xAB369E71ADA64D1AA5A8B6EE5CD58296, 'default', 'Default', NULL, 0, '[]', '2020-05-28 11:03:33', '2020-05-28 11:03:33');
+
+INSERT
 IGNORE INTO `fb_ui_module_groups` (`group_id`, `group_identifier`, `group_name`, `group_comment`, `group_priority`, `params`, `created_at`, `updated_at`) VALUES
 (_binary 0x89F4A14F7F78421699B8584AB9229F1C, 'sleeping-room', 'Sleeping room', NULL, 0, '[]', '2020-05-28 11:04:40', '2020-05-28 12:29:32'),
 (_binary 0xC74A16B167F44FFD812A9E5EC4BD5263, 'house-heaters', 'House heaters', NULL, 0, '[]', '2020-05-28 11:03:33', '2020-05-28 11:03:33'),
@@ -38,11 +43,11 @@ IGNORE INTO `fb_ui_module_widgets_display` (`display_id`, `widget_id`, `params`,
 (_binary 0xFD47E9AF1120458F8F30ADEBAC933406, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6, '[]', '2020-05-28 11:35:44', '2020-05-28 11:35:44', 'button');
 
 INSERT
-IGNORE INTO `fb_ui_module_widgets_dashboards` (`dashboard_id`, `widget_id`) VALUES
-(_binary 0x272379D8835144B6AD8D73A0ABCB7F9C, _binary 0x155534434564454DAF040DFEEF08AA96),
-(_binary 0x272379D8835144B6AD8D73A0ABCB7F9C, _binary 0x1D60090154E743EE8F5DA9E22663DDD7),
-(_binary 0x272379D8835144B6AD8D73A0ABCB7F9C, _binary 0x5626E7A1C42C4A319B5D848E3CF0E82A),
-(_binary 0x272379D8835144B6AD8D73A0ABCB7F9C, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6);
+IGNORE INTO `fb_ui_module_widgets_tabs` (`tab_id`, `widget_id`) VALUES
+(_binary 0x3333dd94060545b5ac51c08cfb604e64, _binary 0x155534434564454DAF040DFEEF08AA96),
+(_binary 0x3333dd94060545b5ac51c08cfb604e64, _binary 0x1D60090154E743EE8F5DA9E22663DDD7),
+(_binary 0x3333dd94060545b5ac51c08cfb604e64, _binary 0x5626E7A1C42C4A319B5D848E3CF0E82A),
+(_binary 0x3333dd94060545b5ac51c08cfb604e64, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6);
 
 INSERT
 IGNORE INTO `fb_ui_module_widgets_groups` (`group_id`, `widget_id`) VALUES

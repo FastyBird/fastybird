@@ -45,14 +45,14 @@
             }
           ]
         },
-        "dashboards": {
+        "tabs": {
           "links": {
-            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/dashboards"
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/tabs"
           },
           "data": [
             {
-              "type": "com.fastybird.ui-module/dashboard",
-              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+              "type": "com.fastybird.ui-module/tab",
+              "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
             }
           ]
         },
@@ -107,14 +107,14 @@
             }
           ]
         },
-        "dashboards": {
+        "tabs": {
           "links": {
-            "self": "/api/ui-module/v1/widgets/1d600901-54e7-43ee-8f5d-a9e22663ddd7/relationships/dashboards"
+            "self": "/api/ui-module/v1/widgets/1d600901-54e7-43ee-8f5d-a9e22663ddd7/relationships/tabs"
           },
           "data": [
             {
-              "type": "com.fastybird.ui-module/dashboard",
-              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+              "type": "com.fastybird.ui-module/tab",
+              "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
             }
           ]
         },
@@ -169,14 +169,14 @@
             }
           ]
         },
-        "dashboards": {
+        "tabs": {
           "links": {
-            "self": "/api/ui-module/v1/widgets/5626e7a1-c42c-4a31-9b5d-848e3cf0e82a/relationships/dashboards"
+            "self": "/api/ui-module/v1/widgets/5626e7a1-c42c-4a31-9b5d-848e3cf0e82a/relationships/tabs"
           },
           "data": [
             {
-              "type": "com.fastybird.ui-module/dashboard",
-              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+              "type": "com.fastybird.ui-module/tab",
+              "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
             }
           ]
         },
@@ -231,14 +231,14 @@
             }
           ]
         },
-        "dashboards": {
+        "tabs": {
           "links": {
-            "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/dashboards"
+            "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/tabs"
           },
           "data": [
             {
-              "type": "com.fastybird.ui-module/dashboard",
-              "id": "272379d8-8351-44b6-ad8d-73a0abcb7f9c"
+              "type": "com.fastybird.ui-module/tab",
+              "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
             }
           ]
         },

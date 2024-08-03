@@ -59,7 +59,7 @@ final class DashboardsV1 extends BaseV1
 	public function __construct(
 		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
 		private readonly Models\Entities\Dashboards\Manager $dashboardsManager,
-		private readonly Models\Entities\Widgets\Repository $widgetsRepository,
+		private readonly Models\Entities\Dashboards\Tabs\Repository $tabsRepository,
 	)
 	{
 	}
@@ -376,11 +376,11 @@ final class DashboardsV1 extends BaseV1
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_WIDGETS) {
-			$findWidgetsQuery = new Queries\Entities\FindWidgets();
-			$findWidgetsQuery->inDashboard($dashboard);
+		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_TABS) {
+			$findTabsQuery = new Queries\Entities\FindTabs();
+			$findTabsQuery->forDashboard($dashboard);
 
-			return $this->buildResponse($request, $response, $this->widgetsRepository->findAllBy($findWidgetsQuery));
+			return $this->buildResponse($request, $response, $this->tabsRepository->findAllBy($findTabsQuery));
 		}
 
 		return parent::readRelationship($request, $response);

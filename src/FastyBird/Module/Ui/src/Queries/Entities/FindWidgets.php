@@ -50,13 +50,29 @@ class FindWidgets extends DoctrineOrmQuery\QueryObject
 	public function inDashboard(Entities\Dashboards\Dashboard $dashboard): void
 	{
 		$this->select[] = static function (ORM\QueryBuilder $qb): void {
-			$qb->join('w.dashboards', 'd');
+			$qb->join('w.tabs', 't');
+			$qb->join('t.dashboards', 'd');
 		};
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($dashboard): void {
 			$qb->andWhere('d.id = :dashboard')->setParameter(
 				'dashboard',
 				$dashboard->getId(),
+				Uuid\Doctrine\UuidBinaryType::NAME,
+			);
+		};
+	}
+
+	public function inTab(Entities\Dashboards\Tabs\Tab $tab): void
+	{
+		$this->select[] = static function (ORM\QueryBuilder $qb): void {
+			$qb->join('w.tabs', 't');
+		};
+
+		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($tab): void {
+			$qb->andWhere('t.id = :tab')->setParameter(
+				'tab',
+				$tab->getId(),
 				Uuid\Doctrine\UuidBinaryType::NAME,
 			);
 		};
@@ -69,7 +85,11 @@ class FindWidgets extends DoctrineOrmQuery\QueryObject
 		};
 
 		$this->filter[] = static function (ORM\QueryBuilder $qb) use ($group): void {
-			$qb->andWhere('g.id = :group')->setParameter('group', $group->getId(), Uuid\Doctrine\UuidBinaryType::NAME);
+			$qb->andWhere('g.id = :group')->setParameter(
+				'group',
+				$group->getId(),
+				Uuid\Doctrine\UuidBinaryType::NAME,
+			);
 		};
 	}
 

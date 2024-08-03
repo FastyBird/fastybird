@@ -66,7 +66,7 @@ export interface IGroup {
 	draft: boolean;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 
@@ -89,7 +89,7 @@ export interface IGroupRecordFactoryPayload {
 	type: IGroupMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment?: string | null;
 	priority?: number;
 
@@ -185,7 +185,7 @@ export interface IGroupResponseData extends TJsonApiData {
 
 interface IGroupResponseDataAttributes {
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -205,7 +205,7 @@ export interface IGroupResponseModel extends TJsonaModel {
 	type: IGroupMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -224,7 +224,7 @@ export interface IGroupDatabaseRecord {
 	type: IGroupMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 

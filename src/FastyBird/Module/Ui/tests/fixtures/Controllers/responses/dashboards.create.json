@@ -19,12 +19,17 @@
       "priority": 0
     },
     "relationships": {
-      "widgets": {
+      "tabs": {
         "links": {
-          "self": "/api/ui-module/v1/dashboards/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/widgets",
-          "related": "/com.fastybird.ui-module/dashboard/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/widgets"
+          "self": "/api/ui-module/v1/dashboards/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/relationships/tabs",
+          "related": "/com.fastybird.ui-module/dashboard/7ef34899-74b5-49d3-bf7a-ea7ad45dea38/tabs"
         },
-        "data": []
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/tab",
+            "id": "__ENTITY_ID__"
+          }
+        ]
       }
     },
     "links": {
