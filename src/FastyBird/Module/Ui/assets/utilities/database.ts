@@ -53,6 +53,7 @@ interface StorageDbSchema extends DBSchema {
 
 type DatabaseRecord =
 	| IDashboardDatabaseRecord
+	| ITabDatabaseRecord
 	| IGroupDatabaseRecord
 	| IWidgetDatabaseRecord
 	| IWidgetDisplayDatabaseRecord

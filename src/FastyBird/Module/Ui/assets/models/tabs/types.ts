@@ -73,7 +73,7 @@ export interface ITab {
 	draft: boolean;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 
@@ -97,7 +97,7 @@ export interface ITabRecordFactoryPayload {
 	type: ITabMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment?: string | null;
 	priority?: number;
 
@@ -194,7 +194,7 @@ export interface ITabResponseData extends TJsonApiData {
 
 interface ITabResponseDataAttributes {
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -215,7 +215,7 @@ export interface ITabResponseModel extends TJsonaModel {
 	type: ITabMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 
 	priority: number;
@@ -235,7 +235,7 @@ export interface ITabDatabaseRecord {
 	type: ITabMeta;
 
 	identifier: string;
-	name: string;
+	name: string | null;
 	comment: string | null;
 	priority: number;
 
