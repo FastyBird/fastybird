@@ -1,1 +1,116 @@
-{}
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/ui-module/v1/widgets"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.ui-module/widget/analog-sensor",
+      "id": "15553443-4564-454d-af04-0dfeef08aa96",
+      "attributes": {
+        "identifier": "room-temperature",
+        "name": "Room temperature"
+      },
+      "relationships": {
+        "display": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/display",
+            "related": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/display"
+          },
+          "data": {
+            "type": "com.fastybird.ui-module/display/chart-graph",
+            "id": "467e6d4d-3545-481b-b613-53be7e9aa641"
+          }
+        },
+        "data-sources": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/data-sources",
+            "related": {
+              "href": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources",
+              "meta": {
+                "count": 1
+              }
+            }
+          },
+          "data": [
+            {
+              "type": "com.fastybird.ui-module/data-source/channel-property",
+              "id": "764937a7-8565-472e-8e12-fe97cd55a377"
+            }
+          ]
+        },
+        "tabs": {
+          "links": {
+            "self": "/api/ui-module/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/relationships/tabs"
+          },
+          "data": [
+            {
+              "name": "Main light"
+            },
+            "relationships"
+            :
+            {
+              "display": {
+                "links": {
+                  "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/display",
+                  "related": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/display"
+                },
+                "data": {
+                  "type": "com.fastybird.ui-module/display/button",
+                  "id": "fd47e9af-1120-458f-8f30-adebac933406"
+                }
+              },
+              "data-sources": {
+                "links": {
+                  "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/data-sources",
+                  "related": {
+                    "href": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/data-sources",
+                    "meta": {
+                      "count": 1
+                    }
+                  }
+                },
+                "data": [
+                  {
+                    "type": "com.fastybird.ui-module/data-source/channel-property",
+                    "id": "cd96aa91-a0a4-4a6c-9d68-2e0754a0a56d"
+                  }
+                ]
+              },
+              "tabs": {
+                "links": {
+                  "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/tabs"
+                },
+                "data": [
+                  {
+                    "type": "com.fastybird.ui-module/tab",
+                    "id": "3333dd94-0605-45b5-ac51-c08cfb604e64"
+                  }
+                ]
+              },
+              "groups": {
+                "links": {
+                  "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6/relationships/groups"
+                },
+                "data": [
+                  {
+                    "type": "com.fastybird.ui-module/group",
+                    "id": "89f4a14f-7f78-4216-99b8-584ab9229f1c"
+                  }
+                ]
+              }
+            },
+            "links"
+            :
+            {
+              "self": "/api/ui-module/v1/widgets/9a914732-98dc-47f6-bfd1-9d81ca9f8cb6"
+            }
+            }
+          ]
+        }
