@@ -25,6 +25,10 @@
                 <element key="src/FastyBird/Automator/DevicesModule/tests/cases/unit" value="FastyBird\Automator\DevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Automator/DevicesModule/tests/tools" value="FastyBird\Automator\DevicesModule\Tests\Tools"/>
 
+                <element key="src/FastyBird/Bridge/DevicesModuleUiModule/src" value="FastyBird\Bridge\DevicesModuleUiModule"/>
+                <element key="src/FastyBird/Bridge/DevicesModuleUiModule/tests/cases/unit" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/DevicesModuleUiModule/tests/tools" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Tools"/>
+
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/src" value="FastyBird\Bridge\RedisDbPluginDevicesModule"/>
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/cases/unit" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools" value="FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools"/>
@@ -162,6 +166,7 @@
     <exclude-pattern>app/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Automator/DateTime/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Automator/DevicesModule/tools/*</exclude-pattern>
+    <exclude-pattern>src/FastyBird/Bridge/DevicesModuleUiModule/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tools/*</exclude-pattern>

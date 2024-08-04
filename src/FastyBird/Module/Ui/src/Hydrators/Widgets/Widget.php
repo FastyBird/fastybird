@@ -17,6 +17,8 @@ namespace FastyBird\Module\Ui\Hydrators\Widgets;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
+use FastyBird\Bridge\DevicesModuleUiModule\Entities as DevicesModuleUiModuleEntities;
+use FastyBird\Bridge\DevicesModuleUiModule\Schemas as DevicesModuleUiModuleSchemas;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
@@ -265,11 +267,11 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 		$dataSources = [];
 
 		foreach ($relationship->getIdentifiers() as $dataSourceRelationIdentifier) {
-			if ($dataSourceRelationIdentifier->getType() === Schemas\Widgets\DataSources\ChannelProperty::SCHEMA_TYPE) {
+			if ($dataSourceRelationIdentifier->getType() === DevicesModuleUiModuleSchemas\Widgets\DataSources\ChannelProperty::SCHEMA_TYPE) {
 				foreach ($included->getAll() as $item) {
 					if ($item->getId() === $dataSourceRelationIdentifier->getId()) {
 						$dataSources[] = [
-							'entity' => Entities\Widgets\DataSources\ChannelProperty::class,
+							'entity' => DevicesModuleUiModuleEntities\Widgets\DataSources\ChannelProperty::class,
 							'channel' => $item->getAttributes()->get('channel'),
 							'property' => $item->getAttributes()->get('property'),
 						];

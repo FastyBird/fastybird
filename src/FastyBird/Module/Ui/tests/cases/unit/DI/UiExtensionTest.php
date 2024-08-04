@@ -68,9 +68,6 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Widgets\Display\Gauge::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Widgets\Display\GroupedButton::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Schemas\Widgets\Display\Slider::class, false));
-		self::assertNotNull(
-			$this->getContainer()->getByType(Schemas\Widgets\DataSources\ChannelProperty::class, false),
-		);
 
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Dashboards\Dashboard::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Dashboards\Tabs\Tab::class, false));
@@ -86,9 +83,6 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\Displays\Gauge::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\Displays\GroupedButton::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\Displays\Slider::class, false));
-		self::assertNotNull(
-			$this->getContainer()->getByType(Hydrators\Widgets\DataSources\ChannelProperty::class, false),
-		);
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\DashboardEntity::class, false));
 	}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "source": {
+      "type": "string",
+      "description": "Data source source"
+    },
+    "params": {
+      "type": "object"
+    },
+    "widget": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Widget unique uuid v4 identifier"
+    },
+    "connector": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector unique uuid v4 identifier"
+    },
+    "property": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Connector property unique uuid v4 identifier"
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "params",
+    "widget",
+    "owner"
+  ]
+}

@@ -233,12 +233,6 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 		$builder->addDefinition($this->prefix('schemas.widgets.digitalSensor'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Widgets\DigitalSensor::class);
 
-		$builder->addDefinition(
-			$this->prefix('schemas.dataSources.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Schemas\Widgets\DataSources\ChannelProperty::class);
-
 		$builder->addDefinition($this->prefix('schemas.display.analogValue'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Widgets\Display\AnalogValue::class);
 
@@ -293,12 +287,6 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Widgets\DigitalSensor::class);
-
-		$builder->addDefinition(
-			$this->prefix('hydrators.dataSources.channelProperty'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Hydrators\Widgets\DataSources\ChannelProperty::class);
 
 		$builder->addDefinition($this->prefix('hydrators.widgets.analogValue'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\AnalogValue::class);
