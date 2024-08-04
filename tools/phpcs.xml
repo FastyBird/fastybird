@@ -155,10 +155,10 @@
     </rule>
 
     <!--Exclude folders -->
-    <exclude-pattern>/node_modules/*</exclude-pattern>
-    <exclude-pattern>/vendor/*</exclude-pattern>
-    <exclude-pattern>/tools</exclude-pattern>
-    <exclude-pattern>/tests/stubs/*</exclude-pattern>
+    <exclude-pattern>^node_modules/*</exclude-pattern>
+    <exclude-pattern>^vendor/*</exclude-pattern>
+    <exclude-pattern>^tools/*</exclude-pattern>
+    <exclude-pattern>^tests/stubs/*</exclude-pattern>
 
     <!--Exclude rules/files -->
     <rule ref="SlevomatCodingStandard.Files.LineLength.LineTooLong">
