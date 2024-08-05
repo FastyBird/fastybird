@@ -23,6 +23,7 @@ use FastyBird\Module\Triggers\Queries;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
+use function strval;
 
 /**
  * @property-read Localization\ITranslator $translator
@@ -46,15 +47,15 @@ trait TTrigger
 			if ($trigger === null) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-					$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+					strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+					strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 			);
 		}
 

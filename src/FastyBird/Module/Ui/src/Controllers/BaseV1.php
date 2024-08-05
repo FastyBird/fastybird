@@ -64,6 +64,7 @@ abstract class BaseV1
 
 	protected Router\Validator $routesValidator;
 
+	/** @var JsonApiHydrators\Container<DoctrineCrud\Entities\IEntity> */
 	protected JsonApiHydrators\Container $hydratorsContainer;
 
 	protected Ui\Logger $logger;
@@ -93,6 +94,9 @@ abstract class BaseV1
 		$this->routesValidator = $validator;
 	}
 
+	/**
+	 * @param JsonApiHydrators\Container<DoctrineCrud\Entities\IEntity> $hydratorsContainer
+	 */
 	public function injectHydratorsContainer(JsonApiHydrators\Container $hydratorsContainer): void
 	{
 		$this->hydratorsContainer = $hydratorsContainer;
@@ -112,18 +116,18 @@ abstract class BaseV1
 		if ($relationEntity !== '') {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//ui-module.base.messages.relationNotFound.heading'),
-				$this->translator->translate(
+				strval($this->translator->translate('//ui-module.base.messages.relationNotFound.heading')),
+				strval($this->translator->translate(
 					'//ui-module.base.messages.relationNotFound.message',
 					['relation' => $relationEntity],
-				),
+				)),
 			);
 		}
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_NOT_FOUND,
-			$this->translator->translate('//ui-module.base.messages.unknownRelation.heading'),
-			$this->translator->translate('//ui-module.base.messages.unknownRelation.message'),
+			strval($this->translator->translate('//ui-module.base.messages.unknownRelation.heading')),
+			strval($this->translator->translate('//ui-module.base.messages.unknownRelation.message')),
 		);
 	}
 
@@ -139,8 +143,8 @@ abstract class BaseV1
 			if (!$content instanceof stdClass) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_BAD_REQUEST,
-					$this->translator->translate('//ui-module.base.messages.notValidJsonApi.heading'),
-					$this->translator->translate('//ui-module.base.messages.notValidJsonApi.message'),
+					strval($this->translator->translate('//ui-module.base.messages.notValidJsonApi.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.notValidJsonApi.message')),
 				);
 			}
 
@@ -149,14 +153,14 @@ abstract class BaseV1
 		} catch (Utils\JsonException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
-				$this->translator->translate('//ui-module.base.messages.notValidJson.heading'),
-				$this->translator->translate('//ui-module.base.messages.notValidJson.message'),
+				strval($this->translator->translate('//ui-module.base.messages.notValidJson.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.notValidJson.message')),
 			);
 		} catch (JsonAPIDocument\Exceptions\RuntimeException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
-				$this->translator->translate('//ui-module.base.messages.notValidJsonApi.heading'),
-				$this->translator->translate('//ui-module.base.messages.notValidJsonApi.message'),
+				strval($this->translator->translate('//ui-module.base.messages.notValidJsonApi.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.notValidJsonApi.message')),
 			);
 		}
 
@@ -181,8 +185,8 @@ abstract class BaseV1
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
-				$this->translator->translate('//ui-module.base.messages.invalidIdentifier.heading'),
-				$this->translator->translate('//ui-module.base.messages.invalidIdentifier.message'),
+				strval($this->translator->translate('//ui-module.base.messages.invalidIdentifier.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.invalidIdentifier.message')),
 			);
 		}
 

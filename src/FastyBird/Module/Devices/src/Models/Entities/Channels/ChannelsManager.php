@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Entities\Channels;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Models;
@@ -51,6 +52,12 @@ final class ChannelsManager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(Utils\ArrayHash $values): Entities\Channels\Channel
 	{
 		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
@@ -62,7 +69,9 @@ final class ChannelsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Channels\Channel $entity,
@@ -78,7 +87,8 @@ final class ChannelsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Channels\Channel $entity): bool
 	{

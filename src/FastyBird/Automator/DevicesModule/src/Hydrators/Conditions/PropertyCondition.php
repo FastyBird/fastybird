@@ -66,8 +66,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/device',
 				],
@@ -92,8 +92,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/property',
 				],
@@ -120,8 +120,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/operator',
 				],
@@ -131,8 +131,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 		} elseif (TriggersTypes\ConditionOperator::tryFrom(strval($attributes->get('operator'))) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
-				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.message'),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading')),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidOperator.message')),
 				[
 					'pointer' => '/data/attributes/operator',
 				],
@@ -156,8 +156,8 @@ abstract class PropertyCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/operand',
 				],

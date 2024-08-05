@@ -24,6 +24,7 @@ use Ramsey\Uuid;
 use function is_bool;
 use function is_scalar;
 use function strtolower;
+use function strval;
 
 /**
  * Property action entity hydrator
@@ -61,8 +62,8 @@ abstract class PropertyAction extends TriggersHydrators\Actions\Action
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/device',
 				],
@@ -87,8 +88,8 @@ abstract class PropertyAction extends TriggersHydrators\Actions\Action
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/property',
 				],
@@ -112,8 +113,8 @@ abstract class PropertyAction extends TriggersHydrators\Actions\Action
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/value',
 				],

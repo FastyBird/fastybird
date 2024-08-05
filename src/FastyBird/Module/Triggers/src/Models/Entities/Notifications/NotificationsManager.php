@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Models\Entities\Notifications;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Models;
 use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
@@ -48,6 +49,12 @@ final class NotificationsManager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(Utils\ArrayHash $values): Entities\Notifications\Notification
 	{
 		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
@@ -57,7 +64,9 @@ final class NotificationsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Notifications\Notification $entity,
@@ -71,7 +80,8 @@ final class NotificationsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Notifications\Notification $entity): bool
 	{

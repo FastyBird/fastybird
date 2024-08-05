@@ -123,20 +123,20 @@ final class DashboardsV1 extends BaseV1
 
 			} catch (JsonApiExceptions\JsonApi $ex) {
 				throw $ex;
-			} catch (DoctrineCrudExceptions\MissingRequiredFieldException $ex) {
+			} catch (DoctrineCrudExceptions\MissingRequiredField $ex) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-					$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+					strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 					[
 						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 					],
 				);
-			} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
+			} catch (DoctrineCrudExceptions\EntityCreation $ex) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-					$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+					strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 					[
 						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 					],
@@ -145,8 +145,8 @@ final class DashboardsV1 extends BaseV1
 				if (preg_match("%PRIMARY'%", $ex->getMessage(), $match) === 1) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//ui-module.base.messages.uniqueIdentifier.heading'),
-						$this->translator->translate('//ui-module.base.messages.uniqueIdentifier.message'),
+						strval($this->translator->translate('//ui-module.base.messages.uniqueIdentifier.heading')),
+						strval($this->translator->translate('//ui-module.base.messages.uniqueIdentifier.message')),
 						[
 							'pointer' => '/data/id',
 						],
@@ -158,8 +158,8 @@ final class DashboardsV1 extends BaseV1
 					if (str_starts_with($columnKey, 'dashboard_')) {
 						throw new JsonApiExceptions\JsonApiError(
 							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
-							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+							strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading')),
+							strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.message')),
 							[
 								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
 									Utils\Strings::substring($columnKey, 7),
@@ -171,8 +171,8 @@ final class DashboardsV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
-					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+					strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.message')),
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
@@ -187,8 +187,8 @@ final class DashboardsV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.notCreated.heading'),
-					$this->translator->translate('//ui-module.base.messages.notCreated.message'),
+					strval($this->translator->translate('//ui-module.base.messages.notCreated.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.notCreated.message')),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -204,8 +204,8 @@ final class DashboardsV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//ui-module.base.messages.invalidType.heading'),
-			$this->translator->translate('//ui-module.base.messages.invalidType.message'),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.heading')),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.message')),
 			[
 				'pointer' => '/data/type',
 			],
@@ -253,8 +253,8 @@ final class DashboardsV1 extends BaseV1
 					if (str_starts_with($columnKey, 'dashboard_')) {
 						throw new JsonApiExceptions\JsonApiError(
 							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
-							$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+							strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading')),
+							strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.message')),
 							[
 								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
 									Utils\Strings::substring($columnKey, 7),
@@ -266,8 +266,8 @@ final class DashboardsV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading'),
-					$this->translator->translate('//ui-module.base.messages.uniqueAttribute.message'),
+					strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.uniqueAttribute.message')),
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
@@ -282,8 +282,8 @@ final class DashboardsV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.notUpdated.heading'),
-					$this->translator->translate('//ui-module.base.messages.notUpdated.message'),
+					strval($this->translator->translate('//ui-module.base.messages.notUpdated.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.notUpdated.message')),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -297,8 +297,8 @@ final class DashboardsV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//ui-module.base.messages.invalidType.heading'),
-			$this->translator->translate('//ui-module.base.messages.invalidType.message'),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.heading')),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.message')),
 			[
 				'pointer' => '/data/type',
 			],
@@ -348,8 +348,8 @@ final class DashboardsV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.notDeleted.heading'),
-				$this->translator->translate('//ui-module.base.messages.notDeleted.message'),
+				strval($this->translator->translate('//ui-module.base.messages.notDeleted.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.notDeleted.message')),
 			);
 		} finally {
 			// Revert all changes when error occur

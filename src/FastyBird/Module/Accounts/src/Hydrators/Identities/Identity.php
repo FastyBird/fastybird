@@ -24,6 +24,7 @@ use FastyBird\Module\Accounts\Schemas;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use function is_scalar;
+use function strval;
 
 /**
  * Identity entity hydrator
@@ -64,8 +65,8 @@ class Identity extends JsonApiHydrators\Hydrator
 		if (!is_scalar($attributes->get('password'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.message')),
 				[
 					'pointer' => '/data/attributes/password',
 				],

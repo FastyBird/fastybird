@@ -172,8 +172,8 @@ abstract class Property extends JsonApiHydrators\Hydrator
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
-					$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+					strval($this->translator->translate('//devices-module.base.messages.invalidAttribute.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.invalidAttribute.message')),
 					[
 						'pointer' => '/data/attributes/format',
 					],
@@ -213,8 +213,8 @@ abstract class Property extends JsonApiHydrators\Hydrator
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//devices-module.base.messages.invalidAttribute.heading'),
-					$this->translator->translate('//devices-module.base.messages.invalidAttribute.message'),
+					strval($this->translator->translate('//devices-module.base.messages.invalidAttribute.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.invalidAttribute.message')),
 					[
 						'pointer' => '/data/attributes/format',
 					],

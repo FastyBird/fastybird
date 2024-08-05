@@ -8,6 +8,7 @@ use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
 use function is_scalar;
+use function strval;
 
 final class DummyActionHydrator extends Hydrators\Actions\Action
 {
@@ -39,8 +40,8 @@ final class DummyActionHydrator extends Hydrators\Actions\Action
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/do_item',
 				],

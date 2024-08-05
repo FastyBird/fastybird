@@ -254,6 +254,9 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 		$builder->addDefinition($this->prefix('schemas.display.slider'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Widgets\Display\Slider::class);
 
+		$builder->addDefinition($this->prefix('schemas.dataSource.generic'), new DI\Definitions\ServiceDefinition())
+			->setType(Schemas\Widgets\DataSources\Generic::class);
+
 		/**
 		 * JSON-API HYDRATORS
 		 */
@@ -288,29 +291,32 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 		)
 			->setType(Hydrators\Widgets\DigitalSensor::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.analogValue'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.analogValue'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\AnalogValue::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.button'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.button'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\Button::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.chartGraph'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.chartGraph'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\ChartGraph::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.digitalValue'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.digitalValue'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\DigitalValue::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.gauge'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.gauge'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\Gauge::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.widgets.groupedButton'),
+			$this->prefix('hydrators.display.groupedButton'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Hydrators\Widgets\Displays\GroupedButton::class);
 
-		$builder->addDefinition($this->prefix('hydrators.widgets.slider'), new DI\Definitions\ServiceDefinition())
+		$builder->addDefinition($this->prefix('hydrators.display.slider'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Widgets\Displays\Slider::class);
+
+		$builder->addDefinition($this->prefix('hydrators.dataSources.generic'), new DI\Definitions\ServiceDefinition())
+			->setType(Hydrators\Widgets\DataSources\Generic::class);
 
 		/**
 		 * COMMANDS

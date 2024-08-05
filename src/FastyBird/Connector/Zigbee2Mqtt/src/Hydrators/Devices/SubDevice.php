@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Hydrators\Devices;
 
-use Doctrine\Common;
 use Doctrine\Persistence;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
@@ -29,6 +28,7 @@ use IPub\JsonAPIDocument;
 use Nette\Localization;
 use Ramsey\Uuid;
 use function is_string;
+use function strval;
 
 /**
  * Zigbee2MQTT sub-device device entity hydrator
@@ -48,10 +48,9 @@ final class SubDevice extends Device
 		Persistence\ManagerRegistry $managerRegistry,
 		Localization\Translator $translator,
 		Helpers\CrudReader|null $crudReader = null,
-		Common\Cache\Cache|null $cache = null,
 	)
 	{
-		parent::__construct($connectorsRepository, $managerRegistry, $translator, $crudReader, $cache);
+		parent::__construct($connectorsRepository, $managerRegistry, $translator, $crudReader);
 	}
 
 	public function getEntityName(): string
@@ -101,8 +100,8 @@ final class SubDevice extends Device
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//zigbee2mqtt-connector.base.messages.invalidRelation.heading'),
-			$this->translator->translate('//zigbee2mqtt-connector.base.messages.invalidRelation.message'),
+			strval($this->translator->translate('//zigbee2mqtt-connector.base.messages.invalidRelation.heading')),
+			strval($this->translator->translate('//zigbee2mqtt-connector.base.messages.invalidRelation.message')),
 			[
 				'pointer' => '/data/relationships/' . Schemas\Devices\SubDevice::RELATIONSHIPS_PARENTS . '/data/id',
 			],

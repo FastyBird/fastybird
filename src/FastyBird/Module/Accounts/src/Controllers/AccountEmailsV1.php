@@ -143,8 +143,8 @@ final class AccountEmailsV1 extends BaseV1
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.invalidType.heading'),
-					$this->translator->translate('//accounts-module.base.messages.invalidType.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.message')),
 					[
 						'pointer' => '/data/type',
 					],
@@ -157,8 +157,8 @@ final class AccountEmailsV1 extends BaseV1
 		} catch (Exceptions\EmailIsNotValid) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.message')),
 				[
 					'pointer' => '/data/attributes/address',
 				],
@@ -166,17 +166,17 @@ final class AccountEmailsV1 extends BaseV1
 		} catch (Exceptions\EmailAlreadyTaken) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.emails.messages.taken.heading'),
-				$this->translator->translate('//accounts-module.emails.messages.taken.message'),
+				strval($this->translator->translate('//accounts-module.emails.messages.taken.heading')),
+				strval($this->translator->translate('//accounts-module.emails.messages.taken.message')),
 				[
 					'pointer' => '/data/attributes/address',
 				],
 			);
-		} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
+		} catch (DoctrineCrudExceptions\EntityCreation $ex) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
 				],
@@ -187,8 +187,8 @@ final class AccountEmailsV1 extends BaseV1
 			if (preg_match("%PRIMARY'%", $ex->getMessage(), $match) === 1) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.uniqueIdentifier.heading'),
-					$this->translator->translate('//accounts-module.base.messages.uniqueIdentifier.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.uniqueIdentifier.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.uniqueIdentifier.message')),
 					[
 						'pointer' => '/data/id',
 					],
@@ -200,8 +200,8 @@ final class AccountEmailsV1 extends BaseV1
 				if (str_starts_with($columnKey, 'email_')) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading'),
-						$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message'),
+						strval($this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading')),
+						strval($this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message')),
 						[
 							'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
 								Utils\Strings::substring($columnKey, 6),
@@ -213,8 +213,8 @@ final class AccountEmailsV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.uniqueAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.uniqueAttribute.message')),
 			);
 		} catch (Throwable $ex) {
 			// Log caught exception
@@ -229,8 +229,8 @@ final class AccountEmailsV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.notCreated.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notCreated.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notCreated.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notCreated.message')),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -278,8 +278,8 @@ final class AccountEmailsV1 extends BaseV1
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.invalidType.heading'),
-					$this->translator->translate('//accounts-module.base.messages.invalidType.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.message')),
 					[
 						'pointer' => '/data/type',
 					],
@@ -304,8 +304,8 @@ final class AccountEmailsV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.notUpdated.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notUpdated.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notUpdated.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notUpdated.message')),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -336,8 +336,8 @@ final class AccountEmailsV1 extends BaseV1
 		if ($email->isDefault()) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.emails.messages.defaultNotDeletable.heading'),
-				$this->translator->translate('//accounts-module.emails.messages.defaultNotDeletable.message'),
+				strval($this->translator->translate('//accounts-module.emails.messages.defaultNotDeletable.heading')),
+				strval($this->translator->translate('//accounts-module.emails.messages.defaultNotDeletable.message')),
 			);
 		}
 
@@ -363,8 +363,8 @@ final class AccountEmailsV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.notDeleted.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notDeleted.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notDeleted.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notDeleted.message')),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -408,8 +408,8 @@ final class AccountEmailsV1 extends BaseV1
 		if ($this->user->getAccount() === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_FORBIDDEN,
-				$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-				$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.message')),
 			);
 		}
 

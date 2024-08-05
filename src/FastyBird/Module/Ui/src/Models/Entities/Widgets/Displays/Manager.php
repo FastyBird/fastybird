@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Ui\Models\Entities\Widgets\Displays;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Events;
 use FastyBird\Module\Ui\Models;
@@ -52,7 +53,9 @@ class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Widgets\Display\Display $entity,

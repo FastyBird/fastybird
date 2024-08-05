@@ -11,6 +11,7 @@ use Ramsey\Uuid;
 use function is_bool;
 use function is_scalar;
 use function strtolower;
+use function strval;
 
 final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 {
@@ -43,8 +44,8 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/watch_item',
 				],
@@ -69,8 +70,8 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/operator',
 				],
@@ -80,8 +81,8 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 		} elseif (Types\ConditionOperator::tryFrom($attributes->get('operator')) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading'),
-				$this->translator->translate('//triggers-module.conditions.messages.invalidOperator.message'),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidOperator.heading')),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidOperator.message')),
 				[
 					'pointer' => '/data/attributes/operator',
 				],
@@ -105,8 +106,8 @@ final class DummyConditionHydrator extends Hydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/operand',
 				],

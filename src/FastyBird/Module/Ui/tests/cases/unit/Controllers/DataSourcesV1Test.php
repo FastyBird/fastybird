@@ -163,15 +163,6 @@ final class DataSourcesV1Test extends Tests\Cases\Unit\DbTestCase
 				StatusCodeInterface::STATUS_CREATED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/dataSources.create.json',
 			],
-			'missingRequired' => [
-				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/widgets/15553443-4564-454d-af04-0dfeef08aa96/data-sources',
-				'Bearer ' . self::VALID_TOKEN,
-				file_get_contents(
-					__DIR__ . '/../../../fixtures/Controllers/requests/dataSources.create.missing.required.json',
-				),
-				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				__DIR__ . '/../../../fixtures/Controllers/responses/dataSources.missing.required.json',
-			],
 			'widgetNotFound' => [
 				'/api/' . Metadata\Constants::MODULE_UI_PREFIX . '/v1/widgets/11553443-4564-454d-af04-0dfeef08aa96/data-sources',
 				'Bearer ' . self::VALID_TOKEN,

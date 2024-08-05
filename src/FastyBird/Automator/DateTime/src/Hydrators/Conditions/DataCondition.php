@@ -23,6 +23,7 @@ use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Utils;
 use function is_scalar;
+use function strval;
 
 /**
  * Time condition entity hydrator
@@ -58,8 +59,8 @@ final class DataCondition extends TriggersHydrators\Conditions\Condition
 		if (!is_scalar($attributes->get('date')) || !$attributes->has('date')) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/date',
 				],
@@ -74,8 +75,8 @@ final class DataCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading'),
-				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.message'),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading')),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidTime.message')),
 				[
 					'pointer' => '/data/attributes/date',
 				],

@@ -23,6 +23,7 @@ use IPub\JsonAPIDocument;
 use IPub\Phone;
 use Nette\Localization;
 use function is_scalar;
+use function strval;
 
 /**
  * SMS notification entity hydrator
@@ -74,8 +75,8 @@ final class Sms extends Notification
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.notifications.messages.invalidPhone.heading'),
-				$this->translator->translate('//triggers-module.notifications.messages.invalidPhone.message'),
+				strval($this->translator->translate('//triggers-module.notifications.messages.invalidPhone.heading')),
+				strval($this->translator->translate('//triggers-module.notifications.messages.invalidPhone.message')),
 				[
 					'pointer' => '/data/attributes/phone',
 				],

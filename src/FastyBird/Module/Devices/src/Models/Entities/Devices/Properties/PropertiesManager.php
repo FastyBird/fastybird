@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Entities\Devices\Properties;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Models;
@@ -51,6 +52,12 @@ final class PropertiesManager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Devices\Properties\Property
@@ -64,7 +71,9 @@ final class PropertiesManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Devices\Properties\Property $entity,
@@ -80,7 +89,8 @@ final class PropertiesManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Devices\Properties\Property $entity): bool
 	{

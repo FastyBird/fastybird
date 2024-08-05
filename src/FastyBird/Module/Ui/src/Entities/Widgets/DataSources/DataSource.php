@@ -19,7 +19,6 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
-use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -52,7 +51,6 @@ abstract class DataSource implements Entities\Entity,
 	#[ORM\CustomIdGenerator(class: Uuid\Doctrine\UuidGenerator::class)]
 	protected Uuid\UuidInterface $id;
 
-	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\ManyToOne(
 		targetEntity: Entities\Widgets\Widget::class,
 		cascade: ['persist'],
@@ -93,7 +91,6 @@ abstract class DataSource implements Entities\Entity,
 		return [
 			'id' => $this->getId()->toString(),
 			'type' => static::getType(),
-			'params' => (array) $this->getParams(),
 
 			'widget' => $this->getWidget()->getId()->toString(),
 

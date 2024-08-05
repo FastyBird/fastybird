@@ -22,17 +22,12 @@ return static function (MBConfig $mbConfig): void {
 	$mbConfig->dataToAppend([
 		ComposerJsonManipulator\ValueObject\ComposerJsonSection::REQUIRE => [
 			'fastybird/datetime-factory' => '^0.6',
-			'fastybird/json-api' => '^0.17',
-			'fastybird/simple-auth' => '^0.12',
+			'fastybird/json-api' => '^0.18',
+			'fastybird/simple-auth' => '^0.14',
 		],
 	]);
 
 	$mbConfig->dataToRemove([
-		ComposerJsonManipulator\ValueObject\ComposerJsonSection::REQUIRE_DEV => [
-			# remove these to merge of packages' composer.json
-			'mockery/mockery' => '*',
-			'ninjify/nunjuck' => '*',
-		],
 		ComposerJsonManipulator\ValueObject\ComposerJsonSection::MINIMUM_STABILITY => 'dev',
 		ComposerJsonManipulator\ValueObject\ComposerJsonSection::PREFER_STABLE => true,
 	]);

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Entities\Connectors;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Models;
@@ -51,6 +52,12 @@ final class ConnectorsManager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Connectors\Connector
@@ -64,7 +71,9 @@ final class ConnectorsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Connectors\Connector $entity,
@@ -80,7 +89,8 @@ final class ConnectorsManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Connectors\Connector $entity): bool
 	{

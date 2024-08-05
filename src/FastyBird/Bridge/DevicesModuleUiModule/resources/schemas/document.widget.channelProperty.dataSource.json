@@ -11,9 +11,6 @@
       "type": "string",
       "description": "Data source source"
     },
-    "params": {
-      "type": "object"
-    },
     "widget": {
       "type": "string",
       "format": "uuid",
@@ -70,8 +67,9 @@
   },
   "required": [
     "id",
-    "params",
     "widget",
+    "channel",
+    "property",
     "owner"
   ]
 }

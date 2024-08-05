@@ -22,6 +22,7 @@ use FastyBird\Module\Devices\Models;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Localization;
 use Ramsey\Uuid;
+use function strval;
 
 /**
  * @property-read Localization\Translator $translator
@@ -45,15 +46,15 @@ trait TChannelProperty
 			if ($property === null) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-					$this->translator->translate('//devices-module.base.messages.notFound.message'),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-				$this->translator->translate('//devices-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 			);
 		}
 

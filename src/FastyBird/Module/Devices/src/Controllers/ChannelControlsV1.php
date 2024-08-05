@@ -103,8 +103,8 @@ final class ChannelControlsV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_NOT_FOUND,
-			$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-			$this->translator->translate('//devices-module.base.messages.notFound.message'),
+			strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+			strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 		);
 	}
 
@@ -137,8 +137,8 @@ final class ChannelControlsV1 extends BaseV1
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-					$this->translator->translate('//devices-module.base.messages.notFound.message'),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 				);
 			}
 		}

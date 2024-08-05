@@ -25,6 +25,7 @@ use Nette\Utils;
 use function in_array;
 use function is_array;
 use function is_scalar;
+use function strval;
 
 /**
  * Time condition entity hydrator
@@ -61,8 +62,8 @@ final class TimeCondition extends TriggersHydrators\Conditions\Condition
 		if (!is_scalar($attributes->get('time')) || !$attributes->has('time')) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/time',
 				],
@@ -77,8 +78,8 @@ final class TimeCondition extends TriggersHydrators\Conditions\Condition
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading'),
-				$this->translator->translate('//triggers-module.conditions.messages.invalidTime.message'),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidTime.heading')),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidTime.message')),
 				[
 					'pointer' => '/data/attributes/time',
 				],
@@ -101,8 +102,8 @@ final class TimeCondition extends TriggersHydrators\Conditions\Condition
 		if (!$attributes->has('days')) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//triggers-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/days',
 				],
@@ -110,8 +111,8 @@ final class TimeCondition extends TriggersHydrators\Conditions\Condition
 		} elseif (!is_array($attributes->get('days'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.conditions.messages.invalidDays.heading'),
-				$this->translator->translate('//triggers-module.conditions.messages.invalidDays.message'),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidDays.heading')),
+				strval($this->translator->translate('//triggers-module.conditions.messages.invalidDays.message')),
 				[
 					'pointer' => '/data/attributes/days',
 				],

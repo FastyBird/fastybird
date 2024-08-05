@@ -29,6 +29,7 @@ use function is_string;
 use function reset;
 use function strtolower;
 use function strtr;
+use function strval;
 use const CASE_LOWER;
 
 /**
@@ -69,8 +70,8 @@ final class Validator implements MiddlewareInterface
 				if ($apiKey === null) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNAUTHORIZED,
-						$this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading'),
-						$this->translator->translate('//apikey-plugin.base.messages.unauthorized.message'),
+						strval($this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading')),
+						strval($this->translator->translate('//apikey-plugin.base.messages.unauthorized.message')),
 					);
 				}
 
@@ -80,8 +81,8 @@ final class Validator implements MiddlewareInterface
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNAUTHORIZED,
-			$this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading'),
-			$this->translator->translate('//apikey-plugin.base.messages.unauthorized.message'),
+			strval($this->translator->translate('//apikey-plugin.base.messages.unauthorized.heading')),
+			strval($this->translator->translate('//apikey-plugin.base.messages.unauthorized.message')),
 		);
 	}
 

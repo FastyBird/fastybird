@@ -12,7 +12,7 @@
   },
   "data": [
     {
-      "type": "com.fastybird.ui-module/data-source/channel-property",
+      "type": "com.fastybird.ui-module/data-source/generic",
       "id": "764937a7-8565-472e-8e12-fe97cd55a377"
     }
   ]

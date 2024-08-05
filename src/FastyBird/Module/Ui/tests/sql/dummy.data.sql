@@ -23,17 +23,17 @@ IGNORE INTO `fb_ui_module_widgets` (`widget_id`, `widget_identifier`, `widget_na
 
 INSERT
 IGNORE INTO `fb_ui_module_widgets_data_sources` (`data_source_id`, `widget_id`, `params`, `created_at`, `updated_at`, `data_source_type`) VALUES
-(_binary 0x32DD50E44B664DEA9BC5E835F8543DC4, _binary 0x1D60090154E743EE8F5DA9E22663DDD7, '[]', '2020-05-28 12:27:47', '2020-05-28 12:27:47', 'channel-property'),
-(_binary 0x764937A78565472E8E12FE97CD55A377, _binary 0x155534434564454DAF040DFEEF08AA96, '[]', '2020-05-28 12:29:32', '2020-05-28 12:29:32', 'channel-property'),
-(_binary 0xCD96AA91A0A44A6C9D682E0754A0A56D, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6, '[]', '2020-05-28 11:35:44', '2020-05-28 11:35:44', 'channel-property'),
-(_binary 0xFFE067C88C024C2CB8DD05256A121215, _binary 0x5626E7A1C42C4A319B5D848E3CF0E82A, '[]', '2020-05-28 12:07:27', '2020-05-28 12:07:27', 'channel-property');
+(_binary 0x32DD50E44B664DEA9BC5E835F8543DC4, _binary 0x1D60090154E743EE8F5DA9E22663DDD7, '[]', '2020-05-28 12:27:47', '2020-05-28 12:27:47', 'generic'),
+(_binary 0x764937A78565472E8E12FE97CD55A377, _binary 0x155534434564454DAF040DFEEF08AA96, '[]', '2020-05-28 12:29:32', '2020-05-28 12:29:32', 'generic'),
+(_binary 0xCD96AA91A0A44A6C9D682E0754A0A56D, _binary 0x9A91473298DC47F6BFD19D81CA9F8CB6, '[]', '2020-05-28 11:35:44', '2020-05-28 11:35:44', 'generic'),
+(_binary 0xFFE067C88C024C2CB8DD05256A121215, _binary 0x5626E7A1C42C4A319B5D848E3CF0E82A, '[]', '2020-05-28 12:07:27', '2020-05-28 12:07:27', 'generic');
 
 INSERT
-IGNORE INTO `fb_ui_module_widgets_data_sources_channels_properties` (`data_source_id`, `data_source_channel`, `data_source_property`) VALUES
-(_binary 0x32DD50E44B664DEA9BC5E835F8543DC4, _binary 0xf37e236f975544a5a4ad669a6be3c797, _binary 0x784b319cd06542dea2a27d0800246a48),
-(_binary 0x764937A78565472E8E12FE97CD55A377, _binary 0x81e0d8e1f64047d3b4716f139ed31bb9, _binary 0x459fd862886a44c88e38d0ac7338e09e),
-(_binary 0xCD96AA91A0A44A6C9D682E0754A0A56D, _binary 0x7a12882ca37c4bbaa1910498f49abd9b, _binary 0xc03e9a0ac20e47248828a844168efd0d),
-(_binary 0xFFE067C88C024C2CB8DD05256A121215, _binary 0x8137cbefb076431d88d4567d1083669c, _binary 0x4353865c9f7f4d78b7f1648f63584cb2);
+IGNORE INTO `fb_ui_module_widgets_generic_data_sources` (`data_source_id`) VALUES
+(_binary 0x32DD50E44B664DEA9BC5E835F8543DC4),
+(_binary 0x764937A78565472E8E12FE97CD55A377),
+(_binary 0xCD96AA91A0A44A6C9D682E0754A0A56D),
+(_binary 0xFFE067C88C024C2CB8DD05256A121215);
 
 INSERT
 IGNORE INTO `fb_ui_module_widgets_display` (`display_id`, `widget_id`, `params`, `created_at`, `updated_at`, `display_type`) VALUES

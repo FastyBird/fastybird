@@ -29,6 +29,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 use function str_replace;
 use function str_starts_with;
+use function strval;
 
 /**
  * Response url formatter
@@ -78,8 +79,8 @@ final readonly class UrlFormat implements MiddlewareInterface
 			if ($this->user->getAccount() === null) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_BAD_REQUEST,
-					$this->translator->translate('//accounts-module.base.messages.failed.heading'),
-					$this->translator->translate('//accounts-module.base.messages.failed.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.failed.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.failed.message')),
 				);
 			}
 

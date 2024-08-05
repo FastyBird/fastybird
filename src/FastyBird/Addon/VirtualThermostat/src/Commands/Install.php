@@ -4941,7 +4941,10 @@ class Install extends Console\Command\Command
 	 *
 	 * @return T
 	 *
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	private function createOrUpdateProperty(
 		string $propertyType,

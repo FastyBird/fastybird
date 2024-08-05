@@ -47,8 +47,8 @@ trait TAccount
 		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ACCOUNT_ID)))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -60,8 +60,8 @@ trait TAccount
 		if ($account === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		}
 

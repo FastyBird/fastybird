@@ -46,7 +46,7 @@ final class Dashboard extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_TABS = 'tabs';
 
-	public function __construct(protected Routing\IRouter $router)
+	public function __construct(protected readonly Routing\IRouter $router)
 	{
 	}
 

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Ui\Models\Entities\Dashboards\Tabs;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Events;
 use FastyBird\Module\Ui\Models;
@@ -51,6 +52,12 @@ final class Manager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(Utils\ArrayHash $values): Entities\Dashboards\Tabs\Tab
 	{
 		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
@@ -62,7 +69,9 @@ final class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Dashboards\Tabs\Tab $entity,
@@ -78,7 +87,8 @@ final class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Dashboards\Tabs\Tab $entity): bool
 	{
