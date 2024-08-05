@@ -100,6 +100,8 @@ final class Constants
 
 	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
 
+	public const BRIDGE_DEVICES_MODULE_UI_MODULE = 'com.fastybird.devices-module-ui-module-bridge';
+
 	/**
 	 * MODULE PREFIXES
 	 */

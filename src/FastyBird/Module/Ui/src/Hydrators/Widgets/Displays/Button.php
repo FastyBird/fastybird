@@ -23,6 +23,7 @@ use IPub\JsonAPIDocument;
 use TypeError;
 use ValueError;
 use function is_scalar;
+use function strval;
 
 /**
  * Button widget display entity hydrator
@@ -59,8 +60,8 @@ final class Button extends Display
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/icon',
 				],
@@ -70,8 +71,8 @@ final class Button extends Display
 		if (Types\WidgetIcon::tryFrom((string) $attributes->get('icon')) === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.invalidAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.invalidAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.invalidAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.invalidAttribute.message')),
 				[
 					'pointer' => '/data/attributes/icon',
 				],

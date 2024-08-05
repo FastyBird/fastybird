@@ -15,7 +15,6 @@
 
 namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Hydrators\Devices;
 
-use Doctrine\Common;
 use Doctrine\Persistence;
 use FastyBird\Addon\VirtualThermostat\Entities as VirtualThermostatEntities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
@@ -32,6 +31,7 @@ use IPub\JsonAPIDocument;
 use Nette\Localization;
 use Ramsey\Uuid;
 use function is_string;
+use function strval;
 
 /**
  * Thermostat device entity hydrator
@@ -51,10 +51,9 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 		Persistence\ManagerRegistry $managerRegistry,
 		Localization\Translator $translator,
 		Helpers\CrudReader|null $crudReader = null,
-		Common\Cache\Cache|null $cache = null,
 	)
 	{
-		parent::__construct($connectorsRepository, $managerRegistry, $translator, $crudReader, $cache);
+		parent::__construct($connectorsRepository, $managerRegistry, $translator, $crudReader);
 	}
 
 	public function getEntityName(): string
@@ -91,12 +90,12 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate(
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidRelation.heading',
-			),
-			$this->translator->translate(
+			)),
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidRelation.message',
-			),
+			)),
 			[
 				'pointer' => '/data/relationships/' . Schemas\Devices\Thermostat::RELATIONSHIPS_CONNECTOR . '/data/id',
 			],
@@ -145,12 +144,12 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate(
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingRelation.heading',
-			),
-			$this->translator->translate(
+			)),
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingRelation.message',
-			),
+			)),
 			[
 				'pointer' => '/data/relationships/' . Schemas\Devices\Thermostat::RELATIONSHIPS_PARENTS . '/data/id',
 			],

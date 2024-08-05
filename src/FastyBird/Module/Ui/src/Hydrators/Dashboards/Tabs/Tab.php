@@ -51,6 +51,18 @@ final class Tab extends JsonApiHydrators\Hydrator
 		return Entities\Dashboards\Tabs\Tab::class;
 	}
 
+	protected function hydrateNameAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
+	{
+		if (
+			!is_scalar($attributes->get('name'))
+			|| (string) $attributes->get('name') === ''
+		) {
+			return null;
+		}
+
+		return (string) $attributes->get('name');
+	}
+
 	protected function hydrateCommentAttribute(JsonAPIDocument\Objects\IStandardObject $attributes): string|null
 	{
 		if (

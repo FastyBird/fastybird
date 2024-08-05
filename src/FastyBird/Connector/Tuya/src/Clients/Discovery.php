@@ -46,6 +46,7 @@ use function boolval;
 use function count;
 use function floatval;
 use function in_array;
+use function intval;
 use function is_array;
 use function is_bool;
 use function is_float;
@@ -832,7 +833,7 @@ final class Discovery
 							? floatval($dataPointSpecification->offsetGet('step'))
 							: null,
 						'scale' => $dataPointSpecification->offsetExists('scale')
-							? floatval($dataPointSpecification->offsetGet('scale'))
+							? intval($dataPointSpecification->offsetGet('scale'))
 							: null,
 						'queryable' => $dataPointStatus !== null,
 						'settable' => $dataPointFunction !== null,

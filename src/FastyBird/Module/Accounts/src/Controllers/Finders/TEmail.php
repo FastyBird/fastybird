@@ -46,8 +46,8 @@ trait TEmail
 		if (!Uuid\Uuid::isValid(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -63,8 +63,8 @@ trait TEmail
 		if ($email === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		}
 

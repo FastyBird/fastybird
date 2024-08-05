@@ -15,6 +15,7 @@
 
 namespace FastyBird\Plugin\ApiKey\Models\Entities;
 
+use Doctrine\DBAL;
 use FastyBird\Plugin\ApiKey\Entities;
 use IPub\DoctrineCrud\Crud as DoctrineCrudCrud;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -47,6 +48,12 @@ final class KeysManager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(Utils\ArrayHash $values): Entities\Key
 	{
 		$entity = $this->getEntityCrud()->getEntityCreator()->create($values);
@@ -56,7 +63,9 @@ final class KeysManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Key $entity,
@@ -70,7 +79,8 @@ final class KeysManager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Key $entity): bool
 	{

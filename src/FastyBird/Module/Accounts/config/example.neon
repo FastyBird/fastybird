@@ -52,7 +52,6 @@ nettrineDbal:
         user: root
         password:
         charset: utf8
-        wrapperClass: \Tests\Tools\ConnectionWrapper
 
         types:
             uuid_binary:

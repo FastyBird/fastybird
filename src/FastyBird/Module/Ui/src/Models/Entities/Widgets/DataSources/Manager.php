@@ -15,6 +15,7 @@
 
 namespace FastyBird\Module\Ui\Models\Entities\Widgets\DataSources;
 
+use Doctrine\DBAL;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Events;
 use FastyBird\Module\Ui\Models;
@@ -51,6 +52,12 @@ class Manager
 	{
 	}
 
+	/**
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\EntityCreation
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
+	 */
 	public function create(
 		Utils\ArrayHash $values,
 	): Entities\Widgets\DataSources\DataSource
@@ -64,7 +71,9 @@ class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DBAL\Exception\UniqueConstraintViolationException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
 		Entities\Widgets\DataSources\DataSource $entity,
@@ -80,7 +89,8 @@ class Manager
 	}
 
 	/**
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
+	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function delete(Entities\Widgets\DataSources\DataSource $entity): bool
 	{

@@ -46,7 +46,7 @@ final class Group extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_WIDGETS = 'widgets';
 
-	public function __construct(protected Routing\IRouter $router)
+	public function __construct(protected readonly Routing\IRouter $router)
 	{
 	}
 

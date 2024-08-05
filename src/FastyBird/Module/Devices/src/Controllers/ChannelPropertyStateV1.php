@@ -92,8 +92,8 @@ final class ChannelPropertyStateV1 extends BaseV1
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//channels-module.base.messages.notFound.heading'),
-				$this->translator->translate('//channels-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//channels-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//channels-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -102,8 +102,8 @@ final class ChannelPropertyStateV1 extends BaseV1
 		if ($state === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
-				$this->translator->translate('//channels-module.base.messages.notFound.heading'),
-				$this->translator->translate('//channels-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//channels-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//channels-module.base.messages.notFound.message')),
 			);
 		}
 

@@ -42,7 +42,7 @@
     "fastybird/devices-module": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "fastybird/tools-library": "dev-main",
-    "ipub/doctrine-crud": "^4.1",
+    "ipub/doctrine-crud": "^5.0",
     "nette/di": "^3.0",
     "orisai/nette-object-mapper": "^0.1",
     "psr/log": "^3.0",

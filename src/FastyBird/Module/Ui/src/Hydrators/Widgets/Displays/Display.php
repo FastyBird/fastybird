@@ -22,6 +22,7 @@ use FastyBird\Module\Ui\Schemas;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use function is_scalar;
+use function strval;
 
 /**
  * Widget display entity hydrator
@@ -57,8 +58,8 @@ abstract class Display extends JsonApiHydrators\Hydrator
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/precision',
 				],
@@ -79,8 +80,8 @@ abstract class Display extends JsonApiHydrators\Hydrator
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/minimum_value',
 				],
@@ -101,8 +102,8 @@ abstract class Display extends JsonApiHydrators\Hydrator
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/maximum_value',
 				],
@@ -123,8 +124,8 @@ abstract class Display extends JsonApiHydrators\Hydrator
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/step_value',
 				],

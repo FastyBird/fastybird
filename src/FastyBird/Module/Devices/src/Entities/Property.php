@@ -244,11 +244,22 @@ abstract class Property implements Entity,
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function setFormat(array|string|null $format): void
+	public function setFormat(
+		array|string|MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
+	): void
 	{
+		if (
+			$format instanceof MetadataFormats\StringEnum
+			|| $format instanceof MetadataFormats\NumberRange
+			|| $format instanceof MetadataFormats\CombinedEnum
+		) {
+			$format = $format->toArray();
+		}
+
 		if (is_string($format)) {
 			if ($this->buildFormat($format) === null) {
 				throw new Exceptions\InvalidArgument('Provided property format is not valid');
@@ -372,9 +383,9 @@ abstract class Property implements Entity,
 		return strval($this->invalid);
 	}
 
-	public function setInvalid(string|null $invalid): void
+	public function setInvalid(float|int|string|null $invalid): void
 	{
-		$this->invalid = $invalid;
+		$this->invalid = $invalid !== null ? strval($invalid) : null;
 	}
 
 	public function getScale(): int|null
@@ -382,9 +393,9 @@ abstract class Property implements Entity,
 		return $this->scale;
 	}
 
-	public function setScale(int|null $scale): void
+	public function setScale(int|float|null $scale): void
 	{
-		$this->scale = $scale;
+		$this->scale = $scale !== null ? intval($scale) : null;
 	}
 
 	public function getStep(): float|null

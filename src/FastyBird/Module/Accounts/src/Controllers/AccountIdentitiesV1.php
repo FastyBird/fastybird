@@ -135,8 +135,12 @@ final class AccountIdentitiesV1 extends BaseV1
 				) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-						$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
+						),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+						),
 						[
 							'pointer' => '/data/attributes/password/current',
 						],
@@ -146,8 +150,12 @@ final class AccountIdentitiesV1 extends BaseV1
 				if (!$passwordAttribute->has('new') || !is_scalar($passwordAttribute->get('new'))) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-						$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
+						),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+						),
 						[
 							'pointer' => '/data/attributes/password/new',
 						],
@@ -157,8 +165,12 @@ final class AccountIdentitiesV1 extends BaseV1
 				if (!$identity->verifyPassword((string) $passwordAttribute->get('current'))) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
-						$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
+						),
+						strval(
+							$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
+						),
 						[
 							'pointer' => '/data/attributes/password/current',
 						],
@@ -174,8 +186,8 @@ final class AccountIdentitiesV1 extends BaseV1
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.invalidType.heading'),
-					$this->translator->translate('//accounts-module.base.messages.invalidType.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.invalidType.message')),
 					[
 						'pointer' => '/data/type',
 					],
@@ -200,8 +212,8 @@ final class AccountIdentitiesV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.notUpdated.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notUpdated.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notUpdated.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notUpdated.message')),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -244,8 +256,8 @@ final class AccountIdentitiesV1 extends BaseV1
 		if ($this->user->getAccount() === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_FORBIDDEN,
-				$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-				$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.message')),
 			);
 		}
 

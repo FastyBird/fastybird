@@ -139,29 +139,29 @@ class BridgesV1 extends BaseV1
 
 			} catch (JsonApiExceptions\JsonApi $ex) {
 				throw $ex;
-			} catch (DoctrineCrudExceptions\MissingRequiredFieldException $ex) {
+			} catch (DoctrineCrudExceptions\MissingRequiredField $ex) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingAttribute.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingAttribute.message',
-					),
+					)),
 					[
 						'pointer' => '/data/attributes/' . DevicesUtilities\Api::fieldToJsonApi($ex->getField()),
 					],
 				);
-			} catch (DoctrineCrudExceptions\EntityCreationException $ex) {
+			} catch (DoctrineCrudExceptions\EntityCreation $ex) {
 				if ($ex->getField() === Schemas\Devices\Thermostat::RELATIONSHIPS_PARENTS) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate(
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingRelation.heading',
-						),
-						$this->translator->translate(
+						)),
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingRelation.message',
-						),
+						)),
 						[
 							'pointer' => '/data/relationships/' . Schemas\Devices\Thermostat::RELATIONSHIPS_PARENTS . '/data/id',
 						],
@@ -169,12 +169,12 @@ class BridgesV1 extends BaseV1
 				} else {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate(
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingAttribute.heading',
-						),
-						$this->translator->translate(
+						)),
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.missingAttribute.message',
-						),
+						)),
 						[
 							'pointer' => '/data/attributes/' . DevicesUtilities\Api::fieldToJsonApi($ex->getField()),
 						],
@@ -184,12 +184,12 @@ class BridgesV1 extends BaseV1
 				if (preg_match("%PRIMARY'%", $ex->getMessage(), $match) === 1) {
 					throw new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate(
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueIdentifier.heading',
-						),
-						$this->translator->translate(
+						)),
+						strval($this->translator->translate(
 							'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueIdentifier.message',
-						),
+						)),
 						[
 							'pointer' => '/data/id',
 						],
@@ -201,12 +201,12 @@ class BridgesV1 extends BaseV1
 					if (str_starts_with($columnKey, 'device_')) {
 						throw new JsonApiExceptions\JsonApiError(
 							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-							$this->translator->translate(
+							strval($this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.heading',
-							),
-							$this->translator->translate(
+							)),
+							strval($this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.message',
-							),
+							)),
 							[
 								'pointer' => '/data/attributes/' . DevicesUtilities\Api::fieldToJsonApi(
 									Utils\Strings::substring($columnKey, 7),
@@ -218,12 +218,12 @@ class BridgesV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.message',
-					),
+					)),
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
@@ -238,12 +238,12 @@ class BridgesV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notCreated.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notCreated.message',
-					),
+					)),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -259,12 +259,12 @@ class BridgesV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate(
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidType.heading',
-			),
-			$this->translator->translate(
+			)),
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidType.message',
-			),
+			)),
 			[
 				'pointer' => '/data/type',
 			],
@@ -298,7 +298,7 @@ class BridgesV1 extends BaseV1
 				// Start transaction connection to the database
 				$this->getOrmConnection()->beginTransaction();
 
-				$device = $this->devicesManager->update($device, $hydrator->hydrate($document));
+				$device = $this->devicesManager->update($device, $hydrator->hydrate($document, $device));
 				assert($device instanceof Entities\Devices\Thermostat);
 
 				$device = $this->bridgeBuilder->build(
@@ -319,12 +319,12 @@ class BridgesV1 extends BaseV1
 					if (str_starts_with($columnKey, 'device_')) {
 						throw new JsonApiExceptions\JsonApiError(
 							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-							$this->translator->translate(
+							strval($this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.heading',
-							),
-							$this->translator->translate(
+							)),
+							strval($this->translator->translate(
 								'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.message',
-							),
+							)),
 							[
 								'pointer' => '/data/attributes/' . DevicesUtilities\Api::fieldToJsonApi(
 									Utils\Strings::substring($columnKey, 7),
@@ -336,12 +336,12 @@ class BridgesV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.uniqueAttribute.message',
-					),
+					)),
 				);
 			} catch (Throwable $ex) {
 				// Log caught exception
@@ -356,12 +356,12 @@ class BridgesV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notUpdated.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notUpdated.message',
-					),
+					)),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -375,12 +375,12 @@ class BridgesV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate(
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidType.heading',
-			),
-			$this->translator->translate(
+			)),
+			strval($this->translator->translate(
 				'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.invalidType.message',
-			),
+			)),
 			[
 				'pointer' => '/data/type',
 			],
@@ -438,12 +438,12 @@ class BridgesV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate(
+				strval($this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notDeleted.heading',
-				),
-				$this->translator->translate(
+				)),
+				strval($this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notDeleted.message',
-				),
+				)),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -470,23 +470,23 @@ class BridgesV1 extends BaseV1
 			if ($device === null) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate(
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notFound.heading',
-					),
-					$this->translator->translate(
+					)),
+					strval($this->translator->translate(
 						'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notFound.message',
-					),
+					)),
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate(
+				strval($this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notFound.heading',
-				),
-				$this->translator->translate(
+				)),
+				strval($this->translator->translate(
 					'//virtual-thermostat-addon-homekit-connector-bridge.base.messages.notFound.message',
-				),
+				)),
 			);
 		}
 

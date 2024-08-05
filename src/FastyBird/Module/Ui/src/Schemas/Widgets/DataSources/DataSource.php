@@ -40,7 +40,7 @@ abstract class DataSource extends JsonApiSchemas\JsonApi
 	 */
 	public const RELATIONSHIPS_WIDGET = 'widget';
 
-	public function __construct(protected Routing\IRouter $router)
+	public function __construct(protected readonly Routing\IRouter $router)
 	{
 	}
 
@@ -56,9 +56,7 @@ abstract class DataSource extends JsonApiSchemas\JsonApi
 		JsonApi\Contracts\Schema\ContextInterface $context,
 	): iterable
 	{
-		return [
-			'params' => (array) $resource->getParams(),
-		];
+		return [];
 	}
 
 	/**

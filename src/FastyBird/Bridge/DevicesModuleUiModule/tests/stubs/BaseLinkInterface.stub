@@ -1,0 +1,23 @@
+<?php declare(strict_types=1);
+
+namespace Neomerx\JsonApi\Contracts\Schema;
+
+interface BaseLinkInterface
+{
+    const SELF = DocumentInterface::KEYWORD_SELF;
+    const RELATED = DocumentInterface::KEYWORD_RELATED;
+    const FIRST = DocumentInterface::KEYWORD_FIRST;
+    const LAST = DocumentInterface::KEYWORD_LAST;
+    const NEXT = DocumentInterface::KEYWORD_NEXT;
+    const PREV = DocumentInterface::KEYWORD_PREV;
+    const ABOUT = 'about';
+
+    public function canBeShownAsString(): bool;
+
+    public function getStringRepresentation(string $prefix): string;
+
+    /**
+     * @return Array<mixed>
+     */
+    public function getArrayRepresentation(string $prefix): array;
+}

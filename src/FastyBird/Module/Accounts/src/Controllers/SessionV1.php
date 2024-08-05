@@ -108,8 +108,8 @@ final class SessionV1 extends BaseV1
 		if (!$attributes->has('uid') || !is_scalar($attributes->get('uid'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/uid',
 				],
@@ -119,8 +119,8 @@ final class SessionV1 extends BaseV1
 		if (!$attributes->has('password') || !is_scalar($attributes->get('password'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/password',
 				],
@@ -135,21 +135,25 @@ final class SessionV1 extends BaseV1
 			if ($ex instanceof Exceptions\AccountNotFound) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.session.messages.unknownAccount.heading'),
-					$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
+					strval($this->translator->translate('//accounts-module.session.messages.unknownAccount.heading')),
+					strval($this->translator->translate('//accounts-module.session.messages.unknownAccount.message')),
 				);
 			} elseif ($ex instanceof Exceptions\AuthenticationFailed) {
 				throw match ($ex->getCode()) {
 					// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 					Security\Authenticator::ACCOUNT_PROFILE_BLOCKED, Security\Authenticator::ACCOUNT_PROFILE_DELETED => new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_FORBIDDEN,
-						$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-						$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+						strval($this->translator->translate('//accounts-module.base.messages.forbidden.heading')),
+						strval($this->translator->translate('//accounts-module.base.messages.forbidden.message')),
 					),
 					default => new JsonApiExceptions\JsonApiError(
 						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-						$this->translator->translate('//accounts-module.session.messages.unknownAccount.heading'),
-						$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
+						strval(
+							$this->translator->translate('//accounts-module.session.messages.unknownAccount.heading'),
+						),
+						strval(
+							$this->translator->translate('//accounts-module.session.messages.unknownAccount.message'),
+						),
 					),
 				};
 			} else {
@@ -165,8 +169,8 @@ final class SessionV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.notCreated.heading'),
-					$this->translator->translate('//accounts-module.base.messages.notCreated.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.notCreated.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.notCreated.message')),
 				);
 			}
 		}
@@ -223,8 +227,8 @@ final class SessionV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.notCreated.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notCreated.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notCreated.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notCreated.message')),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -261,8 +265,8 @@ final class SessionV1 extends BaseV1
 		if (!$attributes->has('refresh') || !is_scalar($attributes->get('refresh'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/refresh',
 				],
@@ -277,8 +281,8 @@ final class SessionV1 extends BaseV1
 		if ($refreshToken === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.session.messages.invalidRefreshToken.heading'),
-				$this->translator->translate('//accounts-module.session.messages.invalidRefreshToken.message'),
+				strval($this->translator->translate('//accounts-module.session.messages.invalidRefreshToken.heading')),
+				strval($this->translator->translate('//accounts-module.session.messages.invalidRefreshToken.message')),
 				[
 					'pointer' => '/data/attributes/refresh',
 				],
@@ -294,8 +298,8 @@ final class SessionV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.session.messages.refreshTokenExpired.heading'),
-				$this->translator->translate('//accounts-module.session.messages.refreshTokenExpired.message'),
+				strval($this->translator->translate('//accounts-module.session.messages.refreshTokenExpired.heading')),
+				strval($this->translator->translate('//accounts-module.session.messages.refreshTokenExpired.message')),
 				[
 					'pointer' => '/data/attributes/refresh',
 				],
@@ -362,8 +366,12 @@ final class SessionV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.session.messages.refreshingTokenFailed.heading'),
-				$this->translator->translate('//accounts-module.session.messages.refreshingTokenFailed.message'),
+				strval(
+					$this->translator->translate('//accounts-module.session.messages.refreshingTokenFailed.heading'),
+				),
+				strval(
+					$this->translator->translate('//accounts-module.session.messages.refreshingTokenFailed.message'),
+				),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -425,8 +433,12 @@ final class SessionV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.session.messages.destroyingSessionFailed.heading'),
-				$this->translator->translate('//accounts-module.session.messages.destroyingSessionFailed.message'),
+				strval(
+					$this->translator->translate('//accounts-module.session.messages.destroyingSessionFailed.heading'),
+				),
+				strval(
+					$this->translator->translate('//accounts-module.session.messages.destroyingSessionFailed.message'),
+				),
 			);
 		} finally {
 			// Revert all changes when error occur
@@ -480,8 +492,8 @@ final class SessionV1 extends BaseV1
 		if ($token === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_FORBIDDEN,
-				$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-				$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.forbidden.message')),
 			);
 		}
 
@@ -503,8 +515,8 @@ final class SessionV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_FORBIDDEN,
-			$this->translator->translate('//accounts-module.base.messages.forbidden.heading'),
-			$this->translator->translate('//accounts-module.base.messages.forbidden.message'),
+			strval($this->translator->translate('//accounts-module.base.messages.forbidden.heading')),
+			strval($this->translator->translate('//accounts-module.base.messages.forbidden.message')),
 		);
 	}
 

@@ -69,8 +69,8 @@ final class TriggerControlsV1 extends BaseV1
 		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -99,8 +99,8 @@ final class TriggerControlsV1 extends BaseV1
 		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -119,8 +119,8 @@ final class TriggerControlsV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_NOT_FOUND,
-			$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-			$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+			strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+			strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 		);
 	}
 
@@ -140,8 +140,8 @@ final class TriggerControlsV1 extends BaseV1
 		if (!$trigger instanceof Entities\Triggers\Manual) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-				$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -163,8 +163,8 @@ final class TriggerControlsV1 extends BaseV1
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate('//triggers-module.base.messages.notFound.heading'),
-					$this->translator->translate('//triggers-module.base.messages.notFound.message'),
+					strval($this->translator->translate('//triggers-module.base.messages.notFound.heading')),
+					strval($this->translator->translate('//triggers-module.base.messages.notFound.message')),
 				);
 			}
 		}

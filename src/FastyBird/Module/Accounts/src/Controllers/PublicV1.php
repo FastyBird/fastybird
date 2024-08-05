@@ -32,6 +32,7 @@ use Nette\Utils;
 use Psr\Http\Message;
 use Throwable;
 use function is_scalar;
+use function strval;
 
 /**
  * Account identity controller
@@ -74,7 +75,7 @@ final class PublicV1 extends BaseV1
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws Doctrine\DBAL\ConnectionException
 	 * @throws Doctrine\DBAL\Exception
-	 * @throws DoctrineCrudExceptions\InvalidArgumentException
+	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws Exception
 	 *
 	 * @Secured\User(guest)
@@ -91,8 +92,8 @@ final class PublicV1 extends BaseV1
 		if ($document->getResource()->getType() !== Schemas\Identities\Identity::SCHEMA_TYPE) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.invalidType.heading'),
-				$this->translator->translate('//accounts-module.base.messages.invalidType.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidType.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidType.message')),
 				[
 					'pointer' => '/data/type',
 				],
@@ -102,8 +103,8 @@ final class PublicV1 extends BaseV1
 		if (!$attributes->has('uid') || !is_scalar($attributes->get('uid'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/uid',
 				],
@@ -118,8 +119,8 @@ final class PublicV1 extends BaseV1
 		if ($identity === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -128,8 +129,8 @@ final class PublicV1 extends BaseV1
 		if ($account->isDeleted()) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//accounts-module.base.messages.notFound.heading'),
-				$this->translator->translate('//accounts-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.notFound.message')),
 			);
 		} elseif ($account->isNotActivated()) {
 			$hash = $account->getRequestHash();
@@ -145,8 +146,8 @@ final class PublicV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.public.messages.notActivated.heading'),
-				$this->translator->translate('//accounts-module.public.messages.notActivated.message'),
+				strval($this->translator->translate('//accounts-module.public.messages.notActivated.heading')),
+				strval($this->translator->translate('//accounts-module.public.messages.notActivated.message')),
 				[
 					'pointer' => '/data/attributes/uid',
 				],
@@ -154,8 +155,8 @@ final class PublicV1 extends BaseV1
 		} elseif ($account->isBlocked()) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.public.messages.blocked.heading'),
-				$this->translator->translate('//accounts-module.public.messages.blocked.message'),
+				strval($this->translator->translate('//accounts-module.public.messages.blocked.heading')),
+				strval($this->translator->translate('//accounts-module.public.messages.blocked.message')),
 				[
 					'pointer' => '/data/attributes/uid',
 				],
@@ -191,8 +192,8 @@ final class PublicV1 extends BaseV1
 
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.public.messages.requestNotSent.heading'),
-				$this->translator->translate('//accounts-module.public.messages.requestNotSent.message'),
+				strval($this->translator->translate('//accounts-module.public.messages.requestNotSent.heading')),
+				strval($this->translator->translate('//accounts-module.public.messages.requestNotSent.message')),
 				[
 					'pointer' => '/data/attributes/uid',
 				],

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Document unique uuid v4 identifier"
+    },
+    "source": {
+      "type": "string",
+      "description": "Data source source"
+    },
+    "widget": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Widget unique uuid v4 identifier"
+    },
+    "device": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Device unique uuid v4 identifier"
+    },
+    "property": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Device property unique uuid v4 identifier"
+    },
+    "owner": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid"
+        }
+      ],
+      "description": "Document owner uuid v4 identifier"
+    },
+    "created_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    },
+    "updated_at": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ],
+      "description": "Item creation date",
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "widget",
+    "device",
+    "property",
+    "owner"
+  ]
+}

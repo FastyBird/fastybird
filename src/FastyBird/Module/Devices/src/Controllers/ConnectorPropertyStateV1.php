@@ -87,8 +87,8 @@ final class ConnectorPropertyStateV1 extends BaseV1
 		if (!$property instanceof Documents\Connectors\Properties\Dynamic) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//connectors-module.base.messages.notFound.heading'),
-				$this->translator->translate('//connectors-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//connectors-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//connectors-module.base.messages.notFound.message')),
 			);
 		}
 
@@ -97,8 +97,8 @@ final class ConnectorPropertyStateV1 extends BaseV1
 		if ($state === null) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_BAD_REQUEST,
-				$this->translator->translate('//connectors-module.base.messages.notFound.heading'),
-				$this->translator->translate('//connectors-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//connectors-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//connectors-module.base.messages.notFound.message')),
 			);
 		}
 

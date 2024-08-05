@@ -27,6 +27,7 @@ use ValueError;
 use function assert;
 use function in_array;
 use function is_scalar;
+use function strval;
 
 /**
  * Account entity hydrator trait
@@ -54,8 +55,8 @@ trait TAccount
 		if (!$attributes->has('first_name') || !is_scalar($attributes->get('first_name'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/details/first_name',
 				],
@@ -73,8 +74,8 @@ trait TAccount
 		if (!$attributes->has('last_name') || !is_scalar($attributes->get('last_name'))) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/details/last_name',
 				],
@@ -113,8 +114,8 @@ trait TAccount
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-					$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 					[
 						'pointer' => '/data/attributes/details/first_name',
 					],
@@ -127,8 +128,8 @@ trait TAccount
 			} else {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//accounts-module.base.messages.missingAttribute.heading'),
-					$this->translator->translate('//accounts-module.base.messages.missingAttribute.message'),
+					strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//accounts-module.base.messages.missingAttribute.message')),
 					[
 						'pointer' => '/data/attributes/details/last_name',
 					],
@@ -207,8 +208,8 @@ trait TAccount
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading'),
-				$this->translator->translate('//accounts-module.base.messages.invalidAttribute.message'),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.heading')),
+				strval($this->translator->translate('//accounts-module.base.messages.invalidAttribute.message')),
 				[
 					'pointer' => '/data/attributes/state',
 				],

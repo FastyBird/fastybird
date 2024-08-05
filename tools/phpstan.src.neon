@@ -4,6 +4,7 @@ includes:
     - ../src/FastyBird/Automator/DateTime/tools/phpstan.config.src.neon
     - ../src/FastyBird/Automator/DevicesModule/tools/phpstan.config.src.neon
 
+    - ../src/FastyBird/Bridge/DevicesModuleUiModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/phpstan.config.src.neon
     - ../src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tools/phpstan.config.src.neon

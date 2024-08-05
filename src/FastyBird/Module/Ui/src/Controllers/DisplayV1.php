@@ -116,8 +116,8 @@ final class DisplayV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//ui-module.base.messages.notUpdated.heading'),
-					$this->translator->translate('//ui-module.base.messages.notUpdated.message'),
+					strval($this->translator->translate('//ui-module.base.messages.notUpdated.heading')),
+					strval($this->translator->translate('//ui-module.base.messages.notUpdated.message')),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -131,8 +131,8 @@ final class DisplayV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//ui-module.base.messages.invalidType.heading'),
-			$this->translator->translate('//ui-module.base.messages.invalidType.message'),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.heading')),
+			strval($this->translator->translate('//ui-module.base.messages.invalidType.message')),
 			[
 				'pointer' => '/data/type',
 			],

@@ -21,6 +21,7 @@ use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Nette\Utils;
 use function is_scalar;
+use function strval;
 
 /**
  * Email notification entity hydrator
@@ -60,8 +61,16 @@ final class Email extends Notification
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//triggers-module.notifications.messages.invalidEmailAddress.heading'),
-				$this->translator->translate('//triggers-module.notifications.messages.invalidEmailAddress.message'),
+				strval(
+					$this->translator->translate(
+						'//triggers-module.notifications.messages.invalidEmailAddress.heading',
+					),
+				),
+				strval(
+					$this->translator->translate(
+						'//triggers-module.notifications.messages.invalidEmailAddress.message',
+					),
+				),
 				[
 					'pointer' => '/data/attributes/email',
 				],

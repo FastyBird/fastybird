@@ -66,7 +66,7 @@ trait ChannelProperty
 		array|string|null $format = null,
 		string|null $unit = null,
 		float|int|string|null $invalid = null,
-		float|int|null $scale = null,
+		int|float|null $scale = null,
 		float|int|null $step = null,
 		bool $settable = false,
 		bool $queryable = false,

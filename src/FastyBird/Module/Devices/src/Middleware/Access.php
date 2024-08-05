@@ -23,6 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use function strval;
 
 /**
  * Access check middleware
@@ -49,14 +50,14 @@ final readonly class Access implements MiddlewareInterface
 		} catch (SimpleAuthExceptions\UnauthorizedAccess) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
-				$this->translator->translate('//devices-module.base.messages.unauthorized.heading'),
-				$this->translator->translate('//devices-module.base.messages.unauthorized.message'),
+				strval($this->translator->translate('//devices-module.base.messages.unauthorized.heading')),
+				strval($this->translator->translate('//devices-module.base.messages.unauthorized.message')),
 			);
 		} catch (SimpleAuthExceptions\ForbiddenAccess) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_FORBIDDEN,
-				$this->translator->translate('//devices-module.base.messages.forbidden.heading'),
-				$this->translator->translate('//devices-module.base.messages.forbidden.message'),
+				strval($this->translator->translate('//devices-module.base.messages.forbidden.heading')),
+				strval($this->translator->translate('//devices-module.base.messages.forbidden.message')),
 			);
 		}
 	}

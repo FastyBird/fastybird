@@ -132,8 +132,8 @@ class ConnectorsV1 extends BaseV1
 
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-					$this->translator->translate('//devices-module.base.messages.notUpdated.heading'),
-					$this->translator->translate('//devices-module.base.messages.notUpdated.message'),
+					strval($this->translator->translate('//devices-module.base.messages.notUpdated.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.notUpdated.message')),
 				);
 			} finally {
 				// Revert all changes when error occur
@@ -147,8 +147,8 @@ class ConnectorsV1 extends BaseV1
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//devices-module.base.messages.invalidType.heading'),
-			$this->translator->translate('//devices-module.base.messages.invalidType.message'),
+			strval($this->translator->translate('//devices-module.base.messages.invalidType.heading')),
+			strval($this->translator->translate('//devices-module.base.messages.invalidType.message')),
 			[
 				'pointer' => '/data/type',
 			],
@@ -208,15 +208,15 @@ class ConnectorsV1 extends BaseV1
 			if ($connector === null) {
 				throw new JsonApiExceptions\JsonApiError(
 					StatusCodeInterface::STATUS_NOT_FOUND,
-					$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-					$this->translator->translate('//devices-module.base.messages.notFound.message'),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 				);
 			}
 		} catch (Uuid\Exception\InvalidUuidStringException) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_NOT_FOUND,
-				$this->translator->translate('//devices-module.base.messages.notFound.heading'),
-				$this->translator->translate('//devices-module.base.messages.notFound.message'),
+				strval($this->translator->translate('//devices-module.base.messages.notFound.heading')),
+				strval($this->translator->translate('//devices-module.base.messages.notFound.message')),
 			);
 		}
 

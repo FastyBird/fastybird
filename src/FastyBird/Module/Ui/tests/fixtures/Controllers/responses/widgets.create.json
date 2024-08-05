@@ -33,11 +33,16 @@
           "related": {
             "href": "/api/ui-module/v1/widgets/329a7ac2-a309-4c39-9d97-c7ba69efe74f/data-sources",
             "meta": {
-              "count": 0
+              "count": 1
             }
           }
         },
-        "data": []
+        "data": [
+          {
+            "type": "com.fastybird.ui-module/data-source/generic",
+            "id": "874c5f81-b60b-4fcc-adb2-3f83b43cf182"
+          }
+        ]
       },
       "tabs": {
         "links": {

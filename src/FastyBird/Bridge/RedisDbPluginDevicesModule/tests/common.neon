@@ -60,7 +60,7 @@ nettrineDbal:
         user: root
         password: root
         charset: utf8
-        wrapperClass: \FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\ConnectionWrapper
+        wrapperClass: \FastyBird\Bridge\RedisDbPluginDevicesModule\Tests\Tools\ConnectionWrapper
 
         types:
             uuid_binary:

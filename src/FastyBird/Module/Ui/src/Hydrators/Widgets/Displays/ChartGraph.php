@@ -20,6 +20,7 @@ use FastyBird\Module\Ui\Entities;
 use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use function is_scalar;
+use function strval;
 
 /**
  * Chart graph widget display entity hydrator
@@ -58,8 +59,8 @@ final class ChartGraph extends Display
 		) {
 			throw new JsonApiExceptions\JsonApiError(
 				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.heading'),
-				$this->translator->translate('//ui-module.base.messages.missingAttribute.message'),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.heading')),
+				strval($this->translator->translate('//ui-module.base.messages.missingAttribute.message')),
 				[
 					'pointer' => '/data/attributes/enable_min_max',
 				],

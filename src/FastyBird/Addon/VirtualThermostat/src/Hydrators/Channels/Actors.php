@@ -26,6 +26,7 @@ use Fig\Http\Message\StatusCodeInterface;
 use IPub\JsonAPIDocument;
 use Ramsey\Uuid;
 use function is_string;
+use function strval;
 
 /**
  * Actors channel entity hydrator
@@ -71,8 +72,8 @@ final class Actors extends VirtualHydrators\Channels\Channel
 
 		throw new JsonApiExceptions\JsonApiError(
 			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
-			$this->translator->translate('//virtual-thermostat-addon.base.messages.invalidRelation.heading'),
-			$this->translator->translate('//virtual-thermostat-addon.base.messages.invalidRelation.message'),
+			strval($this->translator->translate('//virtual-thermostat-addon.base.messages.invalidRelation.heading')),
+			strval($this->translator->translate('//virtual-thermostat-addon.base.messages.invalidRelation.message')),
 			[
 				'pointer' => '/data/relationships/' . Schemas\Channels\Actors::RELATIONSHIPS_DEVICE . '/data/id',
 			],

@@ -18,11 +18,11 @@
           }
         ]
       },
-      "data_sources" : {
+      "data-sources" : {
         "data" : [
           {
             "id" : "874c5f81-b60b-4fcc-adb2-3f83b43cf182",
-            "type" : "com.fastybird.ui-module/data-source/channel-property"
+            "type" : "com.fastybird.ui-module/data-source/generic"
           }
         ]
       },
@@ -36,12 +36,9 @@
   },
   "included" : [
     {
-      "attributes" : {
-        "channel" : "7b023b2d-dcdc-444d-8d4c-8a8d2ae61e06",
-        "property" : "55e3ce0e-8967-4173-b454-30aa5ab1ad6b"
-      },
+      "attributes" : {},
       "id" : "874c5f81-b60b-4fcc-adb2-3f83b43cf182",
-      "type" : "com.fastybird.ui-module/data-source/channel-property"
+      "type" : "com.fastybird.ui-module/data-source/generic"
     },
     {
       "attributes" : {
