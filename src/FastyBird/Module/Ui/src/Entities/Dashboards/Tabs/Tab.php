@@ -58,7 +58,7 @@ class Tab implements Entities\Entity,
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'tab_name', type: 'string', nullable: true, options: ['default' => null])]
-	private string|null $name;
+	private string|null $name = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'tab_comment', type: 'text', nullable: true, options: ['default' => null])]
@@ -91,7 +91,6 @@ class Tab implements Entities\Entity,
 	#[ORM\OrderBy(['id' => 'ASC'])]
 	private Common\Collections\Collection $widgets;
 
-	#[IPubDoctrine\Crud(required: true)]
 	#[ORM\ManyToOne(
 		targetEntity: Entities\Dashboards\Dashboard::class,
 		cascade: ['persist'],
@@ -224,6 +223,7 @@ class Tab implements Entities\Entity,
 				$this->getWidgets(),
 			),
 
+			'owner' => $this->getDashboard()->getOwnerId(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];

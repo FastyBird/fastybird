@@ -73,7 +73,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Widgets\DataSources\DataSource
 	 *
-	 * @param Queries\Entities\FindDataSources<T> $queryObject
+	 * @param Queries\Entities\FindWidgetDataSources<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -81,7 +81,7 @@ final class Repository
 	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\Entities\FindDataSources $queryObject,
+		Queries\Entities\FindWidgetDataSources $queryObject,
 		string $type = Entities\Widgets\DataSources\DataSource::class,
 	): Entities\Widgets\DataSources\DataSource|null
 	{
@@ -109,7 +109,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Widgets\DataSources\DataSource
 	 *
-	 * @param Queries\Entities\FindDataSources<T> $queryObject
+	 * @param Queries\Entities\FindWidgetDataSources<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -117,7 +117,7 @@ final class Repository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\Entities\FindDataSources $queryObject,
+		Queries\Entities\FindWidgetDataSources $queryObject,
 		string $type = Entities\Widgets\DataSources\DataSource::class,
 	): array
 	{
@@ -134,7 +134,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Widgets\DataSources\DataSource
 	 *
-	 * @param Queries\Entities\FindDataSources<T> $queryObject
+	 * @param Queries\Entities\FindWidgetDataSources<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -143,7 +143,7 @@ final class Repository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\Entities\FindDataSources $queryObject,
+		Queries\Entities\FindWidgetDataSources $queryObject,
 		string $type = Entities\Widgets\DataSources\DataSource::class,
 	): DoctrineOrmQuery\ResultSet
 	{

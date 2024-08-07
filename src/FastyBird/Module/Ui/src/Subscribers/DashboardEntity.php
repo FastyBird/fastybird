@@ -66,7 +66,7 @@ final class DashboardEntity implements Common\EventSubscriber
 			return;
 		}
 
-		$findTabQuery = new Queries\Entities\FindTabs();
+		$findTabQuery = new Queries\Entities\FindDashboardTabs();
 		$findTabQuery->forDashboard($entity);
 
 		$foundTab = $this->tabsRepository->findOneBy($findTabQuery);

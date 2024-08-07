@@ -25,7 +25,7 @@ use Neomerx\JsonApi;
 /**
  * Widget display entity schema constructor
  *
- * @template T of Entities\Widgets\Display\Display
+ * @template T of Entities\Widgets\Displays\Display
  * @extends  JsonApiSchemas\JsonApi<T>
  *
  * @package          FastyBird:UIModule!

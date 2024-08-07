@@ -17,7 +17,6 @@ namespace FastyBird\Connector\Virtual\Helpers;
 
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Queue;
-use FastyBird\Connector\Virtual\Queue\Messages\Message as T;
 use Orisai\ObjectMapper;
 
 /**

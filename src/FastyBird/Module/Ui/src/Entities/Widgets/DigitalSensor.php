@@ -34,8 +34,8 @@ class DigitalSensor extends Sensor
 	public function getAllowedDisplayTypes(): array
 	{
 		return [
-			Entities\Widgets\Display\DigitalValue::class,
-			Entities\Widgets\Display\ChartGraph::class,
+			Entities\Widgets\Displays\DigitalValue::class,
+			Entities\Widgets\Displays\ChartGraph::class,
 		];
 	}
 

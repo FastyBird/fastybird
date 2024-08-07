@@ -22,6 +22,7 @@ use FastyBird\Plugin\RabbitMq\Handlers;
 use FastyBird\Plugin\RabbitMq\Publishers;
 use FastyBird\Plugin\RabbitMq\Subscribers;
 use FastyBird\Plugin\RabbitMq\Utilities;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -48,7 +49,7 @@ class RabbitMqExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

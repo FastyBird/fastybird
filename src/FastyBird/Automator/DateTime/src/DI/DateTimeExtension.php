@@ -21,7 +21,7 @@ use FastyBird\Automator\DateTime\Schemas;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
@@ -47,7 +47,7 @@ class DateTimeExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -72,7 +72,7 @@ class DateTimeExtension extends DI\CompilerExtension
 	}
 
 	/**
-	 * @throws Nette\DI\MissingServiceException
+	 * @throws DI\MissingServiceException
 	 */
 	public function beforeCompile(): void
 	{

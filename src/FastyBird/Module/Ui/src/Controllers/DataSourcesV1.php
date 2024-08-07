@@ -78,7 +78,7 @@ final class DataSourcesV1 extends BaseV1
 		// At first, try to load widget
 		$widget = $this->findWidget(strval($request->getAttribute(Router\ApiRoutes::URL_WIDGET_ID)));
 
-		$findQuery = new Queries\Entities\FindDataSources();
+		$findQuery = new Queries\Entities\FindWidgetDataSources();
 		$findQuery->forWidget($widget);
 
 		$dataSources = $this->dataSourcesRepository->getResultSet($findQuery);
@@ -392,7 +392,7 @@ final class DataSourcesV1 extends BaseV1
 	): Entities\Widgets\DataSources\DataSource
 	{
 		try {
-			$findQuery = new Queries\Entities\FindDataSources();
+			$findQuery = new Queries\Entities\FindWidgetDataSources();
 			$findQuery->forWidget($widget);
 			$findQuery->byId(Uuid\Uuid::fromString($id));
 

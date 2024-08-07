@@ -26,6 +26,26 @@
       "format": "uuid",
       "description": "Connector property unique uuid v4 identifier"
     },
+    "value": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ]
+    },
     "owner": {
       "oneOf": [
         {
@@ -70,6 +90,7 @@
     "widget",
     "connector",
     "property",
+    "value",
     "owner"
   ]
 }

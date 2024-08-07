@@ -19,7 +19,6 @@ use FastyBird\JsonApi\Schemas as JsonApiSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Entities;
-use FastyBird\Module\Ui\Entities\Dashboards\Tabs\Tab as T;
 use FastyBird\Module\Ui\Router;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
@@ -27,7 +26,7 @@ use Neomerx\JsonApi;
 /**
  * Tab entity schema
  *
- * @template T of \FastyBird\Module\Ui\Entities\Dashboards\Tabs\Tab
+ * @template T of Entities\Dashboards\Tabs\Tab
  * @extends  JsonApiSchemas\JsonApi<T>
  *
  * @package          FastyBird:UIModule!

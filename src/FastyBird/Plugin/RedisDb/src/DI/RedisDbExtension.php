@@ -24,6 +24,7 @@ use FastyBird\Plugin\RedisDb\Models;
 use FastyBird\Plugin\RedisDb\Publishers;
 use FastyBird\Plugin\RedisDb\States;
 use FastyBird\Plugin\RedisDb\Utilities;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -48,7 +49,7 @@ class RedisDbExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

@@ -28,7 +28,7 @@ use function strval;
 /**
  * Grouped button widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\GroupedButton>
+ * @extends Display<Entities\Widgets\Displays\GroupedButton>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -44,7 +44,7 @@ final class GroupedButton extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\GroupedButton::class;
+		return Entities\Widgets\Displays\GroupedButton::class;
 	}
 
 	/**

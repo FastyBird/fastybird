@@ -25,7 +25,7 @@ use function strval;
 /**
  * Chart graph widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\ChartGraph>
+ * @extends Display<Entities\Widgets\Displays\ChartGraph>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -45,7 +45,7 @@ final class ChartGraph extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\ChartGraph::class;
+		return Entities\Widgets\Displays\ChartGraph::class;
 	}
 
 	/**

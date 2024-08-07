@@ -377,7 +377,7 @@ final class DashboardsV1 extends BaseV1
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
 		if ($relationEntity === Schemas\Dashboards\Dashboard::RELATIONSHIPS_TABS) {
-			$findTabsQuery = new Queries\Entities\FindTabs();
+			$findTabsQuery = new Queries\Entities\FindDashboardTabs();
 			$findTabsQuery->forDashboard($dashboard);
 
 			return $this->buildResponse($request, $response, $this->tabsRepository->findAllBy($findTabsQuery));

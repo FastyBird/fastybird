@@ -22,6 +22,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Entities\Dashboards\Tabs\Tab;
 use FastyBird\Module\Ui\Exceptions;
+use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -43,11 +44,13 @@ use function array_map;
 #[ORM\MappedSuperclass]
 abstract class Widget implements Entities\Entity,
 	Entities\EntityParams,
+	SimpleAuthEntities\Owner,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
 	use Entities\TEntityParams;
+	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
@@ -62,15 +65,15 @@ abstract class Widget implements Entities\Entity,
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'widget_name', type: 'string', nullable: true, options: ['default' => null])]
-	protected string|null $name;
+	protected string|null $name = null;
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
 	#[ORM\OneToOne(
 		mappedBy: 'widget',
-		targetEntity: Entities\Widgets\Display\Display::class,
+		targetEntity: Entities\Widgets\Displays\Display::class,
 		cascade: ['persist', 'remove'],
 	)]
-	protected Display\Display $display;
+	protected Displays\Display $display;
 
 	/** @var Common\Collections\Collection<int, Tab> */
 	#[IPubDoctrine\Crud(writable: true)]
@@ -136,7 +139,7 @@ abstract class Widget implements Entities\Entity,
 		$this->name = $name;
 	}
 
-	public function getDisplay(): Entities\Widgets\Display\Display
+	public function getDisplay(): Entities\Widgets\Displays\Display
 	{
 		return $this->display;
 	}
@@ -144,7 +147,7 @@ abstract class Widget implements Entities\Entity,
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 */
-	public function setDisplay(Entities\Widgets\Display\Display $display): void
+	public function setDisplay(Entities\Widgets\Displays\Display $display): void
 	{
 		$isAllowed = false;
 
@@ -328,6 +331,7 @@ abstract class Widget implements Entities\Entity,
 			),
 			'display' => $this->getDisplay()->getId()->toString(),
 
+			'owner' => $this->getOwnerId(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];

@@ -21,7 +21,7 @@ use FastyBird\Module\Ui\Entities;
 /**
  * Digital value widget display entity schema
  *
- * @template T of Entities\Widgets\Display\DigitalValue
+ * @template T of Entities\Widgets\Displays\DigitalValue
  * @extends  Display<T>
  *
  * @package         FastyBird:UIModule!
@@ -34,7 +34,7 @@ final class DigitalValue extends Display
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Display\DigitalValue::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Displays\DigitalValue::TYPE;
 
 	public function getType(): string
 	{
@@ -43,7 +43,7 @@ final class DigitalValue extends Display
 
 	public function getEntityClass(): string
 	{
-		return Entities\Widgets\Display\DigitalValue::class;
+		return Entities\Widgets\Displays\DigitalValue::class;
 	}
 
 }

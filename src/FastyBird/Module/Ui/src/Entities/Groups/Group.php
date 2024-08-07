@@ -20,6 +20,7 @@ use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
+use FastyBird\SimpleAuth\Entities as SimpleAuthEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
@@ -38,11 +39,13 @@ use function array_map;
 #[ORM\Index(columns: ['group_name'], name: 'group_name_idx')]
 class Group implements Entities\Entity,
 	Entities\EntityParams,
+	SimpleAuthEntities\Owner,
 	DoctrineTimestampable\Entities\IEntityCreated, DoctrineTimestampable\Entities\IEntityUpdated
 {
 
 	use Entities\TEntity;
 	use Entities\TEntityParams;
+	use SimpleAuthEntities\TOwner;
 	use DoctrineTimestampable\Entities\TEntityCreated;
 	use DoctrineTimestampable\Entities\TEntityUpdated;
 
@@ -57,7 +60,7 @@ class Group implements Entities\Entity,
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'group_name', type: 'string', nullable: true, options: ['default' => null])]
-	private string|null $name;
+	private string|null $name = null;
 
 	#[IPubDoctrine\Crud(writable: true)]
 	#[ORM\Column(name: 'group_comment', type: 'text', nullable: true, options: ['default' => null])]
@@ -200,6 +203,7 @@ class Group implements Entities\Entity,
 				$this->getWidgets(),
 			),
 
+			'owner' => $this->getOwnerId(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];

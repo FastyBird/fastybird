@@ -27,7 +27,6 @@ use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
 use function array_map;
-use function strval;
 
 #[ORM\Entity]
 #[ORM\Table(
@@ -227,11 +226,6 @@ abstract class Device implements Entities\Entity,
 	public function setConnector(Entities\Connectors\Connector $connector): void
 	{
 		$this->connector = $connector;
-	}
-
-	public function getOwnerId(): string|null
-	{
-		return $this->owner !== null ? strval($this->owner) : null;
 	}
 
 	/**

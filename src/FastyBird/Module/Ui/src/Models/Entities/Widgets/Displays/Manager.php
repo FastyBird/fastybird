@@ -39,11 +39,11 @@ class Manager
 
 	use Nette\SmartObject;
 
-	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Widgets\Display\Display>|null */
+	/** @var DoctrineCrudCrud\IEntityCrud<Entities\Widgets\Displays\Display>|null */
 	private DoctrineCrudCrud\IEntityCrud|null $entityCrud = null;
 
 	/**
-	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Widgets\Display\Display> $entityCrudFactory
+	 * @param DoctrineCrudCrud\IEntityCrudFactory<Entities\Widgets\Displays\Display> $entityCrudFactory
 	 */
 	public function __construct(
 		private readonly DoctrineCrudCrud\IEntityCrudFactory $entityCrudFactory,
@@ -58,12 +58,12 @@ class Manager
 	 * @throws DoctrineCrudExceptions\InvalidState
 	 */
 	public function update(
-		Entities\Widgets\Display\Display $entity,
+		Entities\Widgets\Displays\Display $entity,
 		Utils\ArrayHash $values,
-	): Entities\Widgets\Display\Display
+	): Entities\Widgets\Displays\Display
 	{
 		$entity = $this->getEntityCrud()->getEntityUpdater()->update($values, $entity);
-		assert($entity instanceof Entities\Widgets\Display\Display);
+		assert($entity instanceof Entities\Widgets\Displays\Display);
 
 		$this->dispatcher?->dispatch(new Events\EntityUpdated($entity));
 
@@ -71,12 +71,12 @@ class Manager
 	}
 
 	/**
-	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Widgets\Display\Display>
+	 * @return DoctrineCrudCrud\IEntityCrud<Entities\Widgets\Displays\Display>
 	 */
 	public function getEntityCrud(): DoctrineCrudCrud\IEntityCrud
 	{
 		if ($this->entityCrud === null) {
-			$this->entityCrud = $this->entityCrudFactory->create(Entities\Widgets\Display\Display::class);
+			$this->entityCrud = $this->entityCrudFactory->create(Entities\Widgets\Displays\Display::class);
 		}
 
 		return $this->entityCrud;

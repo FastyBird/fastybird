@@ -28,7 +28,7 @@ use function strval;
 /**
  * Button widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\Button>
+ * @extends Display<Entities\Widgets\Displays\Button>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -44,7 +44,7 @@ final class Button extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\Button::class;
+		return Entities\Widgets\Displays\Button::class;
 	}
 
 	/**

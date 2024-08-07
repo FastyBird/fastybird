@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Channels\Properties;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Types;
 use Nette\Caching;
 use Ramsey\Uuid;
 use Throwable;
@@ -96,7 +96,7 @@ final class Repository extends Models\Configuration\Repository
 				$this->createKeyOne($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): Documents\Channels\Properties\Property|false {
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CHANNELS_PROPERTIES);
+						->load(Types\ConfigurationType::CHANNELS_PROPERTIES);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -135,7 +135,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+						Types\ConfigurationType::CHANNELS_PROPERTIES->value,
 					],
 				],
 			);
@@ -171,7 +171,7 @@ final class Repository extends Models\Configuration\Repository
 				$this->createKeyAll($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): array {
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CHANNELS_PROPERTIES);
+						->load(Types\ConfigurationType::CHANNELS_PROPERTIES);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -220,7 +220,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CHANNELS_PROPERTIES->value,
+						Types\ConfigurationType::CHANNELS_PROPERTIES->value,
 					],
 				],
 			);

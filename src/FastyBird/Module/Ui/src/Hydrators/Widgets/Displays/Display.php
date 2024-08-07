@@ -27,7 +27,7 @@ use function strval;
 /**
  * Widget display entity hydrator
  *
- * @template  T of Entities\Widgets\Display\Display
+ * @template  T of Entities\Widgets\Displays\Display
  * @extends   JsonApiHydrators\Hydrator<T>
  *
  * @package        FastyBird:UIModule!

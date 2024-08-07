@@ -23,7 +23,7 @@ use function array_merge;
 /**
  * Analog value widget display entity schema
  *
- * @template T of Entities\Widgets\Display\AnalogValue
+ * @template T of Entities\Widgets\Displays\AnalogValue
  * @extends  Display<T>
  *
  * @package         FastyBird:UIModule!
@@ -36,7 +36,7 @@ final class AnalogValue extends Display
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Display\AnalogValue::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Displays\AnalogValue::TYPE;
 
 	public function getType(): string
 	{
@@ -45,7 +45,7 @@ final class AnalogValue extends Display
 
 	public function getEntityClass(): string
 	{
-		return Entities\Widgets\Display\AnalogValue::class;
+		return Entities\Widgets\Displays\AnalogValue::class;
 	}
 
 	/**

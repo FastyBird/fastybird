@@ -20,7 +20,7 @@ use FastyBird\Module\Ui\Entities;
 /**
  * Gauge widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\Gauge>
+ * @extends Display<Entities\Widgets\Displays\Gauge>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -36,7 +36,7 @@ final class Gauge extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\Gauge::class;
+		return Entities\Widgets\Displays\Gauge::class;
 	}
 
 }

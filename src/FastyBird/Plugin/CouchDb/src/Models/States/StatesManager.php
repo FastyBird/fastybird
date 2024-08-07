@@ -24,7 +24,6 @@ use FastyBird\Plugin\CouchDb\Connections;
 use FastyBird\Plugin\CouchDb\Events;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
-use FastyBird\Plugin\CouchDb\States\State as T;
 use Nette;
 use Nette\Utils;
 use PHPOnCouch;

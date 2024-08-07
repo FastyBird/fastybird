@@ -24,6 +24,7 @@ use FastyBird\Plugin\WebServer\Router;
 use FastyBird\Plugin\WebServer\Server;
 use FastyBird\Plugin\WebServer\Subscribers;
 use Fig\Http\Message\RequestMethodInterface;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use stdClass;
@@ -48,7 +49,7 @@ class WebServerExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use (
 			$extensionName,
