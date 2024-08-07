@@ -29,7 +29,7 @@ use FastyBird\Module\Triggers\Router;
 use FastyBird\Module\Triggers\Schemas;
 use FastyBird\Module\Triggers\Subscribers;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
-use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -60,7 +60,7 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -193,7 +193,7 @@ class TriggersExtension extends DI\CompilerExtension implements Translation\DI\T
 	}
 
 	/**
-	 * @throws Nette\DI\MissingServiceException
+	 * @throws DI\MissingServiceException
 	 */
 	public function beforeCompile(): void
 	{

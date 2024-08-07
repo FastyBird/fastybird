@@ -19,6 +19,7 @@ use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata\Documents;
 use FastyBird\Library\Metadata\Exceptions;
 use FastyBird\Library\Metadata\Schemas;
+use Nette\Bootstrap;
 use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
@@ -47,7 +48,7 @@ class MetadataExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

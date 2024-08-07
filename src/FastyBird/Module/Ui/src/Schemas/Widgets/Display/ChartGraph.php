@@ -23,7 +23,7 @@ use function array_merge;
 /**
  * Chart graph widget display entity schema
  *
- * @template T of Entities\Widgets\Display\ChartGraph
+ * @template T of Entities\Widgets\Displays\ChartGraph
  * @extends  Display<T>
  *
  * @package         FastyBird:UIModule!
@@ -36,7 +36,7 @@ final class ChartGraph extends Display
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Display\ChartGraph::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Displays\ChartGraph::TYPE;
 
 	public function getType(): string
 	{
@@ -45,7 +45,7 @@ final class ChartGraph extends Display
 
 	public function getEntityClass(): string
 	{
-		return Entities\Widgets\Display\ChartGraph::class;
+		return Entities\Widgets\Displays\ChartGraph::class;
 	}
 
 	/**

@@ -20,7 +20,7 @@ use FastyBird\Module\Ui\Entities;
 /**
  * Digital value widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\DigitalValue>
+ * @extends Display<Entities\Widgets\Displays\DigitalValue>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -31,7 +31,7 @@ final class DigitalValue extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\DigitalValue::class;
+		return Entities\Widgets\Displays\DigitalValue::class;
 	}
 
 }

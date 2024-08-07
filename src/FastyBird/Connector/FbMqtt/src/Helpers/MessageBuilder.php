@@ -17,7 +17,6 @@ namespace FastyBird\Connector\FbMqtt\Helpers;
 
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queue;
-use FastyBird\Connector\FbMqtt\Queue\Messages\Message as T;
 use Orisai\ObjectMapper;
 
 /**

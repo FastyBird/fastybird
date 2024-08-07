@@ -14,10 +14,6 @@ parameters:
             count: 2
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
-            path: ../src/Entities/Devices/Device.php
-            count: 1
-        -
-            message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Controllers/DevicesV1.php
             count: 15
         -

@@ -1,0 +1,12 @@
+{
+  "id": "176984ad-7cf7-465d-9e53-71668a74a688",
+  "type": "analog-sensor",
+  "identifier": "widget-identifier",
+  "name": null,
+  "display": "1e19c996-a9fe-429a-8db0-ffdac4a5b6c3",
+  "data_sources": ["92bf037a-db87-4a01-b888-d43d188f3e12"],
+  "tabs": ["672dd2fc-9134-4673-a7c5-7a69d789ff95"],
+  "groups": ["28396431-6bf3-45ae-a9e1-f6b2a590e6d6"],
+  "created_at" : null,
+  "updated_at" : null
+}

@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Controls;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Types;
 use Nette\Caching;
 use Ramsey\Uuid;
 use Throwable;
@@ -73,7 +73,7 @@ final class Repository extends Models\Configuration\Repository
 				$this->createKeyOne($queryObject),
 				function (&$dependencies) use ($queryObject): Documents\Connectors\Controls\Control|false {
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CONNECTORS_CONTROLS);
+						->load(Types\ConfigurationType::CONNECTORS_CONTROLS);
 
 					$result = $queryObject->fetch($space);
 
@@ -94,7 +94,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+						Types\ConfigurationType::CONNECTORS_CONTROLS->value,
 					],
 				],
 			);
@@ -126,7 +126,7 @@ final class Repository extends Models\Configuration\Repository
 				$this->createKeyAll($queryObject),
 				function (&$dependencies) use ($queryObject): array {
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CONNECTORS_CONTROLS);
+						->load(Types\ConfigurationType::CONNECTORS_CONTROLS);
 
 					$result = $queryObject->fetch($space);
 
@@ -153,7 +153,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+						Types\ConfigurationType::CONNECTORS_CONTROLS->value,
 					],
 				],
 			);

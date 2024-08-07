@@ -36,7 +36,7 @@ use function strval;
 final class Access implements MiddlewareInterface
 {
 
-	public function __construct(private Localization\Translator $translator)
+	public function __construct(private readonly Localization\Translator $translator)
 	{
 	}
 

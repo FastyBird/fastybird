@@ -73,7 +73,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Dashboards\Tabs\Tab
 	 *
-	 * @param Queries\Entities\FindTabs<T> $queryObject
+	 * @param Queries\Entities\FindDashboardTabs<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return T|null
@@ -81,7 +81,7 @@ final class Repository
 	 * @throws ApplicationExceptions\InvalidState
 	 */
 	public function findOneBy(
-		Queries\Entities\FindTabs $queryObject,
+		Queries\Entities\FindDashboardTabs $queryObject,
 		string $type = Entities\Dashboards\Tabs\Tab::class,
 	): Entities\Dashboards\Tabs\Tab|null
 	{
@@ -109,7 +109,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Dashboards\Tabs\Tab
 	 *
-	 * @param Queries\Entities\FindTabs<T> $queryObject
+	 * @param Queries\Entities\FindDashboardTabs<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return array<T>
@@ -117,7 +117,7 @@ final class Repository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function findAllBy(
-		Queries\Entities\FindTabs $queryObject,
+		Queries\Entities\FindDashboardTabs $queryObject,
 		string $type = Entities\Dashboards\Tabs\Tab::class,
 	): array
 	{
@@ -134,7 +134,7 @@ final class Repository
 	/**
 	 * @template T of Entities\Dashboards\Tabs\Tab
 	 *
-	 * @param Queries\Entities\FindTabs<T> $queryObject
+	 * @param Queries\Entities\FindDashboardTabs<T> $queryObject
 	 * @param class-string<T> $type
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
@@ -143,7 +143,7 @@ final class Repository
 	 * @throws Exceptions\InvalidState
 	 */
 	public function getResultSet(
-		Queries\Entities\FindTabs $queryObject,
+		Queries\Entities\FindDashboardTabs $queryObject,
 		string $type = Entities\Dashboards\Tabs\Tab::class,
 	): DoctrineOrmQuery\ResultSet
 	{

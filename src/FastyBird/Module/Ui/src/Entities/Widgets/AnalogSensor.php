@@ -34,9 +34,9 @@ class AnalogSensor extends Sensor
 	public function getAllowedDisplayTypes(): array
 	{
 		return [
-			Entities\Widgets\Display\ChartGraph::class,
-			Entities\Widgets\Display\Gauge::class,
-			Entities\Widgets\Display\AnalogValue::class,
+			Entities\Widgets\Displays\ChartGraph::class,
+			Entities\Widgets\Displays\Gauge::class,
+			Entities\Widgets\Displays\AnalogValue::class,
 		];
 	}
 

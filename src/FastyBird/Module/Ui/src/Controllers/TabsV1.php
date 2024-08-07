@@ -79,12 +79,12 @@ final class TabsV1 extends BaseV1
 			// At first, try to load dashboard
 			$dashboard = $this->findDashboard(strval($request->getAttribute(Router\ApiRoutes::URL_DASHBOARD_ID)));
 
-			$findQuery = new Queries\Entities\FindTabs();
+			$findQuery = new Queries\Entities\FindDashboardTabs();
 			$findQuery->forDashboard($dashboard);
 
 			$tabs = $this->tabsRepository->getResultSet($findQuery);
 		} else {
-			$findQuery = new Queries\Entities\FindTabs();
+			$findQuery = new Queries\Entities\FindDashboardTabs();
 
 			$tabs = $this->tabsRepository->getResultSet($findQuery);
 		}

@@ -39,6 +39,7 @@ use FastyBird\Module\Devices\Subscribers;
 use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Application;
+use Nette\Bootstrap;
 use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
@@ -72,7 +73,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

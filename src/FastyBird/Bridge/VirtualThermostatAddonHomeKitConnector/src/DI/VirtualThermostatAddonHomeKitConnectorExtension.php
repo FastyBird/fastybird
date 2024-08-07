@@ -29,6 +29,7 @@ use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -57,7 +58,7 @@ class VirtualThermostatAddonHomeKitConnectorExtension extends DI\CompilerExtensi
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

@@ -34,7 +34,7 @@ class AnalogActuator extends Actuator
 	public function getAllowedDisplayTypes(): array
 	{
 		return [
-			Entities\Widgets\Display\Slider::class,
+			Entities\Widgets\Displays\Slider::class,
 		];
 	}
 

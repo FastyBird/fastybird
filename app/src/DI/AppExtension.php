@@ -20,6 +20,7 @@ use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Router as ApplicationRouter;
 use FastyBird\Library\Application\UI as ApplicationUI;
 use Nette\Application;
+use Nette\Bootstrap;
 use Nette\DI;
 use function assert;
 use function is_string;
@@ -44,7 +45,7 @@ class AppExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

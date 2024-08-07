@@ -23,6 +23,7 @@ use FastyBird\Plugin\WsServer\Exceptions;
 use FastyBird\Plugin\WsServer\Subscribers;
 use IPub\WebSockets;
 use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\PhpGenerator;
 use Nette\Schema;
@@ -51,7 +52,7 @@ class WsServerExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

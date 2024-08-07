@@ -94,6 +94,7 @@ abstract class DataSource implements Entities\Entity,
 
 			'widget' => $this->getWidget()->getId()->toString(),
 
+			'owner' => $this->getWidget()->getOwnerId(),
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
 		];

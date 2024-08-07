@@ -20,6 +20,7 @@ use FastyBird\Library\Exchange\Consumers;
 use FastyBird\Library\Exchange\Documents;
 use FastyBird\Library\Exchange\Publisher;
 use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use function assert;
 use function is_bool;
@@ -46,7 +47,7 @@ class ExchangeExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

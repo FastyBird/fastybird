@@ -332,7 +332,7 @@ final class WidgetsV1 extends BaseV1
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
-			$findDataSourcesQuery = new Queries\Entities\FindDataSources();
+			$findDataSourcesQuery = new Queries\Entities\FindWidgetDataSources();
 			$findDataSourcesQuery->forWidget($widget);
 
 			foreach ($this->dataSourcesRepository->findAllBy($findDataSourcesQuery) as $dataSource) {
@@ -389,7 +389,7 @@ final class WidgetsV1 extends BaseV1
 		if ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_DISPLAY) {
 			return $this->buildResponse($request, $response, $widget->getDisplay());
 		} elseif ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_TABS) {
-			$findTabsQuery = new Queries\Entities\FindTabs();
+			$findTabsQuery = new Queries\Entities\FindDashboardTabs();
 			$findTabsQuery->forWidget($widget);
 
 			return $this->buildResponse(
@@ -403,7 +403,7 @@ final class WidgetsV1 extends BaseV1
 
 			return $this->buildResponse($request, $response, $this->groupsRepository->findAllBy($findGroupsQuery));
 		} elseif ($relationEntity === Schemas\Widgets\Widget::RELATIONSHIPS_DATA_SOURCES) {
-			$findDataSourcesQuery = new Queries\Entities\FindDataSources();
+			$findDataSourcesQuery = new Queries\Entities\FindWidgetDataSources();
 			$findDataSourcesQuery->forWidget($widget);
 
 			return $this->buildResponse(

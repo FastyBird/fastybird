@@ -20,7 +20,7 @@ use FastyBird\Module\Ui\Entities;
 /**
  * Analog value widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\AnalogValue>
+ * @extends Display<Entities\Widgets\Displays\AnalogValue>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -36,7 +36,7 @@ final class AnalogValue extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\AnalogValue::class;
+		return Entities\Widgets\Displays\AnalogValue::class;
 	}
 
 }

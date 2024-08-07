@@ -20,7 +20,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
-use FastyBird\Plugin\RedisDb\States\State as T;
 use Nette;
 use Psr\Log;
 use Ramsey\Uuid;

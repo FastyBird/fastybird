@@ -43,7 +43,7 @@ trait TTab
 	{
 		try {
 			if ($dashboard !== null) {
-				$findQuery = new Queries\Entities\FindTabs();
+				$findQuery = new Queries\Entities\FindDashboardTabs();
 				$findQuery->forDashboard($dashboard);
 				$findQuery->byId(Uuid\Uuid::fromString($id));
 

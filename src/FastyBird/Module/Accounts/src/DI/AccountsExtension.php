@@ -34,6 +34,7 @@ use FastyBird\Module\Accounts\Subscribers;
 use FastyBird\Module\Accounts\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Application;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -64,7 +65,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

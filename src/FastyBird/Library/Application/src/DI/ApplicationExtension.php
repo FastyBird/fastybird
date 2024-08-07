@@ -23,6 +23,7 @@ use FastyBird\Library\Application\Subscribers;
 use FastyBird\Library\Application\UI;
 use Monolog;
 use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
 use Sentry;
@@ -54,7 +55,7 @@ class ApplicationExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			Boot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

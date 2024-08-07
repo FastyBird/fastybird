@@ -37,14 +37,31 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Entities\Widgets\DataSources\Repository::class, false),
 		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Entities\Widgets\Displays\Repository::class, false),
+		);
 
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Dashboards\Tabs\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Groups\Manager::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Manager::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Displays\Manager::class, false));
 		self::assertNotNull(
 			$this->getContainer()->getByType(Models\Entities\Widgets\DataSources\Manager::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Entities\Widgets\Displays\Manager::class, false));
+
+		self::assertNotNull($this->getContainer()->getByType(Models\Configuration\Builder::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Configuration\Dashboards\Repository::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Dashboards\Tabs\Repository::class, false),
+		);
+		self::assertNotNull($this->getContainer()->getByType(Models\Configuration\Groups\Repository::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Models\Configuration\Widgets\Repository::class, false));
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Widgets\DataSources\Repository::class, false),
+		);
+		self::assertNotNull(
+			$this->getContainer()->getByType(Models\Configuration\Widgets\Displays\Repository::class, false),
 		);
 
 		self::assertNotNull($this->getContainer()->getByType(Controllers\DashboardsV1::class, false));
@@ -86,6 +103,7 @@ final class UiExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\Displays\Slider::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Hydrators\Widgets\DataSources\Generic::class, false));
 
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\DashboardEntity::class, false));
 	}
 

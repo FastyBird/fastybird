@@ -35,7 +35,7 @@ final class DashboardsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 		$entity = $repository->find(Uuid\Uuid::fromString('ab369e71-ada6-4d1a-a5a8-b6ee5cd58296'));
 
 		self::assertIsObject($entity);
-		self::assertSame('First floor', $entity->getName());
+		self::assertNull($entity->getName());
 	}
 
 	/**
@@ -56,7 +56,7 @@ final class DashboardsRepositoryTest extends Tests\Cases\Unit\DbTestCase
 		$entity = $repository->findOneBy($findQuery);
 
 		self::assertIsObject($entity);
-		self::assertSame('First floor', $entity->getName());
+		self::assertNull($entity->getName());
 	}
 
 	/**

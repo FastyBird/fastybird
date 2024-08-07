@@ -1,7 +1,7 @@
 INSERT
 IGNORE INTO `fb_ui_module_dashboards` (`dashboard_id`, `dashboard_identifier`, `dashboard_name`, `dashboard_comment`, `dashboard_priority`, `params`, `created_at`, `updated_at`) VALUES
 (_binary 0x272379D8835144B6AD8D73A0ABCB7F9C, 'main-dashboard', 'Main dashboard', NULL, 0, '[]', '2020-05-28 10:43:58', '2020-05-28 10:43:58'),
-(_binary 0xAB369E71ADA64D1AA5A8B6EE5CD58296, 'first-floor', 'First floor', NULL, 0, '[]', '2020-05-28 11:03:50', '2020-05-28 11:03:50');
+(_binary 0xAB369E71ADA64D1AA5A8B6EE5CD58296, 'first-floor', NULL, NULL, 0, '[]', '2020-05-28 11:03:50', '2020-05-28 11:03:50');
 
 INSERT
 IGNORE INTO `fb_ui_module_tabs` (`tab_id`, `dashboard_id`, `tab_identifier`, `tab_name`, `tab_comment`, `tab_priority`, `params`, `created_at`, `updated_at`) VALUES

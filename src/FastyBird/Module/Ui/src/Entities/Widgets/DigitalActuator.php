@@ -34,7 +34,7 @@ class DigitalActuator extends Actuator
 	public function getAllowedDisplayTypes(): array
 	{
 		return [
-			Entities\Widgets\Display\Button::class,
+			Entities\Widgets\Displays\Button::class,
 		];
 	}
 

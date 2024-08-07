@@ -42,7 +42,7 @@
       "id": "ab369e71-ada6-4d1a-a5a8-b6ee5cd58296",
       "attributes": {
         "identifier": "first-floor",
-        "name": "First floor",
+        "name": null,
         "comment": null,
         "priority": 0
       },

@@ -262,6 +262,7 @@ final class Constants
 
 	public const MESSAGE_BUS_CONNECTOR_CONTROL_DOCUMENT_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.connector.control';
 
+	// ACTIONS
 	public const MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.action.connector.control';
 
 	public const MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.action.connector.property';

@@ -18,6 +18,9 @@ namespace FastyBird\Module\Ui\DI;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Commands;
 use FastyBird\Module\Ui\Controllers;
@@ -28,6 +31,8 @@ use FastyBird\Module\Ui\Router;
 use FastyBird\Module\Ui\Schemas;
 use FastyBird\Module\Ui\Subscribers;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
+use Nette\Bootstrap;
+use Nette\Caching;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -35,6 +40,7 @@ use stdClass;
 use function array_keys;
 use function array_pop;
 use function assert;
+use function class_exists;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -56,7 +62,7 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());
@@ -78,6 +84,30 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(Ui\Logger::class)
+			->setAutowired(false);
+
+		/**
+		 * MODULE CACHING
+		 */
+
+		$configurationRepositoryCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.repository'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::UI->value . '_configuration_repository',
+			])
+			->setAutowired(false);
+
+		$configurationBuilderCache = $builder->addDefinition(
+			$this->prefix('caching.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Cache::class)
+			->setArguments([
+				'namespace' => MetadataTypes\Sources\Module::UI->value . '_configuration_builder',
+			])
 			->setAutowired(false);
 
 		/**
@@ -159,14 +189,94 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			->setType(Models\Entities\Widgets\DataSources\Manager::class);
 
 		$builder->addDefinition(
+			$this->prefix('models.entities.repositories.displays'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Entities\Widgets\Displays\Repository::class);
+
+		$builder->addDefinition(
 			$this->prefix('models.entities.managers.displays'),
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Models\Entities\Widgets\Displays\Manager::class);
 
 		/**
+		 * MODELS - CONFIGURATION
+		 */
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.builder'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Builder::class)
+			->setArguments([
+				'cache' => $configurationBuilderCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.dashboards'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Dashboards\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.tabs'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Dashboards\Tabs\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.groups'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Groups\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.widgets'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Widgets\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.dataSources'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Widgets\DataSources\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		$builder->addDefinition(
+			$this->prefix('models.configuration.repositories.displays'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Models\Configuration\Widgets\Displays\Repository::class)
+			->setArguments([
+				'cache' => $configurationRepositoryCache,
+			]);
+
+		/**
 		 * SUBSCRIBERS
 		 */
+
+		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\ModuleEntities::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.dashboardEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\DashboardEntity::class);
@@ -204,6 +314,19 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			->setType(Controllers\DisplayV1::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
+
+		/**
+		 * WEBSOCKETS CONTROLLERS
+		 */
+
+		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
+			$builder->addDefinition($this->prefix('controllers.exchange'), new DI\Definitions\ServiceDefinition())
+				->setType(Controllers\ExchangeV1::class)
+				->setArguments([
+					'logger' => $logger,
+				])
+				->addTag('nette.inject');
+		}
 
 		/**
 		 * JSON-API SCHEMAS
@@ -371,6 +494,37 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 		}
 
 		/**
+		 * APPLICATION DOCUMENTS
+		 */
+
+		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$documentAttributeDriverServiceName = array_pop($services);
+
+			$documentAttributeDriverService = $builder->getDefinition($documentAttributeDriverServiceName);
+
+			if ($documentAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$documentAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Documents']],
+				);
+
+				$documentAttributeDriverChainService = $builder->getDefinitionByType(
+					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$documentAttributeDriverChainService->addSetup('addDriver', [
+						$documentAttributeDriverService,
+						'FastyBird\Module\Ui\Documents',
+					]);
+				}
+			}
+		}
+
+		/**
 		 * ROUTES
 		 */
 
@@ -381,6 +535,31 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 				$builder->getDefinitionByType(Router\ApiRoutes::class),
 				$routerService,
 			]);
+		}
+
+		/**
+		 * WEBSOCKETS
+		 */
+
+		if (class_exists('IPub\WebSockets\DI\WebSocketsExtension')) {
+			try {
+				$wsControllerFactoryService = $builder->getDefinitionByType(
+					'IPub\WebSockets\Application\Controller\IControllerFactory',
+				);
+				assert($wsControllerFactoryService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsControllerFactoryService->addSetup(
+					'setMapping',
+					[
+						[
+							'UiModule' => ['FastyBird\\Module\\Ui\\Controllers', '*', '*V1'],
+						],
+					],
+				);
+
+			} catch (DI\MissingServiceException) {
+				// Extension is not registered
+			}
 		}
 	}
 

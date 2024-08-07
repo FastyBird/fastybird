@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
+use FastyBird\Module\Devices\Types;
 use Nette\Caching;
 use Ramsey\Uuid;
 use Throwable;
@@ -97,7 +97,7 @@ final class Repository extends Models\Configuration\Repository
 				$this->createKeyOne($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): Documents\Connectors\Connector|false {
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CONNECTORS);
+						->load(Types\ConfigurationType::CONNECTORS);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -147,7 +147,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CONNECTORS->value,
+						Types\ConfigurationType::CONNECTORS->value,
 					],
 				],
 			);
@@ -185,7 +185,7 @@ final class Repository extends Models\Configuration\Repository
 					$children = [];
 
 					$space = $this->builder
-						->load(Devices\Types\ConfigurationType::CONNECTORS);
+						->load(Types\ConfigurationType::CONNECTORS);
 
 					$metadata = $this->classMetadataFactory->getMetadataFor($type);
 
@@ -227,7 +227,7 @@ final class Repository extends Models\Configuration\Repository
 				},
 				[
 					Caching\Cache::Tags => [
-						Devices\Types\ConfigurationType::CONNECTORS->value,
+						Types\ConfigurationType::CONNECTORS->value,
 					],
 				],
 			);

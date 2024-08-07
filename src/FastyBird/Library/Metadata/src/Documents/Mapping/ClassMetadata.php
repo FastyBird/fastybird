@@ -41,6 +41,8 @@ class ClassMetadata
 
 	public const INHERITANCE_TYPE_SINGLE_TABLE = 1;
 
+	public const INHERITANCE_TYPE_JOINED_TABLE = 2;
+
 	/** @var class-string<T> */
 	private string $name;
 
@@ -71,7 +73,7 @@ class ClassMetadata
 	/**
 	 * READ-ONLY: The discriminator value of this class
 	 *
-	 * This does only apply to the SINGLE_TABLE inheritance mapping strategies
+	 * This does only apply to the SINGLE_TABLE or JOINED_TABLE inheritance mapping strategies
 	 * where a discriminator column is used.
 	 *
 	 * @see discriminatorColumn
@@ -171,13 +173,13 @@ class ClassMetadata
 	}
 
 	/**
-	 * Checks whether the mapped class uses the SINGLE_TABLE inheritance mapping strategy.
+	 * Checks whether the mapped class uses the SINGLE_TABLE or JOINED_TABLE inheritance mapping strategy.
 	 *
-	 * @return bool TRUE if the class participates in a SINGLE_TABLE inheritance mapping, FALSE otherwise.
+	 * @return bool TRUE if the class participates in a SINGLE_TABLE or JOINED_TABLE inheritance mapping, FALSE otherwise.
 	 */
 	public function isInheritanceTypeSingleTable(): bool
 	{
-		return $this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_TABLE;
+		return $this->inheritanceType === self::INHERITANCE_TYPE_SINGLE_TABLE || $this->inheritanceType === self::INHERITANCE_TYPE_JOINED_TABLE;
 	}
 
 	/**

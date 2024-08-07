@@ -21,6 +21,7 @@ use FastyBird\Plugin\ApiKey\Commands;
 use FastyBird\Plugin\ApiKey\Middleware;
 use FastyBird\Plugin\ApiKey\Models;
 use Nette;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
@@ -46,7 +47,7 @@ class ApiKeyExtension extends DI\CompilerExtension
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

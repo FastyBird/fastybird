@@ -26,6 +26,7 @@ use FastyBird\Addon\VirtualThermostat\Schemas;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use Nette\Bootstrap;
 use Nette\DI;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
@@ -51,7 +52,7 @@ class VirtualThermostatExtension extends DI\CompilerExtension implements Transla
 	): void
 	{
 		$config->onCompile[] = static function (
-			ApplicationBoot\Configurator $config,
+			Bootstrap\Configurator $config,
 			DI\Compiler $compiler,
 		) use ($extensionName): void {
 			$compiler->addExtension($extensionName, new self());

@@ -20,7 +20,7 @@ use FastyBird\Module\Ui\Entities;
 /**
  * Slider widget display entity hydrator
  *
- * @extends Display<Entities\Widgets\Display\Slider>
+ * @extends Display<Entities\Widgets\Displays\Slider>
  *
  * @package        FastyBird:UIModule!
  * @subpackage     Hydrators
@@ -39,7 +39,7 @@ final class Slider extends Display
 
 	public function getEntityName(): string
 	{
-		return Entities\Widgets\Display\Slider::class;
+		return Entities\Widgets\Displays\Slider::class;
 	}
 
 }

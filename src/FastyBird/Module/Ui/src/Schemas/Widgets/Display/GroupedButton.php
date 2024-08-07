@@ -23,7 +23,7 @@ use function array_merge;
 /**
  * Grouped button widget display entity schema
  *
- * @template T of Entities\Widgets\Display\GroupedButton
+ * @template T of Entities\Widgets\Displays\GroupedButton
  * @extends  Display<T>
  *
  * @package         FastyBird:UIModule!
@@ -36,7 +36,7 @@ final class GroupedButton extends Display
 	/**
 	 * Define entity schema type string
 	 */
-	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Display\GroupedButton::TYPE;
+	public const SCHEMA_TYPE = MetadataTypes\Sources\Module::UI->value . '/display/' . Entities\Widgets\Displays\GroupedButton::TYPE;
 
 	public function getType(): string
 	{
@@ -45,7 +45,7 @@ final class GroupedButton extends Display
 
 	public function getEntityClass(): string
 	{
-		return Entities\Widgets\Display\GroupedButton::class;
+		return Entities\Widgets\Displays\GroupedButton::class;
 	}
 
 	/**
