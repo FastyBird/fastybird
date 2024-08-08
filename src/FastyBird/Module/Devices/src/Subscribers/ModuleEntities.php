@@ -34,7 +34,6 @@ use Nette\Caching;
 use Nette\Utils;
 use ReflectionClass;
 use function count;
-use function in_array;
 use function is_a;
 use function str_starts_with;
 
@@ -72,8 +71,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 		private readonly Caching\Cache $configurationBuilderCache,
 		private readonly Caching\Cache $configurationRepositoryCache,
-		private readonly Caching\Cache $stateCache,
-		private readonly Caching\Cache $stateStorageCache,
 	)
 	{
 	}
@@ -111,7 +108,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity, self::ACTION_CREATED);
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -149,7 +146,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity, self::ACTION_UPDATED);
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
@@ -212,7 +209,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
 
-		$this->cleanCache($entity, self::ACTION_DELETED);
+		$this->cleanCache($entity);
 	}
 
 	public function enableAsync(): void
@@ -225,7 +222,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		$this->useAsync = false;
 	}
 
-	private function cleanCache(Entities\Entity $entity, string $action): void
+	private function cleanCache(Entities\Entity $entity): void
 	{
 		if ($entity instanceof Entities\Connectors\Connector) {
 			$this->configurationBuilderCache->clean([
@@ -325,15 +322,6 @@ final class ModuleEntities implements Common\EventSubscriber
 					Types\ConfigurationType::CHANNELS_CONTROLS->value,
 					$entity->getId()->toString(),
 				],
-			]);
-		}
-
-		if (in_array($action, [self::ACTION_UPDATED, self::ACTION_DELETED], true)) {
-			$this->stateCache->clean([
-				Caching\Cache::Tags => [$entity->getId()->toString()],
-			]);
-			$this->stateStorageCache->clean([
-				Caching\Cache::Tags => [$entity->getId()->toString()],
 			]);
 		}
 	}

@@ -219,21 +219,35 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 		$channels = $this->channelsConfigurationRepository->findAllBy($findChannelsQuery);
 
 		foreach ($channels as $channel) {
-			$findChannelPropertiesQuery = new Queries\Configuration\FindChannelDynamicProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
+			$this->resetChanel($channel);
+		}
+	}
 
-			$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-				$findChannelPropertiesQuery,
-				Documents\Channels\Properties\Dynamic::class,
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	private function resetChanel(Documents\Channels\Channel $channel): void
+	{
+		$findChannelPropertiesQuery = new Queries\Configuration\FindChannelDynamicProperties();
+		$findChannelPropertiesQuery->forChannel($channel);
+
+		$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
+			$findChannelPropertiesQuery,
+			Documents\Channels\Properties\Dynamic::class,
+		);
+
+		foreach ($properties as $property) {
+			$this->channelPropertiesStatesManager->setValidState(
+				$property,
+				false,
+				MetadataTypes\Sources\Module::DEVICES,
 			);
-
-			foreach ($properties as $property) {
-				$this->channelPropertiesStatesManager->setValidState(
-					$property,
-					false,
-					MetadataTypes\Sources\Module::DEVICES,
-				);
-			}
 		}
 	}
 

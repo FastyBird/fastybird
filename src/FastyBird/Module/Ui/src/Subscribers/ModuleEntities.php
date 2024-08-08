@@ -99,7 +99,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity, self::ACTION_CREATED);
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -137,7 +137,7 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity, self::ACTION_UPDATED);
+		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
@@ -163,7 +163,7 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
 
-		$this->cleanCache($entity, self::ACTION_DELETED);
+		$this->cleanCache($entity);
 	}
 
 	public function enableAsync(): void
@@ -176,7 +176,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		$this->useAsync = false;
 	}
 
-	private function cleanCache(Entities\Entity $entity, string $action): void
+	private function cleanCache(Entities\Entity $entity): void
 	{
 		if ($entity instanceof Entities\Dashboards\Dashboard) {
 			$this->configurationBuilderCache->clean([

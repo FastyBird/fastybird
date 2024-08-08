@@ -119,7 +119,7 @@ final class Exchange extends Console\Command\Command
 				$exchangeFactory->create();
 			}
 
-			$this->consumer->enable(Consumers\State::class);
+			$this->consumer->enable(Consumers\StatesActions::class);
 
 			$this->eventLoop->addSignal(SIGTERM, function (): void {
 				$this->terminate();

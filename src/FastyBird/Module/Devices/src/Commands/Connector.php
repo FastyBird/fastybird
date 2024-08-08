@@ -21,13 +21,10 @@ use Doctrine\DBAL;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
-use FastyBird\Module\Devices\Consumers;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -101,7 +98,6 @@ class Connector extends Console\Command\Command
 		private readonly Devices\Logger $logger,
 		private readonly ApplicationHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly ExchangeConsumers\Container $consumer,
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
@@ -228,7 +224,6 @@ class Connector extends Console\Command\Command
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws ExchangeExceptions\InvalidArgument
 	 */
 	private function prepare(
 		Style\SymfonyStyle $io,
@@ -269,9 +264,6 @@ class Connector extends Console\Command\Command
 		}
 
 		$this->dispatcher?->dispatch(new Events\ConnectorStartup($connector));
-
-		$this->consumer->enable(Consumers\ModuleEntities::class);
-		$this->consumer->enable(Consumers\StateEntities::class);
 
 		$service = $this->serviceFactory->create($connector);
 

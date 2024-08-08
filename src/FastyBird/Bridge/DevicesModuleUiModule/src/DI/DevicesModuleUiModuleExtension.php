@@ -133,7 +133,7 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 				$this->prefix('exchange.consumer.stateEntities'),
 				new DI\Definitions\ServiceDefinition(),
 			)
-				->setType(Consumers\StateEntities::class)
+				->setType(Consumers\SocketsBridge::class)
 				->setArguments([
 					'logger' => $logger,
 				])
@@ -198,7 +198,7 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 					[
 						'@self',
 						$consumerService,
-						Consumers\StateEntities::class,
+						Consumers\SocketsBridge::class,
 					],
 				);
 

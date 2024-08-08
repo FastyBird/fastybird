@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * State.php
+ * StatesActions.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -38,17 +38,17 @@ use function in_array;
 use function React\Async\await;
 
 /**
- * States messages subscriber
+ * States actions messages subscriber
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class State implements ExchangeConsumers\Consumer
+final class StatesActions implements ExchangeConsumers\Consumer
 {
 
-	private const PROPERTIES_STATES_ACTIONS_ROUTING_KEYS = [
+	private const CONSUMER_ROUTING_KEYS = [
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY,
@@ -85,7 +85,7 @@ final class State implements ExchangeConsumers\Consumer
 			return;
 		}
 
-		if (in_array($routingKey, self::PROPERTIES_STATES_ACTIONS_ROUTING_KEYS, true)) {
+		if (in_array($routingKey, self::CONSUMER_ROUTING_KEYS, true)) {
 			$this->handlePropertyStateAction($document, $source, $routingKey);
 		}
 	}
