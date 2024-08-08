@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Sockets.php
+ * SocketsBridge.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -26,14 +26,14 @@ use Nette\Utils;
 use Throwable;
 
 /**
- * Exchange consumer
+ * Exchange to sockets bridge consumer
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final readonly class Sockets implements ExchangeConsumer\Consumer
+final readonly class SocketsBridge implements ExchangeConsumer\Consumer
 {
 
 	public function __construct(

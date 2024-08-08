@@ -811,6 +811,10 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							}
 						}
 
+						$this->cache->clean([
+							Caching\Cache::Tags => [$property->getId()->toString()],
+						]);
+
 						$readValue = $this->convertStoredState($property, null, $result, true);
 						$getValue = $this->convertStoredState($property, null, $result, false);
 

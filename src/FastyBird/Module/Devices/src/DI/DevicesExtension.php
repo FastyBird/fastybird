@@ -554,8 +554,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setArguments([
 				'configurationBuilderCache' => $configurationBuilderCache,
 				'configurationRepositoryCache' => $configurationRepositoryCache,
-				'stateCache' => $stateCache,
-				'stateStorageCache' => $stateStorageCache,
 			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
@@ -937,35 +935,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition(
-			$this->prefix('exchange.consumer.states'),
+			$this->prefix('exchange.consumer.statesActions'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Consumers\State::class)
+			->setType(Consumers\StatesActions::class)
 			->setArguments([
 				'logger' => $logger,
-			])
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-
-		$builder->addDefinition(
-			$this->prefix('exchange.consumer.moduleEntities'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\ModuleEntities::class)
-			->setArguments([
-				'configurationBuilderCache' => $configurationBuilderCache,
-				'configurationRepositoryCache' => $configurationRepositoryCache,
-				'stateCache' => $stateCache,
-			])
-			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
-
-		$builder->addDefinition(
-			$this->prefix('exchange.consumer.stateEntities'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Consumers\StateEntities::class)
-			->setArguments([
-				'stateCache' => $stateCache,
-				'stateStorageCache' => $stateStorageCache,
 			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
@@ -974,10 +949,10 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
 		) {
 			$builder->addDefinition(
-				$this->prefix('exchange.consumer.sockets'),
+				$this->prefix('exchange.consumer.socketsBridge'),
 				new DI\Definitions\ServiceDefinition(),
 			)
-				->setType(Consumers\Sockets::class)
+				->setType(Consumers\SocketsBridge::class)
 				->setArguments([
 					'logger' => $logger,
 				])
@@ -1154,7 +1129,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 					[
 						'@self',
 						$consumerService,
-						Consumers\Sockets::class,
+						Consumers\SocketsBridge::class,
 					],
 				);
 

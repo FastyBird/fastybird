@@ -261,10 +261,7 @@ class Thermostat implements VirtualDrivers\Driver
 					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 
-				if (
-					!$state instanceof DevicesDocuments\States\Channels\Properties\Property
-					|| !$state->isValid()
-				) {
+				if (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 					continue;
 				}
 
@@ -288,7 +285,6 @@ class Thermostat implements VirtualDrivers\Driver
 
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
-				&& $state->isValid()
 				&& Types\Preset::tryFrom(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null
@@ -313,7 +309,6 @@ class Thermostat implements VirtualDrivers\Driver
 
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
-				&& $state->isValid()
 				&& Types\HvacMode::tryFrom(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				) !== null

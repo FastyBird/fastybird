@@ -227,6 +227,18 @@ class Devices
 									],
 								],
 							);
+
+							$this->queue->append(
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector(),
+										'device' => $device->getId(),
+										'state' => DevicesTypes\ConnectionState::CONNECTED,
+										'source' => MetadataTypes\Sources\Connector::VIRTUAL,
+									],
+								),
+							);
 						})
 						->catch(function (Throwable $ex) use ($device): void {
 							$this->logger->error(
@@ -250,7 +262,7 @@ class Devices
 									[
 										'connector' => $device->getConnector(),
 										'device' => $device->getId(),
-										'state' => DevicesTypes\ConnectionState::ALERT->value,
+										'state' => DevicesTypes\ConnectionState::ALERT,
 										'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 									],
 								),
@@ -264,7 +276,7 @@ class Devices
 							[
 								'connector' => $device->getConnector(),
 								'device' => $device->getId(),
-								'state' => DevicesTypes\ConnectionState::DISCONNECTED->value,
+								'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								'source' => MetadataTypes\Sources\Connector::VIRTUAL,
 							],
 						),
@@ -304,18 +316,6 @@ class Devices
 		$service->process()
 			->then(function () use ($device): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
-
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'state' => DevicesTypes\ConnectionState::CONNECTED,
-							'source' => MetadataTypes\Sources\Connector::VIRTUAL,
-						],
-					),
-				);
 			})
 			->catch(function (Throwable $ex) use ($device, $service): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = false;

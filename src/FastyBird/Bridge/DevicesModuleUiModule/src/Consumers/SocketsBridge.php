@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * StateEntities.php
+ * SocketsBridge.php
  *
  * @license        More in license.md
  * @copyright      https://www.fastybird.com
@@ -36,17 +36,17 @@ use function array_merge;
 use function in_array;
 
 /**
- * State entities subscriber
+ * Exchange to sockets bridge consumer
  *
  * @package        FastyBird:DevicesModuleUiModuleBridge!
  * @subpackage     Consumers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StateEntities implements ExchangeConsumers\Consumer
+final class SocketsBridge implements ExchangeConsumers\Consumer
 {
 
-	private const PROPERTIES_STATES_ROUTING_KEYS = [
+	private const CONSUMER_ROUTING_KEYS = [
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_REPORTED_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_CREATED_ROUTING_KEY,
 		Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_STATE_DOCUMENT_UPDATED_ROUTING_KEY,
@@ -82,7 +82,7 @@ final class StateEntities implements ExchangeConsumers\Consumer
 	): void
 	{
 		if (
-			!in_array($routingKey, self::PROPERTIES_STATES_ROUTING_KEYS, true)
+			!in_array($routingKey, self::CONSUMER_ROUTING_KEYS, true)
 			|| (
 				!$document instanceof DevicesDocuments\States\Connectors\Properties\Property
 				&& !$document instanceof DevicesDocuments\States\Devices\Properties\Property

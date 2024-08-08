@@ -97,7 +97,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->cleanCache($event->getProperty());
 
-		$this->publishEntity(
+		$this->publishDocument(
 			$this->useAsync,
 			$event->getSource(),
 			$event->getProperty(),
@@ -124,7 +124,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	{
 		$this->cleanCache($event->getProperty());
 
-		$this->publishEntity(
+		$this->publishDocument(
 			$this->useAsync,
 			$event->getSource(),
 			$event->getProperty(),
@@ -168,7 +168,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
-	private function publishEntity(
+	private function publishDocument(
 		bool $async,
 		MetadataTypes\Sources\Source $source,
 		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,

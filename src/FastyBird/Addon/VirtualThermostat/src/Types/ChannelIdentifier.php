@@ -30,6 +30,8 @@ enum ChannelIdentifier: string
 
 	case STATE = 'state';
 
+	case PRESET_AUTO = 'preset_auto';
+
 	case PRESET_MANUAL = 'preset_manual';
 
 	case PRESET_AWAY = 'preset_away';
