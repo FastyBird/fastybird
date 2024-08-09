@@ -57,6 +57,7 @@
     "phpstan/phpstan-strict-rules": "^1.4",
     "phpunit/phpunit": "^10.0",
     "staabm/annotate-pull-request-from-checkstyle": "^1.8",
+    "symfony/event-dispatcher": "^7.0",
     "tracy/tracy": "^2.9"
   },
   "autoload": {

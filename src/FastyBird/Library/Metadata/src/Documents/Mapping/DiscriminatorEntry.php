@@ -29,7 +29,7 @@ use Attribute;
 final readonly class DiscriminatorEntry implements MappingAttribute
 {
 
-	public function __construct(public string $name)
+	public function __construct(public readonly string $name)
 	{
 	}
 
