@@ -1,41 +1,48 @@
 <?php declare(strict_types = 1);
 
 /**
- * DiscriminatorMap.php
+ * PostLoad.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Documents
+ * @subpackage     Events
  * @since          1.0.0
  *
- * @date           10.02.24
+ * @date           09.08.24
  */
 
-namespace FastyBird\Library\Metadata\Documents\Mapping;
+namespace FastyBird\Library\Metadata\Events;
 
-use Attribute;
 use FastyBird\Library\Metadata\Documents;
+use Symfony\Contracts\EventDispatcher;
 
 /**
- * Document discriminator map definition
+ * Event triggered after document is created
  *
  * @template T of Documents\Document
  *
  * @package        FastyBird:MetadataLibrary!
- * @subpackage     Documents
+ * @subpackage     Events
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[Attribute(Attribute::TARGET_CLASS)]
-final readonly class DiscriminatorMap implements MappingAttribute
+class PostLoad extends EventDispatcher\Event
 {
 
 	/**
-	 * @param array<int|string, class-string<T>> $value
+	 * @param T $document
 	 */
-	public function __construct(public readonly array $value)
+	public function __construct(private readonly Documents\Document $document)
 	{
+	}
+
+	/**
+	 * @return T
+	 */
+	public function getDocument(): Documents\Document
+	{
+		return $this->document;
 	}
 
 }

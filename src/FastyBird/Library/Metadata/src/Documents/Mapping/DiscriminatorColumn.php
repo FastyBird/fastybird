@@ -29,7 +29,7 @@ use Attribute;
 final readonly class DiscriminatorColumn implements MappingAttribute
 {
 
-	public function __construct(public string $name, public string|null $type = null)
+	public function __construct(public readonly string $name, public string|null $type = null)
 	{
 	}
 

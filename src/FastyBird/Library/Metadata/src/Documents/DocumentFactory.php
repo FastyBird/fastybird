@@ -16,9 +16,11 @@
 namespace FastyBird\Library\Metadata\Documents;
 
 use FastyBird\Library\Metadata\Documents;
+use FastyBird\Library\Metadata\Events;
 use FastyBird\Library\Metadata\Exceptions;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\EventDispatcher;
 use function array_key_exists;
 use function assert;
 use function is_int;
@@ -38,8 +40,9 @@ final readonly class DocumentFactory
 {
 
 	public function __construct(
-		private Mapping\ClassMetadataFactory $classMetadataFactory,
-		private ObjectMapper\Processing\Processor $documentMapper,
+		private readonly Mapping\ClassMetadataFactory $classMetadataFactory,
+		private readonly ObjectMapper\Processing\Processor $documentMapper,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 	}
@@ -47,7 +50,7 @@ final readonly class DocumentFactory
 	/**
 	 * @template T of Documents\Document
 	 *
-	 * @param class-string<T> $document
+	 * @param class-string<T> $documentClass
 	 * @param array<string, mixed>|string|object $data
 	 *
 	 * @return T
@@ -57,7 +60,7 @@ final readonly class DocumentFactory
 	 * @throws Exceptions\MalformedInput
 	 * @throws Exceptions\Mapping
 	 */
-	public function create(string $document, array|string|object $data): Documents\Document
+	public function create(string $documentClass, array|string|object $data): Documents\Document
 	{
 		if (is_string($data)) {
 			try {
@@ -77,7 +80,7 @@ final readonly class DocumentFactory
 			}
 		}
 
-		$metadata = $this->classMetadataFactory->getMetadataFor($document);
+		$metadata = $this->classMetadataFactory->getMetadataFor($documentClass);
 
 		if (!$metadata->isInheritanceTypeNone()) {
 			$discriminatorColumnSettings = $metadata->getDiscriminatorColumn();
@@ -116,7 +119,7 @@ final readonly class DocumentFactory
 			}
 
 			if ($metadata->isRootDocument() || $metadata->isAbstract()) {
-				$document = $discriminatorMap[$type];
+				$documentClass = $discriminatorMap[$type];
 			} elseif ($metadata->getDiscriminatorValue() !== $type) {
 				throw new Exceptions\InvalidArgument(sprintf(
 					'Provided document class is different than discriminator value: "%s"',
@@ -129,7 +132,15 @@ final readonly class DocumentFactory
 			$options = new ObjectMapper\Processing\Options();
 			$options->setAllowUnknownFields();
 
-			return $this->documentMapper->process($data, $document, $options);
+			$preLoadEvent = new Events\PreLoad($data, $documentClass);
+			$this->dispatcher?->dispatch($preLoadEvent);
+
+			$document = $this->documentMapper->process($preLoadEvent->getData(), $documentClass, $options);
+
+			$postLoadEvent = new Events\PostLoad($document);
+			$this->dispatcher?->dispatch($postLoadEvent);
+
+			return $postLoadEvent->getDocument();
 		} catch (ObjectMapper\Exception\InvalidData $ex) {
 			$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
 				new ObjectMapper\Printers\TypeToStringConverter(),

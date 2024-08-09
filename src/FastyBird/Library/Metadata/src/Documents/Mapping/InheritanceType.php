@@ -29,7 +29,7 @@ use Attribute;
 final readonly class InheritanceType implements MappingAttribute
 {
 
-	public function __construct(public string $type)
+	public function __construct(public readonly string $type)
 	{
 	}
 

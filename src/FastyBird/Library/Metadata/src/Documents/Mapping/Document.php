@@ -32,7 +32,7 @@ final readonly class Document implements MappingAttribute
 	/**
 	 * @param class-string|null $entity
 	 */
-	public function __construct(public string|null $entity = null)
+	public function __construct(public readonly string|null $entity = null)
 	{
 	}
 
