@@ -1,0 +1,15 @@
+{
+  "data" : {
+    "id" : "764937a7-8565-472e-8e12-fe97cd55a377",
+    "type": "com.fastybird.devices-module-ui-module-bridge/data-source/channel-property",
+    "attributes" : {},
+    "relationships" : {
+      "property": {
+        "data": {
+          "id": "24c436f4-a2e4-4d2b-b910-1a3ff785b784",
+          "type": "com.fastybird.devices-module/property/channel/dynamic"
+        }
+      }
+    }
+  }
+}

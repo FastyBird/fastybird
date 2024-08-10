@@ -18,6 +18,8 @@ namespace FastyBird\Module\Ui\Entities\Widgets\DataSources;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Ui\Schemas;
+use IPub\DoctrineCrud;
 
 #[ORM\Entity]
 #[ORM\Table(
@@ -42,6 +44,20 @@ class Generic extends DataSource
 	public function getSource(): MetadataTypes\Sources\Module
 	{
 		return MetadataTypes\Sources\Module::UI;
+	}
+
+	public function hasRelation(string $relation): bool
+	{
+		return $relation === Schemas\Widgets\DataSources\Generic::RELATIONSHIPS_WIDGET;
+	}
+
+	public function getRelation(string $relation): DoctrineCrud\Entities\IEntity|null
+	{
+		if ($relation === Schemas\Widgets\DataSources\Generic::RELATIONSHIPS_WIDGET) {
+			return $this->getWidget();
+		}
+
+		return null;
 	}
 
 }

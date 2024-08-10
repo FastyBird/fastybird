@@ -20,6 +20,7 @@
                 <element key="src" value="FastyBird\Bridge\DevicesModuleUiModule"/>
                 <element key="tests/cases/unit" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Cases\Unit"/>
                 <element key="tests/tools" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Tools"/>
+                <element key="tests/fixtures/dummy" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy"/>
             </property>
         </properties>
     </rule>

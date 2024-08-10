@@ -39,7 +39,26 @@ services:
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
 
+    -
+        factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyConnectorFactory
+        tags: [connector_type: dummy]
+
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyConnectorSchema}
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyConnectorHydrator}
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyDeviceSchema}
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyDeviceHydrator}
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyChannelSchema}
+    - {factory: FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy\DummyChannelHydrator}
+
     cache.storage: Nette\Caching\Storages\DevNullStorage
+
+decorator:
+    Doctrine\Persistence\Mapping\Driver\MappingDriverChain:
+        setup:
+            - addDriver(@nettrineOrmAttributes.attributeDriver, 'FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy')
+    Doctrine\ORM\Mapping\Driver\AttributeDriver:
+        setup:
+            - addPaths([%appDir%/fixtures/dummy])
 
 contributteTranslation:
     locales:

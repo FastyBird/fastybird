@@ -16,15 +16,41 @@
 namespace FastyBird\Bridge\DevicesModuleUiModule\Entities\Widgets\DataSources;
 
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Bridge\DevicesModuleUiModule\Schemas;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Ui\Entities as UiEntities;
+use IPub\DoctrineCrud;
 use function array_merge;
+use function in_array;
 
 #[ORM\MappedSuperclass]
 abstract class Property extends UiEntities\Widgets\DataSources\DataSource
 {
 
 	abstract public function getProperty(): DevicesEntities\Property;
+
+	public function hasRelation(string $relation): bool
+	{
+		return in_array(
+			$relation,
+			[
+				Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_WIDGET,
+				Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_PROPERTY,
+			],
+			true,
+		);
+	}
+
+	public function getRelation(string $relation): DoctrineCrud\Entities\IEntity|null
+	{
+		if ($relation === Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_WIDGET) {
+			return $this->getWidget();
+		} elseif ($relation === Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_PROPERTY) {
+			return $this->getProperty();
+		}
+
+		return null;
+	}
 
 	/**
 	 * {@inheritDoc}

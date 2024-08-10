@@ -25,7 +25,7 @@ use function array_merge;
 
 #[ORM\Entity]
 #[ORM\Table(
-	name: 'fb_devices_module_ui_module_bridge_widgets_data_sources_devices_properties',
+	name: 'fb_devices_module_ui_module_bridge_devices_data_sources',
 	options: [
 		'collate' => 'utf8mb4_general_ci',
 		'charset' => 'utf8mb4',
@@ -39,12 +39,12 @@ class DeviceProperty extends Property
 	public const TYPE = 'device-property';
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\OneToOne(targetEntity: DevicesEntities\Devices\Properties\Property::class, cascade: ['remove'])]
+	#[ORM\OneToOne(targetEntity: DevicesEntities\Devices\Properties\Property::class)]
 	#[ORM\JoinColumn(
 		name: 'data_source_property',
 		referencedColumnName: 'property_id',
 		nullable: false,
-		onDelete: ['CASCADE'],
+		onDelete: 'CASCADE',
 	)]
 	private DevicesEntities\Devices\Properties\Property $property;
 

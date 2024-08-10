@@ -46,6 +46,7 @@ final class ChannelProperty extends UiHydrators\Widgets\DataSources\DataSource
 	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_PROPERTY,
+		Schemas\Widgets\DataSources\ChannelProperty::RELATIONSHIPS_WIDGET,
 	];
 
 	public function __construct(

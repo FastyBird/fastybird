@@ -15,6 +15,7 @@
 
 namespace FastyBird\Bridge\DevicesModuleUiModule\DI;
 
+use Doctrine\Persistence;
 use FastyBird\Bridge\DevicesModuleUiModule;
 use FastyBird\Bridge\DevicesModuleUiModule\Consumers;
 use FastyBird\Bridge\DevicesModuleUiModule\Hydrators;
@@ -28,6 +29,7 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
+use Nettrine\ORM as NettrineORM;
 use stdClass;
 use function array_keys;
 use function array_pop;
@@ -166,6 +168,37 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
+
+		/**
+		 * DOCTRINE ENTITIES
+		 */
+
+		$services = $builder->findByTag(NettrineORM\DI\OrmAttributesExtension::DRIVER_TAG);
+
+		if ($services !== []) {
+			$services = array_keys($services);
+			$ormAttributeDriverServiceName = array_pop($services);
+
+			$ormAttributeDriverService = $builder->getDefinition($ormAttributeDriverServiceName);
+
+			if ($ormAttributeDriverService instanceof DI\Definitions\ServiceDefinition) {
+				$ormAttributeDriverService->addSetup(
+					'addPaths',
+					[[__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Entities']],
+				);
+
+				$ormAttributeDriverChainService = $builder->getDefinitionByType(
+					Persistence\Mapping\Driver\MappingDriverChain::class,
+				);
+
+				if ($ormAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
+					$ormAttributeDriverChainService->addSetup('addDriver', [
+						$ormAttributeDriverService,
+						'FastyBird\Bridge\DevicesModuleUiModule\Entities',
+					]);
+				}
+			}
+		}
 
 		/**
 		 * APPLICATION DOCUMENTS
