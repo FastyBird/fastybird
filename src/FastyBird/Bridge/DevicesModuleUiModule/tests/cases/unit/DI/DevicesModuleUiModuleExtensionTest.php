@@ -6,6 +6,7 @@ use Error;
 use FastyBird\Bridge\DevicesModuleUiModule\Exceptions;
 use FastyBird\Bridge\DevicesModuleUiModule\Hydrators;
 use FastyBird\Bridge\DevicesModuleUiModule\Schemas;
+use FastyBird\Bridge\DevicesModuleUiModule\Subscribers;
 use FastyBird\Bridge\DevicesModuleUiModule\Tests;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
@@ -27,6 +28,11 @@ final class DevicesModuleUiModuleExtensionTest extends Tests\Cases\Unit\DbTestCa
 	 */
 	public function testServicesRegistration(): void
 	{
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\DocumentsMapper::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\ActionCommand::class, false));
+
 		self::assertNotNull(
 			$this->getContainer()->getByType(Schemas\Widgets\DataSources\ConnectorProperty::class, false),
 		);

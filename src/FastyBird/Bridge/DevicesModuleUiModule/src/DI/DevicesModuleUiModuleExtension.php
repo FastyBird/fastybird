@@ -19,6 +19,7 @@ use FastyBird\Bridge\DevicesModuleUiModule;
 use FastyBird\Bridge\DevicesModuleUiModule\Consumers;
 use FastyBird\Bridge\DevicesModuleUiModule\Hydrators;
 use FastyBird\Bridge\DevicesModuleUiModule\Schemas;
+use FastyBird\Bridge\DevicesModuleUiModule\Subscribers;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\DI as ExchangeDI;
@@ -76,6 +77,22 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 		$logger = $builder->addDefinition($this->prefix('logger'), new DI\Definitions\ServiceDefinition())
 			->setType(DevicesModuleUiModule\Logger::class)
 			->setAutowired(false);
+
+		/**
+		 * SUBSCRIBERS
+		 */
+
+		$builder->addDefinition($this->prefix('subscribers.moduleEntities'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\ModuleEntities::class);
+
+		$builder->addDefinition($this->prefix('subscribers.stateEntities'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\StateEntities::class);
+
+		$builder->addDefinition($this->prefix('subscribers.documentsMapper'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\DocumentsMapper::class);
+
+		$builder->addDefinition($this->prefix('subscribers.dataSourceAction'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\ActionCommand::class);
 
 		/**
 		 * JSON-API SCHEMAS

@@ -33,7 +33,7 @@ use function array_merge;
 	],
 )]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class ConnectorProperty extends UiEntities\Widgets\DataSources\DataSource
+class ConnectorProperty extends Property
 {
 
 	public const TYPE = 'connector-property';
@@ -86,7 +86,6 @@ class ConnectorProperty extends UiEntities\Widgets\DataSources\DataSource
 	{
 		return array_merge(parent::toArray(), [
 			'connector' => $this->getConnector()->getId()->toString(),
-			'property' => $this->getProperty()->getId()->toString(),
 		]);
 	}
 

@@ -33,7 +33,7 @@ use function array_merge;
 	],
 )]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class ChannelProperty extends UiEntities\Widgets\DataSources\DataSource
+class ChannelProperty extends Property
 {
 
 	public const TYPE = 'channel-property';
@@ -86,7 +86,6 @@ class ChannelProperty extends UiEntities\Widgets\DataSources\DataSource
 	{
 		return array_merge(parent::toArray(), [
 			'channel' => $this->getChannel()->getId()->toString(),
-			'property' => $this->getProperty()->getId()->toString(),
 		]);
 	}
 

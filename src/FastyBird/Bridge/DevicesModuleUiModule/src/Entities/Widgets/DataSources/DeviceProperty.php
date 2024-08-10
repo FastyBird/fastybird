@@ -33,7 +33,7 @@ use function array_merge;
 	],
 )]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class DeviceProperty extends UiEntities\Widgets\DataSources\DataSource
+class DeviceProperty extends Property
 {
 
 	public const TYPE = 'device-property';
@@ -86,7 +86,6 @@ class DeviceProperty extends UiEntities\Widgets\DataSources\DataSource
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->getId()->toString(),
-			'property' => $this->getProperty()->getId()->toString(),
 		]);
 	}
 

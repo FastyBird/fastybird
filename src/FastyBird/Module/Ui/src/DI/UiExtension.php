@@ -18,11 +18,15 @@ namespace FastyBird\Module\Ui\DI;
 use Contributte\Translation;
 use Doctrine\Persistence;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Library\Exchange\DI as ExchangeDI;
 use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
+use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Commands;
+use FastyBird\Module\Ui\Consumers;
 use FastyBird\Module\Ui\Controllers;
 use FastyBird\Module\Ui\Hydrators;
 use FastyBird\Module\Ui\Middleware;
@@ -32,7 +36,7 @@ use FastyBird\Module\Ui\Schemas;
 use FastyBird\Module\Ui\Subscribers;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Bootstrap;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -94,7 +98,7 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			$this->prefix('caching.configuration.repository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::UI->value . '_configuration_repository',
 			])
@@ -104,11 +108,21 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			$this->prefix('caching.configuration.builder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::UI->value . '_configuration_builder',
 			])
 			->setAutowired(false);
+
+		$builder->addDefinition(
+			$this->prefix('caching.container'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Container::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			]);
 
 		/**
 		 * ROUTE MIDDLEWARES & ROUTING
@@ -208,75 +222,50 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			$this->prefix('models.configuration.builder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Builder::class)
-			->setArguments([
-				'cache' => $configurationBuilderCache,
-			]);
+			->setType(Models\Configuration\Builder::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.dashboards'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Dashboards\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Dashboards\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.tabs'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Dashboards\Tabs\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Dashboards\Tabs\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.groups'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Groups\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Groups\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.widgets'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Widgets\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Widgets\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.dataSources'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Widgets\DataSources\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Widgets\DataSources\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.displays'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Widgets\Displays\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Widgets\Displays\Repository::class);
 
 		/**
 		 * SUBSCRIBERS
 		 */
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ModuleEntities::class)
-			->setArguments([
-				'configurationBuilderCache' => $configurationBuilderCache,
-				'configurationRepositoryCache' => $configurationRepositoryCache,
-			]);
+			->setType(Subscribers\ModuleEntities::class);
 
 		$builder->addDefinition($this->prefix('subscribers.dashboardEntity'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\DashboardEntity::class);
@@ -451,6 +440,25 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 			->setArguments([
 				'logger' => $logger,
 			]);
+
+		/**
+		 * COMMUNICATION EXCHANGE
+		 */
+
+		if (
+			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
+			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
+		) {
+			$builder->addDefinition(
+				$this->prefix('exchange.consumer.socketsBridge'),
+				new DI\Definitions\ServiceDefinition(),
+			)
+				->setType(Consumers\SocketsBridge::class)
+				->setArguments([
+					'logger' => $logger,
+				])
+				->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+		}
 	}
 
 	/**
@@ -554,6 +562,21 @@ class UiExtension extends DI\CompilerExtension implements Translation\DI\Transla
 						[
 							'UiModule' => ['FastyBird\\Module\\Ui\\Controllers', '*', '*V1'],
 						],
+					],
+				);
+
+				$consumerService = $builder->getDefinitionByType(ExchangeConsumers\Container::class);
+				assert($consumerService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsServerService = $builder->getDefinitionByType('IPub\WebSockets\Server\Server');
+				assert($wsServerService instanceof DI\Definitions\ServiceDefinition);
+
+				$wsServerService->addSetup(
+					'?->onCreate[] = function() {?->enable(?);}',
+					[
+						'@self',
+						$consumerService,
+						Consumers\SocketsBridge::class,
 					],
 				);
 

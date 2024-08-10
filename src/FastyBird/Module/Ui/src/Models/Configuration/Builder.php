@@ -16,11 +16,12 @@
 namespace FastyBird\Module\Ui\Models\Configuration;
 
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Types;
 use Flow\JSONPath;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Throwable;
 use function assert;
 
@@ -32,17 +33,17 @@ use function assert;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Builder
+final readonly class Builder
 {
 
 	public function __construct(
-		private readonly Models\Entities\Dashboards\Repository $dashboardsRepository,
-		private readonly Models\Entities\Dashboards\Tabs\Repository $dashboardsTabsRepository,
-		private readonly Models\Entities\Groups\Repository $groupsRepository,
-		private readonly Models\Entities\Widgets\Repository $widgetsRepository,
-		private readonly Models\Entities\Widgets\DataSources\Repository $widgetsDataSourcesRepository,
-		private readonly Models\Entities\Widgets\Displays\Repository $widgetsDisplayRepository,
-		private readonly Caching\Cache $cache,
+		private Caching\Container $moduleCaching,
+		private Models\Entities\Dashboards\Repository $dashboardsRepository,
+		private Models\Entities\Dashboards\Tabs\Repository $dashboardsTabsRepository,
+		private Models\Entities\Groups\Repository $groupsRepository,
+		private Models\Entities\Widgets\Repository $widgetsRepository,
+		private Models\Entities\Widgets\DataSources\Repository $widgetsDataSourcesRepository,
+		private Models\Entities\Widgets\Displays\Repository $widgetsDisplayRepository,
 	)
 	{
 	}
@@ -54,14 +55,14 @@ final class Builder
 	{
 		try {
 			if ($force) {
-				$this->cache->remove($type->value);
+				$this->moduleCaching->getConfigurationBuilderCache()->remove($type->value);
 			}
 
-			$data = $this->cache->load(
+			$data = $this->moduleCaching->getConfigurationBuilderCache()->load(
 				$type->value,
 				fn (): JSONPath\JSONPath => new JSONPath\JSONPath($this->build($type)),
 				[
-					Caching\Cache::Tags => [$type->value],
+					NetteCaching\Cache::Tags => [$type->value],
 				],
 			);
 			assert($data instanceof JSONPath\JSONPath);

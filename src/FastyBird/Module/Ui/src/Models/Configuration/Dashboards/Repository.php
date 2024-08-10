@@ -16,12 +16,13 @@
 namespace FastyBird\Module\Ui\Models\Configuration\Dashboards;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Queries;
 use FastyBird\Module\Ui\Types;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 use Throwable;
 use function array_map;
@@ -39,8 +40,8 @@ final class Repository extends Models\Configuration\Repository
 {
 
 	public function __construct(
+		private readonly Caching\Container $moduleCaching,
 		private readonly Models\Configuration\Builder $builder,
-		private readonly Caching\Cache $cache,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
@@ -70,7 +71,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var Documents\Dashboards\Dashboard|false $document */
-			$document = $this->cache->load(
+			$document = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyOne($queryObject),
 				function (&$dependencies) use ($queryObject): Documents\Dashboards\Dashboard|false {
 					$space = $this->builder
@@ -88,13 +89,13 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => [$document->getId()->toString()],
+						NetteCaching\Cache::Tags => [$document->getId()->toString()],
 					];
 
 					return $document;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::DASHBOARDS->value,
 					],
 				],
@@ -123,7 +124,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var array<Documents\Dashboards\Dashboard> $documents */
-			$documents = $this->cache->load(
+			$documents = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyAll($queryObject),
 				function (&$dependencies) use ($queryObject): array {
 					$space = $this->builder
@@ -144,7 +145,7 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => array_map(
+						NetteCaching\Cache::Tags => array_map(
 							static fn (Documents\Dashboards\Dashboard $document): string => $document->getId()->toString(),
 							$documents,
 						),
@@ -153,7 +154,7 @@ final class Repository extends Models\Configuration\Repository
 					return $documents;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::DASHBOARDS->value,
 					],
 				],
