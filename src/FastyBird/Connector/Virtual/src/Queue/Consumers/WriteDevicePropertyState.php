@@ -248,6 +248,10 @@ final class WriteDevicePropertyState implements Queue\Consumer
 		try {
 			$driver = $this->driversManager->getDriver($device);
 
+			if (!$driver->isConnected()) {
+				return true;
+			}
+
 			$result = $property instanceof DevicesDocuments\Devices\Properties\Mapped
 				? $driver->notifyState($property, $valueToWrite)
 				: $driver->writeState($property, $valueToWrite);

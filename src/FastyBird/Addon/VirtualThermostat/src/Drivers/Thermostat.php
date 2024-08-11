@@ -286,7 +286,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\Preset::tryFrom(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
 				) !== null
 			) {
 				$this->presetMode = Types\Preset::from(
@@ -310,7 +310,7 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\HvacMode::tryFrom(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
+					MetadataUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
 				) !== null
 			) {
 				$this->hvacMode = Types\HvacMode::from(
@@ -385,6 +385,10 @@ class Thermostat implements VirtualDrivers\Driver
 	 */
 	public function process(): Promise\PromiseInterface
 	{
+		if ($this->connected === false) {
+			return Promise\reject(new Exceptions\InvalidState('Thermostat device is not connected'));
+		}
+
 		$this->lastProcessedTime = $this->dateTimeFactory->getNow();
 
 		if ($this->hvacMode === null || $this->presetMode === null) {
@@ -628,7 +632,10 @@ class Thermostat implements VirtualDrivers\Driver
 	{
 		$deferred = new Promise\Deferred();
 
-		if ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+		if ($this->connected === false) {
+			$deferred->reject(new Exceptions\InvalidArgument('Thermostat device is not connected'));
+
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
@@ -784,7 +791,10 @@ class Thermostat implements VirtualDrivers\Driver
 	{
 		$deferred = new Promise\Deferred();
 
-		if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
+		if ($this->connected === false) {
+			$deferred->reject(new Exceptions\InvalidArgument('Thermostat device is not connected'));
+
+		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
 			$findChannelQuery = new VirtualQueries\Configuration\FindChannels();
 			$findChannelQuery->byId($property->getChannel());
 
