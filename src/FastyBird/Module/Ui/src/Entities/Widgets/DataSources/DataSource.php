@@ -19,6 +19,7 @@ use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui\Entities;
+use IPub\DoctrineCrud;
 use IPub\DoctrineTimestampable;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -82,6 +83,10 @@ abstract class DataSource implements Entities\Entity,
 	{
 		return $this->widget;
 	}
+
+	abstract public function hasRelation(string $relation): bool;
+
+	abstract public function getRelation(string $relation): DoctrineCrud\Entities\IEntity|null;
 
 	/**
 	 * {@inheritDoc}

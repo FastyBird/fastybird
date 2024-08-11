@@ -25,7 +25,7 @@ use function array_merge;
 
 #[ORM\Entity]
 #[ORM\Table(
-	name: 'fb_devices_module_ui_module_bridge_widgets_data_sources_connectors_properties',
+	name: 'fb_devices_module_ui_module_bridge_connectors_data_sources',
 	options: [
 		'collate' => 'utf8mb4_general_ci',
 		'charset' => 'utf8mb4',
@@ -33,18 +33,18 @@ use function array_merge;
 	],
 )]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
-class ConnectorProperty extends UiEntities\Widgets\DataSources\DataSource
+class ConnectorProperty extends Property
 {
 
 	public const TYPE = 'connector-property';
 
 	#[IPubDoctrine\Crud(required: true, writable: true)]
-	#[ORM\OneToOne(targetEntity: DevicesEntities\Connectors\Properties\Property::class, cascade: ['remove'])]
+	#[ORM\OneToOne(targetEntity: DevicesEntities\Connectors\Properties\Property::class)]
 	#[ORM\JoinColumn(
 		name: 'data_source_property',
 		referencedColumnName: 'property_id',
 		nullable: false,
-		onDelete: ['CASCADE'],
+		onDelete: 'CASCADE',
 	)]
 	private DevicesEntities\Connectors\Properties\Property $property;
 
@@ -86,7 +86,6 @@ class ConnectorProperty extends UiEntities\Widgets\DataSources\DataSource
 	{
 		return array_merge(parent::toArray(), [
 			'connector' => $this->getConnector()->getId()->toString(),
-			'property' => $this->getProperty()->getId()->toString(),
 		]);
 	}
 

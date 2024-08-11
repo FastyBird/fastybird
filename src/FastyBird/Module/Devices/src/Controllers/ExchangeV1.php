@@ -207,12 +207,12 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		}
 
 		switch ($args['routing_key']) {
+			case Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY:
+			case Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY:
 			case Devices\Constants::MESSAGE_BUS_DEVICE_CONTROL_ACTION_ROUTING_KEY:
 			case Devices\Constants::MESSAGE_BUS_DEVICE_PROPERTY_ACTION_ROUTING_KEY:
 			case Devices\Constants::MESSAGE_BUS_CHANNEL_CONTROL_ACTION_ROUTING_KEY:
 			case Devices\Constants::MESSAGE_BUS_CHANNEL_PROPERTY_ACTION_ROUTING_KEY:
-			case Devices\Constants::MESSAGE_BUS_CONNECTOR_CONTROL_ACTION_ROUTING_KEY:
-			case Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_ACTION_ROUTING_KEY:
 				/** @var array<string, mixed>|null $data */
 				$data = isset($args['data']) && is_array($args['data']) ? $args['data'] : null;
 
@@ -283,7 +283,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 				}
 
-				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 				}
 
@@ -301,7 +301,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 				}
 
-				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 				}
 
@@ -375,7 +375,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 				}
 
-				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 				}
 
@@ -393,7 +393,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 				}
 
-				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 				}
 
@@ -467,7 +467,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getSet()->getActualValue();
 				}
 
-				if ($entity->getSet()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getSet()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getSet()->getExpectedValue();
 				}
 
@@ -485,7 +485,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 					$data[States\Property::ACTUAL_VALUE_FIELD] = $entity->getWrite()->getActualValue();
 				}
 
-				if ($entity->getWrite()->getActualValue() !== Metadata\Constants::VALUE_NOT_SET) {
+				if ($entity->getWrite()->getExpectedValue() !== Metadata\Constants::VALUE_NOT_SET) {
 					$data[States\Property::EXPECTED_VALUE_FIELD] = $entity->getWrite()->getExpectedValue();
 				}
 

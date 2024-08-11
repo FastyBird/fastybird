@@ -34,6 +34,7 @@ use function strlen;
 use function substr;
 use function time;
 use function trim;
+use function var_dump;
 
 abstract class DbTestCase extends TestCase
 {
@@ -192,7 +193,9 @@ abstract class DbTestCase extends TestCase
 			foreach ($schemas as $sql) {
 				try {
 					$db->executeStatement($sql);
-				} catch (DBAL\Exception) {
+				} catch (DBAL\Exception $ex) {
+					var_dump($ex->getMessage());
+
 					throw new RuntimeException('Database schema could not be created');
 				}
 			}

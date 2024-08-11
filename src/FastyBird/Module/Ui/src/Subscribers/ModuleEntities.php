@@ -25,10 +25,11 @@ use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
+use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\Utils;
 use ReflectionClass;
 use function count;
@@ -57,12 +58,11 @@ final class ModuleEntities implements Common\EventSubscriber
 	private bool $useAsync = false;
 
 	public function __construct(
+		private readonly Caching\Container $moduleCaching,
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
-		private readonly Caching\Cache $configurationBuilderCache,
-		private readonly Caching\Cache $configurationRepositoryCache,
 	)
 	{
 	}
@@ -179,67 +179,67 @@ final class ModuleEntities implements Common\EventSubscriber
 	private function cleanCache(Entities\Entity $entity): void
 	{
 		if ($entity instanceof Entities\Dashboards\Dashboard) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DASHBOARDS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::DASHBOARDS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::DASHBOARDS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 		} elseif ($entity instanceof Entities\Dashboards\Tabs\Tab) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DASHBOARDS_TABS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::DASHBOARDS_TABS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::DASHBOARDS_TABS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 		} elseif ($entity instanceof Entities\Groups\Group) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::GROUPS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::GROUPS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::GROUPS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 		} elseif ($entity instanceof Entities\Widgets\Widget) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::WIDGETS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::WIDGETS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::WIDGETS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 		} elseif ($entity instanceof Entities\Widgets\DataSources\DataSource) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::WIDGETS_DATA_SOURCES->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::WIDGETS_DATA_SOURCES->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::WIDGETS_DATA_SOURCES->value,
 					$entity->getId()->toString(),
 				],
 			]);
 		} elseif ($entity instanceof Entities\Widgets\Displays\Display) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::WIDGETS_DISPLAY->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::WIDGETS_DISPLAY->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::WIDGETS_DISPLAY->value,
 					$entity->getId()->toString(),
 				],

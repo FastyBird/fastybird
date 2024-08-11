@@ -46,6 +46,7 @@ final class DeviceProperty extends UiHydrators\Widgets\DataSources\DataSource
 	/** @var array<string> */
 	protected array $relationships = [
 		Schemas\Widgets\DataSources\DeviceProperty::RELATIONSHIPS_PROPERTY,
+		Schemas\Widgets\DataSources\DeviceProperty::RELATIONSHIPS_WIDGET,
 	];
 
 	public function __construct(

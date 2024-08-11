@@ -176,6 +176,8 @@
             "FastyBird\\Automator\\DevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Automator/DevicesModule/tests/cases/unit",
             "FastyBird\\Automator\\DevicesModule\\Tests\\Tools\\": "src/FastyBird/Automator/DevicesModule/tests/tools",
             "FastyBird\\Bridge\\DevicesModuleUiModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/DevicesModuleUiModule/tests/cases/unit",
+            "FastyBird\\Bridge\\DevicesModuleUiModule\\Tests\\Fixtures\\": "src/FastyBird/Bridge/DevicesModuleUiModule/tests/fixtures",
+            "FastyBird\\Bridge\\DevicesModuleUiModule\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Bridge/DevicesModuleUiModule/tests/fixtures/dummy",
             "FastyBird\\Bridge\\DevicesModuleUiModule\\Tests\\Tools\\": "src/FastyBird/Bridge/DevicesModuleUiModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbPluginDevicesModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbPluginDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools",

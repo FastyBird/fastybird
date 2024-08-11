@@ -27,7 +27,6 @@ use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Queries;
 use FastyBird\Module\Ui\Router;
-use FastyBird\Module\Ui\Schemas;
 use FastyBird\Module\Ui\Utilities;
 use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
@@ -37,6 +36,7 @@ use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use Throwable;
+use function assert;
 use function end;
 use function explode;
 use function preg_match;
@@ -375,8 +375,11 @@ final class DataSourcesV1 extends BaseV1
 
 		$relationEntity = Utils\Strings::lower(strval($request->getAttribute(Router\ApiRoutes::RELATION_ENTITY)));
 
-		if ($relationEntity === Schemas\Widgets\DataSources\DataSource::RELATIONSHIPS_WIDGET) {
-			return $this->buildResponse($request, $response, $dataSource->getWidget());
+		if ($dataSource->hasRelation($relationEntity)) {
+			$entity = $dataSource->getRelation($relationEntity);
+			assert($entity !== null);
+
+			return $this->buildResponse($request, $response, $entity);
 		}
 
 		return parent::readRelationship($request, $response);

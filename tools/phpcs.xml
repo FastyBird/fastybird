@@ -27,6 +27,7 @@
 
                 <element key="src/FastyBird/Bridge/DevicesModuleUiModule/src" value="FastyBird\Bridge\DevicesModuleUiModule"/>
                 <element key="src/FastyBird/Bridge/DevicesModuleUiModule/tests/cases/unit" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Bridge/DevicesModuleUiModule/tests/fixtures/dummy" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Bridge/DevicesModuleUiModule/tests/tools" value="FastyBird\Bridge\DevicesModuleUiModule\Tests\Tools"/>
 
                 <element key="src/FastyBird/Bridge/RedisDbPluginDevicesModule/src" value="FastyBird\Bridge\RedisDbPluginDevicesModule"/>

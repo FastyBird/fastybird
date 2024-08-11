@@ -21,6 +21,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Documents;
+use FastyBird\Module\Ui\Events;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Queries;
@@ -28,6 +29,7 @@ use FastyBird\Module\Ui\Types;
 use IPub\WebSockets;
 use IPub\WebSocketsWAMP;
 use Nette\Utils;
+use Psr\EventDispatcher;
 use Throwable;
 use function array_key_exists;
 use function is_array;
@@ -47,6 +49,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		private readonly Models\Configuration\Widgets\DataSources\Repository $dataSourcesConfigurationRepository,
 		private readonly Ui\Logger $logger,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
 		parent::__construct();
@@ -71,8 +74,6 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		);
 
 		try {
-			// TODO: Add custom data from data sources
-
 			$findDataSources = new Queries\Configuration\FindWidgetDataSources();
 
 			$dataSources = $this->dataSourcesConfigurationRepository->findAllBy($findDataSources);
@@ -170,13 +171,20 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 		if ($entity->getAction() === Types\DataSourceAction::SET) {
 			$dataSource = $this->dataSourcesConfigurationRepository->find($entity->getDataSource());
 
-			// TODO: Handle SET data source
+			if ($dataSource === null) {
+				return;
+			}
+
+			$this->dispatcher?->dispatch(new Events\ActionCommandReceived($entity, $dataSource));
+
 		} elseif ($entity->getAction() === Types\DataSourceAction::GET) {
 			$dataSource = $this->dataSourcesConfigurationRepository->find($entity->getDataSource());
 
 			if ($dataSource === null) {
 				return;
 			}
+
+			$this->dispatcher?->dispatch(new Events\ActionCommandReceived($entity, $dataSource));
 
 			$client->send(Utils\Json::encode([
 				WebSocketsWAMP\Application\Application::MSG_EVENT,

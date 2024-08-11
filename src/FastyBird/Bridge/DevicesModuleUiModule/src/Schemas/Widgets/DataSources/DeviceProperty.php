@@ -19,11 +19,13 @@ use FastyBird\Bridge\DevicesModuleUiModule\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Router as DevicesRouter;
-use FastyBird\Module\Ui\Schemas as UiSchemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use TypeError;
@@ -34,13 +36,13 @@ use function array_merge;
  * Device property data source entity schema
  *
  * @template T of Entities\Widgets\DataSources\DeviceProperty
- * @extends  UiSchemas\Widgets\DataSources\DataSource<T>
+ * @extends  Property<T>
  *
  * @package          FastyBird:DevicesModuleUiModuleBridge!
  * @subpackage       Schemas
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class DeviceProperty extends UiSchemas\Widgets\DataSources\DataSource
+final class DeviceProperty extends Property
 {
 
 	/**
@@ -55,7 +57,8 @@ final class DeviceProperty extends UiSchemas\Widgets\DataSources\DataSource
 	public const RELATIONSHIPS_PROPERTY = 'property';
 
 	public function __construct(
-		private readonly Devices\Models\States\Devices\Repository $propertyStateRepository,
+		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesRepository,
+		private readonly DevicesModels\States\DevicePropertiesManager $devicePropertiesManager,
 		Routing\IRouter $router,
 	)
 	{
@@ -77,10 +80,13 @@ final class DeviceProperty extends UiSchemas\Widgets\DataSources\DataSource
 	 *
 	 * @return iterable<string, mixed>
 	 *
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws DevicesExceptions\NotImplemented
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -94,22 +100,36 @@ final class DeviceProperty extends UiSchemas\Widgets\DataSources\DataSource
 		$attributes = parent::getAttributes($resource, $context);
 
 		if ($resource->getProperty() instanceof DevicesEntities\Devices\Properties\Dynamic) {
-			$state = $this->propertyStateRepository->find($resource->getProperty()->getId());
+			$property = $this->devicesPropertiesRepository->find(
+				$resource->getProperty()->getId(),
+				DevicesDocuments\Devices\Properties\Dynamic::class,
+			);
+
+			$state = $property !== null ? $this->devicePropertiesManager->readState($property) : null;
 
 			return array_merge(
 				(array) $attributes,
 				[
-					'value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
+					'value' => $state !== null && $state->isValid() ? MetadataUtilities\Value::flattenValue(
+						$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
+					) : null,
 				],
 			);
 		} elseif ($resource->getProperty() instanceof DevicesEntities\Devices\Properties\Mapped) {
 			if ($resource->getProperty()->getParent() instanceof DevicesEntities\Devices\Properties\Dynamic) {
-				$state = $this->propertyStateRepository->find($resource->getProperty()->getId());
+				$property = $this->devicesPropertiesRepository->find(
+					$resource->getProperty()->getId(),
+					DevicesDocuments\Devices\Properties\Mapped::class,
+				);
+
+				$state = $property !== null ? $this->devicePropertiesManager->readState($property) : null;
 
 				return array_merge(
 					(array) $attributes,
 					[
-						'value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
+						'value' => $state !== null && $state->isValid() ? MetadataUtilities\Value::flattenValue(
+							$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
+						) : null,
 					],
 				);
 			} else {
@@ -130,27 +150,6 @@ final class DeviceProperty extends UiSchemas\Widgets\DataSources\DataSource
 		}
 
 		return $attributes;
-	}
-
-	/**
-	 * @param T $resource
-	 *
-	 * @return iterable<string, mixed>
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	public function getRelationships(
-		$resource,
-		JsonApi\Contracts\Schema\ContextInterface $context,
-	): iterable
-	{
-		return array_merge((array) parent::getRelationships($resource, $context), [
-			self::RELATIONSHIPS_PROPERTY => [
-				self::RELATIONSHIP_DATA => $resource->getProperty(),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => false,
-			],
-		]);
 	}
 
 	/**

@@ -8,7 +8,7 @@ use Exception;
 use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Models;
@@ -96,7 +96,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),
@@ -220,7 +220,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),
@@ -344,7 +344,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('publish')
 			->with(
 				self::callback(static function ($source): bool {
-					self::assertTrue($source instanceof Metadata\Types\Sources\Module);
+					self::assertTrue($source instanceof MetadataTypes\Sources\Module);
 
 					return true;
 				}),

@@ -19,11 +19,13 @@ use FastyBird\Bridge\DevicesModuleUiModule\Entities;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Router as DevicesRouter;
-use FastyBird\Module\Ui\Schemas as UiSchemas;
 use IPub\SlimRouter\Routing;
 use Neomerx\JsonApi;
 use TypeError;
@@ -34,13 +36,13 @@ use function array_merge;
  * Connector property data source entity schema
  *
  * @template T of Entities\Widgets\DataSources\ConnectorProperty
- * @extends  UiSchemas\Widgets\DataSources\DataSource<T>
+ * @extends  Property<T>
  *
  * @package          FastyBird:DevicesModuleUiModuleBridge!
  * @subpackage       Schemas
  * @author           Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ConnectorProperty extends UiSchemas\Widgets\DataSources\DataSource
+final class ConnectorProperty extends Property
 {
 
 	/**
@@ -55,7 +57,8 @@ final class ConnectorProperty extends UiSchemas\Widgets\DataSources\DataSource
 	public const RELATIONSHIPS_PROPERTY = 'property';
 
 	public function __construct(
-		private readonly Devices\Models\States\Connectors\Repository $propertyStateRepository,
+		private readonly DevicesModels\Configuration\Connectors\Properties\Repository $connectorsPropertiesRepository,
+		private readonly DevicesModels\States\ConnectorPropertiesManager $connectorPropertiesManager,
 		Routing\IRouter $router,
 	)
 	{
@@ -77,9 +80,13 @@ final class ConnectorProperty extends UiSchemas\Widgets\DataSources\DataSource
 	 *
 	 * @return iterable<string, mixed>
 	 *
-	 * @throws DevicesExceptions\NotImplemented
+	 * @throws DevicesExceptions\InvalidArgument
+	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -93,12 +100,19 @@ final class ConnectorProperty extends UiSchemas\Widgets\DataSources\DataSource
 		$attributes = parent::getAttributes($resource, $context);
 
 		if ($resource->getProperty() instanceof DevicesEntities\Connectors\Properties\Dynamic) {
-			$state = $this->propertyStateRepository->find($resource->getProperty()->getId());
+			$property = $this->connectorsPropertiesRepository->find(
+				$resource->getProperty()->getId(),
+				DevicesDocuments\Connectors\Properties\Dynamic::class,
+			);
+
+			$state = $property !== null ? $this->connectorPropertiesManager->readState($property) : null;
 
 			return array_merge(
 				(array) $attributes,
 				[
-					'value' => MetadataUtilities\Value::flattenValue($state?->getActualValue()),
+					'value' => $state !== null && $state->isValid() ? MetadataUtilities\Value::flattenValue(
+						$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
+					) : null,
 				],
 			);
 		} elseif ($resource->getProperty() instanceof DevicesEntities\Connectors\Properties\Variable) {
@@ -111,27 +125,6 @@ final class ConnectorProperty extends UiSchemas\Widgets\DataSources\DataSource
 		}
 
 		return $attributes;
-	}
-
-	/**
-	 * @param T $resource
-	 *
-	 * @return iterable<string, mixed>
-	 *
-	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
-	 */
-	public function getRelationships(
-		$resource,
-		JsonApi\Contracts\Schema\ContextInterface $context,
-	): iterable
-	{
-		return array_merge((array) parent::getRelationships($resource, $context), [
-			self::RELATIONSHIPS_PROPERTY => [
-				self::RELATIONSHIP_DATA => $resource->getProperty(),
-				self::RELATIONSHIP_LINKS_SELF => true,
-				self::RELATIONSHIP_LINKS_RELATED => false,
-			],
-		]);
 	}
 
 	/**
