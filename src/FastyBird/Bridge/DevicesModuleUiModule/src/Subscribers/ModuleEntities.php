@@ -64,7 +64,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	{
 		return [
 			0 => ORM\Events::postUpdate,
-			1 => ORM\Events::postRemove,
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
@@ -94,24 +93,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		// Check for valid entity
 		if (!$entity instanceof DevicesEntities\Entity || $uow->isScheduledForDelete($entity)) {
-			return;
-		}
-
-		$this->processEntity($entity);
-	}
-
-	/**
-	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws UiExceptions\InvalidState
-	 */
-	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
-	{
-		// onFlush was executed before, everything already initialized
-		$entity = $eventArgs->getObject();
-
-		// Check for valid entity
-		if (!$entity instanceof DevicesEntities\Entity) {
 			return;
 		}
 
