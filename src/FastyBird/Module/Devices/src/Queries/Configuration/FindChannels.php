@@ -20,6 +20,7 @@ use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_map;
 use function count;
 use function implode;
 use function serialize;
@@ -81,9 +82,33 @@ class FindChannels extends QueryObject
 		$this->filter[] = '.[?(@.device =~ /(?i).*^' . $device->getId()->toString() . '*$/)]';
 	}
 
+	/**
+	 * @param array<Documents\Devices\Device> $devices
+	 */
+	public function byDevices(array $devices): void
+	{
+		$this->filter[] = '.[?(@.device in [' . (count($devices) > 0 ? implode(
+			'","',
+			array_map(static fn (Documents\Devices\Device $device): string => $device->getId()->toString(), $devices),
+		) : '') . '])]';
+	}
+
 	public function byDeviceId(Uuid\UuidInterface $deviceId): void
 	{
 		$this->filter[] = '.[?(@.device =~ /(?i).*^' . $deviceId->toString() . '*$/)]';
+	}
+
+	/**
+	 * @param array<Uuid\UuidInterface> $devicesId
+	 */
+	public function byDevicesId(array $devicesId): void
+	{
+		$this->filter[] = '.[?(@.device in [' . (count(
+			$devicesId,
+		) > 0 ? implode(
+			'","',
+			array_map(static fn (Uuid\UuidInterface $id): string => $id->toString(), $devicesId),
+		) : '') . '])]';
 	}
 
 	/**

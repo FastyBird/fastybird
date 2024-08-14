@@ -123,3 +123,48 @@ cmd:
             loadConnectorError: "Something went wrong, connector could not be loaded."
             connectorDisabled: "Connector is disabled. Disabled connector could not be executed."
             notSupportedConnector: "Connector does not support devices discovery."
+
+    diagnostics:
+        title: "Devices module - diagnostics"
+        subtitle: "This action will run module diagnostics"
+
+        actions:
+            nothing: "Nothing"
+
+            list:
+                connectors: "List connectors"
+                devices: "List devices"
+                channels: "List channels"
+                properties: "List properties"
+            properties:
+                connectors: "Connectors properties"
+                devices: "Devices properties"
+                channels: "Channels properties"
+            select:
+                allConnectors: "All connectors"
+                allDevices: "All devices"
+                allChannels: "All channels"
+
+        questions:
+            whatType: "Select type to display"
+            select:
+                connector: "Select connector"
+                device: "Select device"
+                channel: "Select channel"
+
+        data:
+            connector: "Connector"
+            device: "Device"
+            channel: "Channel"
+            name: "Name"
+            status: "Status"
+            type: "Type"
+            devicesCnt: "# Devices"
+            channelsCnt: "# Channels"
+            propertiesCnt: "# Properties"
+            defaultValue: "Default value"
+            value: "Value"
+            isValid: "Is valid"
+
+        messages:
+            connectorDisabled: "Connector is disabled. Disabled connector could not be diagnosed."

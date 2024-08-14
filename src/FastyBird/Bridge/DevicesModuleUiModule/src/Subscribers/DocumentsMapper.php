@@ -76,7 +76,7 @@ final class DocumentsMapper implements EventDispatcher\EventSubscriberInterface
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function stateCreated(MetadataEvents\PreLoad $event): void
+	public function preLoad(MetadataEvents\PreLoad $event): void
 	{
 		if (
 			!in_array(
