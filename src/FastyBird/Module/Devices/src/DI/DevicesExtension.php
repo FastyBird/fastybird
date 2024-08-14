@@ -930,6 +930,9 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
 
+		$builder->addDefinition($this->prefix('commands.diagnostics'), new DI\Definitions\ServiceDefinition())
+			->setType(Commands\Diagnostics::class);
+
 		/**
 		 * COMMUNICATION EXCHANGE
 		 */

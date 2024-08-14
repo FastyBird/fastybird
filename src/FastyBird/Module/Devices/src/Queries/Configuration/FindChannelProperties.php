@@ -20,6 +20,9 @@ use FastyBird\Module\Devices\Exceptions;
 use Flow\JSONPath;
 use Nette\Utils;
 use Ramsey\Uuid;
+use function array_map;
+use function count;
+use function implode;
 use function serialize;
 
 /**
@@ -68,9 +71,36 @@ class FindChannelProperties extends QueryObject
 		$this->filter[] = '.[?(@.channel =~ /(?i).*^' . $channel->getId()->toString() . '*$/)]';
 	}
 
+	/**
+	 * @param array<Documents\Channels\Channel> $channels
+	 */
+	public function byChannels(array $channels): void
+	{
+		$this->filter[] = '.[?(@.channel in [' . (count($channels) > 0 ? implode(
+			'","',
+			array_map(
+				static fn (Documents\Channels\Channel $channel): string => $channel->getId()->toString(),
+				$channels,
+			),
+		) : '') . '])]';
+	}
+
 	public function byChannelId(Uuid\UuidInterface $channelId): void
 	{
 		$this->filter[] = '.[?(@.channel =~ /(?i).*^' . $channelId->toString() . '*$/)]';
+	}
+
+	/**
+	 * @param array<Uuid\UuidInterface> $channelsId
+	 */
+	public function byChannelsId(array $channelsId): void
+	{
+		$this->filter[] = '.[?(@.channel in [' . (count(
+			$channelsId,
+		) > 0 ? implode(
+			'","',
+			array_map(static fn (Uuid\UuidInterface $id): string => $id->toString(), $channelsId),
+		) : '') . '])]';
 	}
 
 	public function forParent(
