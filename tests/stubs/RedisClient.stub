@@ -9,7 +9,10 @@ use React\Promise;
  * @method Promise\PromiseInterface select(int $database)
  * @method Promise\PromiseInterface get(string $key)
  * @method Promise\PromiseInterface set(string $key, string $data)
+ * @method Promise\PromiseInterface sadd(string $key, array $members)
  * @method Promise\PromiseInterface del(string $key)
+ * @method Promise\PromiseInterface smembers(string $key)
+ * @method Promise\PromiseInterface flushdb()
  * @method Promise\PromiseInterface publish(string $channel, string $payload)
  * @method Promise\PromiseInterface subscribe(string $channel)
  */

@@ -33,7 +33,6 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -43,7 +42,6 @@ use TypeError;
 use ValueError;
 use function array_map;
 use function array_merge;
-use function assert;
 use function is_array;
 use function strval;
 
@@ -70,7 +68,6 @@ final class DevicePropertiesManager extends PropertiesManager
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -117,21 +114,7 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$document = $this->cache->load(
-				'read_' . $property->getId()->toString(),
-				fn () => $this->readState($property),
-				[
-					Caching\Cache::Tags => array_merge(
-						[$property->getId()->toString()],
-						$property instanceof Documents\Devices\Properties\Mapped
-							? [$property->getParent()->toString()]
-							: [],
-					),
-				],
-			);
-			assert($document instanceof Documents\States\Devices\Properties\Property || $document === null);
-
-			return $document;
+			return $this->readState($property);
 		}
 	}
 

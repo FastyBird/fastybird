@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Models\States\Channels;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use Nette;
-use Nette\Caching;
 use Ramsey\Uuid;
 
 /**
@@ -35,7 +34,6 @@ final class Repository
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Caching\Cache $cache,
 		private readonly IRepository|null $repository = null,
 	)
 	{
@@ -52,22 +50,7 @@ final class Repository
 			throw new Exceptions\NotImplemented('Channel properties state repository is not registered');
 		}
 
-		/** @phpstan-var States\ChannelProperty|null $state */
-		$state = $this->cache->load(
-			$id->toString(),
-			function () use ($id): States\ChannelProperty|null {
-				if ($this->repository === null) {
-					return null;
-				}
-
-				return $this->repository->find($id);
-			},
-			[
-				Caching\Cache::Tags => [$id->toString()],
-			],
-		);
-
-		return $state;
+		return $this->repository->find($id);
 	}
 
 }

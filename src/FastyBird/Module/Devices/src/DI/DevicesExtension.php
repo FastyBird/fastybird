@@ -122,26 +122,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			])
 			->setAutowired(false);
 
-		$stateCache = $builder->addDefinition(
-			$this->prefix('caching.state'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Caching\Cache::class)
-			->setArguments([
-				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
-			])
-			->setAutowired(false);
-
-		$stateStorageCache = $builder->addDefinition(
-			$this->prefix('caching.stateStorage'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Caching\Cache::class)
-			->setArguments([
-				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state_storage',
-			])
-			->setAutowired(false);
-
 		/**
 		 * ROUTE MIDDLEWARES & ROUTING
 		 */
@@ -388,10 +368,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Connectors\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.connectorsProperties'),
@@ -403,10 +380,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Connectors\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.connectorsProperties.async'),
@@ -419,10 +393,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Devices\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.devicesProperties'),
@@ -434,10 +405,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.devicesProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Devices\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.devicesProperties.async'),
@@ -450,10 +418,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Channels\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.channelsProperties'),
@@ -465,10 +430,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.channelsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Channels\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.channelsProperties.async'),
@@ -484,7 +446,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -495,7 +456,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -507,7 +467,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -518,7 +477,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -530,7 +488,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -541,7 +498,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -557,11 +513,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\StateEntities::class)
-			->setArguments([
-				'stateCache' => $stateCache,
-				'stateStorageCache' => $stateStorageCache,
-			]);
+			->setType(Subscribers\StateEntities::class);
 
 		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Connector::class);
