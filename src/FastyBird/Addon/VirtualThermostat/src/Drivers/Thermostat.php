@@ -34,7 +34,6 @@ use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Types as DevicesTypes;
 use React\Promise;
 use Throwable;
 use TypeError;
@@ -136,6 +135,7 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
+	 * @throws VirtualExceptions\Runtime
 	 */
 	public function connect(): Promise\PromiseInterface
 	{
@@ -261,25 +261,50 @@ class Thermostat implements VirtualDrivers\Driver
 					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 				);
 
-				if (!$state instanceof DevicesDocuments\States\Channels\Properties\Property) {
-					continue;
-				}
-
-				if (is_numeric($state->getGet()->getActualValue())) {
+				if (
+					$state instanceof DevicesDocuments\States\Channels\Properties\Property
+					&& is_numeric($state->getGet()->getActualValue())
+				) {
 					$this->targetTemperature[$mode->value] = floatval($state->getGet()->getActualValue());
+				} else {
+					$this->targetTemperature[$mode->value] = floatval(
+						MetadataUtilities\Value::flattenValue(
+							$property->getDefault() ?? VirtualThermostat\Entities\Devices\Device::TARGET_TEMPERATURE,
+						),
+					);
 
-					$this->channelPropertiesStatesManager->setValidState(
-						$property,
-						true,
-						MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+					$this->queue->append(
+						$this->messageBuilder->create(
+							VirtualQueue\Messages\StoreChannelPropertyState::class,
+							[
+								'connector' => $this->device->getConnector(),
+								'device' => $this->device->getId(),
+								'channel' => $property->getChannel(),
+								'property' => $property->getId(),
+								'value' => floatval(
+									MetadataUtilities\Value::flattenValue(
+										$property->getDefault() ?? VirtualThermostat\Entities\Devices\Device::TARGET_TEMPERATURE,
+									),
+								),
+								'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+							],
+						),
 					);
 				}
+
+				$this->channelPropertiesStatesManager->setValidState(
+					$property,
+					true,
+					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+				);
 			}
 		}
 
 		if ($this->deviceHelper->getPresetMode($this->device) !== null) {
+			$property = $this->deviceHelper->getPresetMode($this->device);
+
 			$state = $this->channelPropertiesStatesManager->read(
-				$this->deviceHelper->getPresetMode($this->device),
+				$property,
 				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
@@ -292,18 +317,41 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->presetMode = Types\Preset::from(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
+			} else {
+				$this->presetMode = Types\Preset::from(
+					MetadataUtilities\Value::toString($property->getDefault() ?? Types\Preset::MANUAL->value, true),
+				);
 
-				$this->channelPropertiesStatesManager->setValidState(
-					$this->deviceHelper->getPresetMode($this->device),
-					true,
-					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+				$this->queue->append(
+					$this->messageBuilder->create(
+						VirtualQueue\Messages\StoreChannelPropertyState::class,
+						[
+							'connector' => $this->device->getConnector(),
+							'device' => $this->device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'value' => MetadataUtilities\Value::toString(
+								$property->getDefault() ?? Types\Preset::MANUAL->value,
+								true,
+							),
+							'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+						],
+					),
 				);
 			}
+
+			$this->channelPropertiesStatesManager->setValidState(
+				$property,
+				true,
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+			);
 		}
 
 		if ($this->deviceHelper->getHvacMode($this->device) !== null) {
+			$property = $this->deviceHelper->getHvacMode($this->device);
+
 			$state = $this->channelPropertiesStatesManager->read(
-				$this->deviceHelper->getHvacMode($this->device),
+				$property,
 				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
 			);
 
@@ -316,13 +364,34 @@ class Thermostat implements VirtualDrivers\Driver
 				$this->hvacMode = Types\HvacMode::from(
 					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
+			} else {
+				$this->hvacMode = Types\HvacMode::from(
+					MetadataUtilities\Value::toString($property->getDefault() ?? Types\HvacMode::OFF->value, true),
+				);
 
-				$this->channelPropertiesStatesManager->setValidState(
-					$this->deviceHelper->getHvacMode($this->device),
-					true,
-					MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+				$this->queue->append(
+					$this->messageBuilder->create(
+						VirtualQueue\Messages\StoreChannelPropertyState::class,
+						[
+							'connector' => $this->device->getConnector(),
+							'device' => $this->device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'value' => MetadataUtilities\Value::toString(
+								$property->getDefault() ?? Types\HvacMode::OFF->value,
+								true,
+							),
+							'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+						],
+					),
 				);
 			}
+
+			$this->channelPropertiesStatesManager->setValidState(
+				$property,
+				true,
+				MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
+			);
 		}
 
 		$this->connected = true;
@@ -1232,18 +1301,6 @@ class Thermostat implements VirtualDrivers\Driver
 		$this->setActorState(false, false);
 
 		$this->connected = false;
-
-		$this->queue->append(
-			$this->messageBuilder->create(
-				VirtualQueue\Messages\StoreDeviceConnectionState::class,
-				[
-					'connector' => $this->device->getConnector(),
-					'device' => $this->device->getId(),
-					'state' => DevicesTypes\ConnectionState::STOPPED,
-					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT,
-				],
-			),
-		);
 
 		$this->logger->warning(
 			$reason,
