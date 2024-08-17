@@ -19,6 +19,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
+use Nette\Caching;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
@@ -38,6 +39,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\States\Connectors\Repository $fallback,
+		private readonly Caching\Cache $cache,
 		private readonly IRepository|null $repository = null,
 	)
 	{
@@ -58,10 +60,25 @@ final class Repository
 			}
 		}
 
+		/** @phpstan-var States\ConnectorProperty|null $state */
+		$state = $this->cache->load($id->toString());
+
+		if ($state !== null) {
+			return Promise\resolve($state);
+		}
+
 		$deferred = new Promise\Deferred();
 
 		$this->repository->find($id)
-			->then(static function (States\ConnectorProperty|null $state) use ($deferred): void {
+			->then(function (States\ConnectorProperty|null $state) use ($deferred, $id): void {
+				$this->cache->save(
+					$id->toString(),
+					$state,
+					[
+						Caching\Cache::Tags => [$id->toString()],
+					],
+				);
+
 				$deferred->resolve($state);
 			})
 			->catch(static function (Throwable $ex) use ($deferred): void {
