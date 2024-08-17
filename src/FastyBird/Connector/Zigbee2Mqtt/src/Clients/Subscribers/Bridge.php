@@ -190,6 +190,31 @@ readonly class Bridge
 								),
 							);
 
+						} elseif ($type === Types\BridgeMessageType::DEFINITIONS) {
+							$payload = $this->parsePayload($message);
+
+							if ($payload === null) {
+								$this->logger->warning(
+									'Received message payload is not valid for bridge extensions message',
+									[
+										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+										'type' => 'bridge-messages-subscriber',
+										'connector' => [
+											'id' => $this->connector->getId()->toString(),
+										],
+										'message' => [
+											'topic' => $message->getTopic(),
+											'payload' => $message->getPayload(),
+											'qos' => $message->getQosLevel(),
+										],
+									],
+								);
+
+								return;
+							}
+
+							// This message could be ignored
+
 						} elseif ($type === Types\BridgeMessageType::DEVICES) {
 							$payload = $this->parsePayload($message);
 

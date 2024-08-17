@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use TypeError;
 use ValueError;
+use function preg_match;
 use function React\Async\await;
 
 /**
@@ -87,14 +88,39 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
-		$findDeviceQuery->byConnectorId($message->getConnector());
-		$findDeviceQuery->byIdentifier($message->getDevice());
+		if (preg_match('/^0x[a-fA-F0-9]{16}$/', $message->getDevice()) === 1) {
+			$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+			$findDeviceQuery->byConnectorId($message->getConnector());
+			$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy(
-			$findDeviceQuery,
-			Documents\Devices\SubDevice::class,
-		);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\SubDevice::class,
+			);
+
+		} else {
+			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FRIENDLY_NAME->value);
+			$findDevicePropertyQuery->byValue($message->getDevice());
+
+			$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+				$findDevicePropertyQuery,
+				DevicesDocuments\Devices\Properties\Variable::class,
+			);
+
+			if ($property === null) {
+				return true;
+			}
+
+			$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+			$findDeviceQuery->byConnectorId($message->getConnector());
+			$findDeviceQuery->byId($property->getDevice());
+
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\SubDevice::class,
+			);
+		}
 
 		if ($device === null) {
 			return true;

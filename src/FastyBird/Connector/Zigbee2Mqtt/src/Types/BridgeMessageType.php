@@ -32,6 +32,8 @@ enum BridgeMessageType: string
 
 	case LOGGING = 'logging';
 
+	case DEFINITIONS = 'definitions';
+
 	case DEVICES = 'devices';
 
 	case GROUPS = 'groups';

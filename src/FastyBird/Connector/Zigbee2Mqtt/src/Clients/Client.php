@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\Zigbee2Mqtt\Clients;
 
+use React\Promise;
+
 /**
  * Base device client interface
  *
@@ -28,12 +30,16 @@ interface Client
 
 	/**
 	 * Create client
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	public function connect(): void;
+	public function connect(): Promise\PromiseInterface;
 
 	/**
 	 * Destroy client
+	 *
+	 * @return Promise\PromiseInterface<mixed>
 	 */
-	public function disconnect(): void;
+	public function disconnect(): Promise\PromiseInterface;
 
 }
