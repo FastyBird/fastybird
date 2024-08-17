@@ -34,6 +34,7 @@ includes:
     - ../src/FastyBird/Plugin/CouchDb/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/RabbitMq/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/RedisDb/tools/phpstan.config.src.neon
+    - ../src/FastyBird/Plugin/RedisDbCache/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WebServer/tools/phpstan.config.src.neon
     - ../src/FastyBird/Plugin/WsServer/tools/phpstan.config.src.neon
 

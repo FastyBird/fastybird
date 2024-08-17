@@ -141,6 +141,9 @@
                 <element key="src/FastyBird/Plugin/RedisDb/tests/fixtures" value="FastyBird\Plugin\RedisDb\Tests\Fixtures"/>
                 <element key="src/FastyBird/Plugin/RedisDb/tests/fixtures/dummy" value="FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy"/>
 
+                <element key="src/FastyBird/Plugin/RedisDbCache/src" value="FastyBird\Plugin\RedisDbCache"/>
+                <element key="src/FastyBird/Plugin/RedisDbCache/tests/cases/unit" value="FastyBird\Plugin\RedisDbCache\Tests\Cases\Unit"/>
+
                 <element key="src/FastyBird/Plugin/WebServer/src" value="FastyBird\Plugin\WebServer"/>
                 <element key="src/FastyBird/Plugin/WebServer/tests/cases/unit" value="FastyBird\Plugin\WebServer\Tests\Cases\Unit"/>
 
@@ -193,6 +196,7 @@
     <exclude-pattern>src/FastyBird/Plugin/CouchDb/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Plugin/RabbitMq/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Plugin/RedisDb/tools/*</exclude-pattern>
+    <exclude-pattern>src/FastyBird/Plugin/RedisDbCache/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Plugin/WebServer/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Plugin/WsServer/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Addon/VirtualThermostat/tools/*</exclude-pattern>
