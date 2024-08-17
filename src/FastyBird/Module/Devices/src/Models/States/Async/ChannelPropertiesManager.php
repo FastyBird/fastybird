@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
+use Nette\Caching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -73,6 +74,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		private readonly DateTimeFactory\Factory $dateTimeFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
+		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -113,11 +115,31 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 				));
 			}
 		} else {
+			/** @phpstan-var Documents\States\Channels\Properties\Property|null $document */
+			$document = $this->cache->load('read_' . $property->getId()->toString());
+
+			if ($document !== null) {
+				return Promise\resolve($document);
+			}
+
 			$deferred = new Promise\Deferred();
 
 			$this->readState($property)
 				->then(
-					static function (Documents\States\Channels\Properties\Property|null $document) use ($deferred): void {
+					function (Documents\States\Channels\Properties\Property|null $document) use ($deferred, $property): void {
+						$this->cache->save(
+							'read_' . $property->getId()->toString(),
+							$document,
+							[
+								Caching\Cache::Tags => array_merge(
+									[$property->getId()->toString()],
+									$property instanceof Documents\Channels\Properties\Mapped
+										? [$property->getParent()->toString()]
+										: [],
+								),
+							],
+						);
+
 						$deferred->resolve($document);
 					},
 				)
@@ -788,6 +810,10 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 								return;
 							}
 						}
+
+						$this->cache->clean([
+							Caching\Cache::Tags => [$property->getId()->toString()],
+						]);
 
 						$readValue = $this->convertStoredState($property, null, $result, true);
 						$getValue = $this->convertStoredState($property, null, $result, false);
