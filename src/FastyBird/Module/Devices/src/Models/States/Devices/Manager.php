@@ -23,6 +23,7 @@ use FastyBird\Module\Devices\States;
 use Nette;
 use Nette\Utils;
 use Ramsey\Uuid;
+use Throwable;
 
 /**
  * Device property states manager
@@ -43,6 +44,7 @@ final class Manager
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 * @throws Exceptions\InvalidState
 	 *
 	 * @interal
 	 */
@@ -55,11 +57,16 @@ final class Manager
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		return $this->manager->create($property->getId(), $values);
+		try {
+			return $this->manager->create($property->getId(), $values);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('State could not be created: ' . $ex->getMessage(), $ex->getCode(), $ex);
+		}
 	}
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 * @throws Exceptions\InvalidState
 	 *
 	 * @interal
 	 */
@@ -73,7 +80,11 @@ final class Manager
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		$result = $this->manager->update($property->getId(), $values);
+		try {
+			$result = $this->manager->update($property->getId(), $values);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('State could not be updated: ' . $ex->getMessage(), $ex->getCode(), $ex);
+		}
 
 		if ($result === false) {
 			return false;
@@ -104,6 +115,7 @@ final class Manager
 
 	/**
 	 * @throws Exceptions\NotImplemented
+	 * @throws Exceptions\InvalidState
 	 *
 	 * @interal
 	 */
@@ -113,7 +125,11 @@ final class Manager
 			throw new Exceptions\NotImplemented('Device properties state manager is not registered');
 		}
 
-		return $this->manager->delete($id);
+		try {
+			return $this->manager->delete($id);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('State could not be deleted: ' . $ex->getMessage(), $ex->getCode(), $ex);
+		}
 	}
 
 }
