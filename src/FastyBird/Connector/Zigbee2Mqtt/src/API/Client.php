@@ -149,6 +149,11 @@ final class Client
 		);
 	}
 
+	public function isConnected(): bool
+	{
+		return $this->isConnected;
+	}
+
 	/**
 	 * Connects to a broker
 	 *

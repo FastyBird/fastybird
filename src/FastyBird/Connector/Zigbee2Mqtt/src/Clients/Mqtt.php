@@ -33,6 +33,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use InvalidArgumentException;
 use Nette;
+use React\Promise;
 use Throwable;
 use TypeError;
 use ValueError;
@@ -78,6 +79,8 @@ final class Mqtt implements Client
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<mixed>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws InvalidArgumentException
 	 * @throws MetadataExceptions\InvalidArgument
@@ -87,7 +90,7 @@ final class Mqtt implements Client
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function connect(): void
+	public function connect(): Promise\PromiseInterface
 	{
 		$client = $this->getClient();
 		$client->onConnect[] = function (): void {
@@ -165,10 +168,12 @@ final class Mqtt implements Client
 			}
 		}
 
-		$client->connect();
+		return $client->connect();
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<mixed>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
@@ -176,11 +181,11 @@ final class Mqtt implements Client
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function disconnect(): void
+	public function disconnect(): Promise\PromiseInterface
 	{
 		$client = $this->getClient();
 
-		$client->disconnect();
+		return $client->disconnect();
 	}
 
 	/**

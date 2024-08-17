@@ -347,6 +347,15 @@ final class ConnectorPropertiesManager extends PropertiesManager
 			}
 
 			return $result;
+		} catch (Exceptions\InvalidState $ex) {
+			$this->logger->error(
+				'Connector state could not be deleted',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'connector-properties-states',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Connectors states manager is not configured. State could not be saved',
@@ -432,6 +441,17 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 
 				return $this->readState($property);
+			} catch (Exceptions\InvalidState $ex) {
+				$this->logger->error(
+					'Connector state could not be saved',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'connector-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return null;
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
@@ -460,6 +480,17 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 
 				return $this->readState($property);
+			} catch (Exceptions\InvalidState $ex) {
+				$this->logger->error(
+					'Connector state could not be saved',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'connector-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return null;
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'connectors states manager is not configured. State could not be fetched',
@@ -672,6 +703,15 @@ final class ConnectorPropertiesManager extends PropertiesManager
 						'id' => $property->getId()->toString(),
 						'state' => $result->toArray(),
 					],
+				],
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			$this->logger->error(
+				'Connector state could not be saved',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'connector-properties-states',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 		} catch (Exceptions\NotImplemented) {

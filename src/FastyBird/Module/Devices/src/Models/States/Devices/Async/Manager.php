@@ -58,7 +58,11 @@ final class Manager
 	{
 		if ($this->manager === null) {
 			try {
-				return Promise\resolve($this->fallback->create($property, $values));
+				try {
+					return Promise\resolve($this->fallback->create($property, $values));
+				} catch (Throwable $ex) {
+					return Promise\reject($ex);
+				}
 			} catch (Exceptions\NotImplemented $ex) {
 				return Promise\reject($ex);
 			}
@@ -80,7 +84,11 @@ final class Manager
 	{
 		if ($this->manager === null) {
 			try {
-				return Promise\resolve($this->fallback->update($property, $state, $values));
+				try {
+					return Promise\resolve($this->fallback->update($property, $state, $values));
+				} catch (Throwable $ex) {
+					return Promise\reject($ex);
+				}
 			} catch (Exceptions\NotImplemented $ex) {
 				return Promise\reject($ex);
 			}
@@ -136,7 +144,11 @@ final class Manager
 	{
 		if ($this->manager === null) {
 			try {
-				return Promise\resolve($this->fallback->delete($id));
+				try {
+					return Promise\resolve($this->fallback->delete($id));
+				} catch (Throwable $ex) {
+					return Promise\reject($ex);
+				}
 			} catch (Exceptions\NotImplemented $ex) {
 				return Promise\reject($ex);
 			}

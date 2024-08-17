@@ -66,8 +66,9 @@ final class ConnectionManager
 	public function __destruct()
 	{
 		foreach ($this->clientConnections as $connection) {
-			$connection->disconnect();
-
+			if ($connection->isConnected()) {
+				$connection->disconnect();
+			}
 		}
 	}
 

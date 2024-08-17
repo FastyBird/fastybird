@@ -26,7 +26,6 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
-use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Types;
 use Nette;
@@ -153,8 +152,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	/**
 	 * @param Persistence\Event\LifecycleEventArgs<ORM\EntityManagerInterface> $eventArgs
-	 *
-	 * @throws Exceptions\InvalidState
 	 */
 	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{

@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use TypeError;
 use ValueError;
+use function preg_match;
 use function React\Async\await;
 
 /**
@@ -59,7 +60,6 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 	)
 	{
@@ -87,14 +87,39 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\Configuration\FindSubDevices();
-		$findDeviceQuery->byConnectorId($message->getConnector());
-		$findDeviceQuery->byIdentifier($message->getDevice());
+		if (preg_match('/^0x[a-fA-F0-9]{16}$/', $message->getDevice()) === 1) {
+			$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+			$findDeviceQuery->byConnectorId($message->getConnector());
+			$findDeviceQuery->byIdentifier($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy(
-			$findDeviceQuery,
-			Documents\Devices\SubDevice::class,
-		);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\SubDevice::class,
+			);
+
+		} else {
+			$findDevicePropertyQuery = new DevicesQueries\Configuration\FindDeviceVariableProperties();
+			$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FRIENDLY_NAME->value);
+			$findDevicePropertyQuery->byValue($message->getDevice());
+
+			$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+				$findDevicePropertyQuery,
+				DevicesDocuments\Devices\Properties\Variable::class,
+			);
+
+			if ($property === null) {
+				return true;
+			}
+
+			$findDeviceQuery = new Queries\Configuration\FindSubDevices();
+			$findDeviceQuery->byConnectorId($message->getConnector());
+			$findDeviceQuery->byId($property->getDevice());
+
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\SubDevice::class,
+			);
+		}
 
 		if ($device === null) {
 			return true;
@@ -126,22 +151,6 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				|| $state === DevicesTypes\ConnectionState::ALERT
 				|| $state === DevicesTypes\ConnectionState::UNKNOWN
 			) {
-				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
-				$findDevicePropertiesQuery->forDevice($device);
-
-				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
-					$findDevicePropertiesQuery,
-					DevicesDocuments\Devices\Properties\Dynamic::class,
-				);
-
-				foreach ($properties as $property) {
-					await($this->devicePropertiesStatesManager->setValidState(
-						$property,
-						false,
-						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-					));
-				}
-
 				$findChannelsQuery = new Queries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
 

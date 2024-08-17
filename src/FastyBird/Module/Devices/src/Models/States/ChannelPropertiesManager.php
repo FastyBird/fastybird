@@ -342,9 +342,6 @@ final class ChannelPropertiesManager extends PropertiesManager
 		}
 	}
 
-	/**
-	 * @throws Exceptions\InvalidState
-	 */
 	public function delete(Uuid\UuidInterface $id): bool
 	{
 		try {
@@ -365,6 +362,15 @@ final class ChannelPropertiesManager extends PropertiesManager
 			}
 
 			return $result;
+		} catch (Exceptions\InvalidState $ex) {
+			$this->logger->error(
+				'Channel state could not be deleted',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'channel-properties-states',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
 		} catch (Exceptions\NotImplemented) {
 			$this->logger->warning(
 				'Channels states manager is not configured. State could not be fetched',
@@ -464,6 +470,17 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 
 				return $this->readState($property);
+			} catch (Exceptions\InvalidState $ex) {
+				$this->logger->error(
+					'Channel state could not be saved',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'channel-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return null;
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
@@ -492,6 +509,17 @@ final class ChannelPropertiesManager extends PropertiesManager
 				);
 
 				return $this->readState($property);
+			} catch (Exceptions\InvalidState $ex) {
+				$this->logger->error(
+					'Channel state could not be saved',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'channel-properties-states',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return null;
 			} catch (Exceptions\NotImplemented) {
 				$this->logger->warning(
 					'Channels states manager is not configured. State could not be fetched',
@@ -779,6 +807,15 @@ final class ChannelPropertiesManager extends PropertiesManager
 						'id' => $property->getId()->toString(),
 						'state' => $result->toArray(),
 					],
+				],
+			);
+		} catch (Exceptions\InvalidState $ex) {
+			$this->logger->error(
+				'Channel state could not be saved',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'channel-properties-states',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
 		} catch (Exceptions\NotImplemented) {

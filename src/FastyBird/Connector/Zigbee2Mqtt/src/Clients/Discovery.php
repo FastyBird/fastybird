@@ -84,6 +84,8 @@ final class Discovery
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<mixed>
+	 *
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
@@ -96,7 +98,7 @@ final class Discovery
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function discover(Documents\Devices\Bridge|null $onlyBridge = null): void
+	public function discover(Documents\Devices\Bridge|null $onlyBridge = null): Promise\PromiseInterface
 	{
 		$this->onlyBridge = $onlyBridge;
 
@@ -111,10 +113,12 @@ final class Discovery
 			$this->subscribed = true;
 		}
 
-		$client->connect();
+		return $client->connect();
 	}
 
 	/**
+	 * @return Promise\PromiseInterface<mixed>
+	 *
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
@@ -122,11 +126,11 @@ final class Discovery
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function disconnect(): void
+	public function disconnect(): Promise\PromiseInterface
 	{
 		$client = $this->getClient();
 
-		$client->disconnect();
+		return $client->disconnect();
 	}
 
 	/**

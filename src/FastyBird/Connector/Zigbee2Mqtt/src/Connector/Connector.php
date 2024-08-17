@@ -33,6 +33,7 @@ use Nette;
 use React\EventLoop;
 use React\Promise;
 use ReflectionClass;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
@@ -132,7 +133,23 @@ final class Connector implements DevicesConnectors\Connector
 			return Promise\reject(new Exceptions\InvalidState('Connector client is not configured'));
 		}
 
-		$client->connect();
+		$client->connect()
+			->catch(function (Throwable $ex): void {
+				$this->logger->error(
+					'Zigbee2MQTT connector failed to connect to server',
+					[
+						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+						'type' => 'connector',
+						'error' => [
+							'message' => $ex->getMessage(),
+							'code' => $ex->getCode(),
+						],
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
+			});
 
 		foreach ($this->writersFactories as $writerFactory) {
 			if (
@@ -237,7 +254,23 @@ final class Connector implements DevicesConnectors\Connector
 		assert($this->connector instanceof Documents\Connectors\Connector);
 
 		foreach ($this->clients as $client) {
-			$client->disconnect();
+			$client->disconnect()
+				->catch(function (Throwable $ex): void {
+					$this->logger->error(
+						'Zigbee2MQTT connector failed to disconnect from server',
+						[
+							'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+							'type' => 'connector',
+							'error' => [
+								'message' => $ex->getMessage(),
+								'code' => $ex->getCode(),
+							],
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+						],
+					);
+				});
 		}
 
 		$this->writer?->disconnect();
