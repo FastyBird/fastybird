@@ -152,22 +152,6 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 				|| $state === DevicesTypes\ConnectionState::ALERT
 				|| $state === DevicesTypes\ConnectionState::UNKNOWN
 			) {
-				$findDevicePropertiesQuery = new DevicesQueries\Configuration\FindDeviceDynamicProperties();
-				$findDevicePropertiesQuery->forDevice($device);
-
-				$properties = $this->devicesPropertiesConfigurationRepository->findAllBy(
-					$findDevicePropertiesQuery,
-					DevicesDocuments\Devices\Properties\Dynamic::class,
-				);
-
-				foreach ($properties as $property) {
-					await($this->devicePropertiesStatesManager->setValidState(
-						$property,
-						false,
-						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
-					));
-				}
-
 				$findChannelsQuery = new Queries\Configuration\FindChannels();
 				$findChannelsQuery->forDevice($device);
 
