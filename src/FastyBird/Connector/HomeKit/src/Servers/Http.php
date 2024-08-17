@@ -65,6 +65,7 @@ use function floatval;
 use function hex2bin;
 use function intval;
 use function is_array;
+use function is_bool;
 use function is_string;
 use function preg_match;
 use function sprintf;
@@ -352,7 +353,9 @@ final class Http implements Server
 									),
 								);
 
-								$characteristic->setActualValue($state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue());
+								$characteristic->setActualValue(
+									$state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue(),
+								);
 								$characteristic->setValid($state->isValid());
 							}
 						} catch (Exceptions\InvalidState $ex) {
