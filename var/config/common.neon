@@ -41,8 +41,6 @@ extensions:
     fbApplicationLibrary                            : FastyBird\Library\Application\DI\ApplicationExtension
     fbMetadataLibrary                               : FastyBird\Library\Metadata\DI\MetadataExtension
     fbExchangeLibrary                               : FastyBird\Library\Exchange\DI\ExchangeExtension
-    # FastyBird plugins
-    fbRedisDbPlugin                                 : FastyBird\Plugin\RedisDb\DI\RedisDbExtension
     fbWebServerPlugin                               : FastyBird\Plugin\WebServer\DI\WebServerExtension
     fbWsServerPlugin                                : FastyBird\Plugin\WsServer\DI\WsServerExtension
     # FastyBird modules
@@ -63,8 +61,6 @@ extensions:
     fbZigbee2MqttConnector                          : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
     # FastyBird bridges
     fbDevicesModuleUiModuleBridge                   : FastyBird\Bridge\DevicesModuleUiModule\DI\DevicesModuleUiModuleExtension
-    fbRedisDbPluginDevicesModuleBridge              : FastyBird\Bridge\RedisDbPluginDevicesModule\DI\RedisDbPluginDevicesModuleExtension
-    fbRedisDbPluginTriggersModuleBridge             : FastyBird\Bridge\RedisDbPluginTriggersModule\DI\RedisDbPluginTriggersModuleExtension
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
     fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension
@@ -112,15 +108,6 @@ ipubWebsockets:
     server:
         address: %sockets.address%
         port: %sockets.port%
-
-# Redis exchange
-################
-fbRedisDbPlugin:
-    client:
-        host: %redis.host%
-        port: %redis.port%
-        username: %redis.username%
-        password: %redis.password%
 
 # Web server plugin
 ###################
