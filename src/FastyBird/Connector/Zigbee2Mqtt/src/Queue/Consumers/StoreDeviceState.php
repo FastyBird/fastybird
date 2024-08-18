@@ -29,6 +29,8 @@ use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
+use FastyBird\Module\Devices\Types as DevicesTypes;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use TypeError;
@@ -60,6 +62,7 @@ final class StoreDeviceState implements Queue\Consumer
 		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 	)
 	{
 	}
@@ -71,6 +74,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -172,6 +176,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -259,6 +264,14 @@ final class StoreDeviceState implements Queue\Consumer
 					]),
 					MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
 				));
+
+				if ($this->deviceConnectionManager->getState($device) !== DevicesTypes\ConnectionState::CONNECTED) {
+					await($this->channelPropertiesStatesManager->setValidState(
+						$property,
+						false,
+						MetadataTypes\Sources\Connector::ZIGBEE2MQTT,
+					));
+				}
 
 				$this->stateRepository->set($property->getId(), $state->getValue());
 
