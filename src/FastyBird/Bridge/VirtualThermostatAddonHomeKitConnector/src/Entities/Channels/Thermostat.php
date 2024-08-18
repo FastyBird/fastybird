@@ -26,7 +26,7 @@ use Ramsey\Uuid;
 class Thermostat extends HomeKitEntities\Channels\Channel
 {
 
-	public const TYPE = 'virtual-thermostat-addon-bridge';
+	public const TYPE = 'virtual-thermostat-addon-homekit-connector-bridge';
 
 	public function __construct(
 		Entities\Devices\Thermostat $device,

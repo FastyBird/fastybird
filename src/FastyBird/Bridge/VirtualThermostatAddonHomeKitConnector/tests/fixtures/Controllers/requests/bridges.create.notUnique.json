@@ -1,7 +1,7 @@
 {
   "data": {
     "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
-    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-homekit-connector-bridge",
     "attributes": {
       "identifier": "thermostat-living-room",
       "comment": null,

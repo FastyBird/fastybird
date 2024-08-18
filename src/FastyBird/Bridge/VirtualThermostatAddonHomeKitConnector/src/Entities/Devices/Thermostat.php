@@ -30,7 +30,7 @@ use function sprintf;
 class Thermostat extends HomeKitEntities\Devices\Device
 {
 
-	public const TYPE = 'virtual-thermostat-addon-bridge';
+	public const TYPE = 'virtual-thermostat-addon-homekit-connector-bridge';
 
 	/**
 	 * @param array<DevicesEntities\Devices\Device>|Utils\ArrayHash<DevicesEntities\Devices\Device> $parents
