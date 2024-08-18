@@ -10,7 +10,7 @@
     "self": "/api/virtual-thermostat-addon-homekit-connector-bridge/v1/bridges"
   },
   "data": {
-    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-bridge",
+    "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/device/virtual-thermostat-addon-homekit-connector-bridge",
     "id": "45716d9e-b194-46a9-8dca-5a66cc12a996",
     "attributes": {
       "category": "generic",
@@ -71,7 +71,7 @@
         },
         "data": [
           {
-            "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-bridge",
+            "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-homekit-connector-bridge",
             "id": "__CHANNEL_1_PLACEHOLDER__"
           }
         ]

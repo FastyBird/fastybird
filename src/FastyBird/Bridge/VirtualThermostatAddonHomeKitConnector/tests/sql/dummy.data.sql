@@ -14,8 +14,8 @@ IGNORE INTO `fb_devices_module_devices` (`device_id`, `connector_id`, `device_ca
 (_binary 0x8eab9ed0c3834941a3d97c501fe091b2, _binary 0x2b1ce81f99334d52afd4bec3583e6a06, 'generic', 'thermostat-living-room', 'Thermostat - Living Room', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon'),
 (_binary 0x495a7b6804284bdcb098dca416f03363, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-one', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
 (_binary 0xe10c43a9fa3b463e983104ba23025479, _binary 0xbda37bc79bd74083a925386ac5522325, 'generic', 'universal-test-device-two', 'Actor & Sensor device', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
-(_binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge'),
-(_binary 0x45716d9eb19446a98dca5a66cc12a996, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-living-room', 'Thermostat - Living Room - Corrupted', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge');
+(_binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-office', 'Thermostat - Office', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-homekit-connector-bridge'),
+(_binary 0x45716d9eb19446a98dca5a66cc12a996, _binary 0x451ab010f5004eff82899ed09e56a887, 'generic', 'thermostat-living-room', 'Thermostat - Living Room - Corrupted', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-homekit-connector-bridge');
 
 INSERT
 IGNORE INTO `fb_devices_module_devices_children` (`parent_device`, `child_device`) VALUES
@@ -48,8 +48,8 @@ IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_ca
 (_binary 0xc55dcc2f43c84f03862ea5a2c5ba91c4, _binary 0x8eab9ed0c3834941a3d97c501fe091b2, 'generic', 'preset_manual', null, null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-preset'),
 (_binary 0x6ecec6b9a48a48918d61d552e63e5f5a, _binary 0x495a7b6804284bdcb098dca416f03363, 'generic', 'thermometer', 'Heating element', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
 (_binary 0x0df26d9652954b1084d36dc0f626e9bb, _binary 0xe10c43a9fa3b463e983104ba23025479, 'generic', 'thermometer', 'Heating element', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'dummy'),
-(_binary 0xaf9c9d5869c54d309bceca6e6ce4ed45, _binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, 'generic', 'thermostat_1', 'Thermostat Service', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge'),
-(_binary 0xb6bd042ea8524752bd123c6e9c8a96a4, _binary 0x45716d9eb19446a98dca5a66cc12a996, 'generic', 'thermostat_1', 'Thermostat Service', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-bridge');
+(_binary 0xaf9c9d5869c54d309bceca6e6ce4ed45, _binary 0xcfb6e9cc29a748d6aecb5f901d79eba2, 'generic', 'thermostat_1', 'Thermostat Service', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-homekit-connector-bridge'),
+(_binary 0xb6bd042ea8524752bd123c6e9c8a96a4, _binary 0x45716d9eb19446a98dca5a66cc12a996, 'generic', 'thermostat_1', 'Thermostat Service', null, null, '2024-02-04 22:00:00', '2024-02-04 22:00:00', 'virtual-thermostat-addon-homekit-connector-bridge');
 
 INSERT
 IGNORE INTO `fb_devices_module_channels_properties` (`property_id`, `channel_id`, `parent_id`, `property_category`, `property_identifier`, `property_name`, `property_settable`, `property_queryable`, `property_data_type`, `property_unit`, `property_format`, `property_invalid`, `property_scale`, `property_step`, `property_value`, `property_default`, `params`, `created_at`, `updated_at`, `property_type`) VALUES

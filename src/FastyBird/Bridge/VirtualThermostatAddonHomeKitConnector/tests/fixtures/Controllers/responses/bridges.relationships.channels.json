@@ -12,7 +12,7 @@
   },
   "data": [
     {
-      "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-bridge",
+      "type": "com.fastybird.virtual-thermostat-addon-homekit-connector-bridge/channel/virtual-thermostat-addon-homekit-connector-bridge",
       "id": "af9c9d58-69c5-4d30-9bce-ca6e6ce4ed45"
     }
   ]
