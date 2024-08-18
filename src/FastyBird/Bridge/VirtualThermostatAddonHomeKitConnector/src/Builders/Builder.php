@@ -608,6 +608,10 @@ class Builder
 			$format = null;
 			$default = null;
 
+			if ($characteristicMetadata->offsetExists('Default')) {
+				$default = $characteristicMetadata->offsetGet('Default');
+			}
+
 			if (
 				$characteristicMetadata->offsetExists('Permissions')
 				&& $characteristicMetadata->offsetGet('Permissions') instanceof Utils\ArrayHash
