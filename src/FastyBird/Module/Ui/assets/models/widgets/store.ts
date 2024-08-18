@@ -67,7 +67,7 @@ const storeRecordFactory = (data: IWidgetRecordFactoryPayload): IWidget => {
 		display: {
 			id: 'N/A',
 			type: {
-				source: ModuleSource.MODULE_UI,
+				source: ModuleSource.UI,
 				type: 'N/A',
 				entity: 'display',
 			},
@@ -99,7 +99,7 @@ const storeRecordFactory = (data: IWidgetRecordFactoryPayload): IWidget => {
 			(record[relationName] as IPlainRelation) = {
 				id: get(relation, 'id', 'N/A'),
 				type: get(relation, 'type', {
-					source: ModuleSource.MODULE_UI,
+					source: ModuleSource.UI,
 					type: 'N/A',
 					entity: 'display',
 				}),
@@ -277,7 +277,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 			}
 
 			try {
-				const widgetResponse = await axios.get<IWidgetResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/widgets/${payload.id}`);
+				const widgetResponse = await axios.get<IWidgetResponseJson>(`/${ModulePrefix.UI}/v1/widgets/${payload.id}`);
 
 				const widgetResponseModel = jsonApiFormatter.deserialize(widgetResponse.data) as IWidgetResponseModel;
 
@@ -333,7 +333,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 			this.firstLoad = false;
 
 			try {
-				const widgetsResponse = await axios.get<IWidgetsResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/widgets`);
+				const widgetsResponse = await axios.get<IWidgetsResponseJson>(`/${ModulePrefix.UI}/v1/widgets`);
 
 				const widgetsResponseModel = jsonApiFormatter.deserialize(widgetsResponse.data) as IWidgetResponseModel[];
 
@@ -412,7 +412,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 			} else {
 				try {
 					const createdWidget = await axios.post<IWidgetResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/widgets`,
+						`/${ModulePrefix.UI}/v1/widgets`,
 						jsonApiFormatter.serialize({
 							stuff: newWidget,
 						})
@@ -480,7 +480,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 			} else {
 				try {
 					const updatedWidget = await axios.patch<IWidgetResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/widgets/${payload.id}`,
+						`/${ModulePrefix.UI}/v1/widgets/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -538,7 +538,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 
 			try {
 				const savedWidget = await axios.post<IWidgetResponseJson>(
-					`/${ModulePrefix.MODULE_UI}/v1/widgets`,
+					`/${ModulePrefix.UI}/v1/widgets`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -606,7 +606,7 @@ export const useWidgets = defineStore<string, IWidgetsState, IWidgetsGetters, IW
 				dataSourcesStore.unset({ widget: recordToDelete });
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_UI}/v1/widgets/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.UI}/v1/widgets/${payload.id}`);
 
 					displayStore.unset({ widget: recordToDelete });
 					dataSourcesStore.unset({ widget: recordToDelete });

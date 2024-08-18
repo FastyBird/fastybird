@@ -239,7 +239,7 @@ if (props.id === null) {
 	await devicesStore.add({
 		id: id.value,
 		connector: connector.value,
-		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic', entity: 'device' },
+		type: { source: ModuleSource.DEVICES, type: 'generic', entity: 'device' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
@@ -379,7 +379,7 @@ const onAddStaticProperty = async (): Promise<void> => {
 
 	const { id } = await devicePropertiesStore.add({
 		device: deviceData.value.device,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'device', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.VARIABLE, parent: 'device', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -397,7 +397,7 @@ const onAddDynamicProperty = async (): Promise<void> => {
 
 	const { id } = await devicePropertiesStore.add({
 		device: deviceData.value.device,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'device', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.DYNAMIC, parent: 'device', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),

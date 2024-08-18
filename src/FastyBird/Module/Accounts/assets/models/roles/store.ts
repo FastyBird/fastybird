@@ -122,7 +122,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 			this.semaphore.fetching.item.push(payload.id);
 
 			try {
-				const roleResponse = await axios.get<IRoleResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles/${payload.id}`);
+				const roleResponse = await axios.get<IRoleResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/roles/${payload.id}`);
 
 				const roleResponseModel = jsonApiFormatter.deserialize(roleResponse.data) as IRoleResponseModel;
 
@@ -147,7 +147,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 			this.semaphore.fetching.items = true;
 
 			try {
-				const rolesResponse = await axios.get<IRolesResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles`);
+				const rolesResponse = await axios.get<IRolesResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/roles`);
 
 				const rolesResponseModel = jsonApiFormatter.deserialize(rolesResponse.data) as IRoleResponseModel[];
 
@@ -189,7 +189,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 			} else {
 				try {
 					const createdRole = await axios.post<IRoleResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles`,
+						`/${ModulePrefix.ACCOUNTS}/v1/roles`,
 						jsonApiFormatter.serialize({
 							stuff: newRole,
 						})
@@ -244,7 +244,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 			} else {
 				try {
 					const updatedRole = await axios.patch<IRoleResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles/${updatedRecord.id}`,
+						`/${ModulePrefix.ACCOUNTS}/v1/roles/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -286,7 +286,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 
 			try {
 				const savedRole = await axios.post<IRoleResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles`,
+					`/${ModulePrefix.ACCOUNTS}/v1/roles`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -328,7 +328,7 @@ export const useRoles = defineStore<string, IRolesState, IRolesGetters, IRolesAc
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/roles/${recordToDelete.id}`);
+					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/roles/${recordToDelete.id}`);
 				} catch (e: any) {
 					// Deleting entity on api failed, we need to refresh entity
 					await this.get({ id: payload.id });

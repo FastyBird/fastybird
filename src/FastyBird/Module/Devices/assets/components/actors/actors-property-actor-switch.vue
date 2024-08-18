@@ -147,7 +147,7 @@ const onToggleState = async (): Promise<void> => {
 	}
 
 	try {
-		const result = await wampV1Client.call(`/${ModulePrefix.MODULE_DEVICES}/v1/exchange`, {
+		const result = await wampV1Client.call(`/${ModulePrefix.DEVICES}/v1/exchange`, {
 			routing_key: props.channel !== undefined ? ActionRoutes.CHANNEL_PROPERTY : ActionRoutes.DEVICE_PROPERTY,
 			source: props.property.type.source,
 			data: {

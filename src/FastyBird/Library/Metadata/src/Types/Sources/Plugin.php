@@ -36,6 +36,8 @@ enum Plugin: string implements Source
 
 	case REDISDB = Metadata\Constants::PLUGIN_REDISDB_SOURCE;
 
+	case REDISDB_CACHE = Metadata\Constants::PLUGIN_REDISDB_CACHE_SOURCE;
+
 	case WS_SERVER = Metadata\Constants::PLUGIN_WS_SERVER_SOURCE;
 
 	case WEB_SERVER = Metadata\Constants::PLUGIN_WEB_SERVER_SOURCE;

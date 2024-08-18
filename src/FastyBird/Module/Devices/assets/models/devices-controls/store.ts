@@ -269,7 +269,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 				try {
 					const controlResponse = await axios.get<IDeviceControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/controls/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/controls/${payload.id}`
 					);
 
 					const controlResponseModel = jsonApiFormatter.deserialize(controlResponse.data) as IDeviceControlResponseModel;
@@ -311,9 +311,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 				this.semaphore.fetching.items.push(payload.device.id);
 
 				try {
-					const controlsResponse = await axios.get<IDeviceControlsResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/controls`
-					);
+					const controlsResponse = await axios.get<IDeviceControlsResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/controls`);
 
 					const controlsResponseModel = jsonApiFormatter.deserialize(controlsResponse.data) as IDeviceControlResponseModel[];
 
@@ -392,7 +390,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 					try {
 						const createdControl = await axios.post<IDeviceControlResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/controls`,
+							`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/controls`,
 							jsonApiFormatter.serialize({
 								stuff: newControl,
 							})
@@ -451,7 +449,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 				try {
 					const savedControl = await axios.post<IDeviceControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToSave.device.id}/controls`,
+						`/${ModulePrefix.DEVICES}/v1/devices/${recordToSave.device.id}/controls`,
 						jsonApiFormatter.serialize({
 							stuff: recordToSave,
 						})
@@ -514,7 +512,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToDelete.device.id}/controls/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/controls/${recordToDelete.id}`);
 					} catch (e: any) {
 						const devicesStore = useDevices();
 

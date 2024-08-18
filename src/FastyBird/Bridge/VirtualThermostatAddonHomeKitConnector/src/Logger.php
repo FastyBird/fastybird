@@ -20,7 +20,7 @@ use Psr\Log;
 use Stringable;
 
 /**
- * Connector logger
+ * Bridge logger
  *
  * @package        FastyBird:VirtualThermostatAddonHomeKitConnectorBridge!
  * @subpackage     common

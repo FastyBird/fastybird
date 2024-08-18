@@ -199,7 +199,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 			}
 
 			try {
-				const dashboardResponse = await axios.get<IDashboardResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/dashboards/${payload.id}`);
+				const dashboardResponse = await axios.get<IDashboardResponseJson>(`/${ModulePrefix.UI}/v1/dashboards/${payload.id}`);
 
 				const dashboardResponseModel = jsonApiFormatter.deserialize(dashboardResponse.data) as IDashboardResponseModel;
 
@@ -243,7 +243,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 			this.firstLoad = false;
 
 			try {
-				const dashboardsResponse = await axios.get<IDashboardsResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/dashboards`);
+				const dashboardsResponse = await axios.get<IDashboardsResponseJson>(`/${ModulePrefix.UI}/v1/dashboards`);
 
 				const dashboardsResponseModel = jsonApiFormatter.deserialize(dashboardsResponse.data) as IDashboardResponseModel[];
 
@@ -308,7 +308,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 			} else {
 				try {
 					const createdDashboard = await axios.post<IDashboardResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/dashboards`,
+						`/${ModulePrefix.UI}/v1/dashboards`,
 						jsonApiFormatter.serialize({
 							stuff: newDashboard,
 						})
@@ -364,7 +364,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 			} else {
 				try {
 					const updatedDashboard = await axios.patch<IDashboardResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/dashboards/${payload.id}`,
+						`/${ModulePrefix.UI}/v1/dashboards/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -410,7 +410,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 
 			try {
 				const savedDashboard = await axios.post<IDashboardResponseJson>(
-					`/${ModulePrefix.MODULE_UI}/v1/dashboards`,
+					`/${ModulePrefix.UI}/v1/dashboards`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -460,7 +460,7 @@ export const useDashboards = defineStore<string, IDashboardsState, IDashboardsGe
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_UI}/v1/dashboards/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.UI}/v1/dashboards/${payload.id}`);
 				} catch (e: any) {
 					// Deleting record on api failed, we need to refresh record
 					await this.get({ id: payload.id });

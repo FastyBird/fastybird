@@ -360,7 +360,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				try {
 					const propertyResponse = await axios.get<IDevicePropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/properties/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties/${payload.id}`
 					);
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IDevicePropertyResponseModel;
@@ -403,7 +403,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				try {
 					const propertiesResponse = await axios.get<IDevicePropertiesResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/properties`
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`
 					);
 
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IDevicePropertyResponseModel[];
@@ -525,7 +525,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						}
 
 						const createdProperty = await axios.post<IDevicePropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/properties`,
+							`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -639,7 +639,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						}
 
 						const updatedProperty = await axios.patch<IDevicePropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${updatedRecord.device.id}/properties/${updatedRecord.id}`,
+							`/${ModulePrefix.DEVICES}/v1/devices/${updatedRecord.device.id}/properties/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -775,7 +775,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					}
 
 					const savedProperty = await axios.post<IDevicePropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToSave.device.id}/properties`,
+						`/${ModulePrefix.DEVICES}/v1/devices/${recordToSave.device.id}/properties`,
 						jsonApiFormatter.serialize({
 							stuff: apiData,
 						})
@@ -838,7 +838,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToDelete.device.id}/properties/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
 						const devicesStore = useDevices();
 

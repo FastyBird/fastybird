@@ -168,7 +168,7 @@ export const useSession = defineStore<string, ISessionState, ISessionGetters, IS
 			this.semaphore.fetching = true;
 
 			try {
-				const response = await axios.get<ISessionResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/session`);
+				const response = await axios.get<ISessionResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/session`);
 
 				const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
 
@@ -201,7 +201,7 @@ export const useSession = defineStore<string, ISessionState, ISessionGetters, IS
 
 			try {
 				const response = await axios.post<ISessionResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/session`,
+					`/${ModulePrefix.ACCOUNTS}/v1/session`,
 					dataFormatter.serialize({
 						stuff: {
 							type: 'com.fastybird.accounts-module/session',
@@ -251,7 +251,7 @@ export const useSession = defineStore<string, ISessionState, ISessionGetters, IS
 
 			try {
 				const response = await axios.patch<ISessionResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/session`,
+					`/${ModulePrefix.ACCOUNTS}/v1/session`,
 					dataFormatter.serialize({
 						stuff: {
 							type: 'com.fastybird.accounts-module/session',

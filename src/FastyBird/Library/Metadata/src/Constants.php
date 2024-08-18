@@ -58,6 +58,8 @@ final class Constants
 
 	public const PLUGIN_REDISDB_SOURCE = 'com.fastybird.redisdb-plugin';
 
+	public const PLUGIN_REDISDB_CACHE_SOURCE = 'com.fastybird.redisdb-cache-plugin';
+
 	public const PLUGIN_WS_SERVER_SOURCE = 'com.fastybird.ws-server-plugin';
 
 	public const PLUGIN_WEB_SERVER_SOURCE = 'com.fastybird.web-server-plugin';
@@ -88,19 +90,21 @@ final class Constants
 
 	public const CONNECTOR_ZIGBEE2MQTT_SOURCE = 'com.fastybird.zigbee2mqtt-connector';
 
-	public const AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator';
+	public const AUTOMATOR_DEVICE_MODULE_SOURCE = 'com.fastybird.device-module-automator';
 
-	public const AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator';
+	public const AUTOMATOR_DATE_TIME_SOURCE = 'com.fastybird.date-time-automator';
 
-	public const ADDON_VIRTUAL_THERMOSTAT = 'com.fastybird.virtual-thermostat-addon';
+	public const ADDON_VIRTUAL_THERMOSTAT_SOURCE = 'com.fastybird.virtual-thermostat-addon';
 
-	public const BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE = 'com.fastybird.redisdb-plugin-devices-module-bridge';
+	public const BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE_SOURCE = 'com.fastybird.redisdb-plugin-devices-module-bridge';
 
-	public const BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE = 'com.fastybird.redisdb-plugin-triggers-module-bridge';
+	public const BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE_SOURCE = 'com.fastybird.redisdb-plugin-triggers-module-bridge';
 
-	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
+	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
 
-	public const BRIDGE_DEVICES_MODULE_UI_MODULE = 'com.fastybird.devices-module-ui-module-bridge';
+	public const BRIDGE_SHELLY_CONNECTOR_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.shelly-connector-homekit-connector-bridge';
+
+	public const BRIDGE_DEVICES_MODULE_UI_MODULE_SOURCE = 'com.fastybird.devices-module-ui-module-bridge';
 
 	/**
 	 * MODULE PREFIXES
@@ -119,6 +123,8 @@ final class Constants
 	 */
 
 	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX = 'virtual-thermostat-addon-homekit-connector-bridge';
+
+	public const BRIDGE_SHELLY_CONNECTOR_HOMEKIT_CONNECTOR_PREFIX = 'shelly-connector-homekit-connector-bridge';
 
 	/**
 	 * MESSAGE BUS

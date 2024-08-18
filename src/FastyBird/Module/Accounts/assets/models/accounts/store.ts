@@ -205,7 +205,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			this.semaphore.fetching.item.push(payload.id);
 
 			try {
-				const accountResponse = await axios.get<IAccountResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}`);
+				const accountResponse = await axios.get<IAccountResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`);
 
 				const accountResponseModel = jsonApiFormatter.deserialize(accountResponse.data) as IAccountResponseModel;
 
@@ -245,7 +245,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			this.semaphore.fetching.items = true;
 
 			try {
-				const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`);
+				const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts`);
 
 				const accountsResponseModel = jsonApiFormatter.deserialize(accountsResponse.data) as IAccountResponseModel[];
 
@@ -302,7 +302,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} else {
 				try {
 					const createdAccount = await axios.post<IAccountResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts`,
 						jsonApiFormatter.serialize({
 							stuff: newAccount,
 						})
@@ -366,7 +366,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 			} else {
 				try {
 					const updatedAccount = await axios.patch<IAccountResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.id}`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -420,7 +420,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 
 			try {
 				const savedAccount = await axios.post<IAccountResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts`,
+					`/${ModulePrefix.ACCOUNTS}/v1/accounts`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -480,7 +480,7 @@ export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters,
 				identitiesStore.unset({ account: recordToDelete });
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts${payload.id}`);
+					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts${payload.id}`);
 
 					emailsStore.unset({ account: recordToDelete });
 					identitiesStore.unset({ account: recordToDelete });

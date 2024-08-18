@@ -1,48 +1,58 @@
 export enum ModulePrefix {
-	MODULE_ACCOUNTS = 'accounts-module',
-	MODULE_DEVICES = 'devices-module',
-	MODULE_TRIGGERS = 'triggers-module',
-	MODULE_UI = 'ui-module',
+	ACCOUNTS = 'accounts-module',
+	DEVICES = 'devices-module',
+	TRIGGERS = 'triggers-module',
+	UI = 'ui-module',
 }
 
 export enum ModuleSource {
 	NOT_SPECIFIED = '*',
-	MODULE_ACCOUNTS = 'com.fastybird.accounts-module',
-	MODULE_DEVICES = 'com.fastybird.devices-module',
-	MODULE_TRIGGERS = 'com.fastybird.triggers-module',
-	MODULE_UI = 'com.fastybird.ui-module',
+	ACCOUNTS = 'com.fastybird.accounts-module',
+	DEVICES = 'com.fastybird.devices-module',
+	TRIGGERS = 'com.fastybird.triggers-module',
+	UI = 'com.fastybird.ui-module',
 }
 
 export enum PluginSource {
 	NOT_SPECIFIED = '*',
-	COUCHDB_STORAGE_PLUGIN = 'com.fastybird.couchdb-storage-plugin',
-	RABBITMQ_PLUGIN = 'com.fastybird.rabbitmq-plugin',
-	REDISDB_PLUGIN = 'com.fastybird.redisdb-plugin',
-	WS_EXCHANGE_PLUGIN = 'com.fastybird.ws-server-plugin',
-	WEB_SERVER_PLUGIN = 'com.fastybird.web-server-plugin',
-	API_KEY_PLUGIN = 'com.fastybird.api-key-plugin',
+	COUCHDB_STORAGE = 'com.fastybird.couchdb-storage-plugin',
+	RABBITMQ = 'com.fastybird.rabbitmq-plugin',
+	REDISDB = 'com.fastybird.redisdb-plugin',
+	REDISDB_CACHE = 'com.fastybird.redisdb-cache-plugin',
+	WS_EXCHANGE = 'com.fastybird.ws-server-plugin',
+	WEB_SERVER = 'com.fastybird.web-server-plugin',
+	API_KEY = 'com.fastybird.api-key-plugin',
 }
 
 export enum ConnectorSource {
 	NOT_SPECIFIED = '*',
-	FB_BUS_CONNECTOR = 'com.fastybird.fb-bus-connector',
-	FB_MQTT_CONNECTOR = 'com.fastybird.fb-mqtt-connector',
-	SHELLY_CONNECTOR = 'com.fastybird.shelly-connector',
-	TUYA_CONNECTOR = 'com.fastybird.tuya-connector',
-	SONOFF_CONNECTOR = 'com.fastybird.sonoff-connector',
-	MODBUS_CONNECTOR = 'com.fastybird.modbus-connector',
-	HOMEKIT_CONNECTOR = 'com.fastybird.homekit-connector',
-	VIRTUAL_CONNECTOR = 'com.fastybird.virtual-connector',
-	TERMINAL_CONNECTOR = 'com.fastybird.terminal-connector',
-	VIERA_CONNECTOR = 'com.fastybird.viera-connector',
-	NS_PANEL_CONNECTOR = 'com.fastybird.ns-panel-connector',
-	ZIGBEE2MQTT_CONNECTOR = 'com.fastybird.zigbee2mqtt-connector',
+	FB_BUS = 'com.fastybird.fb-bus-connector',
+	FB_MQTT = 'com.fastybird.fb-mqtt-connector',
+	SHELLY = 'com.fastybird.shelly-connector',
+	TUYA = 'com.fastybird.tuya-connector',
+	SONOFF = 'com.fastybird.sonoff-connector',
+	MODBUS = 'com.fastybird.modbus-connector',
+	HOMEKIT = 'com.fastybird.homekit-connector',
+	VIRTUAL = 'com.fastybird.virtual-connector',
+	TERMINAL = 'com.fastybird.terminal-connector',
+	VIERA = 'com.fastybird.viera-connector',
+	NS_PANEL = 'com.fastybird.ns-panel-connector',
+	ZIGBEE2MQTT = 'com.fastybird.zigbee2mqtt-connector',
 }
 
 export enum AutomatorSource {
 	NOT_SPECIFIED = '*',
-	AUTOMATOR_DEVICE_MODULE = 'com.fastybird.device-module-automator',
-	AUTOMATOR_DATE_TIME = 'com.fastybird.date-time-automator',
+	DEVICE_MODULE = 'com.fastybird.device-module-automator',
+	DATE_TIME = 'com.fastybird.date-time-automator',
+}
+
+export enum BridgeSource {
+	NOT_SPECIFIED = '*',
+	REDISDB_PLUGIN_DEVICES_MODULE = 'com.fastybird.redisdb-plugin-devices-module-bridge',
+	REDISDB_PLUGIN_TRIGGERS_MODULE = 'com.fastybird.redisdb-plugin-triggers-module-bridge',
+	VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge',
+	SHELLY_CONNECTOR_HOMEKIT_CONNECTOR = 'com.fastybird.shelly-connector-homekit-connector-bridge',
+	DEVICES_MODULE_UI_MODULE = 'com.fastybird.devices-module-ui-module-bridge',
 }
 
 export enum DataType {

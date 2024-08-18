@@ -434,7 +434,7 @@ watch(
 						try {
 							await accountStore.addEmail({
 								type: {
-									source: ModuleSource.MODULE_ACCOUNTS,
+									source: ModuleSource.ACCOUNTS,
 									entity: 'email',
 								},
 								data: {

@@ -202,9 +202,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 			this.semaphore.fetching.item.push(payload.id);
 
 			try {
-				const emailResponse = await axios.get<IEmailResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/emails/${payload.id}`
-				);
+				const emailResponse = await axios.get<IEmailResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/emails/${payload.id}`);
 
 				const emailResponseModel = jsonApiFormatter.deserialize(emailResponse.data) as IEmailResponseModel;
 
@@ -234,7 +232,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 			this.semaphore.fetching.items.push(payload.account.id);
 
 			try {
-				const emailsResponse = await axios.get<IEmailsResponseJson>(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/emails`);
+				const emailsResponse = await axios.get<IEmailsResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/emails`);
 
 				const emailsResponseModel = jsonApiFormatter.deserialize(emailsResponse.data) as IEmailResponseModel[];
 
@@ -282,7 +280,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 			} else {
 				try {
 					const createdEmail = await axios.post<IEmailResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/emails`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/emails`,
 						jsonApiFormatter.serialize({
 							stuff: newEmail,
 						})
@@ -337,7 +335,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 			} else {
 				try {
 					const updatedEmail = await axios.patch<IEmailResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${updatedRecord.account.id}/emails/${updatedRecord.id}`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${updatedRecord.account.id}/emails/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -388,7 +386,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 
 			try {
 				const savedEmail = await axios.post<IEmailResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${recordToSave.account.id}/emails`,
+					`/${ModulePrefix.ACCOUNTS}/v1/accounts/${recordToSave.account.id}/emails`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -433,7 +431,7 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${recordToDelete.account.id}/emails/${recordToDelete.id}`);
+					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${recordToDelete.account.id}/emails/${recordToDelete.id}`);
 				} catch (e: any) {
 					const accountsStore = useAccounts();
 
@@ -461,10 +459,10 @@ export const useEmails = defineStore<string, IEmailsState, IEmailsGetters, IEmai
 		async validate(payload: IEmailsValidateActionPayload): Promise<any> {
 			try {
 				const validateResponse = await axios.post(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/validate-email`,
+					`/${ModulePrefix.ACCOUNTS}/v1/validate-email`,
 					jsonApiFormatter.serialize({
 						stuff: {
-							type: `${ModuleSource.MODULE_ACCOUNTS}/email`,
+							type: `${ModuleSource.ACCOUNTS}/email`,
 
 							address: payload.address,
 						},

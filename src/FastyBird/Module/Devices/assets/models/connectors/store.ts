@@ -283,7 +283,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			}
 
 			try {
-				const connectorResponse = await axios.get<IConnectorResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}`);
+				const connectorResponse = await axios.get<IConnectorResponseJson>(`/${ModulePrefix.DEVICES}/v1/connectors/${payload.id}`);
 
 				const connectorResponseModel = jsonApiFormatter.deserialize(connectorResponse.data) as IConnectorResponseModel;
 
@@ -339,7 +339,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			this.firstLoad = false;
 
 			try {
-				const connectorsResponse = await axios.get<IConnectorsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`);
+				const connectorsResponse = await axios.get<IConnectorsResponseJson>(`/${ModulePrefix.DEVICES}/v1/connectors`);
 
 				const connectorsResponseModel = jsonApiFormatter.deserialize(connectorsResponse.data) as IConnectorResponseModel[];
 
@@ -418,7 +418,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			} else {
 				try {
 					const createdConnector = await axios.post<IConnectorResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`,
+						`/${ModulePrefix.DEVICES}/v1/connectors`,
 						jsonApiFormatter.serialize({
 							stuff: newConnector,
 						})
@@ -486,7 +486,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			} else {
 				try {
 					const updatedConnector = await axios.patch<IConnectorResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}`,
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -544,7 +544,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 
 			try {
 				const savedConnector = await axios.post<IConnectorResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/connectors`,
+					`/${ModulePrefix.DEVICES}/v1/connectors`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -612,7 +612,7 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				controlsStore.unset({ connector: recordToDelete });
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.DEVICES}/v1/connectors/${payload.id}`);
 
 					propertiesStore.unset({ connector: recordToDelete });
 					controlsStore.unset({ connector: recordToDelete });

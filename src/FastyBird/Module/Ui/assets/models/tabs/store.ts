@@ -59,7 +59,7 @@ const storeRecordFactory = (data: ITabRecordFactoryPayload): ITab => {
 		dashboard: {
 			id: 'N/A',
 			type: {
-				source: ModuleSource.MODULE_UI,
+				source: ModuleSource.UI,
 				entity: 'dashboard',
 			},
 		},
@@ -88,7 +88,7 @@ const storeRecordFactory = (data: ITabRecordFactoryPayload): ITab => {
 			(record[relationName] as IPlainRelation) = {
 				id: get(relation, 'id', 'N/A'),
 				type: get(relation, 'type', {
-					source: ModuleSource.MODULE_UI,
+					source: ModuleSource.UI,
 					entity: 'display',
 				}),
 			};
@@ -216,7 +216,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 			}
 
 			try {
-				const tabResponse = await axios.get<ITabResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/tabs/${payload.id}`);
+				const tabResponse = await axios.get<ITabResponseJson>(`/${ModulePrefix.UI}/v1/tabs/${payload.id}`);
 
 				const tabResponseModel = jsonApiFormatter.deserialize(tabResponse.data) as ITabResponseModel;
 
@@ -260,7 +260,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 			this.firstLoad = false;
 
 			try {
-				const tabsResponse = await axios.get<ITabsResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/tabs`);
+				const tabsResponse = await axios.get<ITabsResponseJson>(`/${ModulePrefix.UI}/v1/tabs`);
 
 				const tabsResponseModel = jsonApiFormatter.deserialize(tabsResponse.data) as ITabResponseModel[];
 
@@ -325,7 +325,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 			} else {
 				try {
 					const createdTab = await axios.post<ITabResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/tabs`,
+						`/${ModulePrefix.UI}/v1/tabs`,
 						jsonApiFormatter.serialize({
 							stuff: newTab,
 						})
@@ -381,7 +381,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 			} else {
 				try {
 					const updatedTab = await axios.patch<ITabResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/tabs/${payload.id}`,
+						`/${ModulePrefix.UI}/v1/tabs/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -427,7 +427,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 
 			try {
 				const savedTab = await axios.post<ITabResponseJson>(
-					`/${ModulePrefix.MODULE_UI}/v1/tabs`,
+					`/${ModulePrefix.UI}/v1/tabs`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -477,7 +477,7 @@ export const useTabs = defineStore<string, ITabsState, ITabsGetters, ITabsAction
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_UI}/v1/tabs/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.UI}/v1/tabs/${payload.id}`);
 				} catch (e: any) {
 					// Deleting record on api failed, we need to refresh record
 					await this.get({ id: payload.id });

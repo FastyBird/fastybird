@@ -193,7 +193,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 			}
 
 			try {
-				const groupResponse = await axios.get<IGroupResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/groups/${payload.id}`);
+				const groupResponse = await axios.get<IGroupResponseJson>(`/${ModulePrefix.UI}/v1/groups/${payload.id}`);
 
 				const groupResponseModel = jsonApiFormatter.deserialize(groupResponse.data) as IGroupResponseModel;
 
@@ -237,7 +237,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 			this.firstLoad = false;
 
 			try {
-				const groupsResponse = await axios.get<IGroupsResponseJson>(`/${ModulePrefix.MODULE_UI}/v1/groups`);
+				const groupsResponse = await axios.get<IGroupsResponseJson>(`/${ModulePrefix.UI}/v1/groups`);
 
 				const groupsResponseModel = jsonApiFormatter.deserialize(groupsResponse.data) as IGroupResponseModel[];
 
@@ -302,7 +302,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 			} else {
 				try {
 					const createdGroup = await axios.post<IGroupResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/groups`,
+						`/${ModulePrefix.UI}/v1/groups`,
 						jsonApiFormatter.serialize({
 							stuff: newGroup,
 						})
@@ -358,7 +358,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 			} else {
 				try {
 					const updatedGroup = await axios.patch<IGroupResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/groups/${payload.id}`,
+						`/${ModulePrefix.UI}/v1/groups/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -404,7 +404,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 
 			try {
 				const savedGroup = await axios.post<IGroupResponseJson>(
-					`/${ModulePrefix.MODULE_UI}/v1/groups`,
+					`/${ModulePrefix.UI}/v1/groups`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -454,7 +454,7 @@ export const useGroups = defineStore<string, IGroupsState, IGroupsGetters, IGrou
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_UI}/v1/groups/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.UI}/v1/groups/${payload.id}`);
 				} catch (e: any) {
 					// Deleting record on api failed, we need to refresh record
 					await this.get({ id: payload.id });

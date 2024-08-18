@@ -379,10 +379,10 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				if (payload.connectorId) {
 					deviceResponse = await axios.get<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connectorId}/devices/${payload.id}`
 					);
 				} else {
-					deviceResponse = await axios.get<IDeviceResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`);
+					deviceResponse = await axios.get<IDeviceResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices/${payload.id}`);
 				}
 
 				const deviceResponseModel = jsonApiFormatter.deserialize(deviceResponse.data) as IDeviceResponseModel;
@@ -448,9 +448,9 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				let devicesResponse: AxiosResponse<IDevicesResponseJson>;
 
 				if (payload?.connectorId) {
-					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connectorId}/devices`);
+					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connectorId}/devices`);
 				} else {
-					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices`);
+					devicesResponse = await axios.get<IDevicesResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices`);
 				}
 
 				const devicesResponseModel = jsonApiFormatter.deserialize(devicesResponse.data) as IDeviceResponseModel[];
@@ -583,7 +583,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const createdDevice = await axios.post<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices`,
+						`/${ModulePrefix.DEVICES}/v1/devices`,
 						jsonApiFormatter.serialize({
 							stuff: newDevice,
 						})
@@ -654,7 +654,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			} else {
 				try {
 					const updatedDevice = await axios.patch<IDeviceResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`,
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -715,7 +715,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 			try {
 				const savedDevice = await axios.post<IDeviceResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices`,
+					`/${ModulePrefix.DEVICES}/v1/devices`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -788,7 +788,7 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				devicePropertiesStore.unset({ device: recordToDelete });
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.id}`);
+					await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${payload.id}`);
 
 					channelsStore.unset({ device: recordToDelete });
 					deviceControlsStore.unset({ device: recordToDelete });
