@@ -137,31 +137,10 @@ readonly class Device
 								);
 							}
 						} elseif ($type === Types\DeviceMessageType::GET) {
-							$payload = $this->parsePayload($message);
-
-							if ($payload === null) {
-								$this->logger->warning(
-									'Received message payload is not valid for device get state message',
-									[
-										'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
-										'type' => 'device-messages-subscriber',
-										'connector' => [
-											'id' => $this->connector->getId()->toString(),
-										],
-										'message' => [
-											'topic' => $message->getTopic(),
-											'payload' => $message->getPayload(),
-											'qos' => $message->getQosLevel(),
-										],
-									],
-								);
-
-								return;
-							}
-
-							// Handle GET data
-							$this->logger->error(
-								'No handler for GET message type',
+							// This topic could be ignored
+							// It is used only for requesting state from device
+							$this->logger->debug(
+								'Received GET request to receive device status',
 								[
 									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 									'type' => 'device-messages-subscriber',
@@ -175,6 +154,8 @@ readonly class Device
 									],
 								],
 							);
+
+							return;
 						}
 					} else {
 						$payload = $this->parsePayload($message);
