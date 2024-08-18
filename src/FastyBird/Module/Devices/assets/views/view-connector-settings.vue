@@ -217,7 +217,7 @@ const editProperty = computed<IConnectorProperty | null>((): IConnectorProperty 
 if (props.id === null) {
 	await connectorsStore.add({
 		id: id.value,
-		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic', entity: 'connector' },
+		type: { source: ModuleSource.DEVICES, type: 'generic', entity: 'connector' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
@@ -350,7 +350,7 @@ const onAddStaticProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		connector: connectorData.value.connector,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'connector', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.VARIABLE, parent: 'connector', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -368,7 +368,7 @@ const onAddDynamicProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		connector: connectorData.value.connector,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'connector', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.DYNAMIC, parent: 'connector', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),

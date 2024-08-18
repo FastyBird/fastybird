@@ -19,7 +19,7 @@
 ## What is Virtual thermostat & HomeKit connector bridge?
 
 Virtual thermostat & HomeKit connector bridge is extension for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem
-which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-addon) and [HomeKit connector](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge).
+which is creating bridge between [Virtual thermostat addon](https://github.com/FastyBird/virtual-thermostat-addon) and [HomeKit connector](https://github.com/FastyBird/homekit-connector).
 
 ### Features:
 
@@ -41,12 +41,12 @@ This extension is part of the [FastyBird](https://www.fastybird.com) [IoT](https
 In case you want to create you own distribution of [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem you could install this extension with  [Composer](http://getcomposer.org/):
 
 ```sh
-composer require fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge
+composer require fastybird/virtual-thermostat-addon-homekit-connector-bridge
 ```
 
 ## Documentation
 
-:book: Learn how to build bridge between Virtual thermostat and HomeKit connector in [documentation](https://github.com/FastyBird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge/wiki).
+:book: Learn how to build bridge between Virtual thermostat and HomeKit connector in [documentation](https://github.com/FastyBird/virtual-thermostat-addon-homekit-connector-bridge/wiki).
 
 # FastyBird
 
@@ -94,4 +94,4 @@ For release info check [release page](https://github.com/FastyBird/fastybird/rel
 
 ***
 Homepage [https://www.fastybird.com](https://www.fastybird.com) and
-repository [https://github.com/fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge](https://github.com/fastybird/virtual-thermostat-addon-virtual-thermostat-addon-homekit-connector-bridge-bridge).
+repository [https://github.com/fastybird/virtual-thermostat-addon-homekit-connector-bridge](https://github.com/fastybird/virtual-thermostat-addon-homekit-connector-bridge).

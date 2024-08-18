@@ -50,7 +50,7 @@ export function createDevicesModule(): InstallFunction {
 			app.provide(metaKey, options.meta);
 			app.provide(configurationKey, options.configuration);
 
-			wampClient.subscribe(`/${ModulePrefix.MODULE_DEVICES}/v1/exchange`, onWsMessage);
+			wampClient.subscribe(`/${ModulePrefix.DEVICES}/v1/exchange`, onWsMessage);
 
 			for (const [locale, translations] of Object.entries(locales)) {
 				const currentMessages = options.i18n?.global.getLocaleMessage(locale);

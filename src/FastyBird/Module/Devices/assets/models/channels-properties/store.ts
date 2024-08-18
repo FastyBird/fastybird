@@ -362,7 +362,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				try {
 					const propertyResponse = await axios.get<IChannelPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/properties/${payload.id}`
 					);
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IChannelPropertyResponseModel;
@@ -405,7 +405,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				try {
 					const propertiesResponse = await axios.get<IChannelPropertiesResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties`
+						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/properties`
 					);
 
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IChannelPropertyResponseModel[];
@@ -527,7 +527,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						}
 
 						const createdProperty = await axios.post<IChannelPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/properties`,
+							`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/properties`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -641,7 +641,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						}
 
 						const updatedProperty = await axios.patch<IChannelPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${updatedRecord.channel.id}/properties/${updatedRecord.id}`,
+							`/${ModulePrefix.DEVICES}/v1/channels/${updatedRecord.channel.id}/properties/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -777,7 +777,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					}
 
 					const savedProperty = await axios.post<IChannelPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToSave.channel.id}/properties`,
+						`/${ModulePrefix.DEVICES}/v1/channels/${recordToSave.channel.id}/properties`,
 						jsonApiFormatter.serialize({
 							stuff: apiData,
 						})
@@ -840,7 +840,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToDelete.channel.id}/properties/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/channels/${recordToDelete.channel.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
 						const channelsStore = useChannels();
 

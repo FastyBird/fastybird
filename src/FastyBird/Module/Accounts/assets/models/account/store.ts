@@ -89,7 +89,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 
 			try {
 				const updatedAccount = await axios.patch<IAccountResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/me?include=emails,identities,roles`,
+					`/${ModulePrefix.ACCOUNTS}/v1/me?include=emails,identities,roles`,
 					jsonApiFormatter.serialize({
 						stuff: updatedRecord,
 					})
@@ -137,7 +137,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 					...payload.data,
 					...{
 						type: {
-							source: ModuleSource.MODULE_ACCOUNTS,
+							source: ModuleSource.ACCOUNTS,
 							entity: 'email',
 						},
 						accountId: account.id,
@@ -152,7 +152,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 			} else {
 				try {
 					const createdEmail = await axios.post<IEmailResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/me/emails`,
+						`/${ModulePrefix.ACCOUNTS}/v1/me/emails`,
 						jsonApiFormatter.serialize({
 							stuff: newEmail,
 						})
@@ -218,7 +218,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 			} else {
 				try {
 					const updatedEmail = await axios.patch<IEmailResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/me/emails/${updatedRecord.id}`,
+						`/${ModulePrefix.ACCOUNTS}/v1/me/emails/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -273,7 +273,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 
 			try {
 				await axios.patch<IIdentityResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/me/identities/${identity.id}`,
+					`/${ModulePrefix.ACCOUNTS}/v1/me/identities/${identity.id}`,
 					jsonApiFormatter.serialize({
 						stuff: {
 							...identity,
@@ -312,10 +312,10 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 		async requestReset(payload: IAccountRequestResetActionPayload): Promise<boolean> {
 			try {
 				const resetResponse = await axios.post(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/reset-identity`,
+					`/${ModulePrefix.ACCOUNTS}/v1/reset-identity`,
 					jsonApiFormatter.serialize({
 						stuff: {
-							type: `${ModuleSource.MODULE_ACCOUNTS}/identity`,
+							type: `${ModuleSource.ACCOUNTS}/identity`,
 
 							uid: payload.uid,
 						},
@@ -338,7 +338,7 @@ export const useAccount = defineStore<string, IAccountState, IAccountGetters, IA
 
 			try {
 				await axios.post<IAccountResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/register`,
+					`/${ModulePrefix.ACCOUNTS}/v1/register`,
 					jsonApiFormatter.serialize({
 						stuff: {
 							email: payload.emailAddress,

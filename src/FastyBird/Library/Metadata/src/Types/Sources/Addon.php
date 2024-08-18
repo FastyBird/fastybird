@@ -30,6 +30,6 @@ enum Addon: string implements Source
 
 	case NOT_SPECIFIED = Metadata\Constants::NOT_SPECIFIED_SOURCE;
 
-	case VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT;
+	case VIRTUAL_THERMOSTAT = Metadata\Constants::ADDON_VIRTUAL_THERMOSTAT_SOURCE;
 
 }

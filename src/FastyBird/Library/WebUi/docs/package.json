@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-docs",
-  "version": "1.0.0-dev.22",
+  "version": "1.0.0-dev.23",
   "description": "Documentation for FastyBird IoT application theme",
   "bugs": "https://github.com/FastyBird/fastybird#issues",
   "license": "Apache-2.0",
@@ -25,9 +25,9 @@
     "pretty:write": "prettier src --write"
   },
   "dependencies": {
-    "@fastybird/web-ui-components": "1.0.0-dev.22",
-    "@fastybird/web-ui-icons": "1.0.0-dev.22",
-    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.22",
+    "@fastybird/web-ui-components": "1.0.0-dev.23",
+    "@fastybird/web-ui-icons": "1.0.0-dev.23",
+    "@fastybird/web-ui-theme-chalk": "1.0.0-dev.23",
     "element-plus": "^2.7"
   },
   "devDependencies": {

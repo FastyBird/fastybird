@@ -208,7 +208,7 @@ if (props.id === null) {
 	await channelsStore.add({
 		id: id.value,
 		device: device.value,
-		type: { source: ModuleSource.MODULE_DEVICES, type: 'generic', entity: 'channel' },
+		type: { source: ModuleSource.DEVICES, type: 'generic', entity: 'channel' },
 		draft: true,
 		data: {
 			identifier: generateUuid().toString(),
@@ -268,7 +268,7 @@ const onAddStaticProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		channel: channelData.value.channel,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.VARIABLE, parent: 'channel', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.VARIABLE, parent: 'channel', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),
@@ -286,7 +286,7 @@ const onAddDynamicProperty = async (): Promise<void> => {
 
 	const { id } = await propertiesStore.add({
 		channel: channelData.value.channel,
-		type: { source: ModuleSource.MODULE_DEVICES, type: PropertyType.DYNAMIC, parent: 'channel', entity: 'property' },
+		type: { source: ModuleSource.DEVICES, type: PropertyType.DYNAMIC, parent: 'channel', entity: 'property' },
 		draft: true,
 		data: {
 			identifier: generateUuid(),

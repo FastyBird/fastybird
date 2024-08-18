@@ -277,7 +277,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				try {
 					const controlResponse = await axios.get<IConnectorControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/controls/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/controls/${payload.id}`
 					);
 
 					const controlResponseModel = jsonApiFormatter.deserialize(controlResponse.data) as IConnectorControlResponseModel;
@@ -320,7 +320,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				try {
 					const controlsResponse = await axios.get<IConnectorControlsResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/controls`
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/controls`
 					);
 
 					const controlsResponseModel = jsonApiFormatter.deserialize(controlsResponse.data) as IConnectorControlResponseModel[];
@@ -400,7 +400,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 					try {
 						const createdControl = await axios.post<IConnectorControlResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/controls`,
+							`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/controls`,
 							jsonApiFormatter.serialize({
 								stuff: newControl,
 							})
@@ -459,7 +459,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				try {
 					const savedControl = await axios.post<IConnectorControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${recordToSave.connector.id}/controls`,
+						`/${ModulePrefix.DEVICES}/v1/connectors/${recordToSave.connector.id}/controls`,
 						jsonApiFormatter.serialize({
 							stuff: recordToSave,
 						})
@@ -522,7 +522,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${recordToDelete.connector.id}/controls/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/connectors/${recordToDelete.connector.id}/controls/${recordToDelete.id}`);
 					} catch (e: any) {
 						const connectorsStore = useConnectors();
 

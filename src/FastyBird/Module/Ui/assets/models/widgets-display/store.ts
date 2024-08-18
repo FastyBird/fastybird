@@ -253,7 +253,7 @@ export const useWidgetDisplay = defineStore<string, IWidgetDisplayState, IWidget
 
 				try {
 					const displayResponse = await axios.get<IWidgetDisplayResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/widgets/${payload.widget.id}/displays/${payload.id}`
+						`/${ModulePrefix.UI}/v1/widgets/${payload.widget.id}/displays/${payload.id}`
 					);
 
 					const displayResponseModel = jsonApiFormatter.deserialize(displayResponse.data) as IWidgetDisplayResponseModel;
@@ -327,7 +327,7 @@ export const useWidgetDisplay = defineStore<string, IWidgetDisplayState, IWidget
 						};
 
 						const updatedDisplay = await axios.patch<IWidgetDisplayResponseJson>(
-							`/${ModulePrefix.MODULE_UI}/v1/widgets/${updatedRecord.widget.id}/displays/${updatedRecord.id}`,
+							`/${ModulePrefix.UI}/v1/widgets/${updatedRecord.widget.id}/displays/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -392,7 +392,7 @@ export const useWidgetDisplay = defineStore<string, IWidgetDisplayState, IWidget
 
 				try {
 					const savedDisplay = await axios.post<IWidgetDisplayResponseJson>(
-						`/${ModulePrefix.MODULE_UI}/v1/widgets/${recordToSave.widget.id}/displays`,
+						`/${ModulePrefix.UI}/v1/widgets/${recordToSave.widget.id}/displays`,
 						jsonApiFormatter.serialize({
 							stuff: recordToSave,
 						})

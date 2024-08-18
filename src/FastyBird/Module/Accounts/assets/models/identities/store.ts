@@ -180,7 +180,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 			try {
 				const identityResponse = await axios.get<IIdentityResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/identities/${payload.id}`
+					`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/identities/${payload.id}`
 				);
 
 				const identityResponseModel = jsonApiFormatter.deserialize(identityResponse.data) as IIdentityResponseModel;
@@ -211,9 +211,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 			this.semaphore.fetching.items.push(payload.account.id);
 
 			try {
-				const identitiesResponse = await axios.get<IIdentitiesResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/identities`
-				);
+				const identitiesResponse = await axios.get<IIdentitiesResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/identities`);
 
 				const identitiesResponseModel = jsonApiFormatter.deserialize(identitiesResponse.data) as IIdentityResponseModel[];
 
@@ -261,7 +259,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 			} else {
 				try {
 					const createdIdentity = await axios.post<IIdentityResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${payload.account.id}/identities`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/identities`,
 						jsonApiFormatter.serialize({
 							stuff: newIdentity,
 						})
@@ -316,7 +314,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 			} else {
 				try {
 					const updatedIdentity = await axios.patch<IIdentityResponseJson>(
-						`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${updatedRecord.account.id}/identities/${updatedRecord.id}`,
+						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${updatedRecord.account.id}/identities/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -367,7 +365,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 			try {
 				const savedIdentity = await axios.post<IIdentityResponseJson>(
-					`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${recordToSave.account.id}/identities`,
+					`/${ModulePrefix.ACCOUNTS}/v1/accounts/${recordToSave.account.id}/identities`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -412,7 +410,7 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_ACCOUNTS}/v1/accounts/${recordToDelete.account.id}/identities/${recordToDelete.id}`);
+					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${recordToDelete.account.id}/identities/${recordToDelete.id}`);
 				} catch (e: any) {
 					const accountsStore = useAccounts();
 

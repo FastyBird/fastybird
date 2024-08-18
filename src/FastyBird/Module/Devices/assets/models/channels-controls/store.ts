@@ -269,7 +269,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 
 				try {
 					const controlResponse = await axios.get<IChannelControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/controls/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls/${payload.id}`
 					);
 
 					const controlResponseModel = jsonApiFormatter.deserialize(controlResponse.data) as IChannelControlResponseModel;
@@ -312,7 +312,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 
 				try {
 					const controlsResponse = await axios.get<IChannelControlsResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/controls`
+						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`
 					);
 
 					const controlsResponseModel = jsonApiFormatter.deserialize(controlsResponse.data) as IChannelControlResponseModel[];
@@ -392,7 +392,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 
 					try {
 						const createdControl = await axios.post<IChannelControlResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.channel.id}/controls`,
+							`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`,
 							jsonApiFormatter.serialize({
 								stuff: newControl,
 							})
@@ -451,7 +451,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 
 				try {
 					const savedControl = await axios.post<IChannelControlResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToSave.channel.id}/controls`,
+						`/${ModulePrefix.DEVICES}/v1/channels/${recordToSave.channel.id}/controls`,
 						jsonApiFormatter.serialize({
 							stuff: recordToSave,
 						})
@@ -514,7 +514,7 @@ export const useChannelControls = defineStore<string, IChannelControlsState, ICh
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${recordToDelete.channel.id}/controls/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/channels/${recordToDelete.channel.id}/controls/${recordToDelete.id}`);
 					} catch (e: any) {
 						const channelsStore = useChannels();
 

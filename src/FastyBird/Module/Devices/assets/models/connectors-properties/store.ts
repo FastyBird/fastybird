@@ -317,7 +317,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				try {
 					const propertyResponse = await axios.get<IConnectorPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/properties/${payload.id}`
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/properties/${payload.id}`
 					);
 
 					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IConnectorPropertyResponseModel;
@@ -363,7 +363,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				try {
 					const propertiesResponse = await axios.get<IConnectorPropertiesResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/properties`
+						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/properties`
 					);
 
 					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IConnectorPropertyResponseModel[];
@@ -473,7 +473,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						}
 
 						const createdProperty = await axios.post<IConnectorPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${payload.connector.id}/properties`,
+							`/${ModulePrefix.DEVICES}/v1/connectors/${payload.connector.id}/properties`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -577,7 +577,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						}
 
 						const updatedProperty = await axios.patch<IConnectorPropertyResponseJson>(
-							`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${updatedRecord.connector.id}/properties/${updatedRecord.id}`,
+							`/${ModulePrefix.DEVICES}/v1/connectors/${updatedRecord.connector.id}/properties/${updatedRecord.id}`,
 							jsonApiFormatter.serialize({
 								stuff: apiData,
 							})
@@ -703,7 +703,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					}
 
 					const savedProperty = await axios.post<IConnectorPropertyResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${recordToSave.connector.id}/properties`,
+						`/${ModulePrefix.DEVICES}/v1/connectors/${recordToSave.connector.id}/properties`,
 						jsonApiFormatter.serialize({
 							stuff: apiData,
 						})
@@ -766,7 +766,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 				} else {
 					try {
-						await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/connectors/${recordToDelete.connector.id}/properties/${recordToDelete.id}`);
+						await axios.delete(`/${ModulePrefix.DEVICES}/v1/connectors/${recordToDelete.connector.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
 						const connectorsStore = useConnectors();
 

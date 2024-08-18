@@ -366,11 +366,9 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				let channelResponse: AxiosResponse<IChannelResponseJson>;
 
 				if (payload.deviceId) {
-					channelResponse = await axios.get<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels/${payload.id}`
-					);
+					channelResponse = await axios.get<IChannelResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices/${payload.deviceId}/channels/${payload.id}`);
 				} else {
-					channelResponse = await axios.get<IChannelResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/channels/${payload.id}`);
+					channelResponse = await axios.get<IChannelResponseJson>(`/${ModulePrefix.DEVICES}/v1/channels/${payload.id}`);
 				}
 
 				const channelResponseModel = jsonApiFormatter.deserialize(channelResponse.data) as IChannelResponseModel;
@@ -434,9 +432,9 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				let channelsResponse: AxiosResponse<IChannelsResponseJson>;
 
 				if (payload?.deviceId) {
-					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.deviceId}/channels`);
+					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices/${payload.deviceId}/channels`);
 				} else {
-					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.MODULE_DEVICES}/v1/channels`);
+					channelsResponse = await axios.get<IChannelsResponseJson>(`/${ModulePrefix.DEVICES}/v1/channels`);
 				}
 
 				const channelsResponseModel = jsonApiFormatter.deserialize(channelsResponse.data) as IChannelResponseModel[];
@@ -570,7 +568,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 			} else {
 				try {
 					const createdChannel = await axios.post<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${payload.device.id}/channels`,
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/channels`,
 						jsonApiFormatter.serialize({
 							stuff: newChannel,
 						})
@@ -641,7 +639,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 			} else {
 				try {
 					const updatedChannel = await axios.patch<IChannelResponseJson>(
-						`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${updatedRecord.device.id}/channels/${updatedRecord.id}`,
+						`/${ModulePrefix.DEVICES}/v1/devices/${updatedRecord.device.id}/channels/${updatedRecord.id}`,
 						jsonApiFormatter.serialize({
 							stuff: updatedRecord,
 						})
@@ -708,7 +706,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 
 			try {
 				const savedChannel = await axios.post<IChannelResponseJson>(
-					`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToSave.device.id}/channels`,
+					`/${ModulePrefix.DEVICES}/v1/devices/${recordToSave.device.id}/channels`,
 					jsonApiFormatter.serialize({
 						stuff: recordToSave,
 					})
@@ -773,7 +771,7 @@ export const useChannels = defineStore<string, IChannelsState, IChannelsGetters,
 				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
-					await axios.delete(`/${ModulePrefix.MODULE_DEVICES}/v1/devices/${recordToDelete.device.id}/channels/${recordToDelete.id}`);
+					await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/channels/${recordToDelete.id}`);
 				} catch (e: any) {
 					const devicesStore = useDevices();
 
