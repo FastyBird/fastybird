@@ -496,7 +496,7 @@ final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 				// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 				'/api/' . Metadata\Constants::BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX . '/v1/bridges/cfb6e9cc-29a7-48d6-aecb-5f901d79eba2',
 				'Bearer ' . self::EXPIRED_TOKEN,
-				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/bridges.create.json'),
+				file_get_contents(__DIR__ . '/../../../fixtures/Controllers/requests/bridges.update.json'),
 				StatusCodeInterface::STATUS_UNAUTHORIZED,
 				__DIR__ . '/../../../fixtures/Controllers/responses/generic/unauthorized.json',
 			],

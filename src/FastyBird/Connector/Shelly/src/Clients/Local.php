@@ -756,62 +756,6 @@ final class Local implements Client
 	{
 		$states = [];
 
-		if ($state->getInputs() !== []) {
-			foreach ($state->getInputs() as $index => $input) {
-				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::INPUT->value . '_' . $index,
-					'sensors' => [
-						[
-							'identifier' => '_' . Types\SensorDescription::INPUT->value,
-							'value' => $input->getInput(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT->value,
-							'value' => $input->getEvent(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT_COUNT->value,
-							'value' => $input->getEventCnt(),
-						],
-					],
-				];
-			}
-		}
-
-		if ($state->getMeters() !== []) {
-			foreach ($state->getMeters() as $index => $meter) {
-				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::METER->value . '_' . $index,
-					'sensors' => [
-						[
-							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER->value,
-							'value' => $meter->getPower(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_POWER->value,
-							'value' => $meter->getPower(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::OVERPOWER->value,
-							'value' => $meter->getOverpower(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::OVERPOWER_VALUE->value,
-							'value' => $meter->getOverpower(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::ENERGY->value,
-							'value' => $meter->getTotal(),
-						],
-						[
-							'identifier' => '_' . Types\SensorDescription::ROLLER_ENERGY->value,
-							'value' => $meter->getTotal(),
-						],
-					],
-				];
-			}
-		}
-
 		if ($state->getRelays() !== []) {
 			foreach ($state->getRelays() as $index => $relay) {
 				$states[] = [
@@ -921,7 +865,7 @@ final class Local implements Client
 		if ($state->getEmeters() !== []) {
 			foreach ($state->getEmeters() as $index => $emeter) {
 				$states[] = [
-					'identifier' => '_' . Types\BlockDescription::ROLLER->value . '_' . $index,
+					'identifier' => '_' . Types\BlockDescription::EMETER->value . '_' . $index,
 					'sensors' => [
 						[
 							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER->value,
@@ -950,6 +894,70 @@ final class Local implements Client
 						[
 							'identifier' => '_' . Types\SensorDescription::ENERGY_RETURNED->value,
 							'value' => $emeter->getTotalReturned(),
+						],
+					],
+				];
+			}
+		}
+
+		/**
+		 * INPUT in /status API endpoint are separated, but in CoIoT are in relay/roller group
+		 */
+		if ($state->getInputs() !== []) {
+			foreach ($state->getInputs() as $index => $input) {
+				$states[] = [
+					'identifier' => '_' . Types\BlockDescription::RELAY->value . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT->value,
+							'value' => $input->getInput(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT->value,
+							'value' => $input->getEvent(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::INPUT_EVENT_COUNT->value,
+							'value' => $input->getEventCnt(),
+						],
+					],
+				];
+			}
+		}
+
+		/**
+		 * METERS in /status API endpoint are separated, but in CoIoT are in relay/roller group
+		 */
+		if ($state->getMeters() !== []) {
+			foreach ($state->getMeters() as $index => $meter) {
+				$states[] = [
+					'identifier' => '_' . Types\BlockDescription::RELAY->value . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::ACTIVE_POWER->value,
+							'value' => $meter->getPower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ENERGY->value,
+							'value' => $meter->getTotal(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::OVERPOWER->value,
+							'value' => $meter->getOverpower(),
+						],
+					],
+				];
+
+				$states[] = [
+					'identifier' => '_' . Types\BlockDescription::ROLLER->value . '_' . $index,
+					'sensors' => [
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_POWER->value,
+							'value' => $meter->getPower(),
+						],
+						[
+							'identifier' => '_' . Types\SensorDescription::ROLLER_ENERGY->value,
+							'value' => $meter->getTotal(),
 						],
 					],
 				];

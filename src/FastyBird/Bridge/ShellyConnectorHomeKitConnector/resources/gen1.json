@@ -1,0 +1,437 @@
+[
+  {
+    "type": "switch",
+    "models": [
+      "SHSW-1",
+      "SHSW-PM",
+      "SHSW-L",
+      "SHSW-21",
+      "SHSW-22",
+      "SHSW-25",
+      "SHSW-44",
+      "SHSW-PM",
+      "SHEM",
+      "SHEM-3",
+      "SHPLG-1",
+      "SHPLG2-1",
+      "SHPLG-S",
+      "SHPLG-U1",
+      "SHUNI-1"
+    ],
+    "categories": [
+      7,
+      8,
+      29
+    ],
+    "services": [
+      {
+        "type": "Outlet",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Outlet",
+        "category": 7,
+        "channel": "_relay_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_S_output",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "sw",
+                  "switch_on"
+                ],
+                [
+                  "b",
+                  true
+                ],
+                [
+                  "b",
+                  true
+                ]
+              ],
+              [
+                [
+                  "sw",
+                  "switch_off"
+                ],
+                [
+                  "b",
+                  false
+                ],
+                [
+                  "b",
+                  false
+                ]
+              ]
+            ]
+          },
+          {
+            "type": "OutletInUse",
+            "channel": null,
+            "property": "_P_power",
+            "nullable": true,
+            "format": [
+              0,
+              3500
+            ],
+            "value": false,
+            "require": []
+          }
+        ]
+      },
+      {
+        "type": "Switch",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Relay",
+        "category": 8,
+        "channel": "_relay_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_S_output",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "sw",
+                  "switch_on"
+                ],
+                [
+                  "b",
+                  true
+                ],
+                [
+                  "b",
+                  true
+                ]
+              ],
+              [
+                [
+                  "sw",
+                  "switch_off"
+                ],
+                [
+                  "b",
+                  false
+                ],
+                [
+                  "b",
+                  false
+                ]
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Valve",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Valve",
+        "category": 29,
+        "channel": "_relay_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "Active",
+            "channel": null,
+            "property": "_S_output",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "sw",
+                  "switch_on"
+                ],
+                [
+                  "b",
+                  true
+                ],
+                [
+                  "b",
+                  true
+                ]
+              ],
+              [
+                [
+                  "sw",
+                  "switch_off"
+                ],
+                [
+                  "b",
+                  false
+                ],
+                [
+                  "b",
+                  false
+                ]
+              ]
+            ]
+          },
+          {
+            "type": "InUse",
+            "channel": null,
+            "property": "_P_power",
+            "nullable": true,
+            "format": [
+              0,
+              2300
+            ],
+            "value": false,
+            "require": []
+          },
+          {
+            "type": "ValveType",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": [],
+            "value": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "roller",
+    "models": [
+      "SHSW-21",
+      "SHSW-22",
+      "SHSW-25"
+    ],
+    "categories": [
+      14
+    ],
+    "services": [
+      {
+        "type": "WindowCovering",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\WindowCovering",
+        "category": 14,
+        "channel": "_roller_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "CurrentPosition",
+            "channel": null,
+            "property": "_S_rollerPos",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "TargetPosition",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "PositionState",
+            "channel": null,
+            "property": "_S_roller",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "cvr",
+                  "cover_stopped"
+                ],
+                [
+                  "u8",
+                  2
+                ],
+                [
+                  "u8",
+                  2
+                ]
+              ],
+              [
+                [
+                  "cvr",
+                  "cover_opening"
+                ],
+                [
+                  "u8",
+                  1
+                ],
+                [
+                  "u8",
+                  1
+                ]
+              ],
+              [
+                [
+                  "cvr",
+                  "cover_closing"
+                ],
+                [
+                  "u8",
+                  0
+                ],
+                [
+                  "u8",
+                  0
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "light",
+    "models": [
+      "SHRGBW2",
+      "SHBLB-1",
+      "SHBDUO-1",
+      "SHDM-1",
+      "SHDM-2",
+      "SHVIN-1"
+    ],
+    "categories": [
+      5
+    ],
+    "services": [
+      {
+        "type": "Lightbulb",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Lightbulb",
+        "category": 5,
+        "channel": "_light_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "ColorRed",
+            "channel": null,
+            "property": "_S_red",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "ColorGreen",
+            "channel": null,
+            "property": "_S_green",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "ColorBlue",
+            "channel": null,
+            "property": "_S_blue",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "ColorWhite",
+            "channel": null,
+            "property": "_S_white",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_S_output",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "sw",
+                  "switch_on"
+                ],
+                [
+                  "b",
+                  true
+                ],
+                [
+                  "b",
+                  true
+                ]
+              ],
+              [
+                [
+                  "sw",
+                  "switch_off"
+                ],
+                [
+                  "b",
+                  false
+                ],
+                [
+                  "b",
+                  false
+                ]
+              ]
+            ]
+          },
+          {
+            "type": "Hue",
+            "channel": null,
+            "property": null,
+            "nullable": false,
+            "require": ["ColorRed", "ColorGreen", "ColorBlue"]
+          },
+          {
+            "type": "Saturation",
+            "channel": null,
+            "property": null,
+            "nullable": false,
+            "require": ["ColorRed", "ColorGreen", "ColorBlue"]
+          },
+          {
+            "type": "Brightness",
+            "channel": null,
+            "property": "_S_brightness",
+            "nullable": true,
+            "require": []
+          }
+        ]
+      }
+    ]
+  }
+]

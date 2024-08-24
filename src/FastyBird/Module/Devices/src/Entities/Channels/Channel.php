@@ -131,6 +131,8 @@ abstract class Channel implements Entities\Entity,
 
 		$this->properties = new Common\Collections\ArrayCollection();
 		$this->controls = new Common\Collections\ArrayCollection();
+
+		$device->addChannel($this);
 	}
 
 	abstract public static function getType(): string;

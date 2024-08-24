@@ -47,7 +47,7 @@
     "fastybird/application-library": "dev-main",
     "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
-    "fastybird/json-api": "^0.18",
+    "fastybird/json-api": "^0.19",
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.14",
     "fastybird/tools-library": "dev-main",

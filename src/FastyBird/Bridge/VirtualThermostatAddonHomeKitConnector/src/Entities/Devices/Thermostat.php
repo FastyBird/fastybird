@@ -20,6 +20,7 @@ use FastyBird\Addon\VirtualThermostat\Entities as VirtualThermostatEntities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Exceptions;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;
 use Ramsey\Uuid;
@@ -70,6 +71,11 @@ class Thermostat extends HomeKitEntities\Devices\Device
 	public static function getType(): string
 	{
 		return self::TYPE;
+	}
+
+	public function getSource(): MetadataTypes\Sources\Bridge
+	{
+		return MetadataTypes\Sources\Bridge::VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR;
 	}
 
 	/**

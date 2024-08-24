@@ -32,10 +32,6 @@ enum BlockDescription: string
 
 	case LIGHT = 'light';
 
-	case INPUT = 'input';
-
-	case METER = 'meter';
-
 	case EMETER = 'emeter';
 
 	case DEVICE = 'device';

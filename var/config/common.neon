@@ -61,6 +61,7 @@ extensions:
     fbZigbee2MqttConnector                          : FastyBird\Connector\Zigbee2Mqtt\DI\Zigbee2MqttExtension
     # FastyBird bridges
     fbDevicesModuleUiModuleBridge                   : FastyBird\Bridge\DevicesModuleUiModule\DI\DevicesModuleUiModuleExtension
+    fbShellyConnectorHomeKitConnectorBridge         : FastyBird\Bridge\ShellyConnectorHomeKitConnector\DI\ShellyConnectorHomeKitConnectorExtension
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
     fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension

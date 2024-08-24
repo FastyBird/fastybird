@@ -1,0 +1,57 @@
+{
+  "data": {
+    "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
+    "type": "com.fastybird.shelly-connector-homekit-connector-bridge/device/shelly-connector-homekit-connector-bridge",
+    "attributes": {
+      "identifier": "shelly-1pm",
+      "comment": null,
+      "enabled": true,
+      "name": "Shelly 1PM"
+    },
+    "relationships": {
+      "properties": {
+        "data": [
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "60e46edf-8169-4086-b528-2f46b01420be"
+          }
+        ]
+      },
+      "connector": {
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      },
+      "parents": {
+        "data": [
+          {
+            "type": "com.fastybird.shelly-connector/device/shelly-connector",
+            "id": "7ec6831d-112d-4145-955a-3e1248858e07"
+          }
+        ]
+      }
+    }
+  },
+  "included" : [
+    {
+      "attributes" : {
+        "category": "generic",
+        "identifier": "category",
+        "name": null,
+        "data_type": "uchar",
+        "dataType": "uchar",
+        "unit": null,
+        "format": null,
+        "invalid": null,
+        "scale": null,
+        "step": null,
+        "value_transformer": null,
+        "value": 7,
+        "default": null
+      },
+      "id": "60e46edf-8169-4086-b528-2f46b01420be",
+      "type": "com.fastybird.devices-module/property/device/variable"
+    }
+  ]
+}
