@@ -1,0 +1,407 @@
+[
+  {
+    "type": "switch",
+    "models": [
+      "SNSW-001X16EU",
+      "SNSW-001X15UL",
+      "SNSW-001P16EU",
+      "SNSW-001P15UL",
+      "SNSW-002P16EU",
+      "SNSW-102P16EU",
+      "SNSW-002P15UL",
+      "SNSW-102P15UL",
+      "SNPL-00110IT",
+      "SNPL-00112EU",
+      "SNPL-10112EU",
+      "SNPL-00112UK",
+      "SNPL-00116US",
+      "SNSN-0043X",
+      "SNSW-001X8EU",
+      "SNSW-001P8EU",
+      "SNPM-001PCEU16",
+      "SPSW-201XE16EU",
+      "SPSW-201PE16EU",
+      "SPSW-202XE16EU",
+      "SPSW-202PE16EU",
+      "SPSW-003XE16EU",
+      "SPEM-002CEBEU50",
+      "SPSW-004PE16EU",
+      "SPSW-104PE16EU"
+    ],
+    "categories": [
+      7,
+      8,
+      29
+    ],
+    "services": [
+      {
+        "type": "Outlet",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Outlet",
+        "category": 7,
+        "channel": "switch_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_output",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "OutletInUse",
+            "channel": null,
+            "property": "_active_power",
+            "nullable": true,
+            "format": [
+              0,
+              4294967295
+            ],
+            "value": false,
+            "require": []
+          }
+        ]
+      },
+      {
+        "type": "Switch",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Relay",
+        "category": 8,
+        "channel": "switch_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_output",
+            "nullable": false,
+            "require": []
+          }
+        ]
+      },
+      {
+        "type": "Valve",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Valve",
+        "category": 29,
+        "channel": "switch_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "Active",
+            "channel": null,
+            "property": "_output",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "InUse",
+            "channel": null,
+            "property": "_active_power",
+            "nullable": true,
+            "format": [
+              0,
+              4294967295
+            ],
+            "value": false,
+            "require": []
+          },
+          {
+            "type": "ValveType",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": [],
+            "value": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "roller",
+    "models": [
+      "SNSW-002P16EU",
+      "SNSW-102P16EU",
+      "SNSW-002P15UL",
+      "SNSW-102P15UL",
+      "SPSH-002PE16EU"
+    ],
+    "categories": [
+      14
+    ],
+    "services": [
+      {
+        "type": "WindowCovering",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\WindowCovering",
+        "category": 14,
+        "channel": "cover_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "CurrentPosition",
+            "channel": null,
+            "property": "_current_position",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "TargetPosition",
+            "channel": null,
+            "property": "_target_position",
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "PositionState",
+            "channel": null,
+            "property": "_state",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "cvr",
+                  "cover_stopped"
+                ],
+                [
+                  "u8",
+                  2
+                ],
+                [
+                  "u8",
+                  2
+                ]
+              ],
+              [
+                [
+                  "cvr",
+                  "cover_opening"
+                ],
+                [
+                  "u8",
+                  1
+                ],
+                [
+                  "u8",
+                  1
+                ]
+              ],
+              [
+                [
+                  "cvr",
+                  "cover_closing"
+                ],
+                [
+                  "u8",
+                  0
+                ],
+                [
+                  "u8",
+                  0
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "input",
+    "models": [
+      "SNSN-0024X",
+      "SNSN-0D24X",
+      "SNSN-0043X"
+    ],
+    "categories": [
+      15
+    ],
+    "services": [
+      {
+        "type": "StatelessProgrammableSwitch",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\InputButton",
+        "category": 15,
+        "channel": "input_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "ProgrammableSwitchEvent",
+            "channel": null,
+            "property": "_button",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "btn",
+                  "btn_clicked"
+                ],
+                [
+                  "u8",
+                  0
+                ],
+                [
+                  "u8",
+                  0
+                ]
+              ],
+              [
+                [
+                  "btn",
+                  "btn_double_clicked"
+                ],
+                [
+                  "u8",
+                  1
+                ],
+                [
+                  "u8",
+                  1
+                ]
+              ],
+              [
+                [
+                  "btn",
+                  "btn_long_clicked"
+                ],
+                [
+                  "u8",
+                  2
+                ],
+                [
+                  "u8",
+                  2
+                ]
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "type": "StatelessProgrammableSwitch",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\InputSwitch",
+        "category": 15,
+        "channel": "input_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "ProgrammableSwitchEvent",
+            "channel": null,
+            "property": "_switch",
+            "nullable": false,
+            "require": [],
+            "format": [
+              [
+                [
+                  "b",
+                  true
+                ],
+                [
+                  "u8",
+                  0
+                ],
+                [
+                  "u8",
+                  0
+                ]
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "light",
+    "models": [
+      "SNDM-0013US",
+      "SNDM-00100WW",
+      "SNDC-0D4P10WW",
+      "SPDM-001PE01EU",
+      "SPDM-002PE01EU"
+    ],
+    "categories": [
+      5
+    ],
+    "services": [
+      {
+        "type": "Lightbulb",
+        "class": "\\FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Entities\\Channels\\Lightbulb",
+        "category": 5,
+        "channel": "light_%d",
+        "index_start": 0,
+        "multiple": true,
+        "characteristics": [
+          {
+            "type": "Name",
+            "channel": null,
+            "property": null,
+            "nullable": true,
+            "require": []
+          },
+          {
+            "type": "On",
+            "channel": null,
+            "property": "_output",
+            "nullable": false,
+            "require": []
+          },
+          {
+            "type": "Brightness",
+            "channel": null,
+            "property": "_brightness",
+            "nullable": true,
+            "require": []
+          }
+        ]
+      }
+    ]
+  }
+]

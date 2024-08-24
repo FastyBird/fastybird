@@ -1,0 +1,10 @@
+{
+  "data": {
+    "id": "a1036ff8-6ee8-4405-aaed-58bae0814596",
+    "type": "com.fastybird.shelly-connector-homekit-connector-bridge/device/shelly-connector-homekit-connector-bridge",
+    "attributes": {
+      "identifier": "updated-device",
+      "name": "With name"
+    }
+  }
+}

@@ -34,7 +34,7 @@
     "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
     "fastybird/application-library": "dev-main",
-    "fastybird/json-api": "^0.18",
+    "fastybird/json-api": "^0.19",
     "fig/http-message-util": "^1.1",
     "ipub/doctrine-crud": "^5.0",
     "ipub/doctrine-timestampable": "^2.0",

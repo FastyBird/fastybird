@@ -18,7 +18,7 @@ extensions:
     contributteConsole      : Contributte\Console\DI\ConsoleExtension(%consoleMode%)
     contributteMonolog      : Contributte\Monolog\DI\MonologExtension
     contributteCacheFactory : Contributte\Cache\DI\CacheFactoryExtension
-    contributteCacheDebug   : Contributte\Cache\DI\DebugStorageExtension
+    # contributteCacheDebug : Contributte\Cache\DI\DebugStorageExtension
     orisaiObjectMapper      : OriNette\ObjectMapper\DI\ObjectMapperExtension
     fbApplicationLibrary    : FastyBird\Library\Application\DI\ApplicationExtension
 
@@ -58,8 +58,8 @@ contributteMonolog:
 
 # Caching extension
 ###################
-contributteCacheDebug:
-    debug: %debugMode%
+# contributteCacheDebug:
+#     debug: %debugMode%
 
 # Universal object mapper tool
 ##############################

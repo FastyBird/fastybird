@@ -1,15 +1,8 @@
 {
     "name": "fastybird/fastybird",
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mathsolver/mathsolver.git"
-        }
-    ],
     "description": "Repository for FastyBird packages development",
-    "type": "application",
-    "homepage": "https://www.fastybird.com",
     "license": "Apache-2.0",
+    "type": "application",
     "authors": [
         {
             "name": "FastyBird s.r.o.",
@@ -21,6 +14,7 @@
             "email": "adam.kadlec@fastybird.com"
         }
     ],
+    "homepage": "https://www.fastybird.com",
     "require": {
         "php": ">=8.2.0",
         "ext-bcmath": "*",
@@ -47,7 +41,7 @@
         "endroid/qr-code": "4.5",
         "evenement/evenement": "^3.0",
         "fastybird/datetime-factory": "^0.6",
-        "fastybird/json-api": "^0.18",
+        "fastybird/json-api": "^0.19",
         "fastybird/simple-auth": "^0.14",
         "fig/http-message-util": "^1.1",
         "guzzlehttp/guzzle": "^7.5",
@@ -125,6 +119,48 @@
         "symplify/monorepo-builder": "^11.1",
         "tracy/tracy": "^2.9"
     },
+    "replace": {
+        "fastybird/accounts-module": "self.version",
+        "fastybird/apikey-plugin": "self.version",
+        "fastybird/application": "self.version",
+        "fastybird/application-library": "self.version",
+        "fastybird/couchdb-plugin": "self.version",
+        "fastybird/date-time-automator": "self.version",
+        "fastybird/devices-module": "self.version",
+        "fastybird/devices-module-automator": "self.version",
+        "fastybird/devices-module-ui-module-bridge": "self.version",
+        "fastybird/exchange-library": "self.version",
+        "fastybird/fb-mqtt-connector": "self.version",
+        "fastybird/homekit-connector": "self.version",
+        "fastybird/metadata-library": "self.version",
+        "fastybird/modbus-connector": "self.version",
+        "fastybird/ns-panel-connector": "self.version",
+        "fastybird/rabbitmq-plugin": "self.version",
+        "fastybird/redisdb-cache-plugin": "self.version",
+        "fastybird/redisdb-plugin": "self.version",
+        "fastybird/redisdb-plugin-devices-module-bridge": "self.version",
+        "fastybird/redisdb-plugin-triggers-module-bridge": "self.version",
+        "fastybird/shelly-connector": "self.version",
+        "fastybird/shelly-connector-homekit-connector-bridge": "self.version",
+        "fastybird/sonoff-connector": "self.version",
+        "fastybird/tools-library": "self.version",
+        "fastybird/triggers-module": "self.version",
+        "fastybird/tuya-connector": "self.version",
+        "fastybird/ui-module": "self.version",
+        "fastybird/viera-connector": "self.version",
+        "fastybird/virtual-connector": "self.version",
+        "fastybird/virtual-thermostat-addon": "self.version",
+        "fastybird/virtual-thermostat-addon-homekit-connector-bridge": "self.version",
+        "fastybird/web-server-plugin": "self.version",
+        "fastybird/ws-server-plugin": "self.version",
+        "fastybird/zigbee2mqtt-connector": "self.version"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mathsolver/mathsolver.git"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "FastyBird\\Addon\\VirtualThermostat\\": "src/FastyBird/Addon/VirtualThermostat/src/",
@@ -134,6 +170,7 @@
             "FastyBird\\Bridge\\DevicesModuleUiModule\\": "src/FastyBird/Bridge/DevicesModuleUiModule/src/",
             "FastyBird\\Bridge\\RedisDbPluginDevicesModule\\": "src/FastyBird/Bridge/RedisDbPluginDevicesModule/src/",
             "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\": "src/FastyBird/Bridge/RedisDbPluginTriggersModule/src/",
+            "FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\": "src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/src/",
             "FastyBird\\Bridge\\VirtualThermostatAddonHomeKitConnector\\": "src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/src/",
             "FastyBird\\Connector\\FbMqtt\\": "src/FastyBird/Connector/FbMqtt/src/",
             "FastyBird\\Connector\\HomeKit\\": "src/FastyBird/Connector/HomeKit/src/",
@@ -185,6 +222,10 @@
             "FastyBird\\Bridge\\RedisDbPluginDevicesModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbPluginDevicesModule/tests/tools",
             "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/cases/unit",
             "FastyBird\\Bridge\\RedisDbPluginTriggersModule\\Tests\\Tools\\": "src/FastyBird/Bridge/RedisDbPluginTriggersModule/tests/tools",
+            "FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/tests/cases/unit",
+            "FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Tests\\Fixtures\\": "src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/tests/fixtures",
+            "FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/tests/fixtures/dummy",
+            "FastyBird\\Bridge\\ShellyConnectorHomeKitConnector\\Tests\\Tools\\": "src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/tests/tools",
             "FastyBird\\Bridge\\VirtualThermostatAddonHomeKitConnector\\Tests\\Cases\\Unit\\": "src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/cases/unit",
             "FastyBird\\Bridge\\VirtualThermostatAddonHomeKitConnector\\Tests\\Fixtures\\": "src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/fixtures",
             "FastyBird\\Bridge\\VirtualThermostatAddonHomeKitConnector\\Tests\\Fixtures\\Dummy\\": "src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tests/fixtures/dummy",
@@ -249,6 +290,22 @@
             "FastyBird\\Plugin\\WsServer\\Tests\\Cases\\Unit\\": "src/FastyBird/Plugin/WsServer/tests/cases/unit"
         }
     },
+    "bin": [
+        "src/FastyBird/Library/Application/bin/fb-console",
+        "src/FastyBird/Library/Application/bin/fb-console.php",
+        "src/FastyBird/Library/Application/bin/fb-supervisor",
+        "src/FastyBird/Library/Application/bin/fb-supervisor.php"
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "cweagans/composer-patches": true,
+            "phpstan/extension-installer": true,
+            "infection/extension-installer": true,
+            "php-http/discovery": false
+        }
+    },
     "extra": {
         "enable-patching": false,
         "patches": {
@@ -279,58 +336,5 @@
                 "Feature: enable extended queries": "https://raw.githubusercontent.com/FastyBird/libraries-patches/master/softcreatr-jsonpath-src-filters-querymatchfilter-php.patch"
             }
         }
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "cweagans/composer-patches": true,
-            "phpstan/extension-installer": true,
-            "infection/extension-installer": true,
-            "php-http/discovery": false
-        }
-    },
-    "bin": [
-        "src/FastyBird/Library/Application/bin/fb-console",
-        "src/FastyBird/Library/Application/bin/fb-console.php",
-        "src/FastyBird/Library/Application/bin/fb-supervisor",
-        "src/FastyBird/Library/Application/bin/fb-supervisor.php"
-    ],
-    "replace": {
-        "fastybird/accounts-module": "self.version",
-        "fastybird/apikey-plugin": "self.version",
-        "fastybird/application": "self.version",
-        "fastybird/application-library": "self.version",
-        "fastybird/couchdb-plugin": "self.version",
-        "fastybird/date-time-automator": "self.version",
-        "fastybird/devices-module": "self.version",
-        "fastybird/devices-module-automator": "self.version",
-        "fastybird/devices-module-ui-module-bridge": "self.version",
-        "fastybird/exchange-library": "self.version",
-        "fastybird/fb-mqtt-connector": "self.version",
-        "fastybird/homekit-connector": "self.version",
-        "fastybird/metadata-library": "self.version",
-        "fastybird/modbus-connector": "self.version",
-        "fastybird/ns-panel-connector": "self.version",
-        "fastybird/rabbitmq-plugin": "self.version",
-        "fastybird/redisdb-cache-plugin": "self.version",
-        "fastybird/redisdb-plugin": "self.version",
-        "fastybird/redisdb-plugin-devices-module-bridge": "self.version",
-        "fastybird/redisdb-plugin-triggers-module-bridge": "self.version",
-        "fastybird/shelly-connector": "self.version",
-        "fastybird/sonoff-connector": "self.version",
-        "fastybird/tools-library": "self.version",
-        "fastybird/triggers-module": "self.version",
-        "fastybird/tuya-connector": "self.version",
-        "fastybird/ui-module": "self.version",
-        "fastybird/viera-connector": "self.version",
-        "fastybird/virtual-connector": "self.version",
-        "fastybird/virtual-thermostat-addon": "self.version",
-        "fastybird/virtual-thermostat-addon-homekit-connector-bridge": "self.version",
-        "fastybird/web-server-plugin": "self.version",
-        "fastybird/ws-server-plugin": "self.version",
-        "fastybird/zigbee2mqtt-connector": "self.version"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    }
 }

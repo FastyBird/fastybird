@@ -1,0 +1,14 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/devices-module/v1/devices/5e1d0ee0-98b1-49a2-bd88-a3cf09cf2a14/relationships/children",
+    "related": "/api/devices-module/v1/devices/5e1d0ee0-98b1-49a2-bd88-a3cf09cf2a14/children"
+  },
+  "data": []
+}

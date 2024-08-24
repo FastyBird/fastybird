@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/shelly-connector-homekit-connector-bridge/v1/bridges"
+  },
+  "data": {
+    "type": "com.fastybird.shelly-connector-homekit-connector-bridge/device/shelly-connector-homekit-connector-bridge",
+    "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
+    "attributes": {
+      "category": "generic",
+      "identifier": "shelly-1pm",
+      "name": "Shelly 1PM",
+      "comment": null,
+      "owner": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00"
+    },
+    "relationships": {
+      "properties": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/properties",
+          "related": {
+            "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/properties",
+            "meta": {
+              "count": 3
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_1_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_2_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_3_PLACEHOLDER__"
+          }
+        ]
+      },
+      "controls": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/controls",
+          "related": {
+            "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/controls",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      },
+      "channels": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/channels",
+          "related": {
+            "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/channels",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.shelly-connector-homekit-connector-bridge/channel/shelly-connector-homekit-connector-bridge-outlet",
+            "id": "__CHANNEL_1_PLACEHOLDER__"
+          }
+        ]
+      },
+      "connector": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/connector",
+          "related": "/api/devices-module/v1/connectors/451ab010-f500-4eff-8289-9ed09e56a887"
+        },
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      },
+      "parents": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/parents",
+          "related": {
+            "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/parents",
+            "meta": {
+              "count": 1
+            }
+          }
+        },
+        "data": [
+          {
+            "type": "com.fastybird.shelly-connector/device/shelly-connector",
+            "id": "7ec6831d-112d-4145-955a-3e1248858e07"
+          }
+        ]
+      },
+      "children": {
+        "links": {
+          "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/relationships/children",
+          "related": {
+            "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/children",
+            "meta": {
+              "count": 0
+            }
+          }
+        },
+        "data": []
+      }
+    },
+    "links": {
+      "self": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce"
+    }
+  }
+}
