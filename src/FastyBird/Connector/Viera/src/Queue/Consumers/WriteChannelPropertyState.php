@@ -367,6 +367,44 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$result = $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
 
 					break;
+
+				case Types\ChannelPropertyIdentifier::REMOTE->value:
+					$key = Types\ActionKey::tryFrom(strval($expectedValue));
+
+					if ($key === null) {
+						await($this->channelPropertiesStatesManager->setPendingState(
+							$property,
+							false,
+							MetadataTypes\Sources\Connector::VIERA,
+						));
+
+						$this->logger->error(
+							'Provided property value is not valid',
+							[
+								'source' => MetadataTypes\Sources\Connector::VIERA->value,
+								'type' => 'write-channel-property-state-message-consumer',
+								'connector' => [
+									'id' => $connector->getId()->toString(),
+								],
+								'device' => [
+									'id' => $device->getId()->toString(),
+								],
+								'channel' => [
+									'id' => $channel->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+								'data' => $message->toArray(),
+							],
+						);
+
+						return true;
+					}
+
+					$result = $client->sendKey($key);
+					break;
+
 				default:
 					if (
 						Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
@@ -583,6 +621,22 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 						break;
+
+					case Types\ChannelPropertyIdentifier::REMOTE->value:
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $connector->getId(),
+									'device' => $device->getId(),
+									'channel' => Types\ChannelType::TELEVISION,
+									'property' => $property->getId(),
+									'value' => null,
+								],
+							),
+						);
+						break;
+
 					default:
 						if (
 							Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
