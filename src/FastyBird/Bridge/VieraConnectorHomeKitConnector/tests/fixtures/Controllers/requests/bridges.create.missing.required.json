@@ -1,0 +1,22 @@
+{
+  "data": {
+    "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
+    "type": "com.fastybird.viera-connector-homekit-connector-bridge/device/viera-connector-homekit-connector-bridge",
+    "attributes": {
+      "identifier": "connected-bedroom-tv",
+      "comment": null,
+      "enabled": true,
+      "name": "Connected bedroom TV"
+    },
+    "relationships": {
+      "parents": {
+        "data": [
+          {
+            "type": "com.fastybird.viera-connector/device/viera-connector",
+            "id": "8bb73f8a-006e-4a0b-81fe-384d01c3fca2"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -8,6 +8,7 @@ includes:
     - ../src/FastyBird/Bridge/RedisDbPluginDevicesModule/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Bridge/RedisDbPluginTriggersModule/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Bridge/ShellyConnectorHomeKitConnector/tools/phpstan.config.tests.neon
+    - ../src/FastyBird/Bridge/VieraConnectorHomeKitConnector/tools/phpstan.config.tests.neon
     - ../src/FastyBird/Bridge/VirtualThermostatAddonHomeKitConnector/tools/phpstan.config.tests.neon
 
     - ../src/FastyBird/Connector/FbMqtt/tools/phpstan.config.tests.neon
