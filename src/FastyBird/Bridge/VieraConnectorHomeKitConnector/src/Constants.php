@@ -34,6 +34,8 @@ final class Constants
 
 	public const ROUTE_NAME_BRIDGE = 'bridge';
 
+	public const DEFAULT_ACTIVE_IDENTIFIER = 500; // TV tuner
+
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 
 }

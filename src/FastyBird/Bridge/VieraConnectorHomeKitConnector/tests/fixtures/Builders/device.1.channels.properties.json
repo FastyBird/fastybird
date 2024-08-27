@@ -1,0 +1,2679 @@
+{
+  "television_1": {
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Living Room TV",
+      "owner": null,
+      "children": []
+    },
+    "remote_key": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "a819734a-8b27-43b9-8ed3-7e62285e2b5d",
+      "settable": true,
+      "queryable": false
+    },
+    "active": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "active",
+      "name": null,
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "d6df8598-c2c0-40ec-8a14-b08823e74b9c",
+      "settable": true,
+      "queryable": true
+    },
+    "sleep_discovery_mode": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "sleep_discovery_mode",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "active_identifier": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "active_identifier",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    }
+  },
+  "input_source_1": {
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "2",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 500,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "TV",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "TV",
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "television_speaker_1": {
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Living Room TV speaker",
+      "owner": null,
+      "children": []
+    },
+    "volume": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "volume",
+      "name": null,
+      "data_type": "uchar",
+      "unit": null,
+      "format": [
+        0.0,
+        100.0
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "98ee724b-093f-4289-9207-f555a1ed1d86",
+      "settable": true,
+      "queryable": true
+    },
+    "mute": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "mute",
+      "name": null,
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "8e02bb38-08d7-4595-9635-8d1486450ec5",
+      "settable": true,
+      "queryable": true
+    },
+    "volume_selector": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "volume_selector",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "a819734a-8b27-43b9-8ed3-7e62285e2b5d",
+      "settable": true,
+      "queryable": false
+    },
+    "active": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "active",
+      "name": null,
+      "data_type": "bool",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "owner": null,
+      "parent": "d6df8598-c2c0-40ec-8a14-b08823e74b9c",
+      "settable": true,
+      "queryable": true
+    },
+    "volume_control_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "volume_control_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "3",
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_2": {
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi1",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 1,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi1",
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "3",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_5": {
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 387878700000102,
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Apps market",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Apps market",
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_8": {
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 76010507000001,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Plex",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Plex",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_3": {
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "3",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi2",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 2,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi2",
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_4": {
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi3",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Hdmi3",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 3,
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "3",
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_7": {
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Youtube",
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Youtube",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 70000200180001,
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_9": {
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 70003000000001,
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Apple tv+",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Apple tv+",
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_10": {
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Youtube music",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Youtube music",
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 70003100000001,
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
+  "input_source_6": {
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Netflix",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Netflix",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": 10000200000001,
+      "owner": null,
+      "children": []
+    },
+    "input_source": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "input_source",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        [
+          "500",
+          "TV",
+          "TV"
+        ],
+        [
+          "1",
+          "hdmi1",
+          "hdmi1"
+        ],
+        [
+          "2",
+          "hdmi2",
+          "hdmi2"
+        ],
+        [
+          "3",
+          "hdmi3",
+          "hdmi3"
+        ],
+        [
+          "0387878700000102",
+          "apps_market",
+          "apps_market"
+        ],
+        [
+          "0010000200000001",
+          "netflix",
+          "netflix"
+        ],
+        [
+          "0070000200180001",
+          "youtube",
+          "youtube"
+        ],
+        [
+          "0076010507000001",
+          "plex",
+          "plex"
+        ],
+        [
+          "0070003000000001",
+          "apple_tv+",
+          "apple_tv+"
+        ],
+        [
+          "0070003100000001",
+          "youtube_music",
+          "youtube_music"
+        ],
+        [
+          "0070002900000002",
+          "disney+",
+          "disney+"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": false,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "television_1": {
+    "type": "viera-connector-homekit-connector-bridge-television",
+    "category": "generic",
+    "identifier": "television_1",
+    "name": "Television",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_1": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_1",
+    "name": "TV",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "television_speaker_1": {
+    "type": "viera-connector-homekit-connector-bridge-television-speaker",
+    "category": "generic",
+    "identifier": "television_speaker_1",
+    "name": "Television speaker",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_2": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_2",
+    "name": "Hdmi1",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_5": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_5",
+    "name": "Apps market",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_8": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_8",
+    "name": "Plex",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_3": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_3",
+    "name": "Hdmi2",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_4": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_4",
+    "name": "Hdmi3",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_7": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_7",
+    "name": "Youtube",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_9": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_9",
+    "name": "Apple tv+",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_10": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_10",
+    "name": "Youtube music",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  },
+  "input_source_6": {
+    "type": "viera-connector-homekit-connector-bridge-input-source",
+    "category": "generic",
+    "identifier": "input_source_6",
+    "name": "Netflix",
+    "comment": null,
+    "connector": "451ab010-f500-4eff-8289-9ed09e56a887",
+    "owner": null,
+    "created_at": "2024-08-20T11:00:00+02:00",
+    "updated_at": "2024-08-20T11:00:00+02:00"
+  }
+}

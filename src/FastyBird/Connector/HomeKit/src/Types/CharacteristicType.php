@@ -128,6 +128,8 @@ enum CharacteristicType: string
 
 	case IMAGE_ROTATION = 'ImageRotation';
 
+	case INPUT_SOURCE = 'InputSource';
+
 	case INPUT_SOURCE_TYPE = 'InputSourceType';
 
 	case INPUT_DEVICE_TYPE = 'InputDeviceType';

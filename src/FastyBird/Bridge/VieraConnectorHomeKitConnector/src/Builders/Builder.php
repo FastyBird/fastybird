@@ -651,6 +651,8 @@ class Builder
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws HomeKitExceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
 	 * @throws TypeError
 	 * @throws ValueError
@@ -735,6 +737,26 @@ class Builder
 
 			$format = $characteristicMapping->getFormat() ?? $this->buildFormat($characteristicMetadata);
 			$default = null;
+
+			if (
+				(
+					$characteristicMapping->getType() === HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER
+					|| $characteristicMapping->getType() === HomeKitTypes\CharacteristicType::INPUT_SOURCE
+				) && $connectProperty->getIdentifier() === VieraTypes\ChannelPropertyIdentifier::INPUT_SOURCE->value
+			) {
+				$inputSourceFormat = $connectProperty->getFormat();
+				assert($inputSourceFormat instanceof MetadataFormats\CombinedEnum);
+
+				$format = array_map(static function (array $items): array {
+					assert(
+						count($items) === 3
+						&& $items[0] instanceof MetadataFormats\CombinedEnumItem
+						&& $items[1] instanceof MetadataFormats\CombinedEnumItem,
+					);
+
+					return [$items[1]->getValue(), $items[0]->getValue(), $items[0]->getValue()];
+				}, $inputSourceFormat->getItems());
+			}
 
 			if ($characteristicMetadata->offsetExists('Default')) {
 				$default = $characteristicMetadata->offsetGet('Default');

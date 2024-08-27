@@ -16,6 +16,8 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
+use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
+use FastyBird\Connector\Viera\Types as VieraTypes;
 
 /**
  * Viera television speaker service
@@ -27,5 +29,23 @@ use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
  */
 final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 {
+
+	public function recalculateValues(
+		HomeKitProtocol\Characteristics\Characteristic $characteristic,
+		bool $fromDevice,
+	): void
+	{
+		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
+			if ($characteristic->getValue() === 0) {
+				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_UP->value);
+
+			} elseif ($characteristic->getValue() === 1) {
+				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_DOWN->value);
+
+			} else {
+				$characteristic->setValue(null);
+			}
+		}
+	}
 
 }

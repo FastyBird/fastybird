@@ -45,8 +45,8 @@
         {
           "type": "ActiveIdentifier",
           "channel": null,
-          "property": null,
-          "nullable": true
+          "property": "input_source",
+          "nullable": false
         }
       ]
     },
@@ -113,6 +113,13 @@
           "nullable": true
         },
         {
+          "type": "InputSource",
+          "channel": null,
+          "property": "input_source",
+          "nullable": false,
+          "format": null
+        },
+        {
           "type": "InputSourceType",
           "channel": null,
           "property": null,
@@ -134,8 +141,8 @@
         {
           "type": "CurrentVisibilityState",
           "channel": null,
-          "property": "input_source",
-          "nullable": false
+          "property": null,
+          "nullable": true
         },
         {
           "type": "TargetVisibilityState",
