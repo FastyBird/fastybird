@@ -43,9 +43,13 @@ class Device extends VirtualEntities\Devices\Device
 
 	public const MINIMUM_TEMPERATURE = 7.0;
 
-	public const MAXIMUM_TEMPERATURE = 35.0;
+	public const MAXIMUM_ROOM_TEMPERATURE = 1_000.0;
 
-	public const MAXIMUM_FLOOR_TEMPERATURE = 28.0;
+	public const MAXIMUM_FLOOR_TEMPERATURE = 1_000.0;
+
+	public const MAXIMUM_SET_ROOM_TEMPERATURE = 35.0;
+
+	public const MAXIMUM_SET_FLOOR_TEMPERATURE = 30.0;
 
 	public const TARGET_TEMPERATURE = 20.0;
 

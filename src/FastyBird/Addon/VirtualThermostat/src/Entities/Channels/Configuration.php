@@ -88,7 +88,7 @@ class Configuration extends VirtualEntities\Channels\Channel
 			return floatval($property->getValue());
 		}
 
-		return Entities\Devices\Device::MAXIMUM_FLOOR_TEMPERATURE;
+		return Entities\Devices\Device::MAXIMUM_SET_FLOOR_TEMPERATURE;
 	}
 
 	/**
