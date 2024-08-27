@@ -528,7 +528,6 @@ final class Gateway implements Client
 							if (
 								is_string($key)
 								&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
-								&& array_key_exists('identifier', $matches)
 							) {
 								$identifier = $matches['identifier'];
 							}

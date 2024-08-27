@@ -77,6 +77,7 @@ final class MqttParser
 		if (preg_match(MqttValidator::BRIDGE_REGEXP, $topic) === 1) {
 			preg_match(MqttValidator::BRIDGE_REGEXP, $topic, $matches);
 			assert(array_key_exists('type', $matches));
+			assert(array_key_exists('base_topic', $matches));
 
 			return [
 				'connector' => $connector,
@@ -88,6 +89,7 @@ final class MqttParser
 			preg_match(MqttValidator::BRIDGE_REQUEST_RESPONSE_REGEXP, $topic, $matches);
 			assert(array_key_exists('type', $matches));
 			assert(array_key_exists('request_response', $matches));
+			assert(array_key_exists('base_topic', $matches));
 
 			return [
 				'connector' => $connector,

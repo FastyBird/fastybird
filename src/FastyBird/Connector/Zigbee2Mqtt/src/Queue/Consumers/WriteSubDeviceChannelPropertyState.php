@@ -41,7 +41,6 @@ use stdClass;
 use Throwable;
 use TypeError;
 use ValueError;
-use function array_key_exists;
 use function preg_match;
 use function React\Async\async;
 use function React\Async\await;
@@ -313,9 +312,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 
 		if (
 			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) === 1
-			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::tryFrom($matches['type']) !== null
-			&& array_key_exists('identifier', $matches)
 		) {
 			$writeData = new stdClass();
 
@@ -348,11 +345,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				$channel->getIdentifier(),
 				$matches,
 			) === 1
-			&& array_key_exists('type', $matches)
 			&& Types\ExposeType::tryFrom($matches['type']) !== null
-			&& array_key_exists('subtype', $matches)
 			&& Types\ExposeType::tryFrom($matches['subtype']) !== null
-			&& array_key_exists('identifier', $matches)
 		) {
 			$writeData = new stdClass();
 

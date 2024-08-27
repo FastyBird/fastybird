@@ -246,8 +246,6 @@ final class Gen1HttpApi extends HttpApi
 	{
 		if (
 			preg_match(self::CHANNEL_BLOCK, $blockIdentifier, $channelMatches) !== 1
-			|| !array_key_exists('identifier', $channelMatches)
-			|| !array_key_exists('description', $channelMatches)
 			|| !array_key_exists('channel', $channelMatches)
 		) {
 			if ($async) {
@@ -930,14 +928,6 @@ final class Gen1HttpApi extends HttpApi
 	private function buildSensorAction(string $property): string
 	{
 		if (preg_match(self::PROPERTY_SENSOR, $property, $propertyMatches) !== 1) {
-			throw new Exceptions\InvalidState('Property identifier is not valid');
-		}
-
-		if (
-			!array_key_exists('identifier', $propertyMatches)
-			|| !array_key_exists('type', $propertyMatches)
-			|| !array_key_exists('description', $propertyMatches)
-		) {
 			throw new Exceptions\InvalidState('Property identifier is not valid');
 		}
 

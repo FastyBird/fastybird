@@ -34,7 +34,6 @@ use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use RuntimeException;
-use function array_key_exists;
 use function is_string;
 use function preg_match;
 use function strval;
@@ -166,7 +165,6 @@ final class DirectiveController extends BaseController
 			if (
 				is_string($key)
 				&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
-				&& array_key_exists('identifier', $matches)
 			) {
 				$identifier = $matches['identifier'];
 			}

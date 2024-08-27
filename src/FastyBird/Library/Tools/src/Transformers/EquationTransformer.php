@@ -48,9 +48,7 @@ final class EquationTransformer
 	public function __construct(string $equation)
 	{
 		if (preg_match(Metadata\Constants::VALUE_EQUATION_TRANSFORMER, $equation, $matches) === 1) {
-			if (array_key_exists('equation_x', $matches)) {
-				$this->equationFrom = $matches['equation_x'];
-			}
+			$this->equationFrom = $matches['equation_x'];
 
 			if (array_key_exists('equation_y', $matches)) {
 				$this->equationTo = $matches['equation_y'];

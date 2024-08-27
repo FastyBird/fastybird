@@ -197,7 +197,7 @@ final class Device implements Client
 
 					if (
 						preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches) === 1
-						&& array_key_exists('identifier', $matches)
+						&& array_key_exists('key', $matches)
 					) {
 						$capabilityName = $matches['key'];
 					}
@@ -228,7 +228,6 @@ final class Device implements Client
 								$property->getIdentifier(),
 								$matches,
 							) === 1
-							&& array_key_exists('tag', $matches)
 						) {
 							$tags[$matches['tag']] = $property->getValue();
 						}
