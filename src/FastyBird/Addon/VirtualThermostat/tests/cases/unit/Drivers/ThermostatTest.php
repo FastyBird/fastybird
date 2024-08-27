@@ -488,7 +488,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 				[
 					'bceca543-2de7-44b1-8a33-87e9574b6731' => true, // heater_1
 					'd58fe894-0d1c-4bf0-bff5-a190cab20e5c' => 21.6, // target_sensor_1
-					'e2b98261-2a05-483d-be7c-ac3afe3888b2' => 28, // floor_sensor_1
+					'e2b98261-2a05-483d-be7c-ac3afe3888b2' => 31.0, // floor_sensor_1
 					'17627f14-ebbf-4bc1-88fd-e8fc32d3e5de' => 22.0, // target_temperature - manual
 					'1e196c5c-a469-4ec7-95e7-c4bb48d58fe0' => 17.0, // target_temperature - preset_away
 					'767ddcf6-24c5-48b0-baaa-e8c7a90d3dc0' => 20.0, // target_temperature - preset_eco
@@ -527,7 +527,7 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 						'device' => '552cea8a-0e81-41d9-be2f-839b079f315e',
 						'channel' => 'b453987e-bbf4-46fc-830f-6448b19d9665',
 						'property' => 'current_floor_temperature',
-						'value' => 28.0,
+						'value' => 31.0,
 						'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					],
 					[
