@@ -21,6 +21,8 @@ use FastyBird\Connector\FbMqtt\Types;
 use Nette;
 use Ramsey\Uuid;
 use function array_merge;
+use function assert;
+use function is_string;
 use function preg_match;
 use function strtolower;
 
@@ -91,7 +93,8 @@ final class V1Parser
 
 		if (V1Validator::validateChannelPart($topic)) {
 			preg_match(V1Validator::CHANNEL_PARTIAL_REGEXP, $topic, $matches);
-			[, $device] = $matches;
+			[, $device] = $matches + [null, null];
+			assert(is_string($device));
 
 			if (V1Validator::validateChannelAttribute($topic)) {
 				return array_merge(
@@ -125,7 +128,8 @@ final class V1Parser
 	): array
 	{
 		preg_match(V1Validator::DEVICE_ATTRIBUTE_REGEXP, $topic, $matches);
-		[, $device, $attribute] = $matches;
+		[, $device, $attribute] = $matches + [null, null, null];
+		assert(is_string($device) && is_string($attribute));
 
 		return [
 			'connector' => $connector,
@@ -145,7 +149,8 @@ final class V1Parser
 	): array
 	{
 		preg_match(V1Validator::DEVICE_HW_INFO_REGEXP, $topic, $matches);
-		[, $device, $hardware] = $matches;
+		[, $device, $hardware] = $matches + [null, null, null];
+		assert(is_string($device) && is_string($hardware));
 
 		return [
 			'connector' => $connector,
@@ -166,7 +171,8 @@ final class V1Parser
 	): array
 	{
 		preg_match(V1Validator::DEVICE_FW_INFO_REGEXP, $topic, $matches);
-		[, $device, $firmware] = $matches;
+		[, $device, $firmware] = $matches + [null, null, null];
+		assert(is_string($device) && is_string($firmware));
 
 		return [
 			'connector' => $connector,
@@ -218,7 +224,8 @@ final class V1Parser
 	): array
 	{
 		preg_match(V1Validator::CHANNEL_ATTRIBUTE_REGEXP, $topic, $matches);
-		[, , $channel, $attribute] = $matches;
+		[, , $channel, $attribute] = $matches + [null, null, null, null];
+		assert(is_string($channel) && is_string($attribute));
 
 		return [
 			'connector' => $connector,

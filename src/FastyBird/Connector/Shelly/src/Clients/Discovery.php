@@ -199,7 +199,6 @@ final class Discovery
 			if (
 				$sender !== null
 				&& preg_match(self::MATCH_IP_ADDRESS_PORT, $sender, $matches) === 1
-				&& array_key_exists('address', $matches)
 				&& array_key_exists('port', $matches)
 			) {
 				$serviceIpAddress = $matches['address'];

@@ -219,8 +219,6 @@ final class Gen2HttpApi extends HttpApi
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $propertyMatches) !== 1
-			|| !array_key_exists('component', $propertyMatches)
-			|| !array_key_exists('identifier', $propertyMatches)
 			|| !array_key_exists('attribute', $propertyMatches)
 		) {
 			if ($async) {
@@ -349,7 +347,6 @@ final class Gen2HttpApi extends HttpApi
 			if (
 				$configuration instanceof Utils\ArrayHash
 				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-				&& array_key_exists('component', $componentMatches)
 				&& Types\ComponentType::tryFrom($componentMatches['component']) !== null
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH->value) {
@@ -432,7 +429,6 @@ final class Gen2HttpApi extends HttpApi
 			if (
 				$state instanceof Utils\ArrayHash
 				&& preg_match(self::COMPONENT_KEY, $key, $componentMatches) === 1
-				&& array_key_exists('component', $componentMatches)
 				&& Types\ComponentType::tryFrom($componentMatches['component']) !== null
 			) {
 				if ($componentMatches['component'] === Types\ComponentType::SWITCH->value) {
@@ -567,8 +563,6 @@ final class Gen2HttpApi extends HttpApi
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
-			|| !array_key_exists('component', $componentMatches)
-			|| !array_key_exists('identifier', $componentMatches)
 			|| !array_key_exists('attribute', $componentMatches)
 		) {
 			throw new Exceptions\InvalidState('Property identifier is not in expected format');
@@ -623,8 +617,6 @@ final class Gen2HttpApi extends HttpApi
 	{
 		if (
 			preg_match(self::PROPERTY_COMPONENT, $component, $componentMatches) !== 1
-			|| !array_key_exists('component', $componentMatches)
-			|| !array_key_exists('identifier', $componentMatches)
 			|| !array_key_exists('attribute', $componentMatches)
 		) {
 			throw new Exceptions\InvalidState('Property identifier is not in expected format');
