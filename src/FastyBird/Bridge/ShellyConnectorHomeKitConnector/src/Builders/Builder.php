@@ -242,7 +242,7 @@ class Builder
 
 				if (
 					$manufacturerProperty !== null
-					&& !$modelProperty instanceof DevicesEntities\Devices\Properties\Variable
+					&& !$manufacturerProperty instanceof DevicesEntities\Devices\Properties\Variable
 				) {
 					$this->devicesPropertiesManager->delete($manufacturerProperty);
 

@@ -127,10 +127,7 @@ class ShellyConnectorHomeKitConnectorExtension extends DI\CompilerExtension impl
 		$builder->addDefinition($this->prefix('schemas.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Devices\Shelly::class);
 
-		$builder->addDefinition(
-			$this->prefix('schemas.channel.lightbulb.color'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('schemas.channel.lightbulb'), new DI\Definitions\ServiceDefinition())
 			->setType(Schemas\Channels\Lightbulb::class);
 
 		$builder->addDefinition($this->prefix('schemas.channel.outlet'), new DI\Definitions\ServiceDefinition())
@@ -158,10 +155,7 @@ class ShellyConnectorHomeKitConnectorExtension extends DI\CompilerExtension impl
 		$builder->addDefinition($this->prefix('hydrators.device.shelly'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Devices\Shelly::class);
 
-		$builder->addDefinition(
-			$this->prefix('hydrators.channel.lightbulb.color'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('hydrators.channel.lightbulb'), new DI\Definitions\ServiceDefinition())
 			->setType(Hydrators\Channels\Lightbulb::class);
 
 		$builder->addDefinition($this->prefix('hydrators.channel.outlet'), new DI\Definitions\ServiceDefinition())
