@@ -367,7 +367,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$result = $client->sendKey('NRC_HDMI' . $expectedValue . '-ONOFF');
 
 					break;
-
 				case Types\ChannelPropertyIdentifier::REMOTE->value:
 					$key = Types\ActionKey::tryFrom(strval($expectedValue));
 
@@ -403,8 +402,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					}
 
 					$result = $client->sendKey($key);
-					break;
 
+					break;
 				default:
 					if (
 						Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
@@ -621,7 +620,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						);
 
 						break;
-
 					case Types\ChannelPropertyIdentifier::REMOTE->value:
 						$this->queue->append(
 							$this->messageBuilder->create(
@@ -635,8 +633,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								],
 							),
 						);
-						break;
 
+						break;
 					default:
 						if (
 							Types\ChannelPropertyIdentifier::tryFrom($property->getIdentifier()) !== null
