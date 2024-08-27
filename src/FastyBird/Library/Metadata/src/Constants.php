@@ -104,6 +104,8 @@ final class Constants
 
 	public const BRIDGE_SHELLY_CONNECTOR_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.shelly-connector-homekit-connector-bridge';
 
+	public const BRIDGE_VIERA_CONNECTOR_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.viera-connector-homekit-connector-bridge';
+
 	public const BRIDGE_DEVICES_MODULE_UI_MODULE_SOURCE = 'com.fastybird.devices-module-ui-module-bridge';
 
 	/**
@@ -122,9 +124,11 @@ final class Constants
 	 * BRIDGE PREFIXES
 	 */
 
-	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX = 'virtual-thermostat-addon-homekit-connector-bridge';
-
 	public const BRIDGE_SHELLY_CONNECTOR_HOMEKIT_CONNECTOR_PREFIX = 'shelly-connector-homekit-connector-bridge';
+
+	public const BRIDGE_VIERA_CONNECTOR_HOMEKIT_CONNECTOR_PREFIX = 'viera-connector-homekit-connector-bridge';
+
+	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_PREFIX = 'virtual-thermostat-addon-homekit-connector-bridge';
 
 	/**
 	 * MESSAGE BUS
@@ -139,9 +143,9 @@ final class Constants
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	public const VALUE_FORMAT_NUMBER_RANGE = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f){1}\|)?(?:(?:\-)?(?:\d)*(?:.(?:\d)+)?))?(?:\:(?:(?:(?:i8|u8|i16|u16|i32|u32|f){1}\|)?(?:\d)*(?:.(?:\d)+)?)){1}$/';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public const VALUE_FORMAT_STRING_ENUM = '/^(?:[a-zA-Z0-9°](?:[a-zA-Z0-9-?_?:?.+\+\/°])*)(?:,(?:[a-zA-Z0-9°](?:[a-zA-Z0-9-?_?:?.+\+\/°])*))*(?:,)?$/u';
+	public const VALUE_FORMAT_STRING_ENUM = '/^(?:[a-zA-Z0-9+°](?:[a-zA-Z0-9-?_?:?.+\+\/°])*)(?:,(?:[a-zA-Z0-9+°](?:[a-zA-Z0-9-?_?:?.+\+\/°])*))*(?:,)?$/u';
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9°]-?_?\.?)*){2})*$/u';
+	public const VALUE_FORMAT_COMBINED_ENUM = '/^(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9+°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9+°]-?_?\.?)*){2}(?:,(?:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9+°]-?_?\.?)*)(?:\:(?:(?:i8|u8|i16|u16|i32|u32|f|b|s|btn|sw|cvr){1}\|)?(?:[a-zA-Z0-9+°]-?_?\.?)*){2})*$/u';
 
 	/**
 	 * VALUE TRANSFORMERS
