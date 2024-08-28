@@ -203,7 +203,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		MetadataTypes\Sources\Source $source,
 		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
-		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState = null,
+		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState,
 		string $action,
 	): Promise\PromiseInterface|bool
 	{
