@@ -131,7 +131,7 @@ cmd:
         answers:
             mode:
                 local: "Local network mode"
-                cloud: "Tuya cloud server mode"
+                cloud: "Cloud server mode"
 
             dataCentre:
                 centralEurope: "Central Europe"
