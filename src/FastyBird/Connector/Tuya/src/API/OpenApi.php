@@ -167,6 +167,10 @@ final class OpenApi
 	 */
 	public function connect(bool $async = true): Promise\PromiseInterface|bool
 	{
+		if ($this->isConnected()) {
+			return $async ? Promise\resolve(true) : true;
+		}
+
 		$deferred = new Promise\Deferred();
 
 		$request = $this->createRequest(
@@ -1169,7 +1173,7 @@ final class OpenApi
 								$responseBody = $response->getBody()->getContents();
 
 								$response->getBody()->rewind();
-							} catch (RuntimeException $ex) {
+							} catch (Throwable $ex) {
 								$deferred->reject(
 									new Exceptions\OpenApiCall(
 										'Could not get content from response body',
@@ -1204,9 +1208,13 @@ final class OpenApi
 								],
 							);
 
-							$this->checkResponse($request, $response);
+							try {
+								$this->checkResponse($request, $response);
 
-							$deferred->resolve($response);
+								$deferred->resolve($response);
+							} catch (Throwable $ex) {
+								$deferred->reject($ex);
+							}
 						},
 						static function (Throwable $ex) use ($deferred, $request): void {
 							$deferred->reject(

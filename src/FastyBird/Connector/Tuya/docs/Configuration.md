@@ -103,9 +103,9 @@ Tuya connector - installer
 If you choose to create a new connector, you will be asked to choose the mode in which the connector will communicate with the devices:
 
 ```
- In what mode should this connector communicate with Tuya devices? [Tuya cloud server mode]:
+ In what mode should this connector communicate with Tuya devices? [Cloud server mode]:
   [0] Local network mode
-  [1] Tuya cloud server mode
+  [1] Cloud server mode
  > 0
 ```
 
