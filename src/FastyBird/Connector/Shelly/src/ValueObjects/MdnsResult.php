@@ -29,11 +29,24 @@ use function strtolower;
 final readonly class MdnsResult implements ObjectMapper\MappedObject
 {
 
+	/**
+	 * @param array<string, string|null> $data
+	 */
 	public function __construct(
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $address,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		private string $name,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\NullValue(castEmptyString: true),
+		])]
+		private string|null $domain,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MixedValue(),
+			new ObjectMapper\Rules\StringValue(notEmpty: true),
+		)]
+		private array $data,
 	)
 	{
 	}
@@ -48,14 +61,29 @@ final readonly class MdnsResult implements ObjectMapper\MappedObject
 		return $this->name;
 	}
 
+	public function getDomain(): string|null
+	{
+		return $this->domain;
+	}
+
 	/**
-	 * @return array<string, string|array<string, string|int|float|null>>
+	 * @return array<string, string|null>
+	 */
+	public function getData(): array
+	{
+		return $this->data;
+	}
+
+	/**
+	 * @return array<string, string|array<string, string|int|float|null>|null>
 	 */
 	public function __serialize(): array
 	{
 		return [
 			'address' => $this->getAddress(),
 			'name' => strtolower($this->getName()),
+			'domain' => $this->getDomain(),
+			'data' => $this->getData(),
 		];
 	}
 

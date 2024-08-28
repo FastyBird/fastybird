@@ -111,6 +111,8 @@ class Discover extends Console\Command\Command
 			return Console\Command\Command::FAILURE;
 		}
 
+		$this->executedTime = $this->dateTimeFactory->getNow();
+
 		$io = new Style\SymfonyStyle($input, $output);
 
 		$io->title((string) $this->translator->translate('//shelly-connector.cmd.discover.title'));
@@ -287,8 +289,6 @@ class Discover extends Console\Command\Command
 
 		$io->info((string) $this->translator->translate('//shelly-connector.cmd.discover.messages.starting'));
 
-		$this->executedTime = $this->dateTimeFactory->getNow();
-
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
 
 		$result = $serviceCmd->run(new Input\ArrayInput([
@@ -354,7 +354,7 @@ class Discover extends Console\Command\Command
 			if (
 				$createdAt !== null
 				&& $this->executedTime !== null
-				&& $createdAt->getTimestamp() > $this->executedTime->getTimestamp()
+				&& $createdAt->getTimestamp() >= $this->executedTime->getTimestamp()
 			) {
 				$foundDevices++;
 

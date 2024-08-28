@@ -22,7 +22,6 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Services;
-use FastyBird\Connector\Shelly\Storages;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -53,6 +52,7 @@ use function is_string;
 use function preg_match;
 use function React\Async\async;
 use function React\Async\await;
+use function serialize;
 use function strval;
 
 /**
@@ -74,6 +74,8 @@ final class Discovery
 
 	private const MDNS_SEARCH_TIMEOUT = 30;
 
+	private const PROCESS_RESULTS_TIMER = 0.1;
+
 	private const MATCH_NAME = '/(?i)^(?P<type>shelly.+)-(?P<id>[0-9A-Fa-f]+)._(http|shelly)._tcp.local$/';
 
 	private const MATCH_DOMAIN = '/(?i)^(?P<type>[0-9A-Za-z]+)-(?P<id>[0-9A-Fa-f]+).local$/';
@@ -82,7 +84,11 @@ final class Discovery
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
 
-	private Storages\MdnsResultStorage $searchResult;
+	/** @var array<string, Shelly\ValueObjects\MdnsResult>  */
+	private array $searchResult = [];
+
+	/** @var array<string, Shelly\ValueObjects\MdnsResult>  */
+	private array $processedItems = [];
 
 	private Dns\Protocol\Parser $parser;
 
@@ -105,8 +111,6 @@ final class Discovery
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->searchResult = new Storages\MdnsResultStorage();
-
 		$this->parser = new Dns\Protocol\Parser();
 		$this->dumper = new Dns\Protocol\BinaryDumper();
 	}
@@ -256,6 +260,8 @@ final class Discovery
 						[
 							'address' => $serviceIpAddress,
 							'name' => $serviceName,
+							'domain' => $serviceDomain,
+							'data' => $serviceData,
 						],
 						Shelly\ValueObjects\MdnsResult::class,
 						$options,
@@ -279,31 +285,8 @@ final class Discovery
 					return;
 				}
 
-				if (!$this->searchResult->contains($serviceResult)) {
-					$this->searchResult->attach($serviceResult);
-
-					if (preg_match(self::MATCH_NAME, $serviceName, $matches) === 1) {
-						$generation = Types\DeviceGeneration::UNKNOWN;
-
-						if (array_key_exists('gen', $serviceData) && strval($serviceData['gen']) === '2') {
-							$generation = Types\DeviceGeneration::GENERATION_2;
-						} elseif (
-							array_key_exists('arch', $serviceData)
-							&& strval(
-								$serviceData['arch'],
-							) === 'esp8266'
-						) {
-							$generation = Types\DeviceGeneration::GENERATION_1;
-						}
-
-						$this->handleFoundLocalDevice(
-							$generation,
-							Utils\Strings::lower($matches['id']),
-							Utils\Strings::lower($matches['type']),
-							$serviceIpAddress,
-							$serviceDomain,
-						);
-					}
+				if (!array_key_exists(serialize($serviceResult), $this->searchResult)) {
+					$this->searchResult[serialize($serviceResult)] = $serviceResult;
 				}
 			}
 		});
@@ -319,6 +302,43 @@ final class Discovery
 
 			$this->server?->send($request, self::MDNS_ADDRESS . ':' . self::MDNS_PORT);
 		});
+
+		// Processing handler
+		$this->eventLoop->addPeriodicTimer(
+			self::PROCESS_RESULTS_TIMER,
+			async(function (): void {
+				foreach ($this->searchResult as $item) {
+					if (array_key_exists(serialize($item), $this->processedItems)) {
+						continue;
+					}
+
+					$this->processedItems[serialize($item)] = $item;
+
+					if (preg_match(self::MATCH_NAME, $item->getName(), $matches) === 1) {
+						$generation = Types\DeviceGeneration::UNKNOWN;
+
+						if (array_key_exists('gen', $item->getData()) && strval($item->getData()['gen']) === '2') {
+							$generation = Types\DeviceGeneration::GENERATION_2;
+						} elseif (
+							array_key_exists('arch', $item->getData())
+							&& strval(
+								$item->getData()['arch'],
+							) === 'esp8266'
+						) {
+							$generation = Types\DeviceGeneration::GENERATION_1;
+						}
+
+						$this->handleFoundLocalDevice(
+							$generation,
+							Utils\Strings::lower($matches['id']),
+							Utils\Strings::lower($matches['type']),
+							$item->getAddress(),
+							$item->getDomain(),
+						);
+					}
+				}
+			}),
+		);
 
 		// Searching timeout
 		$this->eventLoop->addTimer(
