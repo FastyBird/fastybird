@@ -17,4 +17,5 @@ extensions:
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 fbDateTimeFactory:
-    frozen: new DateTimeImmutable('2020-04-01T12:00:00+00:00')
+    system: false
+    frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')
