@@ -40,8 +40,6 @@ services:
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
 
-    - {factory: FastyBird\Bridge\ShellyConnectorHomeKitConnector\Tests\Tools\DateTimeProvider}
-
     cache.storage: Nette\Caching\Storages\DevNullStorage
 
 decorator:

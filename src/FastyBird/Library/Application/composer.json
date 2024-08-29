@@ -40,6 +40,7 @@
     "doctrine/orm": "2.15.*",
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.14",
+    "ipub/doctrine-timestampable": "^2.0",
     "nette/bootstrap": "^3.1",
     "nette/application": "^3.1",
     "nette/di": "^3.0",

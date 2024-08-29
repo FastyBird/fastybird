@@ -21,6 +21,7 @@ use FastyBird\Library\Application\Helpers;
 use FastyBird\Library\Application\Router;
 use FastyBird\Library\Application\Subscribers;
 use FastyBird\Library\Application\UI;
+use FastyBird\Library\Application\Utilities;
 use Monolog;
 use Nette;
 use Nette\Bootstrap;
@@ -236,6 +237,13 @@ class ApplicationExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('ui.routes'), new DI\Definitions\ServiceDefinition())
 			->setType(Router\AppRouter::class);
+
+		/**
+		 * Utilities
+		 */
+
+		$builder->addDefinition($this->prefix('utilities.doctrineDateProvider'), new DI\Definitions\ServiceDefinition())
+			->setType(Utilities\DateTimeProvider::class);
 	}
 
 	/**
