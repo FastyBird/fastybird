@@ -142,6 +142,7 @@ cmd:
                 india: "India"
 
         data:
+            id: "ID"
             name: "Name"
             mode: "Mode"
             model: "Model"

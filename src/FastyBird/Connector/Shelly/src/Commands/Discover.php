@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Shelly\Commands;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use FastyBird\Connector\Shelly\Documents;
 use FastyBird\Connector\Shelly\Exceptions;
@@ -111,7 +112,9 @@ class Discover extends Console\Command\Command
 			return Console\Command\Command::FAILURE;
 		}
 
-		$this->executedTime = $this->clock->getNow();
+		$executedTime = $this->clock->getNow();
+		assert($executedTime instanceof DateTimeImmutable);
+		$this->executedTime = $executedTime->modify('-5 second');
 
 		$io = new Style\SymfonyStyle($input, $output);
 
