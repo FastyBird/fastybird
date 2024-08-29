@@ -83,7 +83,7 @@ abstract class Periodic
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -211,7 +211,7 @@ abstract class Periodic
 	 */
 	private function writeProperty(Documents\Devices\Device $device): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 
 		if (!array_key_exists($device->getId()->toString(), $this->properties)) {
 			return false;
@@ -259,7 +259,7 @@ abstract class Periodic
 		DevicesDocuments\Devices\Properties\Dynamic $property,
 	): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 
 		$state = await($this->devicePropertiesStatesManager->read(
 			$property,
@@ -327,7 +327,7 @@ abstract class Periodic
 		DevicesDocuments\Channels\Properties\Dynamic $property,
 	): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 
 		$state = await($this->channelPropertiesStatesManager->read(
 			$property,

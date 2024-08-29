@@ -17,3 +17,6 @@ extensions:
     ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
+
+fbDateTimeFactory:
+    frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')

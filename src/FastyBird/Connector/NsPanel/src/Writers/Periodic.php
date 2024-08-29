@@ -85,7 +85,7 @@ abstract class Periodic implements Writer
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		protected readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
-		protected readonly DateTimeFactory\Factory $dateTimeFactory,
+		protected readonly DateTimeFactory\Clock $clock,
 		protected readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -260,7 +260,7 @@ abstract class Periodic implements Writer
 		DevicesDocuments\Channels\Properties\Dynamic $property,
 	): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 
 		$debounce = array_key_exists($property->getId()->toString(), $this->processedProperties)
 			? $this->processedProperties[$property->getId()->toString()]
@@ -345,7 +345,7 @@ abstract class Periodic implements Writer
 		DevicesDocuments\Channels\Properties\Property $property,
 	): bool
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 
 		$serialNumber = $this->thirdPartyDeviceHelper->getGatewayIdentifier($device);
 

@@ -472,7 +472,7 @@ final class SessionV1 extends BaseV1
 
 	private function getNow(): DateTimeImmutable
 	{
-		$now = $this->dateFactory->getNow();
+		$now = $this->clock->getNow();
 		assert($now instanceof DateTimeImmutable);
 
 		return $now;

@@ -62,7 +62,7 @@ abstract class BaseV1
 
 	protected Security\User $user;
 
-	protected DateTimeFactory\Factory $dateFactory;
+	protected DateTimeFactory\Clock $clock;
 
 	protected Localization\Translator $translator;
 
@@ -82,9 +82,9 @@ abstract class BaseV1
 		$this->user = $user;
 	}
 
-	public function injectDateFactory(DateTimeFactory\Factory $dateFactory): void
+	public function injectClock(DateTimeFactory\Clock $clock): void
 	{
-		$this->dateFactory = $dateFactory;
+		$this->clock = $clock;
 	}
 
 	public function injectTranslator(Localization\Translator $translator): void

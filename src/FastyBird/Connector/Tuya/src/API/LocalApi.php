@@ -178,7 +178,7 @@ final class LocalApi
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Tuya\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -214,7 +214,7 @@ final class LocalApi
 		$this->heartBeatTimer = null;
 		$this->lastHeartbeat = null;
 
-		$this->lastConnectAttempt = $this->dateTimeFactory->getNow();
+		$this->lastConnectAttempt = $this->clock->getNow();
 		$this->lost = null;
 		$this->disconnected = null;
 
@@ -273,7 +273,7 @@ final class LocalApi
 							}
 
 							if ($message->getCommand() === Types\LocalDeviceCommand::HEART_BEAT) {
-								$this->lastHeartbeat = $this->dateTimeFactory->getNow();
+								$this->lastHeartbeat = $this->clock->getNow();
 
 								$this->logger->debug(
 									'Device has replied to heartbeat',
@@ -343,7 +343,7 @@ final class LocalApi
 							if (
 							$this->lastHeartbeat !== null
 							&&
-							($this->dateTimeFactory->getNow()->getTimestamp() - $this->lastHeartbeat->getTimestamp())
+							($this->clock->getNow()->getTimestamp() - $this->lastHeartbeat->getTimestamp())
 							>= self::HEARTBEAT_TIMEOUT
 							) {
 								$this->lost();
@@ -409,7 +409,7 @@ final class LocalApi
 		$this->connecting = false;
 		$this->connected = false;
 
-		$this->disconnected = $this->dateTimeFactory->getNow();
+		$this->disconnected = $this->clock->getNow();
 
 		if ($this->heartBeatTimer !== null) {
 			$this->eventLoop->cancelTimer($this->heartBeatTimer);
@@ -661,7 +661,7 @@ final class LocalApi
 	{
 		Utils\Arrays::invoke($this->onLost);
 
-		$this->lost = $this->dateTimeFactory->getNow();
+		$this->lost = $this->clock->getNow();
 
 		$this->disconnect();
 	}
@@ -1366,8 +1366,8 @@ final class LocalApi
 
 		if (array_key_exists('t', $result)) {
 			$result['t'] = $result['t'] === 'int'
-				? $this->dateTimeFactory->getNow()->getTimestamp()
-				: (string) $this->dateTimeFactory->getNow()->getTimestamp();
+				? $this->clock->getNow()->getTimestamp()
+				: (string) $this->clock->getNow()->getTimestamp();
 		}
 
 		if ($command === Types\LocalDeviceCommand::CONTROL_NEW) {

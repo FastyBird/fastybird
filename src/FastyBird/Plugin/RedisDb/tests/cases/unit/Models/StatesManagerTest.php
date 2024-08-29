@@ -172,15 +172,15 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
 		return new Models\States\StatesManager(
 			$redisClient,
 			$factory,
-			$dateTimeFactory,
+			$systemClock,
 			Tests\Fixtures\Dummy\DummyState::class,
 		);
 	}

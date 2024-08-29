@@ -98,7 +98,7 @@ class Connector extends Console\Command\Command
 		private readonly Devices\Logger $logger,
 		private readonly ApplicationHelpers\Database $database,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly Localization\Translator $translator,
 		private readonly array $exchangeFactories = [],
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -189,7 +189,7 @@ class Connector extends Console\Command\Command
 				return Console\Command\Command::FAILURE;
 			}
 
-			$this->executedAt = $this->dateTimeFactory->getNow();
+			$this->executedAt = $this->clock->getNow();
 
 			$this->eventLoop->run();
 
@@ -351,7 +351,7 @@ class Connector extends Console\Command\Command
 				async(function (): void {
 					if ($this->executedAt !== null) {
 						$this->progressBar?->setProgress(
-							$this->dateTimeFactory->getNow()->getTimestamp() - $this->executedAt->getTimestamp(),
+							$this->clock->getNow()->getTimestamp() - $this->executedAt->getTimestamp(),
 						);
 					} else {
 						$this->progressBar?->advance();

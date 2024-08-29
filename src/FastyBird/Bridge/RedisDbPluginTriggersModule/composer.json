@@ -36,7 +36,7 @@
     "fastybird/redisdb-plugin": "dev-main",
     "fastybird/triggers-module": "dev-main",
     "nette/di": "^3.0",
-    "orisai/object-mapper": "^0.1",
+    "orisai/object-mapper": "^0.2",
     "psr/log": "^3.0",
     "symplify/vendor-patches": "^11.2"
   },

@@ -277,12 +277,12 @@ final class StatesManagerTest extends TestCase
 
 		$factory = new States\StateFactory($processor);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
 
 		return new Models\States\StatesManager(
 			$couchClient,
 			$factory,
-			$dateTimeFactory,
+			$systemClock,
 			Tests\Fixtures\CustomState::class,
 		);
 	}

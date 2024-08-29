@@ -96,7 +96,7 @@ final class Gateway implements Client
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -280,7 +280,7 @@ final class Gateway implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 					< $this->gatewayHelper->getHeartbeatDelay($gateway)
 				)
 			) {
@@ -288,7 +288,7 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
@@ -301,7 +301,7 @@ final class Gateway implements Client
 		try {
 			$this->lanApi->getGatewayInfo($this->gatewayHelper->getIpAddress($gateway))
 				->then(function () use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
 					$this->queue->append(
 						$this->messageBuilder->create(
@@ -464,7 +464,7 @@ final class Gateway implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 					< $this->gatewayHelper->getStateReadingDelay($gateway)
 				)
 			) {
@@ -472,7 +472,7 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
@@ -488,7 +488,7 @@ final class Gateway implements Client
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
 				->then(function (API\Messages\Response\GetSubDevices $subDevices) use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 					$this->queue->append(
 						$this->messageBuilder->create(

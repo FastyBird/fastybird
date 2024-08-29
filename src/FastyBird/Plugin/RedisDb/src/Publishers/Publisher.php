@@ -43,7 +43,7 @@ final class Publisher implements ExchangePublisher\Publisher
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly string $channel,
 		private readonly Clients\Client $client,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -62,7 +62,7 @@ final class Publisher implements ExchangePublisher\Publisher
 					'sender_id' => $this->identifier->getIdentifier(),
 					'source' => $source->value,
 					'routing_key' => $routingKey,
-					'created' => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+					'created' => $this->clock->getNow()->format(DateTimeInterface::ATOM),
 					'data' => $entity?->toArray(),
 				]),
 			);

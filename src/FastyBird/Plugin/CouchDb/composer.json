@@ -40,7 +40,7 @@
     "nette/bootstrap": "^3.1",
     "nette/di": "^3.0",
     "nette/utils": "^4.0",
-    "orisai/object-mapper": "^0.1",
+    "orisai/object-mapper": "^0.2",
     "php-on-couch/php-on-couch": "^4.0",
     "phpdocumentor/reflection": "^5.3",
     "phpdocumentor/reflection-common": "^2.2",

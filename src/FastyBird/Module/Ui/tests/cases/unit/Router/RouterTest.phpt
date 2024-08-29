@@ -26,13 +26,6 @@ const VALID_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uZmFzdH
 final class RouterTest extends Tests\Cases\Unit\DbTestCase
 {
 
-	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Nette\DI\MissingServiceException
-	 * @throws RuntimeException
-	 * @throws Error
-	 */
 	public function setUp(): void
 	{
 		$this->registerNeonConfigurationFile(__DIR__ . '/prefixedRoutes.neon');

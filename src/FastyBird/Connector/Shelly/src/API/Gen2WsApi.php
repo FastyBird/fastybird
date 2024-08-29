@@ -146,7 +146,7 @@ final class Gen2WsApi
 		private readonly string|null $password,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Shelly\Logger $logger,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
@@ -167,7 +167,7 @@ final class Gen2WsApi
 
 		$this->session = null;
 
-		$this->lastConnectAttempt = $this->dateTimeFactory->getNow();
+		$this->lastConnectAttempt = $this->clock->getNow();
 		$this->lost = null;
 		$this->disconnected = null;
 
@@ -608,7 +608,7 @@ final class Gen2WsApi
 		$this->connecting = false;
 		$this->connected = false;
 
-		$this->disconnected = $this->dateTimeFactory->getNow();
+		$this->disconnected = $this->clock->getNow();
 
 		$this->session = null;
 
@@ -768,7 +768,7 @@ final class Gen2WsApi
 
 	private function lost(): void
 	{
-		$this->lost = $this->dateTimeFactory->getNow();
+		$this->lost = $this->clock->getNow();
 
 		Utils\Arrays::invoke($this->onLost);
 

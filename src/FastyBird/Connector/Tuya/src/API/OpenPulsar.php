@@ -109,7 +109,7 @@ final class OpenPulsar
 		private readonly Tuya\Logger $logger,
 		private readonly Services\WebSocketClientFactory $webSocketClientFactory,
 		private readonly MetadataSchemas\Validator $schemaValidator,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -130,7 +130,7 @@ final class OpenPulsar
 		$this->connecting = true;
 		$this->connected = false;
 
-		$this->lastConnectAttempt = $this->dateTimeFactory->getNow();
+		$this->lastConnectAttempt = $this->clock->getNow();
 		$this->lost = null;
 		$this->disconnected = null;
 
@@ -232,7 +232,7 @@ final class OpenPulsar
 		$this->connecting = false;
 		$this->connected = false;
 
-		$this->disconnected = $this->dateTimeFactory->getNow();
+		$this->disconnected = $this->clock->getNow();
 
 		if ($this->pingTimer !== null) {
 			$this->eventLoop->cancelTimer($this->pingTimer);
@@ -268,7 +268,7 @@ final class OpenPulsar
 
 	private function lost(): void
 	{
-		$this->lost = $this->dateTimeFactory->getNow();
+		$this->lost = $this->clock->getNow();
 
 		Utils\Arrays::invoke($this->onLost);
 

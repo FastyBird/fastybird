@@ -68,7 +68,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Channels\Repository $channelPropertyStateRepository,
 		private readonly Channels\Manager $channelPropertiesStatesManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly Caching\Cache $cache,
@@ -310,7 +310,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$this->set(
 						$item,
 						Utils\ArrayHash::from([
-							States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+							States\Property::PENDING_FIELD => $this->clock->getNow()->format(
 								DateTimeInterface::ATOM,
 							),
 						]),
@@ -332,7 +332,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				$this->set(
 					$property,
 					Utils\ArrayHash::from([
-						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+						States\Property::PENDING_FIELD => $this->clock->getNow()->format(
 							DateTimeInterface::ATOM,
 						),
 					]),
