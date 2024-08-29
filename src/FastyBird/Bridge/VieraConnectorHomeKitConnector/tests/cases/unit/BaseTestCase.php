@@ -2,10 +2,8 @@
 
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Error;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
@@ -22,28 +20,6 @@ abstract class BaseTestCase extends TestCase
 {
 
 	protected DI\Container $container;
-
-	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Error
-	 */
-	protected function setUp(): void
-	{
-		parent::setUp();
-
-		$this->container = $this->createContainer();
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
-	}
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument

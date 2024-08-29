@@ -40,8 +40,6 @@ services:
         setup:
             - addMiddleware(@fbJsonApi.middlewares.jsonapi)
 
-    - {factory: FastyBird\Bridge\VieraConnectorHomeKitConnector\Tests\Tools\DateTimeProvider}
-
     cache.storage: Nette\Caching\Storages\DevNullStorage
 
 fbDevicesModule:
@@ -109,3 +107,6 @@ fbSimpleAuth:
 fbJsonApi:
     meta:
         copyright: FastyBird s.r.o
+
+fbDateTimeFactory:
+    frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')
