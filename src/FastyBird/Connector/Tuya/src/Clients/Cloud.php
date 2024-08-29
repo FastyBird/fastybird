@@ -85,7 +85,7 @@ final class Cloud implements Client
 		private readonly Tuya\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -373,7 +373,7 @@ final class Cloud implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 					< $this->deviceHelper->getHeartbeatDelay($device)
 				)
 			) {
@@ -381,7 +381,7 @@ final class Cloud implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
@@ -395,7 +395,7 @@ final class Cloud implements Client
 			->getCloudApiConnection($this->connector)
 			->getDeviceDetail($device->getIdentifier())
 			->then(function (API\Messages\Response\GetDevice $detail) use ($device): void {
-				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->dateTimeFactory->getNow();
+				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
 				$this->queue->append(
 					$this->messageBuilder->create(
@@ -484,7 +484,7 @@ final class Cloud implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 					< $this->deviceHelper->getStateReadingDelay($device)
 				)
 			) {
@@ -492,7 +492,7 @@ final class Cloud implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
@@ -506,7 +506,7 @@ final class Cloud implements Client
 			->getCloudApiConnection($this->connector)
 			->getDeviceState($device->getIdentifier())
 			->then(function (API\Messages\Response\GetDeviceState $state) use ($device): void {
-				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+				$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 				$this->queue->append(
 					$this->messageBuilder->create(

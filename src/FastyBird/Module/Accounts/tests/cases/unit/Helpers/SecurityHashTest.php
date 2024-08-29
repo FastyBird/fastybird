@@ -16,41 +16,41 @@ final class SecurityHashTest extends TestCase
 	 */
 	public function testPassword(): void
 	{
-		$dateFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
 
-		$hashHelper = new Helpers\SecurityHash($dateFactory);
+		$hashHelper = new Helpers\SecurityHash($systemClock);
 
 		$hash = $hashHelper->createKey();
 
 		self::assertTrue($hashHelper->isValid($hash));
 
-		$dateFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2021-04-01T12:00:00+00:00'));
 
-		$hashHelper = new Helpers\SecurityHash($dateFactory);
+		$hashHelper = new Helpers\SecurityHash($systemClock);
 
 		self::assertFalse($hashHelper->isValid($hash));
 
-		$dateFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2020-04-01T12:59:00+00:00'));
 
-		$hashHelper = new Helpers\SecurityHash($dateFactory);
+		$hashHelper = new Helpers\SecurityHash($systemClock);
 
 		self::assertTrue($hashHelper->isValid($hash));
 
-		$dateFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->method('getNow')
 			->willReturn(new DateTimeImmutable('2020-04-01T13:01:00+00:00'));
 
-		$hashHelper = new Helpers\SecurityHash($dateFactory);
+		$hashHelper = new Helpers\SecurityHash($systemClock);
 
 		self::assertFalse($hashHelper->isValid($hash));
 	}

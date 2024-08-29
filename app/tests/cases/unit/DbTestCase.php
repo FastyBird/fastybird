@@ -2,13 +2,11 @@
 
 namespace FastyBird\App\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Error;
 use FastyBird\App\DI;
 use FastyBird\App\Exceptions;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use IPub\DoctrineCrud;
@@ -48,28 +46,11 @@ abstract class DbTestCase extends TestCase
 	/** @var array<string> */
 	private array $neonFiles = [];
 
-	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Nette\DI\MissingServiceException
-	 * @throws RuntimeException
-	 * @throws Error
-	 */
 	public function setUp(): void
 	{
 		$this->registerDatabaseSchemaFile(__DIR__ . '/../../sql/dummy.data.sql');
 
 		parent::setUp();
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
 	}
 
 	protected function registerDatabaseSchemaFile(string $file): void

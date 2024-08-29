@@ -40,8 +40,8 @@ final class PublisherTest extends TestCase
 			]))
 			->willReturn(true);
 
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
+		$systemClock = $this->createMock(DateTimeFactory\SystemClock::class);
+		$systemClock
 			->expects(self::once())
 			->method('getNow')
 			->willReturn($now);
@@ -56,7 +56,7 @@ final class PublisherTest extends TestCase
 			$identifierGenerator,
 			'exchange_channel',
 			$client,
-			$dateTimeFactory,
+			$systemClock,
 		);
 
 		$publisher->publish(

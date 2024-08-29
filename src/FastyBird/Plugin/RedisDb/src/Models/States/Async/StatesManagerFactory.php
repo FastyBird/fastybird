@@ -41,7 +41,7 @@ class StatesManagerFactory
 	public function __construct(
 		private readonly Clients\Async\Client $client,
 		private readonly States\StateFactory $stateFactory,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -63,7 +63,7 @@ class StatesManagerFactory
 		return new StatesManager(
 			$this->client,
 			$this->stateFactory,
-			$this->dateTimeFactory,
+			$this->clock,
 			$entity,
 			$this->logger,
 		);

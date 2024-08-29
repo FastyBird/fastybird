@@ -2,7 +2,6 @@
 
 namespace FastyBird\Connector\Tuya\Tests\Cases\Unit\Clients;
 
-use DateTimeImmutable;
 use Error;
 use FastyBird\Connector\Tuya\API;
 use FastyBird\Connector\Tuya\Clients;
@@ -14,7 +13,6 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Tests;
 use FastyBird\Connector\Tuya\Types;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -38,28 +36,6 @@ use const OPENSSL_RAW_DATA;
  */
 final class DiscoveryTest extends Tests\Cases\Unit\DbTestCase
 {
-
-	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws Exceptions\InvalidArgument
-	 * @throws DI\MissingServiceException
-	 * @throws RuntimeException
-	 * @throws Error
-	 */
-	public function setUp(): void
-	{
-		parent::setUp();
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2023-08-21T22:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
-	}
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument

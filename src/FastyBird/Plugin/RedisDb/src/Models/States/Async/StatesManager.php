@@ -65,7 +65,7 @@ class StatesManager
 	public function __construct(
 		private readonly Clients\Async\Client $client,
 		private readonly States\StateFactory $stateFactory,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly string $entity = States\State::class,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -272,7 +272,7 @@ class StatesManager
 					}
 				} else {
 					if ($field === States\State::CREATED_AT_FIELD) {
-						$value = $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM);
+						$value = $this->clock->getNow()->format(DateTimeInterface::ATOM);
 					}
 				}
 
@@ -380,7 +380,7 @@ class StatesManager
 							}
 						} else {
 							if ($field === States\State::UPDATED_AT_FIELD) {
-								$data->{$field} = $this->dateTimeFactory->getNow()->format(
+								$data->{$field} = $this->clock->getNow()->format(
 									DateTimeInterface::ATOM,
 								);
 							}

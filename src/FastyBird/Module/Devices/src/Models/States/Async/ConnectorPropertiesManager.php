@@ -69,7 +69,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		private readonly bool $useExchange,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
 		private readonly Caching\Cache $cache,
@@ -335,7 +335,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 				) : $this->set(
 					$item,
 					Utils\ArrayHash::from([
-						States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(
+						States\Property::PENDING_FIELD => $this->clock->getNow()->format(
 							DateTimeInterface::ATOM,
 						),
 					]),
@@ -364,7 +364,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		) : $this->set(
 			$property,
 			Utils\ArrayHash::from([
-				States\Property::PENDING_FIELD => $this->dateTimeFactory->getNow()->format(DateTimeInterface::ATOM),
+				States\Property::PENDING_FIELD => $this->clock->getNow()->format(DateTimeInterface::ATOM),
 			]),
 			$source,
 		);

@@ -2,13 +2,10 @@
 
 namespace FastyBird\Bridge\DevicesModuleUiModule\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Error;
 use FastyBird\Bridge\DevicesModuleUiModule;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;
@@ -34,29 +31,6 @@ abstract class BaseTestCase extends TestCase
 		parent::setUp();
 
 		$this->container = $this->createContainer();
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
-
-		$dateTimeProvider = $this->createMock(ApplicationUtilities\DateTimeProvider::class);
-		$dateTimeProvider
-			->method('getDate')
-			->willReturn($dateTimeFactory->getNow());
-		$dateTimeProvider
-			->method('getTimestamp')
-			->willReturn($dateTimeFactory->getNow()->getTimestamp());
-
-		$this->mockContainerService(
-			ApplicationUtilities\DateTimeProvider::class,
-			$dateTimeProvider,
-		);
 	}
 
 	/**

@@ -41,13 +41,13 @@ final class SecurityHash
 
 	private const SEPARATOR = '##';
 
-	public function __construct(private readonly DateTimeFactory\Factory $dateTimeFactory)
+	public function __construct(private readonly DateTimeFactory\Clock $clock)
 	{
 	}
 
 	public function createKey(string $interval = '+ 1 hour'): string
 	{
-		$now = $this->dateTimeFactory->getNow();
+		$now = $this->clock->getNow();
 		assert($now instanceof DateTimeImmutable);
 
 		$datetime = $now->modify($interval);
@@ -73,7 +73,7 @@ final class SecurityHash
 
 			$datetime = Utils\DateTime::from($timestamp);
 
-			if ($datetime >= $this->dateTimeFactory->getNow()) {
+			if ($datetime >= $this->clock->getNow()) {
 				return true;
 			}
 		}

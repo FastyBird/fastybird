@@ -83,7 +83,7 @@ class Devices
 		private readonly Virtual\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -208,7 +208,7 @@ class Devices
 					$service->getLastConnectAttempt() === null
 					|| (
 						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-						$this->dateTimeFactory->getNow()->getTimestamp() - $service->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
+						$this->clock->getNow()->getTimestamp() - $service->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
 					)
 				) {
 					$service
@@ -296,14 +296,14 @@ class Devices
 		if (
 			$cmdResult instanceof DateTimeInterface
 			&& (
-				$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+				$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 				< $this->deviceHelper->getStateProcessingDelay($device)
 			)
 		) {
 			return false;
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
@@ -315,7 +315,7 @@ class Devices
 
 		$service->process()
 			->then(function () use ($device): void {
-				$this->processedDevicesCommands[$device->getId()->toString()] = $this->dateTimeFactory->getNow();
+				$this->processedDevicesCommands[$device->getId()->toString()] = $this->clock->getNow();
 			})
 			->catch(function (Throwable $ex) use ($device, $service): void {
 				$this->processedDevicesCommands[$device->getId()->toString()] = false;

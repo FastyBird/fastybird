@@ -153,7 +153,7 @@ final class OpenApi
 		private readonly Tuya\Logger $logger,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 	)
 	{
 		$this->nonce = Uuid\Uuid::uuid1();
@@ -1458,7 +1458,7 @@ final class OpenApi
 			return false;
 		}
 
-		if (!$this->tokenInfo->isExpired($this->dateTimeFactory->getNow())) {
+		if (!$this->tokenInfo->isExpired($this->clock->getNow())) {
 			return false;
 		}
 
@@ -1695,7 +1695,7 @@ final class OpenApi
 		}
 
 		// Sign
-		$timestamp = intval($this->dateTimeFactory->getNow()->format('Uv'));
+		$timestamp = intval($this->clock->getNow()->format('Uv'));
 
 		$message = $this->accessId . $accessToken . $timestamp . $this->nonce->toString() . $strToSign;
 

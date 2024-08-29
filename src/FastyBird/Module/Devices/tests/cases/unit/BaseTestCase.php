@@ -2,12 +2,9 @@
 
 namespace FastyBird\Module\Devices\Tests\Cases\Unit;
 
-use DateTimeImmutable;
 use Error;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Module\Devices\DI;
 use Nette;
 use PHPUnit\Framework\TestCase;
@@ -25,39 +22,6 @@ abstract class BaseTestCase extends TestCase
 
 	/** @var array<string> */
 	protected array $neonFiles = [];
-
-	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws Error
-	 */
-	protected function setUp(): void
-	{
-		parent::setUp();
-
-		$dateTimeFactory = $this->createMock(DateTimeFactory\Factory::class);
-		$dateTimeFactory
-			->method('getNow')
-			->willReturn(new DateTimeImmutable('2020-04-01T12:00:00+00:00'));
-
-		$this->mockContainerService(
-			DateTimeFactory\Factory::class,
-			$dateTimeFactory,
-		);
-
-		$dateTimeProvider = $this->createMock(ApplicationUtilities\DateTimeProvider::class);
-		$dateTimeProvider
-			->method('getDate')
-			->willReturn($dateTimeFactory->getNow());
-		$dateTimeProvider
-			->method('getTimestamp')
-			->willReturn($dateTimeFactory->getNow()->getTimestamp());
-
-		$this->mockContainerService(
-			ApplicationUtilities\DateTimeProvider::class,
-			$dateTimeProvider,
-		);
-	}
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument

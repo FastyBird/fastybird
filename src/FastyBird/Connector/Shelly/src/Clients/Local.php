@@ -96,7 +96,7 @@ final class Local implements Client
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
@@ -342,7 +342,7 @@ final class Local implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 						< $this->deviceHelper->getStateReadingDelay($device)
 				)
 			) {
@@ -350,7 +350,7 @@ final class Local implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
@@ -373,7 +373,7 @@ final class Local implements Client
 						$client->getLastConnectAttempt() === null
 						|| (
 							// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-							$this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
+							$this->clock->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
 						)
 					) {
 						$client->connect()
@@ -428,7 +428,7 @@ final class Local implements Client
 
 			$client->readStates()
 				->then(function (API\Messages\Response\Gen2\GetDeviceState $response) use ($device): void {
-					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 					$this->processGen2DeviceGetState($device, $response);
 				})
@@ -473,7 +473,7 @@ final class Local implements Client
 				$this->deviceHelper->getPassword($device),
 			)
 				->then(function (API\Messages\Response\Gen1\GetDeviceState $response) use ($device): void {
-					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 					$this->queue->append(
 						$this->messageBuilder->create(

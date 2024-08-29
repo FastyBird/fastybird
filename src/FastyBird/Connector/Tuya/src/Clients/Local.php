@@ -87,7 +87,7 @@ final class Local implements Client
 		private readonly Tuya\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
-		private readonly DateTimeFactory\Factory $dateTimeFactory,
+		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
 	{
@@ -223,7 +223,7 @@ final class Local implements Client
 					$client->getLastConnectAttempt() === null
 					|| (
 						// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-						$this->dateTimeFactory->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
+						$this->clock->getNow()->getTimestamp() - $client->getLastConnectAttempt()->getTimestamp() >= self::RECONNECT_COOL_DOWN_TIME
 					)
 				) {
 					$client
@@ -298,7 +298,7 @@ final class Local implements Client
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->dateTimeFactory->getNow()->getTimestamp() - $cmdResult->getTimestamp()
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
 					< $this->deviceHelper->getStateReadingDelay($device)
 				)
 			) {
@@ -306,7 +306,7 @@ final class Local implements Client
 			}
 		}
 
-		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+		$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($device);
 
@@ -319,7 +319,7 @@ final class Local implements Client
 		$client->readStates($this->deviceHelper->getGateway($device) !== null ? $device->getIdentifier() : null)
 			->then(
 				function (array|API\Messages\Response\LocalDeviceWifiScan|Types\LocalDeviceError|string|null $statuses) use ($device): void {
-					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->dateTimeFactory->getNow();
+					$this->processedDevicesCommands[$device->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 					if (is_array($statuses)) {
 						$dataPointsStatuses = [];
