@@ -50,7 +50,7 @@
         "doctrine/orm": "2.15.*",
         "endroid/qr-code": "4.5",
         "evenement/evenement": "^3.0",
-        "fastybird/datetime-factory": "^0.7",
+        "fastybird/datetime-factory": "^0.7.1",
         "fastybird/json-api": "^0.19",
         "fastybird/simple-auth": "^0.14",
         "fig/http-message-util": "^1.1",
