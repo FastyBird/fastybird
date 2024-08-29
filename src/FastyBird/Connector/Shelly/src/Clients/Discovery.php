@@ -23,6 +23,7 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Services;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Connector\Shelly\ValueObjects;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -84,10 +85,10 @@ final class Discovery
 	// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 	private const MATCH_IP_ADDRESS_PORT = '/^(?P<address>((?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])[.]){3}(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))(:(?P<port>[0-9]{1,5}))?$/';
 
-	/** @var array<string, Shelly\ValueObjects\MdnsResult>  */
+	/** @var array<string, ValueObjects\MdnsResult>  */
 	private array $searchResult = [];
 
-	/** @var array<string, Shelly\ValueObjects\MdnsResult>  */
+	/** @var array<string, ValueObjects\MdnsResult>  */
 	private array $processedItems = [];
 
 	private Dns\Protocol\Parser $parser;
@@ -263,7 +264,7 @@ final class Discovery
 							'domain' => $serviceDomain,
 							'data' => $serviceData,
 						],
-						Shelly\ValueObjects\MdnsResult::class,
+						ValueObjects\MdnsResult::class,
 						$options,
 					);
 				} catch (ObjectMapper\Exception\InvalidData $ex) {
