@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ApplicationLibrary!
- * @subpackage     Caching
+ * @subpackage     UI
  * @since          1.0.0
  *
  * @date           08.03.20

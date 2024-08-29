@@ -47,7 +47,6 @@ services:
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyDeviceHydrator}
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyChannelSchema}
     - {factory: FastyBird\Module\Devices\Tests\Fixtures\Dummy\DummyChannelHydrator}
-    - {factory: FastyBird\Module\Devices\Tests\Tools\DateTimeProvider}
 
     cache.storage: Nette\Caching\Storages\DevNullStorage
 

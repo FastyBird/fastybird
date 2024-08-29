@@ -37,7 +37,6 @@
     "bunny/bunny": "0.6.x-dev",
     "cweagans/composer-patches": "^1.7",
     "fastybird/application-library": "dev-main",
-    "fastybird/datetime-factory": "^0.6",
     "fastybird/exchange-library": "dev-main",
     "fastybird/metadata-library": "dev-main",
     "nette/di": "^3.0",

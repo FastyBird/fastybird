@@ -9,6 +9,7 @@ use Error;
 use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Boot as ApplicationBoot;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Module\Accounts\DI;
 use FastyBird\Module\Accounts\Exceptions;
 use IPub\DoctrineCrud;
@@ -89,6 +90,19 @@ abstract class DbTestCase extends TestCase
 		$this->mockContainerService(
 			DateTimeFactory\Factory::class,
 			$dateTimeFactory,
+		);
+
+		$dateTimeProvider = $this->createMock(ApplicationUtilities\DateTimeProvider::class);
+		$dateTimeProvider
+			->method('getDate')
+			->willReturn($dateTimeFactory->getNow());
+		$dateTimeProvider
+			->method('getTimestamp')
+			->willReturn($dateTimeFactory->getNow()->getTimestamp());
+
+		$this->mockContainerService(
+			ApplicationUtilities\DateTimeProvider::class,
+			$dateTimeProvider,
 		);
 	}
 
