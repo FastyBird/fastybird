@@ -21,6 +21,7 @@ extensions:
     # contributteCacheDebug : Contributte\Cache\DI\DebugStorageExtension
     orisaiObjectMapper      : OriNette\ObjectMapper\DI\ObjectMapperExtension
     fbApplicationLibrary    : FastyBird\Library\Application\DI\ApplicationExtension
+    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 ##################################
 # Nette extensions configuration #
