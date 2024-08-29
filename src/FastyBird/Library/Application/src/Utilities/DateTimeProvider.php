@@ -18,6 +18,7 @@ namespace FastyBird\Library\Application\Utilities;
 use DateTimeInterface;
 use FastyBird\DateTimeFactory;
 use IPub\DoctrineTimestampable\Providers as DoctrineTimestampableProviders;
+use Nette\DI;
 
 /**
  * Date provider for doctrine timestampable
@@ -30,18 +31,24 @@ use IPub\DoctrineTimestampable\Providers as DoctrineTimestampableProviders;
 readonly class DateTimeProvider implements DoctrineTimestampableProviders\DateProvider
 {
 
-	public function __construct(private DateTimeFactory\Factory $factory)
+	public function __construct(private DI\Container $container)
 	{
 	}
 
+	/**
+	 * @throws DI\MissingServiceException
+	 */
 	public function getDate(): DateTimeInterface
 	{
-		return $this->factory->getNow();
+		return $this->container->getByType(DateTimeFactory\Factory::class)->getNow();
 	}
 
+	/**
+	 * @throws DI\MissingServiceException
+	 */
 	public function getTimestamp(): int
 	{
-		return $this->factory->getNow()->getTimestamp();
+		return $this->container->getByType(DateTimeFactory\Factory::class)->getNow()->getTimestamp();
 	}
 
 }
