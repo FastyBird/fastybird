@@ -823,7 +823,36 @@ final class Http implements Server
 			Types\ChannelPropertyIdentifier::MANUFACTURER,
 			$accessoryInformation,
 		);
-		$accessoryManufacturer->setActualValue(HomeKit\Constants::DEFAULT_MANUFACTURER);
+
+		if ($owner instanceof Documents\Devices\Device) {
+			$manufacturer = $this->deviceHelper->getManufacturer($owner);
+
+			if ($manufacturer === null) {
+				$manufacturer = HomeKit\Constants::DEFAULT_MANUFACTURER;
+
+				$this->databaseHelper->transaction(
+					function () use ($owner, $manufacturer): void {
+						$device = $this->devicesRepository->find(
+							$owner->getId(),
+							Entities\Devices\Device::class,
+						);
+						assert($device instanceof Entities\Devices\Device);
+
+						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
+							'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER->value,
+							'dataType' => MetadataTypes\DataType::STRING,
+							'value' => $manufacturer,
+							'device' => $device,
+						]));
+					},
+				);
+			}
+
+			$accessoryManufacturer->setActualValue($manufacturer);
+		} else {
+			$accessoryManufacturer->setActualValue(HomeKit\Constants::DEFAULT_MANUFACTURER);
+		}
 
 		$accessoryInformation->addCharacteristic($accessoryManufacturer);
 
@@ -833,10 +862,34 @@ final class Http implements Server
 			$accessoryInformation,
 		);
 
-		if ($accessory instanceof Protocol\Accessories\Bridge) {
-			$accessoryModel->setActualValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
+		if ($owner instanceof Documents\Devices\Device) {
+			$model = $this->deviceHelper->getModel($owner);
+
+			if ($model === null) {
+				$model = HomeKit\Constants::DEFAULT_DEVICE_MODEL;
+
+				$this->databaseHelper->transaction(
+					function () use ($owner, $model): void {
+						$device = $this->devicesRepository->find(
+							$owner->getId(),
+							Entities\Devices\Device::class,
+						);
+						assert($device instanceof Entities\Devices\Device);
+
+						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Devices\Properties\Variable::class,
+							'identifier' => Types\DevicePropertyIdentifier::MODEL->value,
+							'dataType' => MetadataTypes\DataType::STRING,
+							'value' => $model,
+							'device' => $device,
+						]));
+					},
+				);
+			}
+
+			$accessoryModel->setActualValue($model);
 		} else {
-			$accessoryModel->setActualValue(HomeKit\Constants::DEFAULT_DEVICE_MODEL);
+			$accessoryModel->setActualValue(HomeKit\Constants::DEFAULT_BRIDGE_MODEL);
 		}
 
 		$accessoryInformation->addCharacteristic($accessoryModel);

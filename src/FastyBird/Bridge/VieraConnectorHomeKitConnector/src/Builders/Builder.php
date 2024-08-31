@@ -259,15 +259,6 @@ class Builder
 
 			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($viera);
-			$findDevicePropertyQuery->byIdentifier(VieraTypes\DevicePropertyIdentifier::MANUFACTURER->value);
-
-			$vieraManufacturerProperty = $this->devicesPropertiesRepository->findOneBy(
-				$findDevicePropertyQuery,
-				DevicesEntities\Devices\Properties\Variable::class,
-			);
-
-			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
-			$findDevicePropertyQuery->forDevice($viera);
 			$findDevicePropertyQuery->byIdentifier(VieraTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value);
 
 			$vieraSerialNumberProperty = $this->devicesPropertiesRepository->findOneBy(
@@ -324,13 +315,13 @@ class Builder
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $vieraManufacturerProperty?->getValue() ?? VieraConnectorHomeKitConnector\Constants::MANUFACTURER,
+					'value' => VieraConnectorHomeKitConnector\Constants::MANUFACTURER,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($manufacturerProperty, Utils\ArrayHash::from([
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $vieraManufacturerProperty?->getValue() ?? VieraConnectorHomeKitConnector\Constants::MANUFACTURER,
+					'value' => VieraConnectorHomeKitConnector\Constants::MANUFACTURER,
 				]));
 			}
 

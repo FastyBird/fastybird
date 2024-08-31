@@ -62,13 +62,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return [
 			DevicesEvents\ConnectorPropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\ConnectorPropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\ConnectorPropertyStateEntityDeleted::class => 'stateDeleted',
 			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\DevicePropertyStateEntityDeleted::class => 'stateDeleted',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
@@ -91,17 +88,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws UiExceptions\InvalidState
 	 */
 	public function stateUpdated(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\ConnectorPropertyStateEntityUpdated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
-	): void
-	{
-		$this->processProperty($event->getProperty());
-	}
-
-	/**
-	 * @throws UiExceptions\InvalidState
-	 */
-	public function stateDeleted(
 		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
 		DevicesEvents\ConnectorPropertyStateEntityUpdated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void

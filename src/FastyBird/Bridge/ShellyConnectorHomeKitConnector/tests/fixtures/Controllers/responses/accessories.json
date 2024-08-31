@@ -1,0 +1,201 @@
+{
+  "accessories": [
+    {
+      "aid": 1,
+      "services": [
+        {
+          "iid": 1,
+          "type": "3e",
+          "characteristics": [
+            {
+              "iid": 2,
+              "type": "23",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "HomeKit",
+              "ev": false
+            },
+            {
+              "iid": 3,
+              "type": "30",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "o2Q9otoA4Cgzqt02AupQRu6ROiXOVF45",
+              "ev": false
+            },
+            {
+              "iid": 4,
+              "type": "52",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "0.0.0",
+              "ev": false
+            },
+            {
+              "iid": 5,
+              "type": "20",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "FastyBird",
+              "ev": false
+            },
+            {
+              "iid": 6,
+              "type": "21",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "Virtual bridge",
+              "ev": false
+            },
+            {
+              "iid": 7,
+              "type": "14",
+              "perms": [
+                "pw"
+              ],
+              "format": "bool",
+              "ev": false
+            }
+          ],
+          "primary": false,
+          "hidden": false
+        },
+        {
+          "iid": 8,
+          "type": "a2",
+          "characteristics": [
+            {
+              "iid": 9,
+              "type": "37",
+              "perms": [
+                "pr",
+                "ev"
+              ],
+              "format": "string",
+              "value": "01.01.00",
+              "ev": true
+            }
+          ],
+          "primary": false,
+          "hidden": false
+        }
+      ]
+    },
+    {
+      "aid": 2,
+      "services": [
+        {
+          "iid": 1,
+          "type": "3e",
+          "characteristics": [
+            {
+              "iid": 2,
+              "type": "23",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "Shelly 1",
+              "ev": false
+            },
+            {
+              "iid": 3,
+              "type": "30",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "l2mXHVJWcnKwsV18cw1xIk9LTjy1hA2y",
+              "ev": false
+            },
+            {
+              "iid": 4,
+              "type": "52",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "1.0.0",
+              "ev": false
+            },
+            {
+              "iid": 5,
+              "type": "20",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "FastyBird & Shelly",
+              "ev": false
+            },
+            {
+              "iid": 6,
+              "type": "21",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "SHSW-1",
+              "ev": false
+            },
+            {
+              "iid": 7,
+              "type": "14",
+              "perms": [
+                "pw"
+              ],
+              "format": "bool",
+              "ev": false
+            }
+          ],
+          "primary": false,
+          "hidden": false
+        },
+        {
+          "iid": 8,
+          "type": "49",
+          "characteristics": [
+            {
+              "iid": 9,
+              "type": "25",
+              "perms": [
+                "pr",
+                "pw",
+                "ev"
+              ],
+              "format": "bool",
+              "valid-values": [
+                1,
+                0
+              ],
+              "value": false,
+              "ev": true
+            },
+            {
+              "iid": 10,
+              "type": "23",
+              "perms": [
+                "pr"
+              ],
+              "format": "string",
+              "value": "Shelly 1",
+              "ev": false
+            }
+          ],
+          "primary": false,
+          "hidden": false
+        }
+      ]
+    }
+  ]
+}

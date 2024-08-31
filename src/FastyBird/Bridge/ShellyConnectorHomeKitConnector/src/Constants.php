@@ -26,7 +26,9 @@ namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector;
 final class Constants
 {
 
-	public const MANUFACTURER = 'Shelly Ltd.';
+	public const MANUFACTURER = 'FastyBird & Shelly';
+
+	public const MODEL = 'Shelly';
 
 	public const ROUTE_NAME_BRIDGES = 'bridges';
 

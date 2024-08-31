@@ -1,15 +1,16 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\HomeKit\Tests\Cases\Unit\Controllers;
+namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Tests\Cases\Unit\Controllers;
 
 use Doctrine\DBAL;
 use Error;
-use FastyBird\Connector\HomeKit\Documents;
-use FastyBird\Connector\HomeKit\Exceptions;
-use FastyBird\Connector\HomeKit\Middleware;
-use FastyBird\Connector\HomeKit\Queries;
-use FastyBird\Connector\HomeKit\Servers;
-use FastyBird\Connector\HomeKit\Tests;
+use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Exceptions;
+use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Tests;
+use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
+use FastyBird\Connector\HomeKit\Exceptions as HomeKitExceptions;
+use FastyBird\Connector\HomeKit\Middleware as HomeKitMiddleware;
+use FastyBird\Connector\HomeKit\Queries as HomeKitQueries;
+use FastyBird\Connector\HomeKit\Servers as HomeKitServers;
 use FastyBird\Library\Application\EventLoop as ApplicationEventLoop;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -35,7 +36,7 @@ use function call_user_func;
 final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 {
 
-	private Servers\Http|null $httpServer = null;
+	private HomeKitServers\Http|null $httpServer = null;
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
@@ -43,6 +44,7 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
+	 * @throws HomeKitExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
@@ -63,16 +65,16 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 
 		$repository = $this->getContainer()->getByType(DevicesModels\Configuration\Connectors\Repository::class);
 
-		$findConnectorQuery = new Queries\Configuration\FindConnectors();
-		$findConnectorQuery->byId(Uuid\Uuid::fromString('f5a8691b-4917-4866-878f-5217193cf14b'));
+		$findConnectorQuery = new HomeKitQueries\Configuration\FindConnectors();
+		$findConnectorQuery->byId(Uuid\Uuid::fromString('451ab010-f500-4eff-8289-9ed09e56a887'));
 
 		$connector = $repository->findOneBy(
 			$findConnectorQuery,
-			Documents\Connectors\Connector::class,
+			HomeKitDocuments\Connectors\Connector::class,
 		);
-		self::assertInstanceOf(Documents\Connectors\Connector::class, $connector);
+		self::assertInstanceOf(HomeKitDocuments\Connectors\Connector::class, $connector);
 
-		$httpServerFactory = $this->getContainer()->getByType(Servers\HttpFactory::class);
+		$httpServerFactory = $this->getContainer()->getByType(HomeKitServers\HttpFactory::class);
 
 		$this->httpServer = $httpServerFactory->create($connector);
 		$this->httpServer->initialize();
@@ -86,6 +88,7 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
@@ -96,7 +99,7 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 	 */
 	public function testRead(string $url, int $statusCode, string $fixture): void
 	{
-		$middleware = $this->getContainer()->getByType(Middleware\Router::class);
+		$middleware = $this->getContainer()->getByType(HomeKitMiddleware\Router::class);
 
 		$headers = [];
 
@@ -112,8 +115,8 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 		);
 
 		$request = $request->withAttribute(
-			Servers\Http::REQUEST_ATTRIBUTE_CONNECTOR,
-			'f5a8691b-4917-4866-878f-5217193cf14b',
+			HomeKitServers\Http::REQUEST_ATTRIBUTE_CONNECTOR,
+			'451ab010-f500-4eff-8289-9ed09e56a887',
 		);
 
 		$response = call_user_func($middleware, $request);
@@ -127,17 +130,15 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 	}
 
 	/**
-	 * @return array<string, array<int|string>>
+	 * @return array<string, array<string|int|null>>
 	 */
 	public static function accessoriesRead(): array
 	{
 		return [
-			// Valid responses
-			//////////////////
 			'readAll' => [
 				'/accessories',
 				StatusCodeInterface::STATUS_OK,
-				__DIR__ . '/../../../fixtures/Controllers/responses/accessories.index.json',
+				__DIR__ . '/../../../fixtures/Controllers/responses/accessories.json',
 			],
 		];
 	}

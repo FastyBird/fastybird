@@ -82,7 +82,7 @@ INTO `fb_devices_module_devices_properties` (`property_id`, `device_id`, `parent
 (_binary 0x22f4fb59b24c4ca2ae87bef8451c8ee2, _binary 0xab91f301bed442318e8cdbedaf61d7e0, null, 'generic', 'ip_address', null, 0, 0, 'string', null, null, null, null, null, '10.10.0.37', null, null, '2024-08-20 11:00:00', '2024-08-20 11:00:00', 'variable', null),
 (_binary 0xAA30D4151BC04B31A2719AB3355BCC73, _binary 0x5E1D0EE098B149A2BD88A3CF09CF2A14, null, 'generic', 'hardware_model', null, 0, 0, 'string', null, null, null, null, null, 'SHSW-1', null, null, '2024-08-20 11:00:00', '2024-08-20 11:00:00', 'variable', null),
 (_binary 0xBAE23341ABA346C0A5768ECAA457625A, _binary 0x5E1D0EE098B149A2BD88A3CF09CF2A14, null, 'generic', 'category', null, 0, 0, 'uchar', null, null, null, null, null, '8', null, null, '2024-08-20 11:00:00', '2024-08-20 11:00:00', 'variable', null),
-(_binary 0xD42AC191BD9F4BB8A4129F7518000BBE, _binary 0x5E1D0EE098B149A2BD88A3CF09CF2A14, null, 'generic', 'firmware_manufacturer', null, 0, 0, 'string', null, null, null, null, null, 'Shelly Ltd.', null, null, '2024-08-20 11:00:00', '2024-08-20 11:00:00', 'variable', null);
+(_binary 0xD42AC191BD9F4BB8A4129F7518000BBE, _binary 0x5E1D0EE098B149A2BD88A3CF09CF2A14, null, 'generic', 'firmware_manufacturer', null, 0, 0, 'string', null, null, null, null, null, 'FastyBird & Shelly', null, null, '2024-08-20 11:00:00', '2024-08-20 11:00:00', 'variable', null);
 
 INSERT
 IGNORE INTO `fb_devices_module_channels` (`channel_id`, `device_id`, `channel_category`, `channel_identifier`, `channel_name`, `channel_comment`, `params`, `created_at`, `updated_at`, `channel_type`) VALUES

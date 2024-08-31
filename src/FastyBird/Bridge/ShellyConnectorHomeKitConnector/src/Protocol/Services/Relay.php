@@ -16,6 +16,9 @@
 namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
+use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use function is_numeric;
 
 /**
  * Shelly switch service
@@ -27,5 +30,25 @@ use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
  */
 final class Relay extends HomeKitProtocol\Services\Generic
 {
+
+	public function recalculateValues(
+		HomeKitProtocol\Characteristics\Characteristic $characteristic,
+		bool $fromDevice,
+	): void
+	{
+		$inUseCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::OUTLET_INUSE);
+
+		if ($inUseCharacteristic !== null) {
+			if ($inUseCharacteristic->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable) {
+				$inUseCharacteristic->setValue(true);
+			} else {
+				if (is_numeric($inUseCharacteristic->getValue())) {
+					$inUseCharacteristic->setValue($inUseCharacteristic->getValue() > 0);
+				} elseif ($inUseCharacteristic->getValue() === null) {
+					$inUseCharacteristic->setValue(true);
+				}
+			}
+		}
+	}
 
 }

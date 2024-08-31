@@ -272,10 +272,6 @@ class Builder
 				DevicesEntities\Devices\Properties\Variable::class,
 			);
 
-			if ($shellyModelProperty === null) {
-				throw new Exceptions\InvalidState('Shelly device model info could not be loaded');
-			}
-
 			$devicesMapping = $this->loadShellyMapping($shelly);
 
 			$allowedCategories = [];
@@ -331,13 +327,13 @@ class Builder
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL->value,
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $shellyModelProperty->getValue(),
+					'value' => $shellyModelProperty?->getValue() ?? ShellyConnectorHomeKitConnector\Constants::MODEL,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($modelProperty, Utils\ArrayHash::from([
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $shellyModelProperty->getValue(),
+					'value' => $shellyModelProperty?->getValue() ?? ShellyConnectorHomeKitConnector\Constants::MODEL,
 				]));
 			}
 

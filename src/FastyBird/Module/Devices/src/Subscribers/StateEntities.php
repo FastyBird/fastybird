@@ -69,13 +69,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return [
 			Events\ConnectorPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ConnectorPropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\ConnectorPropertyStateEntityDeleted::class => 'stateDeleted',
 			Events\DevicePropertyStateEntityCreated::class => 'stateCreated',
 			Events\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\DevicePropertyStateEntityDeleted::class => 'stateDeleted',
 			Events\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
-			Events\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
 
 			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
 			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
@@ -134,33 +131,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			$event->getRead(),
 			$event->getGet(),
 			self::ACTION_UPDATED,
-		);
-	}
-
-	/**
-	 * @throws Exception
-	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
-	 */
-	public function stateDeleted(
-		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
-	): void
-	{
-		$this->cleanCache($event->getProperty());
-
-		$this->publishDocument(
-			$this->useAsync,
-			$event->getSource(),
-			$event->getProperty(),
-			$event->getRead(),
-			$event->getGet(),
-			self::ACTION_DELETED,
 		);
 	}
 

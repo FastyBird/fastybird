@@ -95,7 +95,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::MAC_ADDRESS,
+					'identifier' => Types\ConnectorPropertyIdentifier::MAC_ADDRESS->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'unit' => null,
 					'format' => null,
@@ -113,7 +113,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SETUP_ID,
+					'identifier' => Types\ConnectorPropertyIdentifier::SETUP_ID->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'unit' => null,
 					'format' => null,
@@ -131,7 +131,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PIN_CODE,
+					'identifier' => Types\ConnectorPropertyIdentifier::PIN_CODE->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'unit' => null,
 					'format' => null,
@@ -149,7 +149,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::SERVER_SECRET,
+					'identifier' => Types\ConnectorPropertyIdentifier::SERVER_SECRET->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'unit' => null,
 					'format' => null,
@@ -167,7 +167,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::CONFIG_VERSION,
+					'identifier' => Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value,
 					'dataType' => MetadataTypes\DataType::USHORT,
 					'unit' => null,
 					'format' => null,
@@ -185,7 +185,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::PAIRED,
+					'identifier' => Types\ConnectorPropertyIdentifier::PAIRED->value,
 					'dataType' => MetadataTypes\DataType::BOOLEAN,
 					'unit' => null,
 					'format' => null,
@@ -209,7 +209,7 @@ final class Properties implements Common\EventSubscriber
 				$this->propertiesManager->create(Utils\ArrayHash::from([
 					'connector' => $entity,
 					'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-					'identifier' => Types\ConnectorPropertyIdentifier::XHM_URI,
+					'identifier' => Types\ConnectorPropertyIdentifier::XHM_URI->value,
 					'dataType' => MetadataTypes\DataType::STRING,
 					'unit' => null,
 					'format' => null,
@@ -262,7 +262,7 @@ final class Properties implements Common\EventSubscriber
 					$this->propertiesManager->create(Utils\ArrayHash::from([
 						'connector' => $entity,
 						'entity' => DevicesEntities\Connectors\Properties\Variable::class,
-						'identifier' => Types\ConnectorPropertyIdentifier::XHM_URI,
+						'identifier' => Types\ConnectorPropertyIdentifier::XHM_URI->value,
 						'dataType' => MetadataTypes\DataType::STRING,
 						'unit' => null,
 						'format' => null,

@@ -26,7 +26,7 @@ namespace FastyBird\Bridge\VieraConnectorHomeKitConnector;
 final class Constants
 {
 
-	public const MANUFACTURER = 'Panasonic';
+	public const MANUFACTURER = 'FastyBird & Panasonic';
 
 	public const MODEL = 'Panasonic TV';
 
