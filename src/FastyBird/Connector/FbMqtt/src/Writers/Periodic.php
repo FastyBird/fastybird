@@ -16,12 +16,14 @@
 namespace FastyBird\Connector\FbMqtt\Writers;
 
 use DateTimeInterface;
+use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Helpers;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
@@ -31,6 +33,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
+use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function in_array;
@@ -77,6 +80,7 @@ abstract class Periodic
 		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
+		protected readonly FbMqtt\Logger $logger,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -286,28 +290,42 @@ abstract class Periodic
 				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 			)
 		) {
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteDevicePropertyState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'property' => $property->getId(),
-						'state' => array_merge(
-							$state->getGet()->toArray(),
-							[
-								'id' => $state->getId(),
-								'valid' => $state->isValid(),
-								'pending' => $state->getPending() instanceof DateTimeInterface
-									? $state->getPending()->format(DateTimeInterface::ATOM)
-									: $state->getPending(),
-							],
-						),
-					],
-				),
-			);
+			try {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteDevicePropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'property' => $property->getId(),
+							'state' => array_merge(
+								$state->getGet()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
+						],
+					),
+				);
 
-			return true;
+				return true;
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
+					[
+						'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return false;
+			}
 		}
 
 		return false;
@@ -354,29 +372,43 @@ abstract class Periodic
 				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 			)
 		) {
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteChannelPropertyState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
-						'state' => array_merge(
-							$state->getGet()->toArray(),
-							[
-								'id' => $state->getId(),
-								'valid' => $state->isValid(),
-								'pending' => $state->getPending() instanceof DateTimeInterface
-									? $state->getPending()->format(DateTimeInterface::ATOM)
-									: $state->getPending(),
-							],
-						),
-					],
-				),
-			);
+			try {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'state' => array_merge(
+								$state->getGet()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
+						],
+					),
+				);
 
-			return true;
+				return true;
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
+					[
+						'source' => MetadataTypes\Sources\Connector::FB_MQTT->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return false;
+			}
 		}
 
 		return false;

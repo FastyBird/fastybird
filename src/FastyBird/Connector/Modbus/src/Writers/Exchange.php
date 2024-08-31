@@ -15,12 +15,14 @@
 
 namespace FastyBird\Connector\Modbus\Writers;
 
+use FastyBird\Connector\Modbus;
 use FastyBird\Connector\Modbus\Documents;
 use FastyBird\Connector\Modbus\Exceptions;
 use FastyBird\Connector\Modbus\Helpers\MessageBuilder;
 use FastyBird\Connector\Modbus\Queries;
 use FastyBird\Connector\Modbus\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
@@ -31,6 +33,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use React\EventLoop;
+use Throwable;
 use function array_merge;
 
 /**
@@ -50,6 +53,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		Documents\Connectors\Connector $connector,
 		MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
+		Modbus\Logger $logger,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
@@ -63,6 +67,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$connector,
 			$messageBuilder,
 			$queue,
+			$logger,
 			$devicesConfigurationRepository,
 			$channelsConfigurationRepository,
 			$channelsPropertiesConfigurationRepository,
@@ -101,67 +106,75 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		$this->consumer->disable(self::class);
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
-			if (
-				$document->getGet()->getExpectedValue() === null
-				|| $document->getPending() !== true
-			) {
-				return;
+		try {
+			if ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
+				if (
+					$document->getGet()->getExpectedValue() === null
+					|| $document->getPending() !== true
+				) {
+					return;
+				}
+
+				$findChannelQuery = new Queries\Configuration\FindChannels();
+				$findChannelQuery->byId($document->getChannel());
+
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
+
+				if ($channel === null) {
+					return;
+				}
+
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($channel->getDevice());
+
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
+
+				if ($device === null) {
+					return;
+				}
+
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteChannelPropertyState::class,
+						[
+							'connector' => $this->connector->getId(),
+							'device' => $device->getId(),
+							'channel' => $channel->getId(),
+							'property' => $document->getId(),
+							'state' => array_merge(
+								$document->getGet()->toArray(),
+								[
+									'id' => $document->getId(),
+									'valid' => $document->isValid(),
+									'pending' => $document->getPending(),
+								],
+							),
+						],
+					),
+				);
 			}
-
-			$findChannelQuery = new Queries\Configuration\FindChannels();
-			$findChannelQuery->byId($document->getChannel());
-
-			$channel = $this->channelsConfigurationRepository->findOneBy(
-				$findChannelQuery,
-				Documents\Channels\Channel::class,
-			);
-
-			if ($channel === null) {
-				return;
-			}
-
-			$findDeviceQuery = new Queries\Configuration\FindDevices();
-			$findDeviceQuery->forConnector($this->connector);
-			$findDeviceQuery->byId($channel->getDevice());
-
-			$device = $this->devicesConfigurationRepository->findOneBy(
-				$findDeviceQuery,
-				Documents\Devices\Device::class,
-			);
-
-			if ($device === null) {
-				return;
-			}
-
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteChannelPropertyState::class,
-					[
-						'connector' => $this->connector->getId(),
-						'device' => $device->getId(),
-						'channel' => $channel->getId(),
-						'property' => $document->getId(),
-						'state' => array_merge(
-							$document->getGet()->toArray(),
-							[
-								'id' => $document->getId(),
-								'valid' => $document->isValid(),
-								'pending' => $document->getPending(),
-							],
-						),
-					],
-				),
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'Characteristic value could not be prepared for writing',
+				[
+					'source' => MetadataTypes\Sources\Connector::MODBUS->value,
+					'type' => 'exchange-writer',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
 			);
 		}
 	}

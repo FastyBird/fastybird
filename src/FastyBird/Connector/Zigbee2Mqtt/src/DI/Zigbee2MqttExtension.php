@@ -83,12 +83,18 @@ class Zigbee2MqttExtension extends DI\CompilerExtension implements Translation\D
 		$builder->addFactoryDefinition($this->prefix('writers.event'))
 			->setImplement(Writers\EventFactory::class)
 			->getResultDefinition()
-			->setType(Writers\Event::class);
+			->setType(Writers\Event::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addFactoryDefinition($this->prefix('writers.exchange'))
 			->setImplement(Writers\ExchangeFactory::class)
 			->getResultDefinition()
 			->setType(Writers\Exchange::class)
+			->setArguments([
+				'logger' => $logger,
+			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
 		/**
