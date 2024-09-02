@@ -15,12 +15,12 @@
 
 namespace FastyBird\Connector\Tuya\Services;
 
-use InvalidArgumentException;
 use Ratchet;
 use Ratchet\Client;
 use React\EventLoop;
 use React\Promise;
 use React\Socket;
+use Throwable;
 
 /**
  * OpenPulsar websockets client factory
@@ -68,7 +68,7 @@ readonly class WebSocketClientFactory
 					'password' => $password,
 				],
 			);
-		} catch (InvalidArgumentException $ex) {
+		} catch (Throwable $ex) {
 			return Promise\reject($ex);
 		}
 	}

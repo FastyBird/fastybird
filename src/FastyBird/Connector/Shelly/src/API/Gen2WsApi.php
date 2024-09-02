@@ -551,8 +551,7 @@ final class Gen2WsApi
 					Utils\Arrays::invoke($this->onConnected);
 
 					$deferred->resolve(true);
-				})
-				->catch(function (Throwable $ex) use ($deferred): void {
+				}, function (Throwable $ex) use ($deferred): void {
 					$this->logger->error(
 						'Connection to device failed',
 						[

@@ -15,15 +15,15 @@
 
 namespace FastyBird\Connector\Sonoff\Services;
 
-use InvalidArgumentException;
 use Ratchet;
 use Ratchet\Client;
 use React\EventLoop;
 use React\Promise;
 use React\Socket;
+use Throwable;
 
 /**
- * OpenPulsar websockets client factory
+ * Sonoff websockets client factory
  *
  * @package        FastyBird:SonoffConnector!
  * @subpackage     Services
@@ -56,7 +56,7 @@ readonly class WebSocketClientFactory
 			$connector = new Client\Connector($this->eventLoop, $reactConnector);
 
 			return $connector($topicUrl);
-		} catch (InvalidArgumentException $ex) {
+		} catch (Throwable $ex) {
 			return Promise\reject($ex);
 		}
 	}
