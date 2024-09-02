@@ -69,7 +69,7 @@ final class Local implements Client
 
 	private const RECONNECT_COOL_DOWN_TIME = 500.0;
 
-	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 2500.0;
+	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 2_500.0;
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
