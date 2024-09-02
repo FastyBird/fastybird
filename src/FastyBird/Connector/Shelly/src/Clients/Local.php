@@ -615,13 +615,7 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
 	 */
 	private function createGen2DeviceWsClient(Documents\Devices\Device $device): API\Gen2WsApi
 	{
