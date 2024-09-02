@@ -44,6 +44,7 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
+use function assert;
 use function count;
 use function in_array;
 use function preg_match;
@@ -66,7 +67,9 @@ final class Local implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const RECONNECT_COOL_DOWN_TIME = 300.0;
+	private const RECONNECT_COOL_DOWN_TIME = 500.0;
+
+	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 2500.0;
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
@@ -221,6 +224,19 @@ final class Local implements Client
 							);
 						})
 						->catch(function (Throwable $ex) use ($device): void {
+							$this->queue->append(
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector(),
+										'identifier' => $device->getIdentifier(),
+										'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+									],
+								),
+							);
+
+							unset($this->gen2DevicesWsClients[$device->getId()->toString()]);
+
 							$this->logger->error(
 								'Device websocket connection could not be created',
 								[
@@ -358,6 +374,18 @@ final class Local implements Client
 			unset($this->devices[$device->getId()->toString()]);
 
 			return false;
+		}
+
+		if (
+			$deviceState === DevicesTypes\ConnectionState::LOST
+			|| $deviceState === DevicesTypes\ConnectionState::DISCONNECTED
+		) {
+			$deviceStateTime = $this->deviceConnectionManager->getStateTime($device);
+			assert($deviceStateTime instanceof DateTimeInterface);
+
+			if ($this->clock->getNow()->getTimestamp() - $deviceStateTime->getTimestamp() < self::DEVICE_RECONNECT_COOL_DOWN_TIME) {
+				return false;
+			}
 		}
 
 		if ($this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_2) {
@@ -540,7 +568,7 @@ final class Local implements Client
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
-										'state' => DevicesTypes\ConnectionState::UNKNOWN,
+										'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 									],
 								),
 							);

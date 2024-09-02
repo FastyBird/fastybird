@@ -503,7 +503,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::UNKNOWN,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);

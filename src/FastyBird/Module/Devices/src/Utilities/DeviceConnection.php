@@ -187,6 +187,46 @@ final class DeviceConnection
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
+	public function getStateTime(
+		Entities\Devices\Device|Documents\Devices\Device $device,
+	): DateTimeInterface|null
+	{
+		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
+		$findDevicePropertyQuery->byDeviceId($device->getId());
+		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findDevicePropertyQuery,
+			Documents\Devices\Properties\Dynamic::class,
+		);
+
+		if ($property instanceof Documents\Devices\Properties\Dynamic) {
+			$state = $this->propertiesStatesManager->readState($property);
+
+			if (
+				$state?->getRead()->getActualValue() !== null
+				&& Types\ConnectionState::tryFrom(
+					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+				) !== null
+			) {
+				return $state->getUpdatedAt();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
 	public function getLostAt(
 		Entities\Devices\Device|Documents\Devices\Device $device,
 	): DateTimeInterface|null
