@@ -41,6 +41,7 @@ use TypeError;
 use ValueError;
 use function array_key_exists;
 use function array_map;
+use function assert;
 use function in_array;
 use function React\Async\async;
 
@@ -60,6 +61,8 @@ final class Cloud implements Client
 	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
+
+	public const REFRESH_SLEEP_DELAY = 2_500.0;
 
 	private const CMD_STATE = 'state';
 
@@ -304,6 +307,17 @@ final class Cloud implements Client
 	private function handleCommunication(): void
 	{
 		if (!$this->connectionManager->getCloudApiConnection($this->connector)->isConnected()) {
+			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
+		}
+
+		if ($this->connectionManager->getCloudApiConnection($this->connector)->isRefreshFailed()) {
+			$refreshFailedAt = $this->connectionManager->getCloudApiConnection($this->connector)->getRefreshFailed();
+			assert($refreshFailedAt instanceof DateTimeInterface);
+
+			if ($this->clock->getNow()->getTimestamp() - $refreshFailedAt->getTimestamp() < self::REFRESH_SLEEP_DELAY) {
+				return;
+			}
+
 			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
 		}
 

@@ -85,6 +85,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Throwable
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -298,6 +299,48 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				if (!$client->isConnected()) {
 					$client->connect();
+				}
+
+				if ($client->isRefreshFailed()) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $connector->getId(),
+								'device' => $device->getId(),
+								'state' => DevicesTypes\ConnectionState::SLEEPING,
+							],
+						),
+					);
+
+					await($this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\Sources\Connector::TUYA,
+					));
+
+					$this->logger->error(
+						'Connection with Tuya cloud needs to be refreshed',
+						[
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
+							'type' => 'write-channel-property-state-message-consumer',
+							'connector' => [
+								'id' => $connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+							'channel' => [
+								'id' => $channel->getId()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
+							'data' => $message->toArray(),
+						],
+					);
+
+					return true;
 				}
 
 				$result = $client->setDeviceState(

@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\Tuya\API;
 
+use DateTimeInterface;
 use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
@@ -142,6 +143,8 @@ final class OpenApi
 	/** @var Promise\Deferred<bool>|null */
 	private Promise\Deferred|null $refreshTokenPromise = null;
 
+	private DateTimeInterface|null $refreshTokenFailed = null;
+
 	public function __construct(
 		private readonly string $identifier,
 		private readonly string $accessId,
@@ -188,6 +191,7 @@ final class OpenApi
 				->then(function (Message\ResponseInterface $response) use ($deferred, $request): void {
 					try {
 						$this->tokenInfo = $this->parseGetAccessToken($request, $response)->getResult();
+						$this->refreshTokenFailed = null;
 
 						$deferred->resolve(true);
 					} catch (Throwable $ex) {
@@ -202,6 +206,7 @@ final class OpenApi
 		}
 
 		$this->tokenInfo = $this->parseGetAccessToken($request, $result)->getResult();
+		$this->refreshTokenFailed = null;
 
 		return true;
 	}
@@ -209,11 +214,22 @@ final class OpenApi
 	public function disconnect(): void
 	{
 		$this->tokenInfo = null;
+		$this->refreshTokenFailed = null;
 	}
 
 	public function isConnected(): bool
 	{
 		return $this->tokenInfo !== null;
+	}
+
+	public function getRefreshFailed(): DateTimeInterface|null
+	{
+		return $this->refreshTokenFailed;
+	}
+
+	public function isRefreshFailed(): bool
+	{
+		return $this->refreshTokenFailed !== null;
 	}
 
 	/**
@@ -1129,6 +1145,8 @@ final class OpenApi
 			try {
 				await($refreshTokenResult);
 			} catch (Throwable $ex) {
+				$this->refreshTokenFailed = $this->clock->getNow();
+
 				return Promise\reject(
 					new Exceptions\OpenApiCall(
 						'Awaiting for refresh token promise failed',
@@ -1139,6 +1157,10 @@ final class OpenApi
 					),
 				);
 			}
+		}
+
+		if ($refreshTokenResult === false) {
+			$this->connect(false);
 		}
 
 		$this->logger->debug(
@@ -1443,15 +1465,15 @@ final class OpenApi
 	}
 
 	/**
-	 * @return Promise\PromiseInterface<bool>|false
+	 * @return Promise\PromiseInterface<bool>|bool
 	 *
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
 	 */
-	private function refreshAccessToken(Request $request): Promise\PromiseInterface|false
+	private function refreshAccessToken(Request $request): Promise\PromiseInterface|bool
 	{
 		if (str_contains(strval($request->getUri()), self::GET_ACCESS_TOKEN_API_ENDPOINT)) {
-			return false;
+			return true;
 		}
 
 		if ($this->tokenInfo === null) {
@@ -1459,7 +1481,7 @@ final class OpenApi
 		}
 
 		if (!$this->tokenInfo->isExpired($this->clock->getNow())) {
-			return false;
+			return true;
 		}
 
 		if ($this->refreshTokenPromise !== null) {
