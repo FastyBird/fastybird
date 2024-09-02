@@ -710,7 +710,7 @@ final class Local implements Client
 					);
 
 					$this->logger->error(
-						'An error occurred on initial Gen 2 device state reading',
+						'An error occurred on Gen 2 device state reading',
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
