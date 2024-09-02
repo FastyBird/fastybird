@@ -62,7 +62,7 @@ final class Cloud implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	public const REFRESH_SLEEP_DELAY = 2_500.0;
+	public const REFRESH_SLEEP_DELAY = 300.0;
 
 	private const CMD_STATE = 'state';
 

@@ -570,8 +570,6 @@ final class Gen2WsApi
 					$this->connecting = false;
 					$this->connected = false;
 
-					Utils\Arrays::invoke($this->onError, $ex);
-
 					$deferred->reject($ex);
 				});
 		} catch (Throwable $ex) {
@@ -591,8 +589,6 @@ final class Gen2WsApi
 					],
 				],
 			);
-
-			Utils\Arrays::invoke($this->onError, $ex);
 
 			$deferred->reject($ex);
 		}

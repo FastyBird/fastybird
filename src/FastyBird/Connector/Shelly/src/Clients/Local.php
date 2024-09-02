@@ -67,9 +67,9 @@ final class Local implements Client
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
-	private const RECONNECT_COOL_DOWN_TIME = 500.0;
+	private const RECONNECT_COOL_DOWN_TIME = 300.0;
 
-	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 2_500.0;
+	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 300.0;
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
@@ -392,7 +392,26 @@ final class Local implements Client
 			$client = $this->getGen2DeviceWsClient($device);
 
 			if ($client === null) {
-				$client = $this->createGen2DeviceWsClient($device);
+				try {
+					$client = $this->createGen2DeviceWsClient($device);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Device websocket connection could not be created',
+						[
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+							'type' => 'local-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+						],
+					);
+
+					return false;
+				}
 			}
 
 			if (!$client->isConnected()) {
@@ -612,7 +631,11 @@ final class Local implements Client
 
 		unset($this->processedDevicesCommands[$device->getId()->toString()]);
 
-		$client = $this->connectionManager->getGen2WsApiConnection($device);
+		try {
+			$client = $this->connectionManager->getGen2WsApiConnection($device);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Gen 2 device WS client is already created', $ex->getCode(), $ex);
+		}
 
 		$client->onMessage[] = function (API\Messages\Message $message) use ($device): void {
 			try {
