@@ -185,7 +185,7 @@ final class Storage implements Caching\Storage
 		$this->client->del($this->formatEntryKey($key));
 
 		if ($this->journal instanceof Journal) {
-			$this->journal->clearKey($this->formatEntryKey($key));
+			$this->journal->cleanEntry($this->formatEntryKey($key));
 		}
 	}
 
