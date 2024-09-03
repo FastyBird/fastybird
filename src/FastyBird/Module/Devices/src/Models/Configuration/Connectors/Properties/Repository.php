@@ -26,6 +26,7 @@ use Ramsey\Uuid;
 use Throwable;
 use function array_filter;
 use function array_map;
+use function array_merge;
 use function assert;
 use function is_array;
 use function md5;
@@ -121,7 +122,10 @@ final class Repository extends Models\Configuration\Repository
 							assert($document instanceof $type);
 
 							$dependencies = [
-								Caching\Cache::Tags => [$document->getId()->toString()],
+								Caching\Cache::Tags => [
+									Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+									$document->getId()->toString(),
+								],
 							];
 
 							return $document;
@@ -208,9 +212,14 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => array_map(
-							static fn (Documents\Connectors\Properties\Property $document): string => $document->getId()->toString(),
-							$documents,
+						Caching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
+							],
+							array_map(
+								static fn (Documents\Connectors\Properties\Property $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 

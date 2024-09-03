@@ -232,6 +232,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Connectors\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
@@ -243,6 +244,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Connectors\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
@@ -254,6 +256,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Devices\Device) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
@@ -265,6 +268,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Devices\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
@@ -276,6 +280,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Devices\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
@@ -287,6 +292,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Channels\Channel) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
@@ -298,6 +304,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Channels\Properties\Property) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
@@ -309,6 +316,7 @@ final class ModuleEntities implements Common\EventSubscriber
 					$entity->getId()->toString(),
 				],
 			]);
+
 		} elseif ($entity instanceof Entities\Channels\Controls\Control) {
 			$this->configurationBuilderCache->clean([
 				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],

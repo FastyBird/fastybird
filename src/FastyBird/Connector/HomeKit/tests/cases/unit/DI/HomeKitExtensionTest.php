@@ -111,6 +111,7 @@ final class HomeKitExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		);
 
 		self::assertNotNull($container->getByType(Protocol\Tlv::class, false));
+		self::assertNotNull($container->getByType(Protocol\Loader::class, false));
 		self::assertNotNull($container->getByType(Protocol\Driver::class, false));
 		self::assertNotNull($container->getByType(Clients\Subscriber::class, false));
 

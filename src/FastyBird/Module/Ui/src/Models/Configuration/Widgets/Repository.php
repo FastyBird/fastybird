@@ -141,7 +141,10 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					$dependencies = [
-						NetteCaching\Cache::Tags => [$document->getId()->toString()],
+						NetteCaching\Cache::Tags => [
+							Types\ConfigurationType::WIDGETS->value,
+							$document->getId()->toString(),
+						],
 					];
 
 					return $document;
@@ -218,9 +221,14 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						NetteCaching\Cache::Tags => array_map(
-							static fn (Documents\Widgets\Widget $document): string => $document->getId()->toString(),
-							$documents,
+						NetteCaching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::WIDGETS->value,
+							],
+							array_map(
+								static fn (Documents\Widgets\Widget $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 

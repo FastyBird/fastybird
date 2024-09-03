@@ -140,7 +140,10 @@ final class Repository extends Models\Configuration\Repository
 					}
 
 					$dependencies = [
-						Caching\Cache::Tags => [$document->getId()->toString()],
+						Caching\Cache::Tags => [
+							Types\ConfigurationType::CHANNELS->value,
+							$document->getId()->toString(),
+						],
 					];
 
 					return $document;
@@ -217,9 +220,14 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => array_map(
-							static fn (Documents\Channels\Channel $document): string => $document->getId()->toString(),
-							$documents,
+						Caching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::CHANNELS->value,
+							],
+							array_map(
+								static fn (Documents\Channels\Channel $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 
