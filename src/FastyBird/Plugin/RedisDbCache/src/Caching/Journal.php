@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Storage.php
+ * Journal.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -20,6 +20,7 @@ use Nette\Caching;
 use function array_merge;
 use function array_unique;
 use function assert;
+use function is_array;
 use function is_string;
 
 /**
@@ -34,8 +35,6 @@ class Journal implements Caching\Storages\Journal
 {
 
 	public const NS_PREFIX = 'FB.Journal';
-
-	public const KEY_TAG = 'tag';
 
 	public const KEY_PRIORITY = 'priority';
 
@@ -54,36 +53,22 @@ class Journal implements Caching\Storages\Journal
 	 */
 	public function write(string $key, array $dependencies): void
 	{
+		$this->cleanEntry($key);
+
 		$this->client->multi();
 
-		// Handle tags
-		if ($dependencies[Caching\Cache::Tags] !== []) {
-			$this->client->del($this->formatKey($key, self::SUFFIX_TAGS)); // Remove existing tags for this key
-
-			foreach ((array) $dependencies[Caching\Cache::Tags] as $tag) {
+		// Add entry to each tag & tag to entry
+		if (isset($dependencies[Caching\Cache::Tags])) {
+			foreach (array_unique((array) $dependencies[Caching\Cache::Tags]) as $tag) {
 				assert(is_string($tag));
 
-				// Add key to the set for this tag
-				$this->client->sAdd(
-					$this->formatKey(self::KEY_TAG . ':' . $tag, self::SUFFIX_KEYS),
-					[$key],
-				);
-
-				// Add tag to the set for this key
-				$this->client->sAdd(
-					$this->formatKey($key, self::SUFFIX_TAGS),
-					[$tag],
-				);
+				$this->client->sAdd($this->formatKey($tag, self::SUFFIX_KEYS), [$key]);
+				$this->client->sAdd($this->formatKey($key, self::SUFFIX_TAGS), [$tag]);
 			}
 		}
 
-		// Handle priority
-		if ($dependencies[Caching\Cache::Priority] !== []) {
-			// Add key to the sorted set with priority as score
-			$this->client->zAdd(
-				$this->formatKey(self::KEY_PRIORITY),
-				[$key => $dependencies[Caching\Cache::Priority]],
-			);
+		if (isset($dependencies[Caching\Cache::Priority])) {
+			$this->client->zAdd($this->formatKey(self::KEY_PRIORITY), [$key => $dependencies[Caching\Cache::Priority]]);
 		}
 
 		$this->client->exec();
@@ -100,92 +85,87 @@ class Journal implements Caching\Storages\Journal
 	public function clean(array $conditions): array|null
 	{
 		if (isset($conditions[Caching\Cache::All])) {
-			// Remove all keys under the namespace
-			$allKeys = $this->client->keys($this->formatKey('*', '*'));
+			$all = $this->client->keys(self::NS_PREFIX . ':*');
 
-			if ($allKeys !== []) {
-				$this->client->del($allKeys);
-			}
+			$this->client->del($all);
 
 			return null;
 		}
 
-		$keysToRemove = [];
+		$entries = [];
 
-		// Clean by tags
-		if (isset($conditions[Caching\Cache::Tags]) && $conditions[Caching\Cache::Tags] !== []) {
-			$tags = (array) $conditions[Caching\Cache::Tags];
+		if (isset($conditions[Caching\Cache::Tags])) {
+			foreach ((array) $conditions[Caching\Cache::Tags] as $tag) {
+				assert(is_string($tag));
 
-			foreach ($tags as $tag) {
-				$taggedKeys = $this->client->sMembers($this->formatKey(self::KEY_TAG . ':' . $tag, self::SUFFIX_KEYS));
+				$this->cleanEntry($found = $this->tagEntries($tag));
 
-				$keysToRemove = array_merge($keysToRemove, $taggedKeys);
-			}
-		}
-
-		// Clean by priority
-		if (isset($conditions[Caching\Cache::Priority]) && $conditions[Caching\Cache::Priority] !== []) {
-			$priorityKeys = $this->client->zRangeByScore(
-				$this->formatKey(self::KEY_PRIORITY),
-				0,
-				$conditions[Caching\Cache::Priority],
-			);
-
-			$keysToRemove = array_merge($keysToRemove, $priorityKeys);
-		}
-
-		$keysToRemove = array_unique($keysToRemove);
-
-		if ($keysToRemove === []) {
-			return [];
-		}
-
-		$keyTagsMap = [];
-
-		foreach ($keysToRemove as $key) {
-			$keyTagsMap[$key] = $this->client->sMembers($this->formatKey($key, self::SUFFIX_TAGS));
-		}
-
-		$this->client->multi();
-
-		foreach ($keysToRemove as $key) {
-			foreach ($keyTagsMap[$key] as $tag) {
-				$this->client->sRem($this->formatKey(self::KEY_TAG . ':' . $tag, self::SUFFIX_KEYS), $key);
+				$entries[] = $found;
 			}
 
-			$this->client->del($this->formatKey($key, self::SUFFIX_TAGS)); // Remove all tags for this key
-			$this->client->zRem($this->formatKey(self::KEY_PRIORITY), $key); // Remove key from priority sorted set
+			$entries = array_merge(...$entries);
 		}
 
-		$this->client->exec();
+		if (isset($conditions[Caching\Cache::Priority])) {
+			$this->cleanEntry($found = $this->priorityEntries($conditions[Caching\Cache::Priority]));
 
-		return $keysToRemove;
+			$entries = array_merge($entries, $found);
+		}
+
+		return array_unique($entries);
 	}
 
-	public function clearKey(string $key): void
+	/**
+	 * Deletes all keys from associated tags and all priorities
+	 *
+	 * @param array<string>|string $keys
+	 */
+	public function cleanEntry(array|string $keys): void
 	{
-		// Retrieve all tags associated with this key
-		$tags = $this->client->sMembers($this->formatKey($key, self::SUFFIX_TAGS));
+		foreach (is_array($keys) ? $keys : [$keys] as $key) {
+			$entries = $this->entryTags($key);
 
-		$this->client->multi();
+			$this->client->multi();
 
-		// Remove this key from all tag sets
-		foreach ($tags as $tag) {
-			$this->client->sRem($this->formatKey(self::KEY_TAG . ':' . $tag, self::SUFFIX_KEYS), $key);
+			foreach ($entries as $tag) {
+				$this->client->sRem($this->formatKey($tag, self::SUFFIX_KEYS), $key);
+			}
+
+			// Drop tags of entry and priority, in case there are some
+			$this->client->del($this->formatKey($key, self::SUFFIX_TAGS));
+			$this->client->zRem($this->formatKey(self::KEY_PRIORITY), $key);
+
+			$this->client->exec();
 		}
+	}
 
-		// Remove the key's tags set
-		$this->client->del($this->formatKey($key, self::SUFFIX_TAGS));
+	/**
+	 * @return array<string>
+	 */
+	private function priorityEntries(int $priority): array
+	{
+		return $this->client->zRangeByScore($this->formatKey(self::KEY_PRIORITY), 0, $priority);
+	}
 
-		// Remove the key from the priority sorted set, if it exists
-		$this->client->zRem($this->formatKey(self::KEY_PRIORITY), $key);
+	/**
+	 * @return array<string>
+	 */
+	private function entryTags(string $key): array
+	{
+		return $this->client->sMembers($this->formatKey($key, self::SUFFIX_TAGS));
+	}
 
-		$this->client->exec();
+	/**
+	 * @return array<string>
+	 */
+	private function tagEntries(string $tag): array
+	{
+		return $this->client->sMembers($this->formatKey($tag, self::SUFFIX_KEYS));
 	}
 
 	private function formatKey(string $key, string|null $suffix = null): string
 	{
-		return self::NS_PREFIX . ':' . $key . ($suffix !== null ? ':' . $suffix : '');
+		return self::NS_PREFIX . ':' . $key . ($suffix !== null ? ':' . $suffix : null);
 	}
 
 }
