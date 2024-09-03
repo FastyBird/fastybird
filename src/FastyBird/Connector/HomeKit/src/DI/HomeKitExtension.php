@@ -354,7 +354,10 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Protocol\Tlv::class);
 
 		$builder->addDefinition($this->prefix('protocol.accessoryLoader'))
-			->setType(Protocol\Loader::class);
+			->setType(Protocol\Loader::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('protocol.accessoryDriver'))
 			->setType(Protocol\Driver::class);
