@@ -482,11 +482,11 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * HOMEKIT
 		 */
 
-		$httpServerServiceFactoryName = $builder->getByType(Servers\HttpFactory::class);
+		$protocolLoaderServiceName = $builder->getByType(Protocol\Loader::class);
 
-		if ($httpServerServiceFactoryName !== null) {
-			$httpServerServiceFactory = $builder->getDefinition($httpServerServiceFactoryName);
-			assert($httpServerServiceFactory instanceof DI\Definitions\FactoryDefinition);
+		if ($protocolLoaderServiceName !== null) {
+			$protocolLoaderService = $builder->getDefinition($protocolLoaderServiceName);
+			assert($protocolLoaderService instanceof DI\Definitions\ServiceDefinition);
 
 			$accessoriesFactories = $builder->findByType(
 				Protocol\Accessories\AccessoryFactory::class,
@@ -498,12 +498,9 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				Protocol\Characteristics\CharacteristicFactory::class,
 			);
 
-			$httpServerServiceFactory->getResultDefinition()->setArgument('accessoryFactories', $accessoriesFactories);
-			$httpServerServiceFactory->getResultDefinition()->setArgument('serviceFactories', $servicesFactories);
-			$httpServerServiceFactory->getResultDefinition()->setArgument(
-				'characteristicsFactories',
-				$characteristicsFactories,
-			);
+			$protocolLoaderService->setArgument('accessoryFactories', $accessoriesFactories);
+			$protocolLoaderService->setArgument('serviceFactories', $servicesFactories);
+			$protocolLoaderService->setArgument('characteristicsFactories', $characteristicsFactories);
 		}
 	}
 
