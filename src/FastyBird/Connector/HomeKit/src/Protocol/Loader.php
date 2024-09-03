@@ -84,7 +84,6 @@ class Loader
 	 * @throws Hashids\HashidsException
 	 */
 	public function __construct(
-		private readonly Documents\Connectors\Connector $connector,
 		private readonly Protocol\Driver $accessoriesDriver,
 		private readonly Protocol\Accessories\BridgeFactory $bridgeAccessoryFactory,
 		private readonly array $accessoryFactories,
@@ -143,7 +142,7 @@ class Loader
 		$bridgedAccessories = [];
 
 		$findDevicesQuery = new Queries\Configuration\FindDevices();
-		$findDevicesQuery->forConnector($this->connector);
+		$findDevicesQuery->forConnector($connector);
 
 		$devices = $this->devicesConfigurationRepository->findAllBy(
 			$findDevicesQuery,
@@ -335,7 +334,7 @@ class Loader
 									'type' => 'http-server',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
-										'id' => $this->connector->getId()->toString(),
+										'id' => $connector->getId()->toString(),
 									],
 									'device' => [
 										'id' => $accessory->getDevice()->getId()->toString(),
@@ -378,7 +377,7 @@ class Loader
 										'type' => 'http-server',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $connector->getId()->toString(),
 										],
 										'device' => [
 											'id' => $accessory->getDevice()->getId()->toString(),
