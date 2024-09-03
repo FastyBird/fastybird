@@ -947,6 +947,18 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			])
 			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
 
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.moduleEntities'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\ModuleEntities::class)
+			->setArguments([
+				'logger' => $logger,
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
 		if (
 			$builder->findByType('IPub\WebSockets\Router\LinkGenerator') !== []
 			&& $builder->findByType('IPub\WebSocketsWAMP\Topics\IStorage') !== []
