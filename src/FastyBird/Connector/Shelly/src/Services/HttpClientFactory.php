@@ -59,6 +59,12 @@ final class HttpClientFactory
 				$connector = new Socket\Connector(
 					[
 						'timeout' => self::CONNECTION_TIMEOUT,
+						'tls' => [
+							'verify_peer' => false,
+							'verify_peer_name' => false,
+							'check_hostname' => false,
+							'allow_self_signed' => true,
+						],
 					],
 					$this->eventLoop,
 				);
