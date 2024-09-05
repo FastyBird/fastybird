@@ -407,6 +407,34 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
+		if (!$this->getClient($connector)->isConnected()) {
+			$this->logger->error(
+				'Client is not connected to Zigbee2MQTT',
+				[
+					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
+					'type' => 'write-sub-device-channel-property-state-message-consumer',
+					'connector' => [
+						'id' => $connector->getId()->toString(),
+					],
+					'bridge' => [
+						'id' => $bridge->getId()->toString(),
+					],
+					'device' => [
+						'id' => $device->getId()->toString(),
+					],
+					'channel' => [
+						'id' => $channel->getId()->toString(),
+					],
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
+				],
+			);
+
+			return false;
+		}
+
 		try {
 			$this->getClient($connector)
 				->publish(

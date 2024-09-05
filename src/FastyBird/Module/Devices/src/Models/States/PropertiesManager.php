@@ -86,7 +86,7 @@ abstract class PropertiesManager
 					$mappedProperty,
 					$forReading,
 				);
-			} catch (MetadataExceptions\InvalidValue $ex) {
+			} catch (MetadataExceptions\InvalidValue | MetadataExceptions\InvalidState $ex) {
 				if ($mappedProperty !== null) {
 					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
 					$updateValues[States\Property::VALID_FIELD] = false;
@@ -95,7 +95,26 @@ abstract class PropertiesManager
 						'Property stored actual value could not be converted to mapped property',
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
-							'type' => 'channel-properties-states',
+							'type' => 'properties-states',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'property' => $property->getId()->toString(),
+							'mapped_property' => $mappedProperty->getId()->toString(),
+						],
+					);
+
+				} else {
+					throw new Exceptions\InvalidActualValue('Property stored actual value was not valid');
+				}
+			} catch (\Throwable $ex) {
+				if ($mappedProperty !== null) {
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
+					$updateValues[States\Property::VALID_FIELD] = false;
+
+					$this->logger->error(
+						'Property stored actual value could not be converted to mapped property',
+						[
+							'source' => MetadataTypes\Sources\Module::DEVICES->value,
+							'type' => 'properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
