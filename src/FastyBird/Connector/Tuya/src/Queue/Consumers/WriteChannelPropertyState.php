@@ -478,7 +478,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'write-channel-property-state-message-consumer',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex, false),
 						'connector' => [
 							'id' => $connector->getId()->toString(),
 						],
@@ -532,7 +532,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				$extra = [];
 
-				if ($ex instanceof Exceptions\OpenApiCall) {
+				$renderException = true;
+
+				if ($ex instanceof Exceptions\OpenApiCall || $ex instanceof Exceptions\LocalApiCall) {
 					$extra = [
 						'request' => [
 							'method' => $ex->getRequest()?->getMethod(),
@@ -543,9 +545,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'body' => $ex->getResponse()?->getBody()->getContents(),
 						],
 					];
-				}
 
-				if ($ex instanceof Exceptions\OpenApiCall || $ex instanceof Exceptions\LocalApiCall) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
@@ -556,6 +556,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							],
 						),
 					);
+
+					$renderException = false;
 
 				} elseif ($ex instanceof Exceptions\OpenApiError || $ex instanceof Exceptions\LocalApiError) {
 					$this->queue->append(
@@ -588,7 +590,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $connector->getId()->toString(),
 							],

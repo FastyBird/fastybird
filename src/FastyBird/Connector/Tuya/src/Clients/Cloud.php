@@ -425,17 +425,7 @@ final class Cloud implements Client
 				);
 			})
 			->catch(function (Throwable $ex) use ($device): void {
-				$this->logger->error(
-					'Could not call cloud openapi',
-					[
-						'source' => MetadataTypes\Sources\Connector::TUYA->value,
-						'type' => 'cloud-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
+				$renderException = true;
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
@@ -459,6 +449,8 @@ final class Cloud implements Client
 							],
 						),
 					);
+
+					$renderException = false;
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
@@ -467,6 +459,18 @@ final class Cloud implements Client
 						),
 					);
 				}
+
+				$this->logger->error(
+					'Could not call cloud openapi',
+					[
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
+						'type' => 'cloud-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
 			});
 
 		return true;
