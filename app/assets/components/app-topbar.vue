@@ -130,7 +130,6 @@ const onSwitchTheme = (event: MouseEvent): void => {
 	const y = event.clientY;
 	const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
 
-	// @ts-expect-error: Transition API
 	const transition = document.startViewTransition(async () => {
 		resolveFn(true);
 
