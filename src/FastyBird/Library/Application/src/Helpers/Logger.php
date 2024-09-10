@@ -47,13 +47,15 @@ class Logger
 	/**
 	 * @return array<array<string, string|int>>
 	 */
-	public static function buildException(Throwable $ex): array
+	public static function buildException(Throwable $ex, bool $render = true): array
 	{
-		try {
-			$blueScreen = new Tracy\BlueScreen();
-			$blueScreen->renderToFile($ex, self::getExceptionFile($ex));
-		} catch (Throwable) {
-			// Blue scree could not be saved
+		if ($render) {
+			try {
+				$blueScreen = new Tracy\BlueScreen();
+				$blueScreen->renderToFile($ex, self::getExceptionFile($ex));
+			} catch (Throwable) {
+				// Blue scree could not be saved
+			}
 		}
 
 		return self::processAllExceptions($ex);

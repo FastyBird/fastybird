@@ -480,12 +480,18 @@ final class Local implements Client
 					$this->processGen2DeviceGetState($device, $response);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
+					if ($ex instanceof Exceptions\HttpApiCall) {
+						$renderException = false;
+					}
+
 					$this->logger->error(
 						'Could not read device state',
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -536,6 +542,8 @@ final class Local implements Client
 					$this->processGen1DeviceGetState($device, $response);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
 					if ($ex instanceof Exceptions\HttpApiError) {
 						$this->queue->append(
 							$this->messageBuilder->create(
@@ -592,6 +600,8 @@ final class Local implements Client
 								),
 							);
 						}
+
+						$renderException = false;
 					}
 
 					$this->logger->error(
@@ -599,7 +609,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -715,6 +725,12 @@ final class Local implements Client
 					$this->processGen2DeviceGetState($device, $state);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
+					if ($ex instanceof Exceptions\HttpApiCall) {
+						$renderException = false;
+					}
+
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
@@ -731,7 +747,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
