@@ -535,16 +535,18 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				$renderException = true;
 
 				if ($ex instanceof Exceptions\OpenApiCall || $ex instanceof Exceptions\LocalApiCall) {
-					$extra = [
-						'request' => [
-							'method' => $ex->getRequest()?->getMethod(),
-							'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-							'body' => $ex->getRequest()?->getBody()->getContents(),
-						],
-						'response' => [
-							'body' => $ex->getResponse()?->getBody()->getContents(),
-						],
-					];
+					if ($ex instanceof Exceptions\OpenApiCall) {
+						$extra = [
+							'request' => [
+								'method' => $ex->getRequest()?->getMethod(),
+								'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
+								'body' => $ex->getRequest()?->getBody()->getContents(),
+							],
+							'response' => [
+								'body' => $ex->getResponse()?->getBody()->getContents(),
+							],
+						];
+					}
 
 					$this->queue->append(
 						$this->messageBuilder->create(
