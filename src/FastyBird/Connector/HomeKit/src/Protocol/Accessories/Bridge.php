@@ -21,6 +21,7 @@ use FastyBird\Connector\HomeKit\Exceptions;
 use FastyBird\Connector\HomeKit\Types;
 use Ramsey\Uuid;
 use SplObjectStorage;
+use function assert;
 
 /**
  * HAP bridge accessory
@@ -84,6 +85,8 @@ class Bridge extends Accessory
 				}
 
 				foreach ($this->accessories as $existingAccessory) {
+					assert($existingAccessory instanceof Accessory);
+
 					if ($existingAccessory->getAid() !== null && $existingAccessory->getAid() === $newAid) {
 						$newAid++;
 
@@ -104,6 +107,8 @@ class Bridge extends Accessory
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $existingAccessory) {
+			assert($existingAccessory instanceof Accessory);
+
 			if ($existingAccessory->getAid() === $accessory->getAid()) {
 				throw new Exceptions\InvalidArgument('Duplicate AID found when attempting to add accessory');
 			}
@@ -122,6 +127,8 @@ class Bridge extends Accessory
 		$accessories = [];
 
 		foreach ($this->accessories as $accessory) {
+			assert($accessory instanceof Accessory);
+
 			$accessories[] = $accessory;
 		}
 
@@ -133,6 +140,8 @@ class Bridge extends Accessory
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $accessory) {
+			assert($accessory instanceof Accessory);
+
 			if ($accessory->getAid() === $aid) {
 				return $accessory;
 			}

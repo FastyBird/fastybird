@@ -28,6 +28,7 @@ use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
@@ -105,7 +106,7 @@ abstract class PropertiesManager
 				} else {
 					throw new Exceptions\InvalidActualValue('Property stored actual value was not valid');
 				}
-			} catch (\Throwable $ex) {
+			} catch (Throwable $ex) {
 				if ($mappedProperty !== null) {
 					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
 					$updateValues[States\Property::VALID_FIELD] = false;

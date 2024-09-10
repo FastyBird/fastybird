@@ -20,6 +20,7 @@ use FastyBird\Connector\HomeKit\Documents;
 use Nette;
 use React\Socket;
 use SplObjectStorage;
+use function assert;
 use function str_replace;
 
 /**
@@ -75,6 +76,8 @@ final class SecureServer extends EventEmitter implements Socket\ServerInterface
 		$this->activeConnections->rewind();
 
 		foreach ($this->activeConnections as $connection) {
+			assert($connection instanceof SecureConnection);
+
 			$connection->setSharedKey($sharedKey);
 		}
 	}

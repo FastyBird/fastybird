@@ -27,6 +27,7 @@ use ValueError;
 use function array_filter;
 use function array_map;
 use function array_values;
+use function assert;
 use function sprintf;
 
 /**
@@ -90,6 +91,8 @@ abstract class Accessory
 		$this->services->rewind();
 
 		foreach ($this->services as $service) {
+			assert($service instanceof Protocol\Services\Service);
+
 			$services[] = $service;
 		}
 
@@ -116,6 +119,8 @@ abstract class Accessory
 		$this->services->rewind();
 
 		foreach ($this->services as $service) {
+			assert($service instanceof Protocol\Services\Service);
+
 			if ($service->getName() === $name) {
 				return $service;
 			}
@@ -175,8 +180,10 @@ abstract class Accessory
 
 		$this->services->rewind();
 
-		foreach ($this->services as $characteristic) {
-			$services[] = $characteristic->getName();
+		foreach ($this->services as $service) {
+			assert($service instanceof Protocol\Services\Service);
+
+			$services[] = $service->getName();
 		}
 
 		return sprintf(

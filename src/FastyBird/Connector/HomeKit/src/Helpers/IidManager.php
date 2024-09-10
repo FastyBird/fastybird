@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Helpers;
 use FastyBird\Connector\HomeKit\Protocol;
 use Nette;
 use SplObjectStorage;
+use function assert;
 
 /**
  * Maintains a mapping between Service/Characteristic objects and IIDs
@@ -69,6 +70,12 @@ final class IidManager
 		$this->storage->rewind();
 
 		foreach ($this->storage as $object) {
+			assert(
+				$object instanceof Protocol\Accessories\Accessory
+				|| $object instanceof Protocol\Services\Service
+				|| $object instanceof Protocol\Characteristics\Characteristic,
+			);
+
 			if ($this->storage[$object] === $iid) {
 				return $object;
 			}

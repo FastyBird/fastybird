@@ -19,6 +19,7 @@ use FastyBird\Connector\Zigbee2Mqtt;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplObjectStorage;
+use function assert;
 
 /**
  * Clients message queue consumers container
@@ -88,6 +89,8 @@ final class Consumers
 		}
 
 		foreach ($this->consumers as $consumer) {
+			assert($consumer instanceof Consumer);
+
 			if ($consumer->consume($message) === true) {
 				return;
 			}
