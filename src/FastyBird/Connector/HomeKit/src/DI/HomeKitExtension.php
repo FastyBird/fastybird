@@ -383,7 +383,10 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('commands.execute'), new DI\Definitions\ServiceDefinition())
-			->setType(Commands\Execute::class);
+			->setType(Commands\Execute::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('commands.install'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Install::class)
