@@ -175,36 +175,52 @@ final class Cloud implements Client
 			->getCloudWsConnection($this->connector);
 
 		$wsClient->onMessage[] = function (API\Messages\Message $message): void {
-			if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $message->getIdentifier(),
-							'state' => $message->isOnline()
-								? DevicesTypes\ConnectionState::CONNECTED
-								: DevicesTypes\ConnectionState::DISCONNECTED,
-						],
-					),
+			if (
+				$message instanceof API\Messages\Response\ReportDeviceOnline
+				|| $message instanceof API\Messages\Response\ReportDeviceState
+			) {
+				$knowDevices = array_filter(
+					$this->devices,
+					function (Documents\Devices\Device $device) use ($message): bool {
+						return $device->getIdentifier() === $message->getIdentifier();
+					},
 				);
-			} elseif ($message instanceof API\Messages\Response\ReportDeviceState) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreChannelPropertyState::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $message->getIdentifier(),
-							'data_points' => array_map(
-								static fn (API\Messages\Response\DataPointState $dps): array => [
-									'code' => $dps->getCode(),
-									'value' => $dps->getValue(),
-								],
-								$message->getDataPoints(),
-							),
-						],
-					),
-				);
+
+				if ($knowDevices === []) {
+					return;
+				}
+
+				if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'identifier' => $message->getIdentifier(),
+								'state' => $message->isOnline()
+									? DevicesTypes\ConnectionState::CONNECTED
+									: DevicesTypes\ConnectionState::DISCONNECTED,
+							],
+						),
+					);
+				} else {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'identifier' => $message->getIdentifier(),
+								'data_points' => array_map(
+									static fn(API\Messages\Response\DataPointState $dps): array => [
+										'code' => $dps->getCode(),
+										'value' => $dps->getValue(),
+									],
+									$message->getDataPoints(),
+								),
+							],
+						),
+					);
+				}
 			}
 		};
 
