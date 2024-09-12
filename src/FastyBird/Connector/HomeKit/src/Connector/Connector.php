@@ -15,6 +15,7 @@
 
 namespace FastyBird\Connector\HomeKit\Connector;
 
+use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
@@ -22,6 +23,7 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Writers;
+use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -34,6 +36,7 @@ use React\EventLoop;
 use React\Promise;
 use TypeError;
 use ValueError;
+use z4kn4fein\SemVer;
 use function assert;
 use function React\Async\async;
 
@@ -82,13 +85,21 @@ final class Connector implements DevicesConnectors\Connector
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Runtime
+	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
+	 * @throws Nette\IOException
+	 * @throws SemVer\SemverException
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
