@@ -15,11 +15,12 @@
 
 namespace FastyBird\Module\Devices\Subscribers;
 
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -36,8 +37,7 @@ final class ConfigurationCache implements EventDispatcher\EventSubscriberInterfa
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Caching\Cache $configurationBuilderCache,
-		private readonly Caching\Cache $configurationRepositoryCache,
+		private readonly Caching\Container $moduleCaching,
 	)
 	{
 	}
@@ -56,108 +56,108 @@ final class ConfigurationCache implements EventDispatcher\EventSubscriberInterfa
 		$entity = $event->getEntity();
 
 		if ($entity instanceof Entities\Connectors\Connector) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CONNECTORS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Connectors\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Connectors\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CONNECTORS_CONTROLS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Devices\Device) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::DEVICES->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Devices\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::DEVICES_PROPERTIES->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Devices\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::DEVICES_CONTROLS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Channels\Channel) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CHANNELS->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Channels\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CHANNELS_PROPERTIES->value,
 					$entity->getId()->toString(),
 				],
 			]);
 
 		} elseif ($entity instanceof Entities\Channels\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
+			$this->moduleCaching->getConfigurationBuilderCache()->clean([
+				NetteCaching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
 			]);
 
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
+			$this->moduleCaching->getConfigurationRepositoryCache()->clean([
+				NetteCaching\Cache::Tags => [
 					Types\ConfigurationType::CHANNELS_CONTROLS->value,
 					$entity->getId()->toString(),
 				],

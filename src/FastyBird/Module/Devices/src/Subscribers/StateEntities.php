@@ -17,19 +17,20 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use DateTimeInterface;
 use Exception;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -53,9 +54,8 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	public function __construct(
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
-		private readonly Caching\Cache $stateCache,
-		private readonly Caching\Cache $stateStorageCache,
-		private readonly Utilities\EventLoopStatus $eventLoopStatus,
+		private readonly Caching\Container $moduleCaching,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -130,11 +130,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		Documents\Connectors\Properties\Property|Documents\Devices\Properties\Property|Documents\Channels\Properties\Property $document,
 	): void
 	{
-		$this->stateCache->clean([
-			Caching\Cache::Tags => [$document->getId()->toString()],
+		$this->moduleCaching->getStateCache()->clean([
+			NetteCaching\Cache::Tags => [$document->getId()->toString()],
 		]);
-		$this->stateStorageCache->clean([
-			Caching\Cache::Tags => [$document->getId()->toString()],
+		$this->moduleCaching->getStateStorageCache()->clean([
+			NetteCaching\Cache::Tags => [$document->getId()->toString()],
 		]);
 	}
 

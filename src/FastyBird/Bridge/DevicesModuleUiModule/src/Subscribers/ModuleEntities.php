@@ -20,7 +20,7 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Bridge\DevicesModuleUiModule\Documents;
 use FastyBird\Bridge\DevicesModuleUiModule\Queries;
-use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -30,7 +30,6 @@ use FastyBird\Module\Ui\Exceptions as UiExceptions;
 use FastyBird\Module\Ui\Models as UiModels;
 use Nette;
 use Nette\Caching;
-use React\Promise;
 use function array_map;
 use function assert;
 use function count;
@@ -48,12 +47,11 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	use Nette\SmartObject;
 
-	private bool $useAsync = false;
-
 	public function __construct(
 		private readonly UiModels\Configuration\Widgets\DataSources\Repository $dataSourcesRepository,
 		private readonly UiCaching\Container $uiModuleCaching,
 		private readonly ORM\EntityManagerInterface $entityManager,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -63,11 +61,7 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			0 => ORM\Events::postUpdate,
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			ORM\Events::postUpdate,
 		];
 	}
 
@@ -97,16 +91,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->processEntity($entity);
-	}
-
-	public function enableAsync(): void
-	{
-		$this->useAsync = true;
-	}
-
-	public function disableAsync(): void
-	{
-		$this->useAsync = false;
 	}
 
 	/**
@@ -158,19 +142,15 @@ final class ModuleEntities implements Common\EventSubscriber
 			);
 			assert($dataSource !== null);
 
-			$this->publishDocument($this->useAsync, $dataSource);
+			$this->publishDocument($dataSource);
 		}
 	}
 
-	/**
-	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
-	 */
 	private function publishDocument(
-		bool $async,
 		Documents\Widgets\DataSources\Property $dataSource,
-	): Promise\PromiseInterface|bool
+	): void
 	{
-		return $this->getPublisher($async)->publish(
+		$this->getPublisher($this->eventLoopStatus->isRunning())->publish(
 			MetadataTypes\Sources\Bridge::DEVICES_MODULE_UI_MODULE,
 			Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_REPORTED_ROUTING_KEY,
 			$dataSource,

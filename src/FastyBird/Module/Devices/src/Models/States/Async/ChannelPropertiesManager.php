@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,7 +34,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -71,10 +72,10 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 		private readonly Models\Configuration\Channels\Properties\Repository $channelPropertiesConfigurationRepository,
 		private readonly Models\States\Channels\Async\Repository $channelPropertyStateRepository,
 		private readonly Models\States\Channels\Async\Manager $channelPropertiesStatesManager,
+		private readonly Caching\Container $moduleCaching,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -116,7 +117,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			}
 		} else {
 			/** @phpstan-var Documents\States\Channels\Properties\Property|null $document */
-			$document = $this->cache->load('read_' . $property->getId()->toString());
+			$document = $this->moduleCaching->getStateCache()->load('read_' . $property->getId()->toString());
 
 			if ($document !== null) {
 				return Promise\resolve($document);
@@ -127,11 +128,11 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 			$this->readState($property)
 				->then(
 					function (Documents\States\Channels\Properties\Property|null $document) use ($deferred, $property): void {
-						$this->cache->save(
+						$this->moduleCaching->getStateCache()->save(
 							'read_' . $property->getId()->toString(),
 							$document,
 							[
-								Caching\Cache::Tags => array_merge(
+								NetteCaching\Cache::Tags => array_merge(
 									[$property->getId()->toString()],
 									$property instanceof Documents\Channels\Properties\Mapped
 										? [$property->getParent()->toString()]
@@ -811,8 +812,8 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							}
 						}
 
-						$this->cache->clean([
-							Caching\Cache::Tags => [$property->getId()->toString()],
+						$this->moduleCaching->getStateCache()->clean([
+							NetteCaching\Cache::Tags => [$property->getId()->toString()],
 						]);
 
 						$readValue = $this->convertStoredState($property, null, $result, true);

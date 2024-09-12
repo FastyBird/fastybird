@@ -6,24 +6,24 @@
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Subscribers
  * @since          1.0.0
  *
  * @date           11.09.24
  */
 
-namespace FastyBird\Module\Devices\Subscribers;
+namespace FastyBird\Library\Application\Subscribers;
 
-use FastyBird\Library\Application\Events as ApplicationEvents;
-use FastyBird\Module\Devices\Utilities;
+use FastyBird\Library\Application\Events;
+use FastyBird\Library\Application\Utilities;
 use Nette;
 use Symfony\Component\EventDispatcher;
 
 /**
  * Event loop events
  *
- * @package        FastyBird:DevicesModule!
+ * @package        FastyBird:ApplicationLibrary!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
@@ -40,9 +40,9 @@ final class EventLoop implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			ApplicationEvents\EventLoopStarted::class => 'loopStarted',
-			ApplicationEvents\EventLoopStopped::class => 'loopStopped',
-			ApplicationEvents\EventLoopStopping::class => 'loopStopped',
+			Events\EventLoopStarted::class => 'loopStarted',
+			Events\EventLoopStopped::class => 'loopStopped',
+			Events\EventLoopStopping::class => 'loopStopped',
 		];
 	}
 

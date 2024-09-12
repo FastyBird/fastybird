@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -32,7 +33,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -63,12 +64,12 @@ final class ConnectorPropertiesManager extends PropertiesManager
 
 	public function __construct(
 		private readonly bool $useExchange,
-		private readonly Connectors\Repository $connectorPropertyStateRepository,
-		private readonly Connectors\Manager $connectorPropertiesStatesManager,
+		private readonly Models\States\Connectors\Repository $connectorPropertyStateRepository,
+		private readonly Models\States\Connectors\Manager $connectorPropertiesStatesManager,
+		private readonly Caching\Container $moduleCaching,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -115,11 +116,11 @@ final class ConnectorPropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$document = $this->cache->load(
+			$document = $this->moduleCaching->getStateCache()->load(
 				'read_' . $property->getId()->toString(),
 				fn () => $this->readState($property),
 				[
-					Caching\Cache::Tags => [$property->getId()->toString()],
+					NetteCaching\Cache::Tags => [$property->getId()->toString()],
 				],
 			);
 			assert($document instanceof Documents\States\Connectors\Properties\Property || $document === null);

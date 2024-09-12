@@ -18,6 +18,7 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -26,7 +27,6 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Nette\Utils;
 use ReflectionClass;
@@ -61,7 +61,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
-		private readonly Utilities\EventLoopStatus $eventLoopStatus,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,

@@ -15,11 +15,12 @@
 
 namespace FastyBird\Module\Devices\Models\States\Channels\Async;
 
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 use React\Promise;
 use Throwable;
@@ -39,7 +40,7 @@ final class Repository
 
 	public function __construct(
 		private readonly Models\States\Channels\Repository $fallback,
-		private readonly Caching\Cache $cache,
+		private readonly Caching\Container $moduleCaching,
 		private readonly IRepository|null $repository = null,
 	)
 	{
@@ -61,7 +62,7 @@ final class Repository
 		}
 
 		/** @phpstan-var States\ChannelProperty|null $state */
-		$state = $this->cache->load($id->toString());
+		$state = $this->moduleCaching->getStateStorageCache()->load($id->toString());
 
 		if ($state !== null) {
 			return Promise\resolve($state);
@@ -71,11 +72,11 @@ final class Repository
 
 		$this->repository->find($id)
 			->then(function (States\ChannelProperty|null $state) use ($deferred, $id): void {
-				$this->cache->save(
+				$this->moduleCaching->getStateStorageCache()->save(
 					$id->toString(),
 					$state,
 					[
-						Caching\Cache::Tags => [$id->toString()],
+						NetteCaching\Cache::Tags => [$id->toString()],
 					],
 				);
 

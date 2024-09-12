@@ -5,7 +5,7 @@ namespace FastyBird\Module\Triggers\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
@@ -31,22 +31,21 @@ final class ModuleEntitiesTest extends TestCase
 
 		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
+		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$eventLoopStatus,
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
 		);
 
 		self::assertSame([
-			0 => ORM\Events::prePersist,
-			1 => ORM\Events::postPersist,
-			2 => ORM\Events::postUpdate,
-			3 => ORM\Events::postRemove,
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			ORM\Events::prePersist,
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
+			ORM\Events::postRemove,
 		], $subscriber->getSubscribedEvents());
 	}
 
@@ -113,8 +112,11 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
+		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$eventLoopStatus,
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
@@ -194,8 +196,11 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
+		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$eventLoopStatus,
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,
@@ -277,8 +282,11 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
+		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
+			$eventLoopStatus,
 			$documentFactory,
 			$publisher,
 			$asyncPublisher,

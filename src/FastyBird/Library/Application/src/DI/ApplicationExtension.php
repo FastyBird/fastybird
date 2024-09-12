@@ -157,10 +157,7 @@ class ApplicationExtension extends DI\CompilerExtension
 		 */
 
 		if ($configuration->logging->console->enabled) {
-			$builder->addDefinition(
-				$this->prefix('subscribers.console'),
-				new DI\Definitions\ServiceDefinition(),
-			)
+			$builder->addDefinition($this->prefix('subscribers.console'), new DI\Definitions\ServiceDefinition())
 				->setType(Subscribers\Console::class)
 				->setArguments([
 					'handler' => $consoleHandler,
@@ -176,15 +173,15 @@ class ApplicationExtension extends DI\CompilerExtension
 				->setType(Subscribers\EntityDiscriminator::class);
 		}
 
+		$builder->addDefinition($this->prefix('subscribers.eventLoop'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\EventLoop::class);
+
 		/**
 		 * SENTRY ISSUES LOGGER
 		 */
 
 		if (interface_exists('\Sentry\ClientInterface')) {
-			$builder->addDefinition(
-				$this->prefix('helpers.sentry'),
-				new DI\Definitions\ServiceDefinition(),
-			)
+			$builder->addDefinition($this->prefix('helpers.sentry'), new DI\Definitions\ServiceDefinition())
 				->setType(Helpers\Sentry::class);
 		}
 
@@ -244,6 +241,9 @@ class ApplicationExtension extends DI\CompilerExtension
 
 		$builder->addDefinition($this->prefix('utilities.doctrineDateProvider'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\DateTimeProvider::class);
+
+		$builder->addDefinition($this->prefix('utilities.eventLoop.status'), new DI\Definitions\ServiceDefinition())
+			->setType(Utilities\EventLoopStatus::class);
 	}
 
 	/**
