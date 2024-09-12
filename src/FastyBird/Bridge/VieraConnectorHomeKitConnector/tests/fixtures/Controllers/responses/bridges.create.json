@@ -28,7 +28,7 @@
           "related": {
             "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/properties",
             "meta": {
-              "count": 4
+              "count": 5
             }
           }
         },
@@ -46,8 +46,12 @@
             "id": "__PROPERTY_3_PLACEHOLDER__"
           },
           {
-            "type": "com.fastybird.devices-module/property/device/variable",
+            "type": "com.fastybird.devices-module/property/device/dynamic",
             "id": "__PROPERTY_4_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/variable",
+            "id": "__PROPERTY_5_PLACEHOLDER__"
           }
         ]
       },

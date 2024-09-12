@@ -75,13 +75,10 @@ final class ModuleEntitiesTest extends TestCase
 		);
 
 		self::assertSame([
-			0 => 'postPersist',
-			1 => 'postUpdate',
-			2 => 'preRemove',
-			3 => 'postRemove',
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			'postPersist',
+			'postUpdate',
+			'preRemove',
+			'postRemove',
 		], $subscriber->getSubscribedEvents());
 	}
 

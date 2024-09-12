@@ -297,6 +297,26 @@ final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 					&& is_array($actual['data'])
 					&& isset($actual['data']['relationships'])
 					&& is_array($actual['data']['relationships'])
+					&& isset($actual['data']['relationships']['properties'])
+					&& is_array($actual['data']['relationships']['properties'])
+					&& isset($actual['data']['relationships']['properties']['data'])
+					&& is_array($actual['data']['relationships']['properties']['data'])
+					&& isset($actual['data']['relationships']['properties']['data'][3])
+					&& is_array($actual['data']['relationships']['properties']['data'][3])
+					&& isset($actual['data']['relationships']['properties']['data'][3]['id'])
+				) {
+					$expectation = str_replace(
+						'__PROPERTY_4_PLACEHOLDER__',
+						strval($actual['data']['relationships']['properties']['data'][3]['id']),
+						$expectation,
+					);
+				}
+
+				if (
+					isset($actual['data'])
+					&& is_array($actual['data'])
+					&& isset($actual['data']['relationships'])
+					&& is_array($actual['data']['relationships'])
 					&& isset($actual['data']['relationships']['channels'])
 					&& is_array($actual['data']['relationships']['channels'])
 					&& isset($actual['data']['relationships']['channels']['data'])
