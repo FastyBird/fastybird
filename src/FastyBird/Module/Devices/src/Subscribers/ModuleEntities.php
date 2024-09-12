@@ -18,7 +18,6 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -77,14 +76,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			0 => ORM\Events::postPersist,
-			1 => ORM\Events::postUpdate,
-			2 => ORM\Events::preRemove,
-			3 => ORM\Events::postRemove,
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
+			ORM\Events::preRemove,
+			ORM\Events::postRemove,
 		];
 	}
 
@@ -217,6 +212,37 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function disableAsync(): void
 	{
 		$this->useAsync = false;
+	}
+
+	public function transactionFinished(): void
+	{
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
+		]);
+		$this->configurationBuilderCache->clean([
+			Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
+		]);
 	}
 
 	private function cleanCache(Entities\Entity $entity): void

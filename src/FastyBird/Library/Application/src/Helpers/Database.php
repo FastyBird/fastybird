@@ -18,9 +18,11 @@ namespace FastyBird\Library\Application\Helpers;
 use Doctrine\DBAL;
 use Doctrine\ORM;
 use Doctrine\Persistence;
+use FastyBird\Library\Application\Events;
 use FastyBird\Library\Application\Exceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
+use Psr\EventDispatcher;
 use Psr\Log;
 use Throwable;
 use function gc_collect_cycles;
@@ -41,6 +43,7 @@ class Database
 
 	public function __construct(
 		private readonly Persistence\ManagerRegistry|null $managerRegistry = null,
+		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
 	{
@@ -95,6 +98,8 @@ class Database
 			// Start transaction connection to the database
 			$connection->beginTransaction();
 
+			$this->dispatcher?->dispatch(new Events\DbTransactionStarted());
+
 			$result = $callback();
 
 			if ($connection->isRollbackOnly()) {
@@ -105,6 +110,16 @@ class Database
 				// Commit all changes into database
 				$connection->commit();
 			}
+
+			foreach ($this->managerRegistry->getManagers() as $name => $manager) {
+				if (!$manager instanceof ORM\EntityManagerInterface) {
+					continue;
+				}
+
+				$manager->clear();
+			}
+
+			$this->dispatcher?->dispatch(new Events\DbTransactionFinished());
 
 			return $result;
 		} catch (Throwable $ex) {
@@ -137,6 +152,8 @@ class Database
 			$this->pingAndReconnect();
 
 			$connection->beginTransaction();
+
+			$this->dispatcher?->dispatch(new Events\DbTransactionStarted());
 		} catch (Throwable $ex) {
 			throw new Exceptions\InvalidState(
 				'An error occurred: ' . $ex->getMessage(),
@@ -165,6 +182,16 @@ class Database
 			} else {
 				// Commit all changes into database
 				$connection->commit();
+
+				foreach ($this->managerRegistry->getManagers() as $name => $manager) {
+					if (!$manager instanceof ORM\EntityManagerInterface) {
+						continue;
+					}
+
+					$manager->clear();
+				}
+
+				$this->dispatcher?->dispatch(new Events\DbTransactionFinished());
 			}
 		} catch (Throwable $ex) {
 			// Revert all changes when error occur

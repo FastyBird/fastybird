@@ -101,7 +101,7 @@ abstract class Device implements Entities\Entity,
 	#[ORM\ManyToMany(
 		targetEntity: self::class,
 		mappedBy: 'parents',
-		cascade: ['persist', 'remove'],
+		cascade: ['remove'],
 		orphanRemoval: true,
 	)]
 	protected Common\Collections\Collection $children;

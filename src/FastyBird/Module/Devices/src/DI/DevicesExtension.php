@@ -556,6 +556,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'configurationRepositoryCache' => $configurationRepositoryCache,
 			]);
 
+		$builder->addDefinition(
+			$this->prefix('subscribers.entities.symfonyBridge'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Subscribers\ModuleEntitiesBridge::class);
+
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class)
 			->setArguments([
