@@ -755,7 +755,7 @@ class Loader
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function buildCharacteristic(
+	private function buildCharacteristic(
 		Types\ChannelPropertyIdentifier $identifier,
 		Protocol\Services\Service $service,
 		DevicesDocuments\Channels\Properties\Property|null $property = null,

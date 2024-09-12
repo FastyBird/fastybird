@@ -245,24 +245,6 @@ class Database
 				continue;
 			}
 
-			// Flushing and then clearing Doctrine's entity manager allows
-			// for more memory to be released by PHP
-			try {
-				if ($manager->isOpen()) {
-					$manager->flush();
-				}
-			} catch (Throwable $ex) {
-				// Log caught exception
-				$this->logger->error(
-					'An unhandled error occurred during flushing entity manager',
-					[
-						'source' => MetadataTypes\Sources\Module::NOT_SPECIFIED,
-						'type' => 'helper',
-						'exception' => Logger::buildException($ex),
-					],
-				);
-			}
-
 			try {
 				$manager->getConnection()->close();
 			} catch (Throwable $ex) {

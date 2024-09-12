@@ -2047,6 +2047,12 @@ final class PairingController extends BaseController
 						$connector,
 						Types\ConnectorPropertyIdentifier::HASHING_KEY,
 					);
+
+					$this->setConfiguration(
+						$connector,
+						Types\ConnectorPropertyIdentifier::CONFIG_VERSION,
+						1,
+					);
 				}
 			});
 		} catch (Throwable) {

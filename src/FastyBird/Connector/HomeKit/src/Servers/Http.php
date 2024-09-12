@@ -15,7 +15,6 @@
 
 namespace FastyBird\Connector\HomeKit\Servers;
 
-use Doctrine\DBAL;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Clients;
 use FastyBird\Connector\HomeKit\Documents;
@@ -26,14 +25,11 @@ use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Subscribers;
 use FastyBird\Connector\HomeKit\Types;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -45,7 +41,6 @@ use React\Socket;
 use Throwable;
 use TypeError;
 use ValueError;
-use z4kn4fein\SemVer;
 use function hex2bin;
 use function is_string;
 
@@ -77,7 +72,6 @@ final class Http implements Server
 		private readonly Middleware\Router $routerMiddleware,
 		private readonly SecureServerFactory $secureServerFactory,
 		private readonly Clients\Subscriber $subscriber,
-		private readonly Protocol\Loader $accessoriesLoader,
 		private readonly Protocol\Driver $accessoriesDriver,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Connector $connectorHelper,
@@ -90,49 +84,16 @@ final class Http implements Server
 	{
 	}
 
-	/**
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
-	 * @throws DBAL\Exception
-	 * @throws DevicesExceptions\InvalidArgument
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
-	 * @throws Nette\IOException
-	 * @throws SemVer\SemverException
-	 * @throws ToolsExceptions\InvalidArgument
-	 * @throws TypeError
-	 * @throws ValueError
-	 */
 	public function initialize(): void
 	{
-		$this->accessoriesLoader->load($this->connector);
-
-		foreach ($this->accessoriesDriver->getAccessories() as $accessory) {
-			if ($accessory instanceof Protocol\Accessories\Generic) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $accessory->getDevice()->getConnector(),
-							'device' => $accessory->getDevice()->getId(),
-							'state' => DevicesTypes\ConnectionState::CONNECTED,
-						],
-					),
-				);
-			}
-		}
-
 		$this->entitiesSubscriber->onUpdateSharedKey[] = function (DevicesEntities\Connectors\Properties\Variable $property): void {
 			$this->setSharedKey($property);
 		};
 	}
 
+	/**
+	 * @throws Exceptions\Runtime
+	 */
 	public function connect(): void
 	{
 		try {
@@ -283,8 +244,26 @@ final class Http implements Server
 				$ex,
 			));
 		});
+
+		foreach ($this->accessoriesDriver->getAccessories() as $accessory) {
+			if ($accessory instanceof Protocol\Accessories\Generic) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $accessory->getDevice()->getConnector(),
+							'device' => $accessory->getDevice()->getId(),
+							'state' => DevicesTypes\ConnectionState::CONNECTED,
+						],
+					),
+				);
+			}
+		}
 	}
 
+	/**
+	 * @throws Exceptions\Runtime
+	 */
 	public function disconnect(): void
 	{
 		$this->logger->debug(
@@ -301,6 +280,21 @@ final class Http implements Server
 		$this->socket?->close();
 
 		$this->socket = null;
+
+		foreach ($this->accessoriesDriver->getAccessories() as $accessory) {
+			if ($accessory instanceof Protocol\Accessories\Generic) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $accessory->getDevice()->getConnector(),
+							'device' => $accessory->getDevice()->getId(),
+							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+						],
+					),
+				);
+			}
+		}
 	}
 
 	/**

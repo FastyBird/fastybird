@@ -78,7 +78,13 @@ class Driver
 			assert($existingAccessory instanceof Protocol\Accessories\Accessory);
 
 			if ($existingAccessory->getCategory() === Types\AccessoryCategory::BRIDGE) {
-				throw new Exceptions\InvalidState('There is already registered bridge');
+				if (!$existingAccessory->getId()->equals($accessory->getId())) {
+					throw new Exceptions\InvalidState('There is already registered bridge');
+				}
+			}
+
+			if ($existingAccessory->getId()->equals($accessory->getId())) {
+				$this->accessories->detach($existingAccessory);
 			}
 		}
 

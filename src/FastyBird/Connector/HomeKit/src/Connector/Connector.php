@@ -18,6 +18,7 @@ namespace FastyBird\Connector\HomeKit\Connector;
 use FastyBird\Connector\HomeKit;
 use FastyBird\Connector\HomeKit\Documents;
 use FastyBird\Connector\HomeKit\Exceptions;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
 use FastyBird\Connector\HomeKit\Servers;
 use FastyBird\Connector\HomeKit\Writers;
@@ -51,6 +52,8 @@ final class Connector implements DevicesConnectors\Connector
 
 	private const QUEUE_PROCESSING_INTERVAL = 0.01;
 
+	private const DRIVER_RELOAD_INTERVAL = 60;
+
 	/** @var array<Servers\Server> */
 	private array $servers = [];
 
@@ -68,6 +71,7 @@ final class Connector implements DevicesConnectors\Connector
 		private readonly Queue\Queue $queue,
 		private readonly Queue\Consumers $consumers,
 		private readonly array $serversFactories,
+		private readonly Protocol\Loader $accessoriesLoader,
 		private readonly HomeKit\Logger $logger,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -104,6 +108,8 @@ final class Connector implements DevicesConnectors\Connector
 			],
 		);
 
+		$this->accessoriesLoader->load($this->connector);
+
 		foreach ($this->serversFactories as $serverFactory) {
 			$server = $serverFactory->create($this->connector);
 			$server->initialize();
@@ -132,6 +138,14 @@ final class Connector implements DevicesConnectors\Connector
 			async(function (): void {
 				$this->consumers->consume();
 			}),
+		);
+
+		$this->consumersTimer = $this->eventLoop->addPeriodicTimer(
+			self::DRIVER_RELOAD_INTERVAL,
+			function (): void {
+				assert($this->connector instanceof Documents\Connectors\Connector);
+				$this->accessoriesLoader->load($this->connector);
+			},
 		);
 
 		$this->logger->info(
