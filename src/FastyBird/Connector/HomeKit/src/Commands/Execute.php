@@ -311,7 +311,9 @@ class Execute extends Console\Command\Command
 		$lines = explode("\n", $qrCode->getString());
 
 		foreach ($lines as $line) {
-			$this->logger->info($line);
+			if ($line !== '') {
+				$this->logger->info($line);
+			}
 		}
 
 		$serviceCmd = $symfonyApp->find(DevicesCommands\Connector::NAME);
