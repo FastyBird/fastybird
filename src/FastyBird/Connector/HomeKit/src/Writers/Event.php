@@ -15,12 +15,22 @@
 
 namespace FastyBird\Connector\HomeKit\Writers;
 
+use FastyBird\Connector\HomeKit;
+use FastyBird\Connector\HomeKit\Documents;
+use FastyBird\Connector\HomeKit\Helpers;
+use FastyBird\Connector\HomeKit\Protocol;
 use FastyBird\Connector\HomeKit\Queue;
+use FastyBird\Connector\HomeKit\Types;
+use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Events as DevicesEvents;
+use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use Psr\EventDispatcher as PsrEventDispatcher;
+use React\EventLoop;
 use Symfony\Component\EventDispatcher;
 use Throwable;
 
@@ -37,6 +47,40 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 
 	public const NAME = 'event';
 
+	public function __construct(
+		Documents\Connectors\Connector $connector,
+		Helpers\MessageBuilder $messageBuilder,
+		Queue\Queue $queue,
+		Protocol\Driver $accessoryDriver,
+		HomeKit\Logger $logger,
+		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
+		DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
+		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
+		DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
+		DevicesModels\States\Async\DevicePropertiesManager $devicePropertiesStatesManager,
+		DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
+		DateTimeFactory\Clock $clock,
+		EventLoop\LoopInterface $eventLoop,
+		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
+	)
+	{
+		parent::__construct(
+			$connector,
+			$messageBuilder,
+			$queue,
+			$logger,
+			$devicesConfigurationRepository,
+			$devicesPropertiesConfigurationRepository,
+			$channelsConfigurationRepository,
+			$channelsPropertiesConfigurationRepository,
+			$accessoryDriver,
+			$devicePropertiesStatesManager,
+			$channelPropertiesStatesManager,
+			$clock,
+			$eventLoop,
+		);
+	}
+
 	public static function getSubscribedEvents(): array
 	{
 		return [
@@ -44,6 +88,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateChanged',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateChanged',
+			DevicesEvents\EntityUpdated::class => 'entityUpdated',
 		];
 	}
 
@@ -150,6 +195,38 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
 			);
+		}
+	}
+
+	public function entityUpdated(DevicesEvents\EntityUpdated $event): void
+	{
+		$entity = $event->getEntity();
+
+		if ($entity instanceof DevicesEntities\Connectors\Properties\Variable) {
+			if (!$entity->getConnector()->getId()->equals($this->connector->getId())) {
+				return;
+			}
+
+			if (
+				$entity->getIdentifier() === Types\ConnectorPropertyIdentifier::PAIRED->value
+				|| $entity->getIdentifier() === Types\ConnectorPropertyIdentifier::CONFIG_VERSION->value
+			) {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\RestartConnector(
+						MetadataTypes\Sources\Connector::HOMEKIT,
+						'Connector configuration changed, services have to be restarted',
+					),
+				);
+			}
+
+			if ($entity->getIdentifier() === Types\ConnectorPropertyIdentifier::SHARED_KEY->value) {
+				$this->dispatcher?->dispatch(
+					new DevicesEvents\RestartConnector(
+						MetadataTypes\Sources\Connector::HOMEKIT,
+						'Connector shared key changed, services have to be restarted',
+					),
+				);
+			}
 		}
 	}
 
