@@ -2,16 +2,20 @@
 
 namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Tests\Cases\Unit\Controllers;
 
+use Doctrine\DBAL;
 use Error;
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Exceptions;
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Tests;
 use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
+use FastyBird\Connector\HomeKit\Exceptions as HomeKitExceptions;
 use FastyBird\Connector\HomeKit\Middleware as HomeKitMiddleware;
+use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Queries as HomeKitQueries;
 use FastyBird\Connector\HomeKit\Servers as HomeKitServers;
 use FastyBird\Library\Application\EventLoop as ApplicationEventLoop;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Fig\Http\Message\RequestMethodInterface;
@@ -23,6 +27,7 @@ use Nette\Utils;
 use Ramsey\Uuid;
 use React\Http\Message\ServerRequest;
 use RuntimeException;
+use z4kn4fein\SemVer;
 use function call_user_func;
 
 /**
@@ -36,12 +41,19 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws DBAL\Exception
+	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
+	 * @throws HomeKitExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws MetadataExceptions\MalformedInput
+	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
+	 * @throws SemVer\SemverException
 	 * @throws RuntimeException
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Error
 	 */
 	public function setUp(): void
@@ -62,6 +74,10 @@ final class AccessoriesTest extends Tests\Cases\Unit\DbTestCase
 			HomeKitDocuments\Connectors\Connector::class,
 		);
 		self::assertInstanceOf(HomeKitDocuments\Connectors\Connector::class, $connector);
+
+		$accessoryLoader = $this->getContainer()->getByType(HomeKitProtocol\Loader::class);
+
+		$accessoryLoader->load($connector);
 
 		$httpServerFactory = $this->getContainer()->getByType(HomeKitServers\HttpFactory::class);
 
