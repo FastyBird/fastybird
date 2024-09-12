@@ -494,9 +494,6 @@ class Builder
 						},
 					);
 
-					$service = $this->channelsRepository->find($service->getId());
-					assert($service instanceof Entities\Channels\Shelly);
-
 					$this->logger->debug(
 						'Shelly service for shelly connector accessory was created',
 						[
@@ -552,9 +549,6 @@ class Builder
 				) {
 					continue;
 				}
-
-				$service = $this->channelsRepository->find($service->getId());
-				assert($service instanceof Entities\Channels\Shelly);
 
 				$result = $this->createCharacteristic(
 					$shelly,

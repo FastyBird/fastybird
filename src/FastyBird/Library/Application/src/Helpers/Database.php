@@ -111,14 +111,6 @@ class Database
 				$connection->commit();
 			}
 
-			foreach ($this->managerRegistry->getManagers() as $name => $manager) {
-				if (!$manager instanceof ORM\EntityManagerInterface) {
-					continue;
-				}
-
-				$manager->clear();
-			}
-
 			$this->dispatcher?->dispatch(new Events\DbTransactionFinished());
 
 			return $result;
@@ -182,14 +174,6 @@ class Database
 			} else {
 				// Commit all changes into database
 				$connection->commit();
-
-				foreach ($this->managerRegistry->getManagers() as $name => $manager) {
-					if (!$manager instanceof ORM\EntityManagerInterface) {
-						continue;
-					}
-
-					$manager->clear();
-				}
 
 				$this->dispatcher?->dispatch(new Events\DbTransactionFinished());
 			}
