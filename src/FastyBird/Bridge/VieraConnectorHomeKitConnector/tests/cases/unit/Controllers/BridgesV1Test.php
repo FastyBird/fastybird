@@ -287,13 +287,13 @@ final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 						}
 
 						$expectation = str_replace(
-							'__CHANNEL_' . $channel . '_TYPE_PLACEHOLDER__',
+							'__CHANNEL_' . $channel . '_PLACEHOLDER__',
 							strval($data['id']),
 							$expectation,
 						);
 
 						$expectation = str_replace(
-							'__CHANNEL_' . $channel . '_PLACEHOLDER__',
+							'__CHANNEL_' . $channel . '_TYPE_PLACEHOLDER__',
 							strval($data['type']),
 							$expectation,
 						);
