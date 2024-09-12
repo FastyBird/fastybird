@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * ModuleEntitiesBridge.php
+ * EventLoop.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
@@ -16,49 +16,44 @@
 namespace FastyBird\Module\Devices\Subscribers;
 
 use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Module\Devices\Utilities;
 use Nette;
 use Symfony\Component\EventDispatcher;
 
 /**
- * Doctrine entities events
+ * Event loop events
  *
  * @package        FastyBird:DevicesModule!
  * @subpackage     Subscribers
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class ModuleEntitiesBridge implements EventDispatcher\EventSubscriberInterface
+final class EventLoop implements EventDispatcher\EventSubscriberInterface
 {
 
 	use Nette\SmartObject;
 
-	public function __construct(private readonly ModuleEntities $subscriber)
+	public function __construct(private readonly Utilities\EventLoopStatus $eventLoopStatus)
 	{
 	}
 
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
-			ApplicationEvents\DbTransactionFinished::class => 'transactionFinished',
+			ApplicationEvents\EventLoopStarted::class => 'loopStarted',
+			ApplicationEvents\EventLoopStopped::class => 'loopStopped',
+			ApplicationEvents\EventLoopStopping::class => 'loopStopped',
 		];
 	}
 
-	public function enableAsync(): void
+	public function loopStarted(): void
 	{
-		$this->subscriber->enableAsync();
+		$this->eventLoopStatus->setStatus(true);
 	}
 
-	public function disableAsync(): void
+	public function loopStopped(): void
 	{
-		$this->subscriber->enableAsync();
-	}
-
-	public function transactionFinished(): void
-	{
-		$this->subscriber->transactionFinished();
+		$this->eventLoopStatus->setStatus(false);
 	}
 
 }

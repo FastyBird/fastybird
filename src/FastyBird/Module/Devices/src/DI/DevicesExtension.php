@@ -557,10 +557,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			]);
 
 		$builder->addDefinition(
-			$this->prefix('subscribers.entities.symfonyBridge'),
+			$this->prefix('subscribers.cache.configuration'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Subscribers\ModuleEntitiesBridge::class);
+			->setType(Subscribers\ConfigurationCache::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+			]);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\StateEntities::class)
@@ -571,6 +575,9 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Connector::class);
+
+		$builder->addDefinition($this->prefix('subscribers.eventLoop'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\EventLoop::class);
 
 		/**
 		 * API CONTROLLERS
@@ -911,6 +918,9 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 
 		$builder->addDefinition($this->prefix('utilities.connector.connection'), new DI\Definitions\ServiceDefinition())
 			->setType(Utilities\ConnectorConnection::class);
+
+		$builder->addDefinition($this->prefix('utilities.eventLoop.status'), new DI\Definitions\ServiceDefinition())
+			->setType(Utilities\EventLoopStatus::class);
 
 		/**
 		 * COMMANDS

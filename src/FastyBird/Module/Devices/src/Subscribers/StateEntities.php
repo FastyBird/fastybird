@@ -17,7 +17,6 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Library\Application\Events as ApplicationEvents;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
@@ -27,10 +26,10 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
+use FastyBird\Module\Devices\Utilities;
 use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Caching;
-use React\Promise;
 use Symfony\Component\EventDispatcher;
 
 /**
@@ -52,12 +51,11 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	private const ACTION_DELETED = 'deleted';
 
-	private bool $useAsync = false;
-
 	public function __construct(
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly Caching\Cache $stateCache,
 		private readonly Caching\Cache $stateStorageCache,
+		private readonly Utilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -73,10 +71,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			Events\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
 			Events\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			Events\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 
@@ -98,7 +92,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		$this->cleanCache($event->getProperty());
 
 		$this->publishDocument(
-			$this->useAsync,
 			$event->getSource(),
 			$event->getProperty(),
 			$event->getRead(),
@@ -125,23 +118,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		$this->cleanCache($event->getProperty());
 
 		$this->publishDocument(
-			$this->useAsync,
 			$event->getSource(),
 			$event->getProperty(),
 			$event->getRead(),
 			$event->getGet(),
 			self::ACTION_UPDATED,
 		);
-	}
-
-	public function enableAsync(): void
-	{
-		$this->useAsync = true;
-	}
-
-	public function disableAsync(): void
-	{
-		$this->useAsync = false;
 	}
 
 	private function cleanCache(
@@ -157,8 +139,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
-	 *
 	 * @throws Exception
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidData
@@ -169,13 +149,12 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishDocument(
-		bool $async,
 		MetadataTypes\Sources\Source $source,
 		Documents\Connectors\Properties\Dynamic|Documents\Devices\Properties\Dynamic|Documents\Channels\Properties\Dynamic|Documents\Devices\Properties\Mapped|Documents\Channels\Properties\Mapped $property,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty $readState,
 		States\ConnectorProperty|States\ChannelProperty|States\DeviceProperty|null $getState,
 		string $action,
-	): Promise\PromiseInterface|bool
+	): void
 	{
 		if ($property instanceof Documents\Connectors\Properties\Dynamic) {
 			switch ($action) {
@@ -192,11 +171,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 					break;
 				default:
-					return $async
-						? Promise\reject(
-							new Exceptions\InvalidArgument('Provided publish action is not supported'),
-						)
-						: false;
+					return;
 			}
 
 			$document = $this->documentFactory->create(
@@ -233,11 +208,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 					break;
 				default:
-					return $async
-						? Promise\reject(
-							new Exceptions\InvalidArgument('Provided publish action is not supported'),
-						)
-						: false;
+					return;
 			}
 
 			$document = $this->documentFactory->create(
@@ -271,11 +242,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 					break;
 				default:
-					return $async
-						? Promise\reject(
-							new Exceptions\InvalidArgument('Provided publish action is not supported'),
-						)
-						: false;
+					return;
 			}
 
 			$document = $this->documentFactory->create(
@@ -295,7 +262,7 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 		}
 
-		return $this->getPublisher($async)->publish(
+		$this->getPublisher($this->eventLoopStatus->isRunning())->publish(
 			$source,
 			$routingKey,
 			$document,

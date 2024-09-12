@@ -14,7 +14,7 @@ parameters:
         -
             message: '#^Return type of call to method PHPUnit\\Framework\\TestCase::createMock\(\) contains unresolvable type.#'
             path: ../tests/cases/unit/Subscribers/ModuleEntitiesTest.php
-            count: 28
+            count: 32
         -
             message: '#^Return type of call to method PHPUnit\\Framework\\TestCase::createMock\(\) contains unresolvable type.#'
             path: ../tests/cases/unit/Models/States/ChannelPropertiesStatesWritingTest.php

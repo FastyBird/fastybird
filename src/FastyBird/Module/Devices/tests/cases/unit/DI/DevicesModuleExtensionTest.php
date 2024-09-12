@@ -188,8 +188,9 @@ final class DevicesModuleExtensionTest extends Tests\Cases\Unit\DbTestCase
 		self::assertNotNull($this->getContainer()->getByType(Router\ApiRoutes::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntities::class, false));
-		self::assertNotNull($this->getContainer()->getByType(Subscribers\ModuleEntitiesBridge::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Subscribers\StateEntities::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\ConfigurationCache::class, false));
+		self::assertNotNull($this->getContainer()->getByType(Subscribers\EventLoop::class, false));
 
 		self::assertNotNull($this->getContainer()->getByType(Utilities\DeviceConnection::class, false));
 		self::assertNotNull($this->getContainer()->getByType(Utilities\ConnectorConnection::class, false));

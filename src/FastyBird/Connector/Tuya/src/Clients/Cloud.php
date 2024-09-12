@@ -39,6 +39,7 @@ use React\EventLoop;
 use Throwable;
 use TypeError;
 use ValueError;
+use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function assert;
@@ -181,9 +182,7 @@ final class Cloud implements Client
 			) {
 				$knowDevices = array_filter(
 					$this->devices,
-					function (Documents\Devices\Device $device) use ($message): bool {
-						return $device->getIdentifier() === $message->getIdentifier();
-					},
+					static fn (Documents\Devices\Device $device): bool => $device->getIdentifier() === $message->getIdentifier(),
 				);
 
 				if ($knowDevices === []) {
@@ -211,7 +210,7 @@ final class Cloud implements Client
 								'connector' => $this->connector->getId(),
 								'identifier' => $message->getIdentifier(),
 								'data_points' => array_map(
-									static fn(API\Messages\Response\DataPointState $dps): array => [
+									static fn (API\Messages\Response\DataPointState $dps): array => [
 										'code' => $dps->getCode(),
 										'value' => $dps->getValue(),
 									],
