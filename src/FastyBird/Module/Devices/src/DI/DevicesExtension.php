@@ -868,14 +868,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Commands\Connector::class)
 			->setArguments([
 				'logger' => $logger,
-				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
 
 		$builder->addDefinition($this->prefix('commands.exchange'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Exchange::class)
 			->setArguments([
 				'logger' => $logger,
-				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
 
 		$builder->addDefinition($this->prefix('commands.diagnostics'), new DI\Definitions\ServiceDefinition())
@@ -938,6 +936,24 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
+
+		$connectorCommandServiceName = $builder->getByType(Commands\Connector::class);
+		assert(is_string($connectorCommandServiceName));
+		$connectorCommandService = $builder->getDefinition($connectorCommandServiceName);
+		assert($connectorCommandService instanceof DI\Definitions\ServiceDefinition);
+		$connectorCommandService->setArgument(
+			'exchangeFactories',
+			$builder->findByType(ExchangeExchange\Factory::class),
+		);
+
+		$exchangeCommandServiceName = $builder->getByType(Commands\Exchange::class);
+		assert(is_string($exchangeCommandServiceName));
+		$exchangeCommandService = $builder->getDefinition($exchangeCommandServiceName);
+		assert($exchangeCommandService instanceof DI\Definitions\ServiceDefinition);
+		$exchangeCommandService->setArgument(
+			'exchangeFactories',
+			$builder->findByType(ExchangeExchange\Factory::class),
+		);
 
 		/**
 		 * DOCTRINE ENTITIES

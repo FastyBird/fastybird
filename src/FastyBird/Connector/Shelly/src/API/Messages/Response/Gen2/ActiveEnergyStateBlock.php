@@ -35,15 +35,15 @@ final readonly class ActiveEnergyStateBlock implements API\Messages\Message
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue()]
 		private float $total,
+		#[ObjectMapper\Rules\IntValue()]
+		#[ObjectMapper\Modifiers\FieldName('minute_ts')]
+		private int $minuteTs,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		#[ObjectMapper\Modifiers\FieldName('by_minute')]
-		private array $byMinute,
-		#[ObjectMapper\Rules\IntValue()]
-		#[ObjectMapper\Modifiers\FieldName('minute_ts')]
-		private int $minuteTs,
+		private array $byMinute = [],
 	)
 	{
 	}

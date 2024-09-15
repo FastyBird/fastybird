@@ -29,12 +29,14 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use React\EventLoop;
 use Throwable;
 use function array_merge;
+use function str_starts_with;
 
 /**
  * Exchange based properties writer
@@ -118,6 +120,10 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 	{
 		try {
 			if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
+				if (str_starts_with($routingKey, DevicesConstants::MESSAGE_BUS_DELETED_ROUTING_KEY)) {
+					return;
+				}
+
 				if (
 					$document->getGet()->getExpectedValue() === null
 					|| $document->getPending() !== true
@@ -158,6 +164,10 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 				);
 
 			} elseif ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
+				if (str_starts_with($routingKey, DevicesConstants::MESSAGE_BUS_DELETED_ROUTING_KEY)) {
+					return;
+				}
+
 				if (
 					$document->getGet()->getExpectedValue() === null
 					|| $document->getPending() !== true

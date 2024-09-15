@@ -154,6 +154,14 @@ final class Constants
 
 	public const ROUTING_PREFIX = Metadata\Constants::MESSAGE_BUS_PREFIX_KEY . '.module.document';
 
+	public const MESSAGE_BUS_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.';
+
+	public const MESSAGE_BUS_CREATED_ROUTING_KEY = self::ROUTING_PREFIX . '.created.';
+
+	public const MESSAGE_BUS_UPDATED_ROUTING_KEY = self::ROUTING_PREFIX . '.updated.';
+
+	public const MESSAGE_BUS_DELETED_ROUTING_KEY = self::ROUTING_PREFIX . '.deleted.';
+
 	// DEVICES
 	public const MESSAGE_BUS_DEVICE_DOCUMENT_REPORTED_ROUTING_KEY = self::ROUTING_PREFIX . '.reported.device';
 
