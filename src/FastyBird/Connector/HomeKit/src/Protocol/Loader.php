@@ -38,6 +38,7 @@ use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Hashids;
 use Nette;
 use Nette\Utils;
@@ -266,6 +267,7 @@ class Loader
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::AID->value,
+							'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::AID->value),
 							'dataType' => MetadataTypes\DataType::UCHAR,
 							'value' => $accessory->getAid(),
 							'device' => $device,
@@ -502,6 +504,9 @@ class Loader
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+							'name' => DevicesUtilities\Name::createName(
+								Types\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+							),
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => $serialNumber,
 							'device' => $device,
@@ -547,6 +552,7 @@ class Loader
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::VERSION->value,
+							'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::VERSION->value),
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => strval($firmwareVersion),
 							'device' => $device,
@@ -592,6 +598,9 @@ class Loader
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::MANUFACTURER->value,
+							'name' => DevicesUtilities\Name::createName(
+								Types\DevicePropertyIdentifier::MANUFACTURER->value,
+							),
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => $manufacturer,
 							'device' => $device,
@@ -630,6 +639,7 @@ class Loader
 						$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 							'entity' => DevicesEntities\Devices\Properties\Variable::class,
 							'identifier' => Types\DevicePropertyIdentifier::MODEL->value,
+							'name' => DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::MODEL->value),
 							'dataType' => MetadataTypes\DataType::STRING,
 							'value' => $model,
 							'device' => $device,

@@ -37,6 +37,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Localization;
@@ -328,6 +329,7 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value,
+					'name' => DevicesUtilities\Name::createName(HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value),
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $category->value,
 					'device' => $accessory,
@@ -350,6 +352,7 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL->value,
+					'name' => DevicesUtilities\Name::createName(HomeKitTypes\DevicePropertyIdentifier::MODEL->value),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => $shellyModelProperty?->getValue() ?? ShellyConnectorHomeKitConnector\Constants::MODEL,
 					'device' => $accessory,
@@ -365,6 +368,9 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
+					'name' => DevicesUtilities\Name::createName(
+						HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
+					),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => ShellyConnectorHomeKitConnector\Constants::MANUFACTURER,
 					'device' => $accessory,
@@ -381,6 +387,9 @@ class Builder
 					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 						'entity' => DevicesEntities\Devices\Properties\Variable::class,
 						'identifier' => HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+						'name' => DevicesUtilities\Name::createName(
+							HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+						),
 						'dataType' => MetadataTypes\DataType::STRING,
 						'value' => $shellySerialNumberProperty->getValue(),
 						'device' => $accessory,

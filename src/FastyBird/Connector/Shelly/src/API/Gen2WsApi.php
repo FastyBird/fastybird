@@ -937,7 +937,6 @@ final class Gen2WsApi
 	}
 
 	/**
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	private function parseDeviceStatusResponse(
@@ -1084,7 +1083,6 @@ final class Gen2WsApi
 	}
 
 	/**
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	private function parseDeviceEventsResponse(
