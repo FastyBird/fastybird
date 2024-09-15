@@ -484,6 +484,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
+						'serial_number' => $id,
 						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,
@@ -528,6 +529,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
+						'serial_number' => $id,
 						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,

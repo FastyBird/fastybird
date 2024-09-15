@@ -205,7 +205,7 @@ class Builder
 					throw new Exceptions\InvalidState('Device identifier could not be calculated');
 				}
 
-				$categoryProperty = $modelProperty = $manufacturerProperty = null;
+				$categoryProperty = $modelProperty = $manufacturerProperty = $serialNumberProperty = null;
 			} else {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($accessory);
@@ -248,7 +248,31 @@ class Builder
 
 					$manufacturerProperty = null;
 				}
+
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery->forDevice($accessory);
+				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value);
+
+				$serialNumberProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+				if (
+					$serialNumberProperty !== null
+					&& !$serialNumberProperty instanceof DevicesEntities\Devices\Properties\Variable
+				) {
+					$this->devicesPropertiesManager->delete($serialNumberProperty);
+
+					$serialNumberProperty = null;
+				}
 			}
+
+			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+			$findDevicePropertyQuery->forDevice($shelly);
+			$findDevicePropertyQuery->byIdentifier(ShellyTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value);
+
+			$shellySerialNumberProperty = $this->devicesPropertiesRepository->findOneBy(
+				$findDevicePropertyQuery,
+				DevicesEntities\Devices\Properties\Variable::class,
+			);
 
 			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($shelly);
@@ -350,6 +374,23 @@ class Builder
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => ShellyConnectorHomeKitConnector\Constants::MANUFACTURER,
 				]));
+			}
+
+			if ($shellySerialNumberProperty !== null) {
+				if ($serialNumberProperty === null) {
+					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
+						'identifier' => HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+						'dataType' => MetadataTypes\DataType::STRING,
+						'value' => $shellySerialNumberProperty->getValue(),
+						'device' => $accessory,
+					]));
+				} else {
+					$this->devicesPropertiesManager->update($serialNumberProperty, Utils\ArrayHash::from([
+						'dataType' => MetadataTypes\DataType::STRING,
+						'value' => $shellySerialNumberProperty->getValue(),
+					]));
+				}
 			}
 
 			$this->databaseHelper->commitTransaction();

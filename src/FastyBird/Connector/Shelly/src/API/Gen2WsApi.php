@@ -589,7 +589,10 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
 									'device' => [
 										'id' => $this->id->toString(),
 									],
@@ -615,7 +618,10 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
 									'device' => [
 										'id' => $this->id->toString(),
 									],
@@ -667,7 +673,10 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
 									'device' => [
 										'id' => $this->id->toString(),
 									],
@@ -679,7 +688,7 @@ final class Gen2WsApi
 							);
 
 							$this->messages[$payload->id]->getDeferred()?->reject(
-								new Exceptions\WsCall('Could not decode received payload'),
+								new Exceptions\WsError('Could not decode received payload'),
 							);
 						}
 					} elseif (
@@ -823,7 +832,7 @@ final class Gen2WsApi
 				}
 
 				$this->messages[$payload->id]->getDeferred()?->reject(
-					new Exceptions\WsCall('Received device response could not be processed'),
+					new Exceptions\WsError('Received device response could not be processed'),
 				);
 
 				if ($this->messages[$payload->id]->getTimer() !== null) {
@@ -1138,7 +1147,6 @@ final class Gen2WsApi
 	/**
 	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
 	 *
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	protected function validatePayload(
@@ -1154,7 +1162,7 @@ final class Gen2WsApi
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			if ($throw) {
-				throw new Exceptions\WsCall(
+				throw new Exceptions\WsError(
 					'Could not validate received payload',
 					$ex->getCode(),
 					$ex,

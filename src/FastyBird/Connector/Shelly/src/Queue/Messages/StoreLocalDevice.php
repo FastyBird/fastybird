@@ -40,6 +40,9 @@ final class StoreLocalDevice extends Device
 	public function __construct(
 		Uuid\UuidInterface $connector,
 		string $identifier,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		#[ObjectMapper\Modifiers\FieldName('serial_number')]
+		private readonly string $serialNumber,
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\DeviceGeneration::class)]
 		private readonly Types\DeviceGeneration $generation,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
@@ -68,6 +71,11 @@ final class StoreLocalDevice extends Device
 	)
 	{
 		parent::__construct($connector, $identifier);
+	}
+
+	public function getSerialNumber(): string
+	{
+		return $this->serialNumber;
 	}
 
 	public function getGeneration(): Types\DeviceGeneration
@@ -119,6 +127,7 @@ final class StoreLocalDevice extends Device
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
+			'serial_number' => $this->getSerialNumber(),
 			'generation' => $this->getGeneration()->value,
 			'ip_address' => $this->getIpAddress(),
 			'domain' => $this->getDomain(),

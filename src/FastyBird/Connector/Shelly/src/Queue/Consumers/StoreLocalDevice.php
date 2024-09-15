@@ -131,6 +131,13 @@ final class StoreLocalDevice implements Queue\Consumer
 
 		$this->setDeviceProperty(
 			$device->getId(),
+			$message->getSerialNumber(),
+			MetadataTypes\DataType::STRING,
+			Types\DevicePropertyIdentifier::SERIAL_NUMBER,
+			DevicesUtilities\Name::createName(Types\DevicePropertyIdentifier::SERIAL_NUMBER->value),
+		);
+		$this->setDeviceProperty(
+			$device->getId(),
 			$message->getIpAddress(),
 			MetadataTypes\DataType::STRING,
 			Types\DevicePropertyIdentifier::IP_ADDRESS,
