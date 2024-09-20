@@ -24,7 +24,6 @@ use Ramsey\Uuid;
 use SplObjectStorage;
 use TypeError;
 use ValueError;
-use function assert;
 
 /**
  * HAP accessory driver service
@@ -75,8 +74,6 @@ class Driver
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $existingAccessory) {
-			assert($existingAccessory instanceof Protocol\Accessories\Accessory);
-
 			if ($existingAccessory->getCategory() === Types\AccessoryCategory::BRIDGE) {
 				if (!$existingAccessory->getId()->equals($accessory->getId())) {
 					throw new Exceptions\InvalidState('There is already registered bridge');
@@ -100,8 +97,6 @@ class Driver
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $existingAccessory) {
-			assert($existingAccessory instanceof Protocol\Accessories\Accessory);
-
 			if ($existingAccessory->getCategory() === Types\AccessoryCategory::BRIDGE) {
 				if (!$existingAccessory instanceof Accessories\Bridge) {
 					throw new Exceptions\InvalidState(
@@ -144,8 +139,6 @@ class Driver
 				}
 
 				foreach ($this->accessories as $existingAccessory) {
-					assert($existingAccessory instanceof Protocol\Accessories\Accessory);
-
 					if ($existingAccessory->getAid() !== null && $existingAccessory->getAid() === $newAid) {
 						$newAid++;
 
@@ -162,8 +155,6 @@ class Driver
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $existingAccessory) {
-			assert($existingAccessory instanceof Protocol\Accessories\Accessory);
-
 			if ($existingAccessory->getAid() === $accessory->getAid()) {
 				throw new Exceptions\InvalidArgument('Duplicate AID found when attempting to add accessory');
 			}
@@ -182,8 +173,6 @@ class Driver
 		$accessories = [];
 
 		foreach ($this->accessories as $accessory) {
-			assert($accessory instanceof Protocol\Accessories\Accessory);
-
 			$accessories[] = $accessory;
 		}
 
@@ -195,8 +184,6 @@ class Driver
 		$this->accessories->rewind();
 
 		foreach ($this->accessories as $accessory) {
-			assert($accessory instanceof Protocol\Accessories\Accessory);
-
 			if ($accessory->getId()->equals($id)) {
 				return $accessory;
 			}

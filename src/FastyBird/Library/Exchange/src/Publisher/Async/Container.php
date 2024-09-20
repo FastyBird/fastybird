@@ -22,7 +22,6 @@ use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use SplObjectStorage;
 use Throwable;
-use function assert;
 
 /**
  * Exchange async publishers proxy
@@ -63,8 +62,6 @@ class Container implements Publisher
 		$this->publishers->rewind();
 
 		foreach ($this->publishers as $publisher) {
-			assert($publisher instanceof Publisher);
-
 			$promises[] = $publisher->publish($source, $routingKey, $entity);
 		}
 

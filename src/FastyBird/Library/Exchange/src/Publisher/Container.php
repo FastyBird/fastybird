@@ -20,7 +20,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use SplObjectStorage;
-use function assert;
 
 /**
  * Exchange publishers proxy
@@ -54,8 +53,6 @@ class Container implements Publisher
 		$this->publishers->rewind();
 
 		foreach ($this->publishers as $publisher) {
-			assert($publisher instanceof Publisher);
-
 			$publisher->publish($source, $routingKey, $entity);
 		}
 

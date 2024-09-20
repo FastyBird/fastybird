@@ -19,7 +19,6 @@ use FastyBird\Connector\Sonoff;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use SplObjectStorage;
-use function assert;
 
 /**
  * Clients message consumer proxy
@@ -89,8 +88,6 @@ final class Consumers
 		}
 
 		foreach ($this->consumers as $consumer) {
-			assert($consumer instanceof Consumer);
-
 			if ($consumer->consume($message) === true) {
 				return;
 			}

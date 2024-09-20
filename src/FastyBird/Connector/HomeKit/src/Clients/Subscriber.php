@@ -26,7 +26,6 @@ use React\Socket;
 use SplObjectStorage;
 use function array_diff;
 use function array_key_exists;
-use function assert;
 use function in_array;
 use function parse_url;
 use function React\Async\async;
@@ -112,8 +111,6 @@ final class Subscriber
 		$this->connections->rewind();
 
 		foreach ($this->connections as $registeredConnection) {
-			assert($registeredConnection instanceof Socket\ConnectionInterface);
-
 			if ($connection->getRemoteAddress() === $connection->getRemoteAddress()) {
 				$this->connections->detach($registeredConnection);
 
@@ -233,8 +230,6 @@ final class Subscriber
 		$this->connections->rewind();
 
 		foreach ($this->connections as $connection) {
-			assert($connection instanceof Socket\ConnectionInterface);
-
 			$ip = $this->connections[$connection];
 
 			if (!in_array($ip, $this->subscriptions[$this->getTopic($aid, $iid)], true)) {

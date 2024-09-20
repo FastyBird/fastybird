@@ -30,7 +30,6 @@ use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_values;
-use function assert;
 use function in_array;
 use function sprintf;
 
@@ -124,8 +123,6 @@ class Service
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			assert($characteristic instanceof Protocol\Characteristics\Characteristic);
-
 			$characteristics[] = $characteristic;
 		}
 
@@ -157,8 +154,6 @@ class Service
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			assert($characteristic instanceof Protocol\Characteristics\Characteristic);
-
 			if ($characteristic->getName() === $name->value) {
 				return true;
 			}
@@ -172,8 +167,6 @@ class Service
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			assert($characteristic instanceof Protocol\Characteristics\Characteristic);
-
 			if ($characteristic->getName() === $name->value) {
 				return $characteristic;
 			}
@@ -253,8 +246,6 @@ class Service
 		$this->characteristics->rewind();
 
 		foreach ($this->characteristics as $characteristic) {
-			assert($characteristic instanceof Protocol\Characteristics\Characteristic);
-
 			$characteristics[$characteristic->getName()] = $characteristic->isValid()
 				? $characteristic->getValue()
 				: $characteristic->getDefault();

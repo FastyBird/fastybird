@@ -21,7 +21,6 @@ use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
 use SplObjectStorage;
-use function assert;
 
 /**
  * Exchange consumer proxy
@@ -56,7 +55,6 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			assert($consumer instanceof Consumer);
 
 			$info = $this->consumers->getInfo();
 
@@ -97,7 +95,6 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			assert($consumer instanceof Consumer);
 
 			$info = $this->consumers->getInfo();
 
@@ -127,7 +124,6 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
-			assert($consumer instanceof Consumer);
 
 			$info = $this->consumers->getInfo();
 
