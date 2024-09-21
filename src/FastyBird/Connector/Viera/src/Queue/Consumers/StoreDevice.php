@@ -324,7 +324,7 @@ final class StoreDevice implements Queue\Consumer
 				array_merge(
 					[
 						[
-							'TV',
+							Viera\Constants::TV_IDENTIFIER,
 							500,
 							500,
 						],

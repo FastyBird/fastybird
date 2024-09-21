@@ -57,4 +57,5 @@ class Constants
 		Types\ActionKey::MENU->value => Types\ChannelPropertyIdentifier::KEY_MENU,
 	];
 
+	public const TV_IDENTIFIER = 'TV';
 }

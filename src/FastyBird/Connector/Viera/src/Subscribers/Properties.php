@@ -298,7 +298,7 @@ final class Properties implements Common\EventSubscriber
 			array_merge(
 				[
 					[
-						'TV',
+						Viera\Constants::TV_IDENTIFIER,
 						500,
 						500,
 					],

@@ -988,7 +988,7 @@ class Install extends Console\Command\Command
 				array_merge(
 					[
 						[
-							'TV',
+							Viera\Constants::TV_IDENTIFIER,
 							500,
 							500,
 						],
