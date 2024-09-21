@@ -746,17 +746,17 @@ class Builder
 						&& $items[1] instanceof MetadataFormats\CombinedEnumItem,
 					);
 
-					return [$items[1]->getValue(), $items[1]->getValue(), $items[0]->getValue()];
+					return [$items[0]->getValue(), $items[1]->getValue(), $items[1]->getValue()];
 				}, $inputSourceFormat->getItems());
 			}
 
 			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION) {
 				$format = [
 					[
-						0, 0, MetadataTypes\Payloads\Button::CLICKED,
+						MetadataTypes\Payloads\Button::CLICKED, 0, 0,
 					],
 					[
-						1, 0, MetadataTypes\Payloads\Button::CLICKED,
+						MetadataTypes\Payloads\Button::CLICKED, 1, 1,
 					],
 				];
 
