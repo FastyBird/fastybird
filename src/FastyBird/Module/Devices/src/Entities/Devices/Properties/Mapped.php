@@ -23,7 +23,6 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
-use FastyBird\Module\Devices\Utilities;
 use Ramsey\Uuid;
 use TypeError;
 use ValueError;
@@ -165,10 +164,6 @@ class Mapped extends Property
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
-		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
-			return null;
-		}
-
 		try {
 			return MetadataUtilities\Value::normalizeValue(
 				MetadataUtilities\Value::transformDataType(
@@ -206,10 +201,6 @@ class Mapped extends Property
 			throw new Exceptions\InvalidState('Reading value is allowed only for variable parent properties');
 		}
 
-		if (!Utilities\Value::compareDataTypes($this->getDataType(), $this->getParent()->getDataType())) {
-			return null;
-		}
-
 		try {
 			return MetadataUtilities\Value::normalizeValue(
 				MetadataUtilities\Value::transformDataType(
@@ -234,25 +225,6 @@ class Mapped extends Property
 		}
 
 		throw new Exceptions\InvalidState('Value setter is allowed only for parent');
-	}
-
-	/**
-	 * @throws Exceptions\InvalidArgument
-	 * @throws Exceptions\InvalidState
-	 */
-	public function setDataType(MetadataTypes\DataType $dataType): void
-	{
-		if (!Utilities\Value::compareDataTypes($this->getParent()->getDataType(), $dataType)) {
-			throw new Exceptions\InvalidArgument(
-				sprintf(
-					'Mapped property data type: %s is not compatible with parent data type: %s',
-					$dataType->value,
-					$this->getParent()->getDataType()->value,
-				),
-			);
-		}
-
-		parent::setDataType($dataType);
 	}
 
 	/**

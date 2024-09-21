@@ -26,7 +26,6 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
 use Throwable;
 use TypeError;
@@ -269,17 +268,6 @@ abstract class PropertiesManager
 		}
 
 		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-
 			if (is_string($mappedProperty->getValueTransformer())) {
 				$transformer = new ToolsTransformers\EquationTransformer($mappedProperty->getValueTransformer());
 
@@ -297,6 +285,12 @@ abstract class PropertiesManager
 			$value = MetadataUtilities\Value::transformDataType(
 				MetadataUtilities\Value::flattenValue($value),
 				$mappedProperty->getDataType(),
+			);
+
+			$value = MetadataUtilities\Value::transformValueFromDevice(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getFormat(),
 			);
 
 			/**
@@ -384,17 +378,6 @@ abstract class PropertiesManager
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-
 			/**
 			 * Transform value to mapped property defined data type
 			 */
@@ -432,6 +415,15 @@ abstract class PropertiesManager
 					$value = $transformer->calculateEquationTo($value, $mappedProperty->getDataType());
 				}
 			}
+
+			/**
+			 * Finally transform value to device ()
+			 */
+			$value = MetadataUtilities\Value::transformValueToDevice(
+				$value,
+				$mappedProperty->getDataType(),
+				$mappedProperty->getFormat(),
+			);
 		}
 
 		/**
