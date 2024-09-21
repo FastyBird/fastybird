@@ -213,7 +213,6 @@ class Loader
 							? Types\CharacteristicUnit::from($property->getUnit())
 							: null,
 					);
-					$characteristic->setActualValue($property->getDefault());
 
 					$service->addCharacteristic($characteristic);
 				}
@@ -279,6 +278,10 @@ class Loader
 			foreach ($accessory->getServices() as $service) {
 				foreach ($service->getCharacteristics() as $characteristic) {
 					$property = $characteristic->getProperty();
+
+					if ($property !== null) {
+						$characteristic->setActualValue($property->getDefault());
+					}
 
 					if ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 						$characteristic->setActualValue($property->getValue());

@@ -128,6 +128,8 @@ enum ChannelPropertyIdentifier: string
 
 	case IMAGE_ROTATION = 'image_rotation';
 
+	case INPUT_SOURCE = 'input_source';
+
 	case INPUT_SOURCE_TYPE = 'input_source_type';
 
 	case INPUT_DEVICE_TYPE = 'input_device_type';
