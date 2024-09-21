@@ -20,7 +20,6 @@ use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 use FastyBird\Connector\Viera\Types as VieraTypes;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use function intval;
 
@@ -59,14 +58,20 @@ final class Television extends HomeKitProtocol\Services\Generic
 		return $characteristics;
 	}
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
 	public function recalculateValues(
 		HomeKitProtocol\Characteristics\Characteristic $characteristic,
 		bool $fromDevice,
 	): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION->value) {
-			$characteristic->setValue(MetadataTypes\Payloads\Button::CLICKED);
-
+			if (MetadataUtilities\Value::toString($characteristic->getValue()) === '0') {
+				$characteristic->setValue('0');
+			} else {
+				$characteristic->setValue(null);
+			}
 		} elseif ($characteristic->getName() === HomeKitTypes\CharacteristicType::REMOTE_KEY->value) {
 			if ($characteristic->getValue() === 0) {
 				$characteristic->setValue(VieraTypes\ActionKey::REWIND->value);

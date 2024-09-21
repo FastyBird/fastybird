@@ -728,6 +728,7 @@ class Builder
 
 			$format = $characteristicMapping->getFormat() ?? $this->buildFormat($characteristicMetadata);
 			$default = null;
+			$dataType = null;
 
 			if (
 				(
@@ -745,36 +746,50 @@ class Builder
 						&& $items[1] instanceof MetadataFormats\CombinedEnumItem,
 					);
 
-					return [$items[1]->getValue(), $items[0]->getValue(), $items[0]->getValue()];
+					return [$items[1]->getValue(), $items[1]->getValue(), $items[0]->getValue()];
 				}, $inputSourceFormat->getItems());
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION) {
+				$format = [
+					[
+						0, 0, MetadataTypes\Payloads\Button::CLICKED,
+					],
+					[
+						1, 0, MetadataTypes\Payloads\Button::CLICKED,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::ENUM;
 			}
 
 			if ($characteristicMetadata->offsetExists('Default')) {
 				$default = $characteristicMetadata->offsetGet('Default');
 			}
 
-			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
-				$dataTypes = array_map(
-					static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
-					(array) $characteristicMetadata->offsetGet('DataType'),
-				);
+			if ($dataType === null) {
+				if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
+					$dataTypes = array_map(
+						static fn (string $type): MetadataTypes\DataType => MetadataTypes\DataType::from($type),
+						(array) $characteristicMetadata->offsetGet('DataType'),
+					);
 
-				if ($dataTypes === []) {
-					throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+					if ($dataTypes === []) {
+						throw new Exceptions\InvalidState('Characteristic definition is missing required attributes');
+					}
+				} else {
+					$dataTypes = [MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'))];
 				}
-			} else {
-				$dataTypes = [MetadataTypes\DataType::from($characteristicMetadata->offsetGet('DataType'))];
+
+				if (!in_array($connectProperty->getDataType(), $dataTypes, true) && $format === null) {
+					throw new Exceptions\InvalidState(sprintf(
+						'Provided Viera property: %s could not be mapped to HomeKit characteristic due to invalid data type',
+						$connectProperty->getIdentifier(),
+					));
+				}
+
+				$dataType = $connectProperty->getDataType();
 			}
-
-			if (!in_array($connectProperty->getDataType(), $dataTypes, true) && $format === null) {
-				throw new Exceptions\InvalidState(sprintf(
-					'Provided Viera property: %s could not be mapped to HomeKit characteristic due to invalid data type',
-					$connectProperty->getIdentifier(),
-				));
-			}
-
-			$dataType = $connectProperty->getDataType();
-
 		} else {
 			$entity = DevicesEntities\Channels\Properties\Dynamic::class;
 

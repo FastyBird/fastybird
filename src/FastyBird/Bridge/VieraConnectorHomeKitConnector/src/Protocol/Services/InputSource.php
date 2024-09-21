@@ -100,11 +100,18 @@ final class InputSource extends HomeKitProtocol\Services\Generic
 		assert(is_int($type));
 
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::TARGET_VISIBILITY_STATE->value) {
+			$currentVisibilityState = $this->findCharacteristic(
+				HomeKitTypes\CharacteristicType::CURRENT_VISIBILITY_STATE,
+			);
+			$currentVisibilityState?->setValue($characteristic->getValue());
+
 			$inputSource = $this->findCharacteristic(HomeKitTypes\CharacteristicType::INPUT_SOURCE);
 
 			if ($characteristic->getValue() === 0) {
 				$inputSource?->setValue($type);
 			}
+
+			$characteristic->setValue(null);
 		} elseif ($characteristic->getName() === HomeKitTypes\CharacteristicType::INPUT_SOURCE->value) {
 			$currentVisibilityState = $this->findCharacteristic(
 				HomeKitTypes\CharacteristicType::CURRENT_VISIBILITY_STATE,
