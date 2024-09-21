@@ -62,6 +62,7 @@ extensions:
     # FastyBird bridges
     fbDevicesModuleUiModuleBridge                   : FastyBird\Bridge\DevicesModuleUiModule\DI\DevicesModuleUiModuleExtension
     fbShellyConnectorHomeKitConnectorBridge         : FastyBird\Bridge\ShellyConnectorHomeKitConnector\DI\ShellyConnectorHomeKitConnectorExtension
+    fbVieraConnectorHomeKitConnectorBridge          : FastyBird\Bridge\VieraConnectorHomeKitConnector\DI\VieraConnectorHomeKitConnectorExtension
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
     fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension
