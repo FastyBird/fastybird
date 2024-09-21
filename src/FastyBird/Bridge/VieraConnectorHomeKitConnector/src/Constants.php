@@ -15,6 +15,8 @@
 
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector;
 
+use FastyBird\Connector\Viera\Constants as VieraConstants;
+
 /**
  * Bridge constants
  *
@@ -34,7 +36,7 @@ final class Constants
 
 	public const ROUTE_NAME_BRIDGE = 'bridge';
 
-	public const DEFAULT_ACTIVE_IDENTIFIER = 500; // TV tuner
+	public const DEFAULT_ACTIVE_IDENTIFIER = VieraConstants::TV_IDENTIFIER; // TV tuner
 
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
 

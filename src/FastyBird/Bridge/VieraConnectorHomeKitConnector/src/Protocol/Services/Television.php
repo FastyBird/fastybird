@@ -44,11 +44,11 @@ final class Television extends HomeKitProtocol\Services\Generic
 		foreach ($characteristics as $characteristic) {
 			if ($characteristic->getName() === HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER->value) {
 				if ($characteristic->getValue() === null) {
-					$characteristic->setActualValue(
+					$characteristic->setValue(
 						VieraConnectorHomeKitConnector\Constants::DEFAULT_ACTIVE_IDENTIFIER,
 					);
 				} else {
-					$characteristic->setActualValue(
+					$characteristic->setValue(
 						intval(MetadataUtilities\Value::toString($characteristic->getValue(), true)),
 					);
 				}
