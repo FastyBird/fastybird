@@ -287,12 +287,6 @@ abstract class PropertiesManager
 				$mappedProperty->getDataType(),
 			);
 
-			$value = MetadataUtilities\Value::transformValueFromDevice(
-				$value,
-				$mappedProperty->getDataType(),
-				$mappedProperty->getFormat(),
-			);
-
 			/**
 			 * Read value is now normalized and validated against mapped property configuration
 			 */
@@ -415,15 +409,6 @@ abstract class PropertiesManager
 					$value = $transformer->calculateEquationTo($value, $mappedProperty->getDataType());
 				}
 			}
-
-			/**
-			 * Finally transform value to device ()
-			 */
-			$value = MetadataUtilities\Value::transformValueToDevice(
-				$value,
-				$mappedProperty->getDataType(),
-				$mappedProperty->getFormat(),
-			);
 		}
 
 		/**
