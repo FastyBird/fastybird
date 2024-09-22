@@ -36,10 +36,10 @@ final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 	): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
-			if ($characteristic->getValue() === 0) {
+			if ($characteristic->getValue() === '0') {
 				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_UP->value);
 
-			} elseif ($characteristic->getValue() === 1) {
+			} elseif ($characteristic->getValue() === '1') {
 				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_DOWN->value);
 
 			} else {

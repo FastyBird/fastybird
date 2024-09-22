@@ -16,11 +16,17 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Bridge\VieraConnectorHomeKitConnector;
+use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 use FastyBird\Connector\Viera\Types as VieraTypes;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
+use Ramsey\Uuid;
+use TypeError;
+use ValueError;
+use function array_unique;
 use function intval;
 
 /**
@@ -35,6 +41,33 @@ final class Television extends HomeKitProtocol\Services\Generic
 {
 
 	/**
+	 * @param array<string> $requiredCharacteristics
+	 * @param array<string> $optionalCharacteristics
+	 * @param array<string> $virtualCharacteristics
+	 */
+	public function __construct(
+		Uuid\UuidInterface $typeId,
+		HomeKitTypes\ServiceType $type,
+		HomeKitProtocol\Accessories\Accessory $accessory,
+		HomeKitDocuments\Channels\Channel|null $channel = null,
+		array $requiredCharacteristics = [],
+		array $optionalCharacteristics = [],
+		array $virtualCharacteristics = [],
+	)
+	{
+		parent::__construct(
+			$typeId,
+			$type,
+			$accessory,
+			$channel,
+			$requiredCharacteristics,
+			$optionalCharacteristics,
+			$virtualCharacteristics,
+			true,
+		);
+	}
+
+	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
 	public function getCharacteristics(): array
@@ -44,9 +77,7 @@ final class Television extends HomeKitProtocol\Services\Generic
 		foreach ($characteristics as $characteristic) {
 			if ($characteristic->getName() === HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER->value) {
 				if ($characteristic->getValue() === null) {
-					$characteristic->setValue(
-						VieraConnectorHomeKitConnector\Constants::DEFAULT_ACTIVE_IDENTIFIER,
-					);
+					$characteristic->setValue(VieraConnectorHomeKitConnector\Constants::DEFAULT_ACTIVE_IDENTIFIER);
 				} else {
 					$characteristic->setValue(
 						intval(MetadataUtilities\Value::toString($characteristic->getValue(), true)),
@@ -58,17 +89,14 @@ final class Television extends HomeKitProtocol\Services\Generic
 		return $characteristics;
 	}
 
-	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 */
 	public function recalculateValues(
 		HomeKitProtocol\Characteristics\Characteristic $characteristic,
 		bool $fromDevice,
 	): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION->value) {
-			if (MetadataUtilities\Value::toString($characteristic->getValue()) === '0') {
-				$characteristic->setValue('0');
+			if ($characteristic->getValue() === MetadataTypes\Payloads\Button::CLICKED->value) {
+				$characteristic->setValue(MetadataTypes\Payloads\Button::CLICKED->value);
 			} else {
 				$characteristic->setValue(null);
 			}
@@ -116,6 +144,39 @@ final class Television extends HomeKitProtocol\Services\Generic
 				$characteristic->setValue(null);
 			}
 		}
+	}
+
+	/**
+	 * Create a HAP representation of Television Service
+	 *
+	 * @return array<string, array<array<string, array<int|string>|bool|float|int|string|null>|int|null>|bool|int|string|null>
+	 *
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function toHap(): array
+	{
+		$hapRepresentation = parent::toHap();
+
+		$linkedServices = [];
+
+		$inputSources = $this->getAccessory()->findServices(HomeKitTypes\ServiceType::INPUT_SOURCE);
+
+		foreach ($inputSources as $inputSource) {
+			$linkedServices[] = $this->getAccessory()->getIidManager()->getIid($inputSource);
+		}
+
+		$speakers = $this->getAccessory()->findServices(HomeKitTypes\ServiceType::TELEVISION_SPEAKER);
+
+		foreach ($speakers as $speaker) {
+			$linkedServices[] = $this->getAccessory()->getIidManager()->getIid($speaker);
+		}
+
+		$hapRepresentation[HomeKitTypes\Representation::LINKED->value] = array_unique($linkedServices);
+
+		return $hapRepresentation;
 	}
 
 }

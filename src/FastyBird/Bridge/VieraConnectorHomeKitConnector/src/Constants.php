@@ -38,6 +38,14 @@ final class Constants
 
 	public const DEFAULT_ACTIVE_IDENTIFIER = VieraConstants::TV_IDENTIFIER; // TV tuner
 
+	public const DEFAULT_ACTIVE_CODE = VieraConstants::TV_CODE; // TV tuner
+
 	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
+
+	public const INPUT_SOURCE_TYPE_TV = 2;
+
+	public const INPUT_SOURCE_TYPE_HDMI = 3;
+
+	public const INPUT_SOURCE_TYPE_APPLICATION = 10;
 
 }

@@ -19,7 +19,7 @@ base:
             television: "Television"
             televisionspeaker: "Television speaker"
             inputsource: "Input source"
-        speaker: "speaker"
+        speaker: "Speaker"
 
     messages:
         notValidJson:

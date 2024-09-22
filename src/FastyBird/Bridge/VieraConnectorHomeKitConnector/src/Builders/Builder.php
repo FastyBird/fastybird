@@ -25,6 +25,7 @@ use FastyBird\Connector\HomeKit\Exceptions as HomeKitExceptions;
 use FastyBird\Connector\HomeKit\Helpers as HomeKitHelpers;
 use FastyBird\Connector\HomeKit\Queries as HomeKitQueries;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
+use FastyBird\Connector\Viera\Constants as VieraConstants;
 use FastyBird\Connector\Viera\Entities as VieraEntities;
 use FastyBird\Connector\Viera\Exceptions as VieraExceptions;
 use FastyBird\Connector\Viera\Queries as VieraQueries;
@@ -451,6 +452,8 @@ class Builder
 
 			$nameIndex = $serviceIndex;
 
+			$inputIndex = 1;
+
 			foreach ($inputSourceProperty->getFormat()->getItems() as $item) {
 				assert(
 					count($item) === 3
@@ -461,10 +464,26 @@ class Builder
 				);
 
 				$serviceNames[$nameIndex] = str_replace('_', ' ', Utils\Strings::firstUpper($item[0]->getValue()));
-				$serviceValues[$nameIndex] = intval($item[1]->getValue());
+
+				if (intval($item[1]->getValue()) > 999) {
+					$serviceValues[$nameIndex] = 1000 + $inputIndex;
+				} elseif (intval($item[1]->getValue()) < VieraConstants::MAX_HDMI_CODE) {
+					$serviceValues[$nameIndex] = intval($item[1]->getValue());
+				} elseif (intval($item[1]->getValue()) === VieraConstants::TV_CODE) {
+					$serviceValues[$nameIndex] = VieraConstants::TV_CODE;
+				} else {
+					throw new Exceptions\InvalidState(
+						sprintf(
+							'Input source: %s type has unsupported value: %s',
+							$item[0]->getValue(),
+							$item[1]->getValue(),
+						),
+					);
+				}
 
 				++$nameIndex;
 				++$maxServices;
+				++$inputIndex;
 			}
 		}
 
@@ -632,7 +651,84 @@ class Builder
 			}
 
 			++$serviceIndex;
-		} while ($serviceIndex < $maxServices);
+		} while ($serviceIndex <= $maxServices);
+
+		if ($service->getServiceType() === HomeKitTypes\ServiceType::TELEVISION) {
+			try {
+				$activeIdentifierIdentifier = strtolower(
+					strval(
+						preg_replace(
+							'/(?<!^)[A-Z]/',
+							'_$0',
+							HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER->value,
+						),
+					),
+				);
+
+				$findCharacteristic = new DevicesQueries\Entities\FindChannelProperties();
+				$findCharacteristic->forChannel($service);
+				$findCharacteristic->byIdentifier($activeIdentifierIdentifier);
+
+				$characteristic = $this->channelsPropertiesRepository->findOneBy($findCharacteristic);
+
+				assert($characteristic instanceof DevicesEntities\Channels\Properties\Dynamic);
+
+				$inputSourcesNames = $inputSourcesValues = [];
+				$inputIndex = 1;
+
+				assert($characteristic->getFormat() instanceof MetadataFormats\CombinedEnum);
+
+				foreach ($characteristic->getFormat()->getItems() as $item) {
+					assert(
+						count($item) === 3
+						&& $item[0] instanceof MetadataFormats\CombinedEnumItem
+						&& is_string($item[0]->getValue())
+						&& $item[1] instanceof MetadataFormats\CombinedEnumItem
+						&& is_numeric($item[1]->getValue()),
+					);
+
+					$inputSourcesNames[] = str_replace('_', ' ', Utils\Strings::firstUpper($item[0]->getValue()));
+
+					if (intval($item[1]->getValue()) > 999) {
+						$inputSourcesValues[$inputIndex] = 1000 + $inputIndex;
+					} elseif (intval($item[1]->getValue()) < VieraConstants::MAX_HDMI_CODE) {
+						$inputSourcesValues[$inputIndex] = intval($item[1]->getValue());
+					} elseif (intval($item[1]->getValue()) === VieraConstants::TV_CODE) {
+						$inputSourcesValues[$inputIndex] = VieraConstants::TV_CODE;
+					} else {
+						throw new Exceptions\InvalidState(
+							sprintf(
+								'Input source: %s type has unsupported value: %s',
+								$item[0]->getValue(),
+								$item[1]->getValue(),
+							),
+						);
+					}
+
+					++$inputIndex;
+				}
+
+				$this->channelsPropertiesManager->update(
+					$characteristic,
+					Utils\ArrayHash::from([
+						'format' => array_map(
+							static fn ($name, $value): array => [$name, $value, $value],
+							$inputSourcesNames,
+							$inputSourcesValues,
+						),
+					]),
+				);
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					sprintf(
+						'HomeKit characteristic: %s could not be updated',
+						HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER->value,
+					),
+					$ex->getCode(),
+					$ex,
+				);
+			}
+		}
 
 		return true;
 	}
@@ -753,10 +849,10 @@ class Builder
 			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION) {
 				$format = [
 					[
-						MetadataTypes\Payloads\Button::CLICKED, 0, 0,
+						MetadataTypes\Payloads\Button::CLICKED->value, 0, 0,
 					],
 					[
-						MetadataTypes\Payloads\Button::CLICKED, 1, 1,
+						MetadataTypes\Payloads\Button::RELEASED->value, 1, 1,
 					],
 				];
 
@@ -802,10 +898,12 @@ class Builder
 				$value = $name ?? ($viera->getName() ?? $viera->getIdentifier());
 
 				if ($service->getServiceType() === HomeKitTypes\ServiceType::TELEVISION_SPEAKER) {
-					$value .= ' ' . $this->translator->translate(
+					$value = $this->translator->translate(
 						'//viera-connector-homekit-connector-bridge.base.misc.speaker',
 					);
 				}
+
+				$value = str_replace('_', '-', $value);
 			}
 
 			if (
@@ -822,11 +920,11 @@ class Builder
 				$entity = DevicesEntities\Channels\Properties\Variable::class;
 
 				if ($value > 999) {
-					$value = 10;
-				} elseif ($value < 100) {
-					$value = 3;
-				} elseif ($value === 500) {
-					$value = 2;
+					$value = VieraConnectorHomeKitConnector\Constants::INPUT_SOURCE_TYPE_APPLICATION;
+				} elseif ($value < VieraConstants::MAX_HDMI_CODE) {
+					$value = VieraConnectorHomeKitConnector\Constants::INPUT_SOURCE_TYPE_HDMI;
+				} elseif ($value === VieraConstants::TV_CODE) {
+					$value = VieraConnectorHomeKitConnector\Constants::INPUT_SOURCE_TYPE_TV;
 				} else {
 					$value = null;
 				}
@@ -853,6 +951,10 @@ class Builder
 				$permissions = (array) $characteristicMetadata->offsetGet('Permissions');
 
 				$settable = in_array(HomeKitTypes\CharacteristicPermission::WRITE->value, $permissions, true);
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::CURRENT_VISIBILITY_STATE) {
+				$settable = true;
 			}
 
 			if ($characteristicMetadata->offsetGet('DataType') instanceof Utils\ArrayHash) {
