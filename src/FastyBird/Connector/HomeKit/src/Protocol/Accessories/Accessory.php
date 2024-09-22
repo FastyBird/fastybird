@@ -111,17 +111,22 @@ abstract class Accessory
 		$this->services->attach($service);
 	}
 
-	public function findService(string $name): Protocol\Services\Service|null
+	/**
+	 * @return array<Protocol\Services\Service>
+	 */
+	public function findServices(Types\ServiceType $name): array
 	{
+		$services = [];
+
 		$this->services->rewind();
 
 		foreach ($this->services as $service) {
-			if ($service->getName() === $name) {
-				return $service;
+			if ($service->getName() === $name->value) {
+				$services[] = $service;
 			}
 		}
 
-		return null;
+		return $services;
 	}
 
 	/**
@@ -145,7 +150,7 @@ abstract class Accessory
 	 * Create a HAP representation of this Service
 	 * Used for json serialization
 	 *
-	 * @return array<string, (int|array<array<string, (string|int|bool|array<array<string, (bool|float|int|array<int>|string|array<string>|null)>>|null)>>|null)>
+	 * @return array<string, array<int, array<string, array<array<string, array<int|string>|bool|float|int|string|null>|int|null>|bool|int|string|null>>|int|null>
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -173,9 +178,7 @@ abstract class Accessory
 	{
 		$services = [];
 
-		$this->services->rewind();
-
-		foreach ($this->services as $service) {
+		foreach ($this->getServices() as $service) {
 			$services[] = $service->getName();
 		}
 

@@ -201,7 +201,7 @@ class Driver
 	}
 
 	/**
-	 * @return array<string, array<array<string, (int|array<array<string, (string|int|bool|array<array<string, (bool|float|int|array<int>|string|array<string>|null)>>|null)>>|null)>>>
+	 * @return array<string, array<int<0, max>, array<string, array<int, array<string, array<array<string, array<int|string>|bool|float|int|string|null>|int|null>|bool|int|string|null>>|int|null>>>
 	 *
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
