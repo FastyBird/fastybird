@@ -16,14 +16,12 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Bridge\VieraConnectorHomeKitConnector;
-use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
 use FastyBird\Connector\Viera\Types as VieraTypes;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use Ramsey\Uuid;
 use TypeError;
 use ValueError;
 use function array_unique;
@@ -39,33 +37,6 @@ use function intval;
  */
 final class Television extends HomeKitProtocol\Services\Generic
 {
-
-	/**
-	 * @param array<string> $requiredCharacteristics
-	 * @param array<string> $optionalCharacteristics
-	 * @param array<string> $virtualCharacteristics
-	 */
-	public function __construct(
-		Uuid\UuidInterface $typeId,
-		HomeKitTypes\ServiceType $type,
-		HomeKitProtocol\Accessories\Accessory $accessory,
-		HomeKitDocuments\Channels\Channel|null $channel = null,
-		array $requiredCharacteristics = [],
-		array $optionalCharacteristics = [],
-		array $virtualCharacteristics = [],
-	)
-	{
-		parent::__construct(
-			$typeId,
-			$type,
-			$accessory,
-			$channel,
-			$requiredCharacteristics,
-			$optionalCharacteristics,
-			$virtualCharacteristics,
-			true,
-		);
-	}
 
 	/**
 	 * @throws MetadataExceptions\InvalidArgument

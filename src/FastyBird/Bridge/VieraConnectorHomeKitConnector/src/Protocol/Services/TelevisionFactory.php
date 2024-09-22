@@ -61,8 +61,8 @@ class TelevisionFactory implements HomeKitProtocol\Services\ServiceFactory
 			$requiredCharacteristics,
 			$optionalCharacteristics,
 			$virtualCharacteristics,
-			$primary,
-			$hidden,
+			true,
+			false,
 		);
 	}
 

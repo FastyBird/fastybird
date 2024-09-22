@@ -466,7 +466,7 @@ class Builder
 				$serviceNames[$nameIndex] = str_replace('_', ' ', Utils\Strings::firstUpper($item[0]->getValue()));
 
 				if (intval($item[1]->getValue()) > 999) {
-					$serviceValues[$nameIndex] = 1000 + $inputIndex;
+					$serviceValues[$nameIndex] = 1_000 + $inputIndex;
 				} elseif (intval($item[1]->getValue()) < VieraConstants::MAX_HDMI_CODE) {
 					$serviceValues[$nameIndex] = intval($item[1]->getValue());
 				} elseif (intval($item[1]->getValue()) === VieraConstants::TV_CODE) {
@@ -690,7 +690,7 @@ class Builder
 					$inputSourcesNames[] = str_replace('_', ' ', Utils\Strings::firstUpper($item[0]->getValue()));
 
 					if (intval($item[1]->getValue()) > 999) {
-						$inputSourcesValues[$inputIndex] = 1000 + $inputIndex;
+						$inputSourcesValues[$inputIndex] = 1_000 + $inputIndex;
 					} elseif (intval($item[1]->getValue()) < VieraConstants::MAX_HDMI_CODE) {
 						$inputSourcesValues[$inputIndex] = intval($item[1]->getValue());
 					} elseif (intval($item[1]->getValue()) === VieraConstants::TV_CODE) {
@@ -901,6 +901,7 @@ class Builder
 					$value = $this->translator->translate(
 						'//viera-connector-homekit-connector-bridge.base.misc.speaker',
 					);
+					assert(is_string($value));
 				}
 
 				$value = str_replace('_', '-', $value);

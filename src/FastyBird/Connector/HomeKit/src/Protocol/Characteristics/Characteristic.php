@@ -32,6 +32,7 @@ use ValueError;
 use function array_map;
 use function array_merge;
 use function in_array;
+use function intval;
 use function sprintf;
 use function strval;
 
