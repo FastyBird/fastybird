@@ -113,13 +113,6 @@
           "nullable": true
         },
         {
-          "type": "InputSource",
-          "channel": null,
-          "property": "input_source",
-          "nullable": false,
-          "format": null
-        },
-        {
           "type": "InputSourceType",
           "channel": null,
           "property": null,
