@@ -769,6 +769,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							if (
 								$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 								&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
+								&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
 							) {
 								$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
 								$data->offsetUnset(States\Property::PENDING_FIELD);
