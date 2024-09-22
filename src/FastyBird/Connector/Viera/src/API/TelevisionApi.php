@@ -1353,9 +1353,6 @@ final class TelevisionApi
 		return $deferred->promise();
 	}
 
-	/**
-	 * @throws Exceptions\TelevisionApiError
-	 */
 	private function subscribeEvents(): bool
 	{
 		if ($this->eventsServer !== null) {
@@ -1507,6 +1504,22 @@ final class TelevisionApi
 				$this->subscriptionId = array_pop($sidHeader);
 			}
 		} catch (GuzzleHttp\Exception\GuzzleException | Exceptions\TelevisionApiCall) {
+			$this->eventsServer->close();
+
+			$this->subscriptionCreated = false;
+		} catch (Throwable $ex) {
+			$this->logger->error(
+				'Could not get http client',
+				[
+					'source' => MetadataTypes\Sources\Connector::VIERA->value,
+					'type' => 'television-api',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'device' => [
+						'identifier' => $this->identifier,
+					],
+				],
+			);
+
 			$this->eventsServer->close();
 
 			$this->subscriptionCreated = false;

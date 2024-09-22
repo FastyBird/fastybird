@@ -63,4 +63,6 @@ class Constants
 
 	public const MAX_HDMI_CODE = 100;
 
+	public const MIN_APPLICATION_CODE = 1_000;
+
 }
