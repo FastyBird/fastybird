@@ -88,11 +88,13 @@ final class TelevisionApi
 
 	use Nette\SmartObject;
 
-	private const EVENTS_TIMEOUT = 10;
+	private const EVENTS_TIMEOUT = 100;
 
 	private const URN_RENDERING_CONTROL = 'schemas-upnp-org:service:RenderingControl:1';
 
 	private const URN_REMOTE_CONTROL = 'panasonic-com:service:p00NetworkControl:1';
+
+	private const URN_EVENT_SUBSCRIBE = 'schemas-upnp-org:event-1-0';
 
 	private const URL_CONTROL_DMR = '/dmr/control_0';
 
@@ -1479,17 +1481,24 @@ final class TelevisionApi
 		$this->subscriptionId = null;
 
 		try {
-			$response = $client->send(
-				$this->createRequest(
-					'SUBSCRIBE',
-					sprintf('http://%s:%s%s', $this->ipAddress, $this->port, self::URL_EVENT_NRC),
-					[
-						'CALLBACK' => '<http://' . $localIpAddress . ':' . $localPort . '>',
-						'NT' => 'upnp:event',
-						'TIMEOUT' => 'Second-' . self::EVENTS_TIMEOUT,
-					],
-				),
+			$parameters = '<X_EventType>status</X_EventType>';
+			$parameters .= '<X_CallbackURL>http://' . $localIpAddress . ':' . $localPort . '</X_CallbackURL>';
+
+			$request = $this->createXmlRequest(
+				self::URL_EVENT_NRC,
+				self::URN_EVENT_SUBSCRIBE,
+				'X_Subscribe',
+				$parameters,
+				'u',
 			);
+
+			$request = $request->withMethod('SUBSCRIBE');
+
+			$request = $request->withHeader('CALLBACK', '<http://' . $localIpAddress . ':' . $localPort . '>');
+			$request = $request->withHeader('NT', 'upnp:event');
+			$request = $request->withHeader('TIMEOUT', 'Second-' . self::EVENTS_TIMEOUT);
+
+			$response = $client->send($request);
 
 			/** @var array<string>|null $sidHeader */
 			$sidHeader = $response->getHeader('SID');
