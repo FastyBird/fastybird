@@ -179,8 +179,55 @@ class StatesManager
 					);
 				}
 			}))
-			->catch(function (Throwable $ex) use ($id, $deferred): void {
-				if ($ex instanceof Exceptions\NotUpdated) {
+			->catch(function (Throwable $ex) use ($id, $values, $database, $deferred): void {
+				if ($ex instanceof Exceptions\NotFound) {
+					$this->createKey($id, $values, $this->entity::getCreateFields(), $database)
+						->then(async(function (string $raw) use ($id, $deferred): void {
+							try {
+								$state = $this->stateFactory->create($this->entity, $raw);
+
+								$deferred->resolve($state);
+							} catch (Throwable $ex) {
+								$this->logger->error(
+									'Data stored in database are noc compatible with state entity',
+									[
+										'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
+										'type' => 'states-async-manager',
+										'record' => [
+											'id' => $id->toString(),
+											'data' => $raw,
+										],
+										'exception' => ApplicationHelpers\Logger::buildException($ex),
+									],
+								);
+
+								await($this->client->del($id->toString()));
+
+								$deferred->reject(
+									new Exceptions\InvalidState(
+										'State could not be updated, stored data are not valid',
+										$ex->getCode(),
+										$ex,
+									),
+								);
+							}
+						}))
+						->catch(function (Throwable $ex) use ($id, $deferred): void {
+							$this->logger->error(
+								'State could not be updated',
+								[
+									'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
+									'type' => 'states-async-manager',
+									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'record' => [
+										'id' => $id->toString(),
+									],
+								],
+							);
+
+							$deferred->reject($ex);
+						});
+				} elseif ($ex instanceof Exceptions\NotUpdated) {
 					$deferred->resolve(false);
 				} else {
 					$this->logger->error(
@@ -338,7 +385,7 @@ class StatesManager
 				->then(async(function (string|null $raw) use ($id, $fields, $values, $deferred): void {
 					if (!is_string($raw)) {
 						$deferred->reject(
-							new Exceptions\InvalidState('Stored record could not be loaded from database'),
+							new Exceptions\NotFound('Stored record could not be loaded from database'),
 						);
 
 						return;
