@@ -73,6 +73,8 @@ class Characteristic
 
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $actualValue = null;
 
+	private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = null;
+
 	private bool $valid = true;
 
 	/**
@@ -170,38 +172,65 @@ class Characteristic
 
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
-		return $this->actualValue;
+		return $this->expectedValue ?? $this->actualValue;
 	}
 
 	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
-		try {
-			$value = Protocol\Transformer::fromClient(
-				$this->property,
-				$this->dataType,
-				Protocol\Transformer::toClient(
+		if ($value !== null) {
+			try {
+				$value = Protocol\Transformer::fromClient(
 					$this->property,
 					$this->dataType,
-					$this->validValues,
-					$this->maxLength,
-					$this->minValue,
-					$this->maxValue,
-					$this->minStep,
-					$value,
-				),
-			);
-		} catch (Throwable) {
-			$value = null;
+					Protocol\Transformer::toClient(
+						$this->property,
+						$this->dataType,
+						$this->validValues,
+						$this->maxLength,
+						$this->minValue,
+						$this->maxValue,
+						$this->minStep,
+						$value,
+					),
+				);
+			} catch (Throwable) {
+				$value = null;
+			}
 		}
 
-		$this->actualValue = $value;
+		if ($this->expectedValue !== null) {
+			$this->expectedValue = $value;
+		} else {
+			$this->actualValue = $value;
+		}
 	}
 
 	public function setActualValue(
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): void
 	{
-		$this->setValue($value);
+		if ($value !== null) {
+			try {
+				$value = Protocol\Transformer::fromClient(
+					$this->property,
+					$this->dataType,
+					Protocol\Transformer::toClient(
+						$this->property,
+						$this->dataType,
+						$this->validValues,
+						$this->maxLength,
+						$this->minValue,
+						$this->maxValue,
+						$this->minStep,
+						$value,
+					),
+				);
+			} catch (Throwable) {
+				$value = null;
+			}
+		}
+
+		$this->actualValue = $value;
 
 		$this->service->recalculateValues($this, true);
 	}
@@ -210,7 +239,28 @@ class Characteristic
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value,
 	): void
 	{
-		$this->setValue($value);
+		if ($value !== null) {
+			try {
+				$value = Protocol\Transformer::fromClient(
+					$this->property,
+					$this->dataType,
+					Protocol\Transformer::toClient(
+						$this->property,
+						$this->dataType,
+						$this->validValues,
+						$this->maxLength,
+						$this->minValue,
+						$this->maxValue,
+						$this->minStep,
+						$value,
+					),
+				);
+			} catch (Throwable) {
+				$value = null;
+			}
+		}
+
+		$this->expectedValue = $value;
 
 		$this->service->recalculateValues($this, false);
 	}
@@ -321,7 +371,7 @@ class Characteristic
 				$this->minValue,
 				$this->maxValue,
 				$this->minStep,
-				$this->isValid() ? $this->getValue() : $this->getDefault(),
+				$this->isValid() ? $this->actualValue : $this->getDefault(),
 			);
 		}
 

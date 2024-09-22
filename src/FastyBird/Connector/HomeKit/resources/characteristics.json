@@ -1950,13 +1950,140 @@
     "DataType": "uchar",
     "Default": 0
   },
-  "InputSource": {
-    "Format": "uint32",
+  "RemoteKeyRewind": {
+    "Format": "uint8",
     "Permissions": [
-      "pw"
+      "pw",
+      "ev"
     ],
     "UUID": "00000000-0000-0000-0000-000000000000",
-    "DataType": ["uint", "enum"]
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyFastForward": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyNextTrack": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyPreviousTrack": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyArrowUp": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyArrowDown": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyArrowLeft": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyArrowRight": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeySelect": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyBack": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyExit": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyPlayPause": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyInformation": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyVolumeUp": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
+  },
+  "RemoteKeyVolumeDown": {
+    "Format": "uint8",
+    "Permissions": [
+      "pw",
+      "ev"
+    ],
+    "UUID": "00000000-0000-0000-0000-000000000000",
+    "DataType": ["uint", "string", "button", "enum"]
   },
   "Consumption": {
     "Format": "float",

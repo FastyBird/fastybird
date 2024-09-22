@@ -326,9 +326,8 @@ class Loader
 									),
 								);
 
-								$characteristic->setActualValue(
-									$state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue(),
-								);
+								$characteristic->setActualValue($state->getGet()->getActualValue());
+								$characteristic->setExpectedValue($state->getGet()->getExpectedValue());
 								$characteristic->setValid($state->isValid());
 							}
 						} catch (Exceptions\InvalidState $ex) {
@@ -369,9 +368,8 @@ class Loader
 								);
 
 								if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
-									$characteristic->setActualValue(
-										$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
-									);
+									$characteristic->setActualValue($state->getRead()->getActualValue());
+									$characteristic->setExpectedValue($state->getRead()->getExpectedValue());
 									$characteristic->setValid($state->isValid());
 								}
 							} catch (Exceptions\InvalidState $ex) {

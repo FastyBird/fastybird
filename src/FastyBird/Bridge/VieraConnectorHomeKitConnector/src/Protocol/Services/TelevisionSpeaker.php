@@ -17,7 +17,9 @@ namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
-use FastyBird\Connector\Viera\Types as VieraTypes;
+use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 
 /**
  * Viera television speaker service
@@ -30,20 +32,31 @@ use FastyBird\Connector\Viera\Types as VieraTypes;
 final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 {
 
+	/**
+	 * @throws MetadataExceptions\InvalidArgument
+	 */
 	public function recalculateValues(
 		HomeKitProtocol\Characteristics\Characteristic $characteristic,
 		bool $fromDevice,
 	): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
-			if ($characteristic->getValue() === '0') {
-				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_UP->value);
+			if ($characteristic->getValue() !== null) {
+				if (MetadataUtilities\Value::toString($characteristic->getValue(), true) === '0') {
+					$volumeKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_UP,
+					);
+					$volumeKeyCharacteristic?->setValue(MetadataTypes\Payloads\Button::CLICKED->value);
 
-			} elseif ($characteristic->getValue() === '1') {
-				$characteristic->setValue(VieraTypes\ActionKey::VOLUME_DOWN->value);
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
+					$volumeKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_DOWN,
+					);
+					$volumeKeyCharacteristic?->setValue(MetadataTypes\Payloads\Button::CLICKED->value);
 
-			} else {
-				$characteristic->setValue(null);
+				} else {
+					$characteristic->setValue(null);
+				}
 			}
 		}
 	}

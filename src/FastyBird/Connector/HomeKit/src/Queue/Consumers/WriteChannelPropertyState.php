@@ -240,13 +240,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 						if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 							if ($message->getState() !== null) {
-								if ($message->getState()->getExpectedValue() !== null) {
-									$characteristic->setActualValue($message->getState()->getExpectedValue());
-									$characteristic->setValid($message->getState()->isValid());
-								} elseif ($message->getState()->getActualValue() !== null) {
-									$characteristic->setActualValue($message->getState()->getActualValue());
-									$characteristic->setValid($message->getState()->isValid());
-								}
+								$characteristic->setActualValue($message->getState()->getActualValue());
+								$characteristic->setExpectedValue($message->getState()->getExpectedValue());
+								$characteristic->setValid($message->getState()->isValid());
 							} else {
 								$this->logger->warning(
 									'State entity is missing in event entity',
@@ -277,10 +273,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						}
 					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 						if ($message->getState() !== null) {
-							if ($message->getState()->getExpectedValue() !== null) {
-								$characteristic->setActualValue($message->getState()->getExpectedValue());
-								$characteristic->setValid($message->getState()->isValid());
-							}
+							$characteristic->setActualValue($message->getState()->getActualValue());
+							$characteristic->setExpectedValue($message->getState()->getExpectedValue());
+							$characteristic->setValid($message->getState()->isValid());
 						} else {
 							$this->logger->warning(
 								'State entity is missing in event entity',

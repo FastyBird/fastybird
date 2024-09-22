@@ -39,7 +39,85 @@
         {
           "type": "RemoteKey",
           "channel": null,
-          "property": "remote",
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "RemoteKeyRewind",
+          "channel": null,
+          "property": "key_rewind",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyFastForward",
+          "channel": null,
+          "property": "key_fast_forward",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyNextTrack",
+          "channel": null,
+          "property": "key_skip_next",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyPreviousTrack",
+          "channel": null,
+          "property": "key_skip_prev",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowUp",
+          "channel": null,
+          "property": "key_arrow_up",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowDown",
+          "channel": null,
+          "property": "key_arrow_down",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowLeft",
+          "channel": null,
+          "property": "key_arrow_left",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowRight",
+          "channel": null,
+          "property": "key_arrow_right",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeySelect",
+          "channel": null,
+          "property": "key_ok",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyBack",
+          "channel": null,
+          "property": "key_cancel",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyExit",
+          "channel": null,
+          "property": "key_cancel",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyPlayPause",
+          "channel": null,
+          "property": "key_play",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyInformation",
+          "channel": null,
+          "property": "key_info",
           "nullable": false
         },
         {
@@ -83,7 +161,19 @@
         {
           "type": "VolumeSelector",
           "channel": null,
-          "property": "remote",
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "RemoteKeyVolumeUp",
+          "channel": null,
+          "property": "key_volume_up",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyVolumeDown",
+          "channel": null,
+          "property": "key_volume_down",
           "nullable": false
         },
         {

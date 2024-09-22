@@ -621,15 +621,33 @@ final class CharacteristicsController extends BaseController
 					],
 				);
 
+				if ($characteristic->getProperty() !== null) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
+							[
+								'connector' => $connectorId,
+								'device' => $characteristic->getService()->getChannel()?->getDevice(),
+								'channel' => $characteristic->getService()->getChannel()?->getId(),
+								'property' => $characteristic->getProperty()->getId(),
+								'value' => MetadataUtilities\Value::flattenValue($characteristic->getValue()),
+							],
+						),
+					);
+				}
+
 				foreach ($characteristic->getService()->getCharacteristics() as $row) {
 					if (
-						(
+						!$row->getTypeId()->equals($characteristic->getTypeId())
+						&& (
+							(
 							$row->getProperty() instanceof DevicesDocuments\Channels\Properties\Dynamic
 							&& $row->getProperty()->isSettable()
-						) || (
-							$row->getProperty() instanceof DevicesDocuments\Channels\Properties\Mapped
-							&& $row->getProperty()->isSettable()
-						) || $row->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable
+							) || (
+								$row->getProperty() instanceof DevicesDocuments\Channels\Properties\Mapped
+								&& $row->getProperty()->isSettable()
+							) || $row->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable
+						)
 					) {
 						$this->queue->append(
 							$this->messageBuilder->create(
@@ -645,27 +663,6 @@ final class CharacteristicsController extends BaseController
 						);
 					}
 				}
-
-				$this->logger->debug(
-					'Apple client requested to set expected value to device channel property',
-					[
-						'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
-						'type' => 'characteristics-controller',
-						'characteristic' => [
-							'type' => $characteristic->getTypeId()->toString(),
-							'name' => $characteristic->getName(),
-						],
-						'device' => [
-							'id' => $characteristic->getService()->getChannel()?->getDevice()->toString(),
-						],
-						'channel' => [
-							'id' => $characteristic->getService()->getChannel()?->getId()->toString(),
-						],
-						'property' => [
-							'id' => $characteristic->getProperty()?->getId()->toString(),
-						],
-					],
-				);
 			}
 
 			if ($includeValue === true) {

@@ -53,12 +53,14 @@ use function array_values;
 use function assert;
 use function count;
 use function floatval;
+use function implode;
 use function in_array;
 use function intval;
 use function is_array;
 use function is_numeric;
 use function is_string;
 use function preg_replace;
+use function sort;
 use function sprintf;
 use function str_replace;
 use function strtolower;
@@ -687,9 +689,9 @@ class Builder
 						&& is_numeric($item[1]->getValue()),
 					);
 
-					$inputSourcesNames[] = str_replace('_', ' ', Utils\Strings::firstUpper($item[0]->getValue()));
+					$inputSourcesNames[] = $item[0]->getValue();
 
-					if (intval($item[1]->getValue()) > 999) {
+					if (intval($item[1]->getValue()) > VieraConstants::MIN_APPLICATION_CODE) {
 						$inputSourcesValues[$inputIndex] = 1_000 + $inputIndex;
 					} elseif (intval($item[1]->getValue()) < VieraConstants::MAX_HDMI_CODE) {
 						$inputSourcesValues[$inputIndex] = intval($item[1]->getValue());
@@ -718,11 +720,237 @@ class Builder
 						),
 					]),
 				);
+
 			} catch (Throwable $ex) {
 				throw new Exceptions\InvalidState(
 					sprintf(
 						'HomeKit characteristic: %s could not be updated',
 						HomeKitTypes\CharacteristicType::ACTIVE_IDENTIFIER->value,
+					),
+					$ex->getCode(),
+					$ex,
+				);
+			}
+
+			try {
+				$remoteKeyIdentifier = strtolower(
+					strval(
+						preg_replace(
+							'/(?<!^)[A-Z]/',
+							'_$0',
+							HomeKitTypes\CharacteristicType::REMOTE_KEY->value,
+						),
+					),
+				);
+
+				$findCharacteristic = new DevicesQueries\Entities\FindChannelProperties();
+				$findCharacteristic->forChannel($service);
+				$findCharacteristic->byIdentifier($remoteKeyIdentifier);
+
+				$characteristic = $this->channelsPropertiesRepository->findOneBy($findCharacteristic);
+
+				assert($characteristic instanceof DevicesEntities\Channels\Properties\Dynamic);
+
+				$supportedRemoteKeys = [];
+
+				foreach ($service->getProperties() as $property) {
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_REWIND->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 0;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_FAST_FORWARD->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 1;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_NEXT_TRACK->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 2;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_PREVIOUS_TRACK->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 3;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_UP->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 4;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_DOWN->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 5;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_LEFT->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 6;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_RIGHT->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 7;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_SELECT->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 8;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_BACK->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 9;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 10;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_PLAY_PAUSE->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 11;
+					}
+
+					if (
+						$property->getIdentifier() === strtolower(
+							strval(
+								preg_replace(
+									'/(?<!^)[A-Z]/',
+									'_$0',
+									HomeKitTypes\CharacteristicType::REMOTE_KEY_INFORMATION->value,
+								),
+							),
+						)
+					) {
+						$supportedRemoteKeys[] = 15;
+					}
+				}
+
+				sort($supportedRemoteKeys);
+
+				$this->channelsPropertiesManager->update(
+					$characteristic,
+					Utils\ArrayHash::from([
+						'format' => implode(',', $supportedRemoteKeys),
+					]),
+				);
+
+			} catch (Throwable $ex) {
+				throw new Exceptions\InvalidState(
+					sprintf(
+						'HomeKit characteristic: %s could not be updated',
+						HomeKitTypes\CharacteristicType::REMOTE_KEY->value,
 					),
 					$ex->getCode(),
 					$ex,
@@ -788,6 +1016,10 @@ class Builder
 			);
 
 			if ($connectProperty === null && !$characteristicMapping->isNullable()) {
+				return false;
+			}
+
+			if ($connectProperty === null && $characteristicMapping->isNullable()) {
 				return false;
 			}
 		}
@@ -859,6 +1091,156 @@ class Builder
 				$dataType = MetadataTypes\DataType::ENUM;
 			}
 
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_REWIND) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 0, 0,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_FAST_FORWARD) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 1, 1,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_NEXT_TRACK) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 2, 2,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_PREVIOUS_TRACK) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 3, 3,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_UP) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 4, 4,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_DOWN) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 5, 5,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_LEFT) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 6, 6,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_RIGHT) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 7, 7,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_SELECT) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 8, 8,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_BACK) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 9, 9,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 10, 10,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_PLAY_PAUSE) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 11, 11,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_INFORMATION) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 15, 15,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_UP) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 0, 0,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
+			if ($characteristicMapping->getType() === HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_DOWN) {
+				$format = [
+					[
+						MetadataTypes\Payloads\Button::CLICKED->value, 1, 1,
+					],
+				];
+
+				$dataType = MetadataTypes\DataType::BUTTON;
+			}
+
 			if ($characteristicMetadata->offsetExists('Default')) {
 				$default = $characteristicMetadata->offsetGet('Default');
 			}
@@ -920,7 +1302,7 @@ class Builder
 			) {
 				$entity = DevicesEntities\Channels\Properties\Variable::class;
 
-				if ($value > 999) {
+				if ($value > VieraConstants::MIN_APPLICATION_CODE) {
 					$value = VieraConnectorHomeKitConnector\Constants::INPUT_SOURCE_TYPE_APPLICATION;
 				} elseif ($value < VieraConstants::MAX_HDMI_CODE) {
 					$value = VieraConnectorHomeKitConnector\Constants::INPUT_SOURCE_TYPE_HDMI;

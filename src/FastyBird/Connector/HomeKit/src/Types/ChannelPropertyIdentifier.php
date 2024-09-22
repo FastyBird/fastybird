@@ -320,4 +320,40 @@ enum ChannelPropertyIdentifier: string
 
 	case COLOR_WHITE = 'color_white';
 
+	case REMOTE_KEY_REWIND = 'remote_key_rewind';
+
+	case REMOTE_KEY_FAST_FORWARD = 'remote_key_fast_forward';
+
+	case REMOTE_KEY_NEXT_TRACK = 'remote_key_next_track';
+
+	case REMOTE_KEY_PREVIOUS_TRACK = 'remote_key_previous_track';
+
+	case REMOTE_KEY_ARROW_UP = 'remote_key_arrow_up';
+
+	case REMOTE_KEY_ARROW_DOWN = 'remote_key_arrow_down';
+
+	case REMOTE_KEY_ARROW_LEFT = 'remote_key_arrow_left';
+
+	case REMOTE_KEY_ARROW_RIGHT = 'remote_key_arrow_right';
+
+	case REMOTE_KEY_SELECT = 'remote_key_select';
+
+	case REMOTE_KEY_BACK = 'remote_key_back';
+
+	case REMOTE_KEY_EXIT = 'remote_key_exit';
+
+	case REMOTE_KEY_PLAY_PAUSE = 'remote_key_play_pause';
+
+	case REMOTE_KEY_INFORMATION = 'remote_key_information';
+
+	case REMOTE_KEY_VOLUME_UP = 'remote_key_volume_up';
+
+	case REMOTE_KEY_VOLUME_DOWN = 'remote_key_volume_down';
+
+	case CONSUMPTION = 'consumption';
+
+	case ELECTRIC_CURRENT = 'electric_current';
+
+	case VOLTAGE = 'voltage';
+
 }
