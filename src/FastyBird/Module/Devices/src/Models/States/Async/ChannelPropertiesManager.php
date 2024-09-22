@@ -760,7 +760,7 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 					try {
 						if ($state !== null) {
 							$actualValue = MetadataUtilities\Value::flattenValue(
-								$this->convertReadValue($state->getActualValue(), $property, null, false),
+								$this->convertReadValue($state->getActualValue(), $property, null, true),
 							);
 							$expectedValue = MetadataUtilities\Value::flattenValue(
 								$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),
@@ -769,15 +769,28 @@ final class ChannelPropertiesManager extends Models\States\PropertiesManager
 							if (
 								$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 								&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
-								&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) !== null
 							) {
-								$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
-								$data->offsetUnset(States\Property::PENDING_FIELD);
+								// If the new expected value is same as actual value
+								// then the expected filed could be reset
+								if ($expectedValue !== null) {
+									// Expected value is set in the database
+									// so it have to be cleared
+									$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+									$data->offsetSet(States\Property::PENDING_FIELD, false);
+								} else {
+									// Expected value is not present
+									// si it could be omitted
+									$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
+									$data->offsetUnset(States\Property::PENDING_FIELD);
+								}
+							}
 
-							} elseif (
+							if (
 								$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
 								&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
 							) {
+								// If the new actual value is same as expected value
+								// then the expected field could be reset
 								$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 								$data->offsetSet(States\Property::PENDING_FIELD, false);
 							}
