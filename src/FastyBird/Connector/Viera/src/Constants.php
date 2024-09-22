@@ -58,4 +58,7 @@ class Constants
 	];
 
 	public const TV_IDENTIFIER = 'TV';
+
+	public const TV_CODE = 500;
+
 }

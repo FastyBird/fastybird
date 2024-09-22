@@ -325,8 +325,8 @@ final class StoreDevice implements Queue\Consumer
 					[
 						[
 							Viera\Constants::TV_IDENTIFIER,
-							500,
-							500,
+							Viera\Constants::TV_CODE,
+							Viera\Constants::TV_CODE,
 						],
 					],
 					array_map(

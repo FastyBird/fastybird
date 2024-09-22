@@ -989,8 +989,8 @@ class Install extends Console\Command\Command
 					[
 						[
 							Viera\Constants::TV_IDENTIFIER,
-							500,
-							500,
+							Viera\Constants::TV_CODE,
+							Viera\Constants::TV_CODE,
 						],
 					],
 					$hdmi !== [] ? $hdmi : [],

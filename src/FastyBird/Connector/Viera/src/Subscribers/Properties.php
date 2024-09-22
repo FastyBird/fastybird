@@ -299,8 +299,8 @@ final class Properties implements Common\EventSubscriber
 				[
 					[
 						Viera\Constants::TV_IDENTIFIER,
-						500,
-						500,
+						Viera\Constants::TV_CODE,
+						Viera\Constants::TV_CODE,
 					],
 				],
 				$hdmiFormat,
