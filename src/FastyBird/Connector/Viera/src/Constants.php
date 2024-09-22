@@ -61,4 +61,6 @@ class Constants
 
 	public const TV_CODE = 500;
 
+	public const MAX_HDMI_CODE = 100;
+
 }
