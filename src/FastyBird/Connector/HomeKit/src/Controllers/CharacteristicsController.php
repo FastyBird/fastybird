@@ -681,22 +681,24 @@ final class CharacteristicsController extends BaseController
 				);
 			}
 
-			$this->subscriber->publish(
-				$aid,
-				$iid,
-				Protocol\Transformer::toClient(
-					$characteristic->getProperty(),
-					$characteristic->getDataType(),
-					$characteristic->getValidValues(),
-					$characteristic->getMaxLength(),
-					$characteristic->getMinValue(),
-					$characteristic->getMaxValue(),
-					$characteristic->getMinStep(),
-					$characteristic->isValid() ? $characteristic->getValue() : $characteristic->getDefault(),
-				),
-				$characteristic->immediateNotify(),
-				$clientAddress,
-			);
+			foreach ($characteristic->getService()->getCharacteristics() as $row) {
+				$this->subscriber->publish(
+					$aid,
+					$iid,
+					Protocol\Transformer::toClient(
+						$row->getProperty(),
+						$row->getDataType(),
+						$row->getValidValues(),
+						$row->getMaxLength(),
+						$row->getMinValue(),
+						$row->getMaxValue(),
+						$row->getMinStep(),
+						$row->isValid() ? $row->getValue() : $row->getDefault(),
+					),
+					$row->immediateNotify(),
+					$clientAddress,
+				);
+			}
 		}
 
 		if ($events !== null) {

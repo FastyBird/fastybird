@@ -1187,7 +1187,8 @@
   "RemoteKey": {
     "Format": "uint8",
     "Permissions": [
-      "pw"
+      "pw",
+      "ev"
     ],
     "UUID": "000000E1-0000-1000-8000-0026BB765291",
     "MaxValue": 16,
