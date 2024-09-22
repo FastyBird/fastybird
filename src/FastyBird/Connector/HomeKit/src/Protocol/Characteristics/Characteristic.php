@@ -26,6 +26,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use Nette;
 use Ramsey\Uuid;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_map;
@@ -173,6 +174,25 @@ class Characteristic
 
 	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
+		try {
+			$value = Protocol\Transformer::fromClient(
+				$this->property,
+				$this->dataType,
+				Protocol\Transformer::toClient(
+					$this->property,
+					$this->dataType,
+					$this->validValues,
+					$this->maxLength,
+					$this->minValue,
+					$this->maxValue,
+					$this->minStep,
+					$value,
+				),
+			);
+		} catch (Throwable) {
+			$value = null;
+		}
+
 		$this->actualValue = $value;
 	}
 
@@ -237,15 +257,15 @@ class Characteristic
 			|| $this->dataType === Types\DataType::FLOAT
 		) {
 			if ($this->maxValue !== null) {
-				$meta[Types\Representation::MAX_VALUE->value] = $this->maxValue;
+				$meta[Types\Representation::MAX_VALUE->value] = intval($this->maxValue);
 			}
 
 			if ($this->minValue !== null) {
-				$meta[Types\Representation::MIN_VALUE->value] = $this->minValue;
+				$meta[Types\Representation::MIN_VALUE->value] = intval($this->minValue);
 			}
 
 			if ($this->minStep !== null) {
-				$meta[Types\Representation::MIN_STEP->value] = $this->minStep;
+				$meta[Types\Representation::MIN_STEP->value] = intval($this->minStep);
 			}
 
 			if ($this->unit !== null) {
