@@ -123,7 +123,7 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 		return [
 			'Viera 1 - edit' => [
 				'4D454930-0200-1000-8001-80C755230D19',
-				12,
+				13,
 				__DIR__ . '/../../../fixtures/Builders/device.1.channels.json',
 				__DIR__ . '/../../../fixtures/Builders/device.1.channels.properties.json',
 			],

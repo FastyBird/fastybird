@@ -673,7 +673,7 @@ class Builder
 
 				$characteristic = $this->channelsPropertiesRepository->findOneBy($findCharacteristic);
 
-				assert($characteristic instanceof DevicesEntities\Channels\Properties\Dynamic);
+				assert($characteristic instanceof DevicesEntities\Channels\Properties\Mapped);
 
 				$inputSourcesNames = $inputSourcesValues = [];
 				$inputIndex = 1;

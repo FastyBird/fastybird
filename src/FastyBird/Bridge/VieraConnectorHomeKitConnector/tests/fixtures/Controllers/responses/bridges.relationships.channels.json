@@ -12,6 +12,10 @@
   },
   "data": [
     {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "11ba6989-03f3-492d-b393-c1b62578eba1"
+    },
+    {
       "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-television",
       "id": "26c20fa0-d99a-40a4-8df0-8c8511afaf8d"
     },

@@ -1,4 +1,167 @@
 {
+  "input_source_11": {
+    "is_configured": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "is_configured",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "1",
+        "0"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "1",
+      "owner": null,
+      "children": []
+    },
+    "input_source_type": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "input_source_type",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "10",
+      "owner": null,
+      "children": []
+    },
+    "identifier": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "identifier",
+      "name": null,
+      "data_type": "uint",
+      "unit": null,
+      "format": [
+        0.0,
+        null
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": 0,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1011,
+      "owner": null,
+      "children": []
+    },
+    "configured_name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "configured_name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Disney+",
+      "owner": null,
+      "children": []
+    },
+    "target_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "target_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    },
+    "name": {
+      "type": "variable",
+      "category": "generic",
+      "identifier": "name",
+      "name": null,
+      "data_type": "string",
+      "unit": null,
+      "format": null,
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2024-08-20T11:00:00+02:00",
+      "value": "Disney+",
+      "owner": null,
+      "children": []
+    },
+    "current_visibility_state": {
+      "type": "dynamic",
+      "category": "generic",
+      "identifier": "current_visibility_state",
+      "name": null,
+      "data_type": "enum",
+      "unit": null,
+      "format": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": "0",
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "settable": true,
+      "queryable": false,
+      "owner": null,
+      "children": []
+    }
+  },
   "television_1": {
     "configured_name": {
       "type": "variable",
@@ -20,24 +183,30 @@
       "children": []
     },
     "remote_key": {
-      "type": "mapped",
+      "type": "dynamic",
       "category": "generic",
       "identifier": "remote_key",
       "name": null,
-      "data_type": "string",
+      "data_type": "enum",
       "unit": null,
-      "format": null,
+      "format": [
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
       "invalid": null,
       "scale": null,
       "step": null,
       "default": null,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "owner": null,
-      "parent": "a819734a-8b27-43b9-8ed3-7e62285e2b5d",
+      "updated_at": "2020-04-01T12:00:00+00:00",
       "settable": true,
-      "queryable": false
+      "queryable": false,
+      "owner": null,
+      "children": []
     },
     "active": {
       "type": "mapped",
@@ -90,59 +259,85 @@
       "unit": null,
       "format": [
         [
-          "500",
           "TV",
-          "TV"
+          "500",
+          "500"
         ],
         [
-          "1",
           "hdmi1",
-          "hdmi1"
+          "1",
+          "1"
         ],
         [
-          "2",
           "hdmi2",
-          "hdmi2"
+          "2",
+          "2"
         ],
         [
-          "3",
           "hdmi3",
-          "hdmi3"
+          "3",
+          "3"
         ],
         [
-          "0387878700000102",
           "apps_market",
-          "apps_market"
+          "1005",
+          "1005"
         ],
         [
-          "0010000200000001",
           "netflix",
-          "netflix"
+          "1006",
+          "1006"
         ],
         [
-          "0070000200180001",
           "youtube",
-          "youtube"
+          "1007",
+          "1007"
         ],
         [
-          "0076010507000001",
           "plex",
-          "plex"
+          "1008",
+          "1008"
         ],
         [
-          "0070003000000001",
           "apple_tv+",
-          "apple_tv+"
+          "1009",
+          "1009"
         ],
         [
-          "0070003100000001",
           "youtube_music",
-          "youtube_music"
+          "1010",
+          "1010"
         ],
         [
-          "0070002900000002",
           "disney+",
-          "disney+"
+          "1011",
+          "1011"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2024-08-20T11:00:00+02:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_arrow_up": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_arrow_up",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "4",
+          "4"
         ]
       ],
       "invalid": null,
@@ -153,7 +348,111 @@
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
       "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
+      "parent": "2499c9c0-3d88-4abe-82b2-5a3766266ffd",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_arrow_down": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_arrow_down",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "5",
+          "5"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "851b9661-3e1a-462a-8e84-c6859866a2d2",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_arrow_left": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_arrow_left",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "6",
+          "6"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "c3503999-6818-4e34-a797-537096447692",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_arrow_right": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_arrow_right",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "7",
+          "7"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "492b780d-82f1-4aa3-ba7e-a8797fd641c5",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_select": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_select",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "8",
+          "8"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "f682d475-7074-47d8-b93f-09866af25c8c",
       "settable": true,
       "queryable": false
     }
@@ -295,82 +594,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -391,7 +614,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -412,8 +635,8 @@
       "default": null,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": "Living Room TV speaker",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": "Speaker",
       "owner": null,
       "children": []
     },
@@ -461,24 +684,27 @@
       "queryable": true
     },
     "volume_selector": {
-      "type": "mapped",
+      "type": "dynamic",
       "category": "generic",
       "identifier": "volume_selector",
       "name": null,
-      "data_type": "string",
+      "data_type": "enum",
       "unit": null,
-      "format": null,
+      "format": [
+        "0",
+        "1"
+      ],
       "invalid": null,
       "scale": null,
       "step": null,
-      "default": null,
+      "default": "0",
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "owner": null,
-      "parent": "a819734a-8b27-43b9-8ed3-7e62285e2b5d",
+      "updated_at": "2020-04-01T12:00:00+00:00",
       "settable": true,
-      "queryable": false
+      "queryable": false,
+      "owner": null,
+      "children": []
     },
     "active": {
       "type": "mapped",
@@ -523,6 +749,58 @@
       "value": "3",
       "owner": null,
       "children": []
+    },
+    "remote_key_volume_up": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_volume_up",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "0",
+          "0"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "a4c50a85-3964-4a31-9b55-90f4d2f8e221",
+      "settable": true,
+      "queryable": false
+    },
+    "remote_key_volume_down": {
+      "type": "mapped",
+      "category": "generic",
+      "identifier": "remote_key_volume_down",
+      "name": null,
+      "data_type": "button",
+      "unit": null,
+      "format": [
+        [
+          "btn_clicked",
+          "1",
+          "1"
+        ]
+      ],
+      "invalid": null,
+      "scale": null,
+      "step": null,
+      "default": null,
+      "value_transformer": null,
+      "created_at": "2020-04-01T12:00:00+00:00",
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "owner": null,
+      "parent": "da662a7d-cade-478c-815f-ff3df696c5b2",
+      "settable": true,
+      "queryable": false
     }
   },
   "input_source_2": {
@@ -662,82 +940,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -758,7 +960,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -813,8 +1015,8 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 387878700000102,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1005,
       "owner": null,
       "children": []
     },
@@ -901,82 +1103,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -997,7 +1123,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -1043,8 +1169,8 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 76010507000001,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1008,
       "owner": null,
       "children": []
     },
@@ -1140,82 +1266,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -1236,7 +1286,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -1379,82 +1429,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -1475,7 +1449,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -1618,82 +1592,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -1714,7 +1612,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -1829,8 +1727,8 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 70000200180001,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1007,
       "owner": null,
       "children": []
     },
@@ -1857,82 +1755,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -1953,7 +1775,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -2022,8 +1844,8 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 70003000000001,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1009,
       "owner": null,
       "children": []
     },
@@ -2096,82 +1918,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -2192,7 +1938,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -2307,8 +2053,8 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 70003100000001,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1010,
       "owner": null,
       "children": []
     },
@@ -2335,82 +2081,6 @@
       "owner": null,
       "children": []
     },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
-    },
     "current_visibility_state": {
       "type": "dynamic",
       "category": "generic",
@@ -2431,7 +2101,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []
@@ -2569,86 +2239,10 @@
       "default": 0,
       "value_transformer": null,
       "created_at": "2024-08-20T11:00:00+02:00",
-      "updated_at": "2024-08-20T11:00:00+02:00",
-      "value": 10000200000001,
+      "updated_at": "2020-04-01T12:00:00+00:00",
+      "value": 1006,
       "owner": null,
       "children": []
-    },
-    "input_source": {
-      "type": "mapped",
-      "category": "generic",
-      "identifier": "input_source",
-      "name": null,
-      "data_type": "enum",
-      "unit": null,
-      "format": [
-        [
-          "500",
-          "TV",
-          "TV"
-        ],
-        [
-          "1",
-          "hdmi1",
-          "hdmi1"
-        ],
-        [
-          "2",
-          "hdmi2",
-          "hdmi2"
-        ],
-        [
-          "3",
-          "hdmi3",
-          "hdmi3"
-        ],
-        [
-          "0387878700000102",
-          "apps_market",
-          "apps_market"
-        ],
-        [
-          "0010000200000001",
-          "netflix",
-          "netflix"
-        ],
-        [
-          "0070000200180001",
-          "youtube",
-          "youtube"
-        ],
-        [
-          "0076010507000001",
-          "plex",
-          "plex"
-        ],
-        [
-          "0070003000000001",
-          "apple_tv+",
-          "apple_tv+"
-        ],
-        [
-          "0070003100000001",
-          "youtube_music",
-          "youtube_music"
-        ],
-        [
-          "0070002900000002",
-          "disney+",
-          "disney+"
-        ]
-      ],
-      "invalid": null,
-      "scale": null,
-      "step": null,
-      "default": null,
-      "value_transformer": null,
-      "created_at": "2020-04-01T12:00:00+00:00",
-      "updated_at": "2020-04-01T12:00:00+00:00",
-      "owner": null,
-      "parent": "65a4b39b-1bbb-41f3-93ca-898e9f088df3",
-      "settable": true,
-      "queryable": false
     },
     "current_visibility_state": {
       "type": "dynamic",
@@ -2670,7 +2264,7 @@
       "value_transformer": null,
       "created_at": "2020-04-01T12:00:00+00:00",
       "updated_at": "2020-04-01T12:00:00+00:00",
-      "settable": false,
+      "settable": true,
       "queryable": false,
       "owner": null,
       "children": []

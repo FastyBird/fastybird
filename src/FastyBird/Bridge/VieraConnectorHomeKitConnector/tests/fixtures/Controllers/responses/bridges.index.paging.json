@@ -74,11 +74,15 @@
             "related": {
               "href": "/api/devices-module/v1/devices/1d0f40bf-e023-4e62-8bec-7a5d81e40e84/channels",
               "meta": {
-                "count": 12
+                "count": 13
               }
             }
           },
           "data": [
+            {
+              "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+              "id": "11ba6989-03f3-492d-b393-c1b62578eba1"
+            },
             {
               "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-television",
               "id": "26c20fa0-d99a-40a4-8df0-8c8511afaf8d"
