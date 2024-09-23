@@ -40,12 +40,15 @@ final class Relay extends HomeKitProtocol\Services\Generic
 
 		if ($inUseCharacteristic !== null) {
 			if ($inUseCharacteristic->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable) {
-				$inUseCharacteristic->setValue(true);
+				$inUseCharacteristic->setActualValue(true);
+				$inUseCharacteristic->setExpectedValue(null);
 			} else {
 				if (is_numeric($inUseCharacteristic->getValue())) {
-					$inUseCharacteristic->setValue($inUseCharacteristic->getValue() > 0);
-				} elseif ($inUseCharacteristic->getValue() === null) {
-					$inUseCharacteristic->setValue(true);
+					$inUseCharacteristic->setActualValue($inUseCharacteristic->getValue() > 0);
+					$inUseCharacteristic->setExpectedValue(null);
+				} else {
+					$inUseCharacteristic->setActualValue(true);
+					$inUseCharacteristic->setExpectedValue(null);
 				}
 			}
 		}
