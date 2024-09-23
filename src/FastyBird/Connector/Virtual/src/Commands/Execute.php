@@ -74,7 +74,7 @@ class Execute extends Console\Command\Command
 						'connector',
 						'c',
 						Input\InputOption::VALUE_OPTIONAL,
-						'Run devices module connector',
+						'Connector ID or identifier',
 						true,
 					),
 				]),
