@@ -35,10 +35,7 @@ final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function recalculateValues(
-		HomeKitProtocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
-	): void
+	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
 			if ($characteristic->getValue() !== null) {
@@ -46,16 +43,17 @@ final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 					$volumeKeyCharacteristic = $this->findCharacteristic(
 						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_UP,
 					);
-					$volumeKeyCharacteristic?->setValue(MetadataTypes\Payloads\Button::CLICKED->value);
+					$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
 
 				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
 					$volumeKeyCharacteristic = $this->findCharacteristic(
 						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_DOWN,
 					);
-					$volumeKeyCharacteristic?->setValue(MetadataTypes\Payloads\Button::CLICKED->value);
+					$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
 
 				} else {
-					$characteristic->setValue(null);
+					$characteristic->setActualValue(null);
+					$characteristic->setExpectedValue(null);
 				}
 			}
 		}

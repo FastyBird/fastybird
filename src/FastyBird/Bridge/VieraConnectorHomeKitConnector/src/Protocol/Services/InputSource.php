@@ -30,10 +30,7 @@ use function assert;
 final class InputSource extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(
-		HomeKitProtocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
-	): void
+	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
 	{
 		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::TARGET_VISIBILITY_STATE->value) {
 			$currentVisibilityState = $this->findCharacteristic(
@@ -41,7 +38,7 @@ final class InputSource extends HomeKitProtocol\Services\Generic
 			);
 			assert($currentVisibilityState instanceof HomeKitProtocol\Characteristics\Characteristic);
 
-			$currentVisibilityState->setValue($characteristic->getValue());
+			$currentVisibilityState->setExpectedValue($characteristic->getValue());
 		}
 	}
 

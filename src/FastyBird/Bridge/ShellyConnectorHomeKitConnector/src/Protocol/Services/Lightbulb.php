@@ -33,33 +33,26 @@ use function is_int;
 final class Lightbulb extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(
-		HomeKitProtocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
-	): void
+	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
 	{
-		$updatePropertyType = $fromDevice ? DevicesTypes\PropertyType::DYNAMIC : DevicesTypes\PropertyType::MAPPED;
-
 		if (
 			$characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_RED->value
 			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_GREEN->value
 			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_BLUE->value
 			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_WHITE->value
 		) {
-			$this->calculateRgbToHsb($updatePropertyType);
+			$this->calculateRgbToHsb();
 
 		} elseif (
 			$characteristic->getName() === HomeKitTypes\CharacteristicType::HUE->value
 			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::SATURATION->value
 			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::BRIGHTNESS->value
 		) {
-			$this->calculateHsbToRgb($updatePropertyType);
+			$this->calculateHsbToRgb();
 		}
 	}
 
-	private function calculateRgbToHsb(
-		DevicesTypes\PropertyType $updatePropertyType,
-	): void
+	private function calculateRgbToHsb(): void
 	{
 		$redCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED);
 		$greenCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN);
@@ -86,45 +79,16 @@ final class Lightbulb extends HomeKitProtocol\Services\Generic
 		}
 
 		$hue = $this->findCharacteristic(HomeKitTypes\CharacteristicType::HUE);
-
-		if (
-			$hue !== null
-			&& (
-				$hue->getProperty() === null
-				|| $hue->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$hue->setValue($hsb->getHue());
-		}
+		$hue?->setExpectedValue($hsb->getHue());
 
 		$saturation = $this->findCharacteristic(HomeKitTypes\CharacteristicType::SATURATION);
-
-		if (
-			$saturation !== null
-			&& (
-				$saturation->getProperty() === null
-				|| $saturation->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$saturation->setValue($hsb->getSaturation());
-		}
+		$saturation?->setExpectedValue($hsb->getSaturation());
 
 		$brightness = $this->findCharacteristic(HomeKitTypes\CharacteristicType::BRIGHTNESS);
-
-		if (
-			$brightness !== null
-			&& (
-				$brightness->getProperty() === null
-				|| $brightness->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$brightness->setValue($hsb->getBrightness());
-		}
+		$brightness?->setExpectedValue($hsb->getBrightness());
 	}
 
-	private function calculateHsbToRgb(
-		DevicesTypes\PropertyType $updatePropertyType,
-	): void
+	private function calculateHsbToRgb(): void
 	{
 		$hueCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::HUE);
 		$saturationCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::SATURATION);
@@ -168,53 +132,16 @@ final class Lightbulb extends HomeKitProtocol\Services\Generic
 		}
 
 		$red = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED);
-
-		if (
-			$red !== null
-			&& (
-				$red->getProperty() === null
-				|| $red->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$red->setValue($rgb->getRed());
-		}
+		$red?->setExpectedValue($rgb->getRed());
 
 		$green = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN);
-
-		if (
-			$green !== null
-			&& (
-				$green->getProperty() === null
-				|| $green->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$green->setValue($rgb->getGreen());
-		}
+		$green?->setExpectedValue($rgb->getGreen());
 
 		$blue = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_BLUE);
-
-		if (
-			$blue !== null
-			&& (
-				$blue->getProperty() === null
-				|| $blue->getProperty()::getType() === $updatePropertyType->value
-			)
-		) {
-			$blue->setValue($rgb->getBlue());
-		}
+		$blue?->setExpectedValue($rgb->getBlue());
 
 		$white = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_WHITE);
-
-		if (
-			$white !== null
-			&& (
-				$white->getProperty() === null
-				|| $white->getProperty()::getType() === $updatePropertyType->value
-			)
-			&& $rgb->getWhite() !== null
-		) {
-			$white->setValue($rgb->getWhite());
-		}
+		$white?->setExpectedValue($rgb->getWhite());
 	}
 
 }

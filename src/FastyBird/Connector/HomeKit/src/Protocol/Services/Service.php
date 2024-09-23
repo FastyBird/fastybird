@@ -203,9 +203,9 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(Protocol\Characteristics\Characteristic $characteristic, bool $fromDevice): void
+	public function recalculateValues(Protocol\Characteristics\Characteristic $characteristic): void
 	{
-		$this->accessory->recalculateValues($this, $characteristic, $fromDevice);
+		$this->accessory->recalculateValues($this, $characteristic);
 	}
 
 	/**

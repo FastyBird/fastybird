@@ -135,7 +135,6 @@ abstract class Accessory
 	public function recalculateValues(
 		Protocol\Services\Service $service,
 		Protocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
 	): void
 	{
 		// Used only for specific accessories

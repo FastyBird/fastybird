@@ -31,10 +31,7 @@ use function is_numeric;
 final class Outlet extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(
-		HomeKitProtocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
-	): void
+	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
 	{
 		$inUseCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::OUTLET_INUSE);
 
