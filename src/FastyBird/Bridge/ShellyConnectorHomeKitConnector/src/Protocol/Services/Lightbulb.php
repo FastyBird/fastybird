@@ -33,20 +33,20 @@ use function is_int;
 final class Lightbulb extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
+	public function recalculateCharacteristics(): void
 	{
 		if (
-			$characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_RED->value
-			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_GREEN->value
-			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_BLUE->value
-			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_WHITE->value
+			$this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED)
+			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN)
+			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_BLUE)
 		) {
 			$this->calculateRgbToHsb();
+		}
 
-		} elseif (
-			$characteristic->getName() === HomeKitTypes\CharacteristicType::HUE->value
-			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::SATURATION->value
-			|| $characteristic->getName() === HomeKitTypes\CharacteristicType::BRIGHTNESS->value
+		if (
+			$this->hasCharacteristic(HomeKitTypes\CharacteristicType::HUE)
+			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::SATURATION)
+			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::BRIGHTNESS)
 		) {
 			$this->calculateHsbToRgb();
 		}

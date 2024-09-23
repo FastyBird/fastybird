@@ -402,6 +402,8 @@ class Loader
 						}
 					}
 				}
+
+				$service->recalculateCharacteristics();
 			}
 		}
 	}

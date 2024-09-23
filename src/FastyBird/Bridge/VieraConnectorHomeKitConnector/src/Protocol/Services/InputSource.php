@@ -30,15 +30,21 @@ use function assert;
 final class InputSource extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
+	public function recalculateCharacteristics(): void
 	{
-		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::TARGET_VISIBILITY_STATE->value) {
-			$currentVisibilityState = $this->findCharacteristic(
-				HomeKitTypes\CharacteristicType::CURRENT_VISIBILITY_STATE,
-			);
-			assert($currentVisibilityState instanceof HomeKitProtocol\Characteristics\Characteristic);
+		foreach ($this->getCharacteristics() as $characteristic) {
+			if ($characteristic->getExpectedValue() !== null) {
+				continue;
+			}
 
-			$currentVisibilityState->setExpectedValue($characteristic->getValue());
+			if ($characteristic->getName() === HomeKitTypes\CharacteristicType::TARGET_VISIBILITY_STATE->value) {
+				$currentVisibilityState = $this->findCharacteristic(
+					HomeKitTypes\CharacteristicType::CURRENT_VISIBILITY_STATE,
+				);
+				assert($currentVisibilityState instanceof HomeKitProtocol\Characteristics\Characteristic);
+
+				$currentVisibilityState->setExpectedValue($characteristic->getValue());
+			}
 		}
 	}
 

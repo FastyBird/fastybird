@@ -31,7 +31,7 @@ use function is_numeric;
 final class Valve extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(HomeKitProtocol\Characteristics\Characteristic $characteristic): void
+	public function recalculateCharacteristics(): void
 	{
 		$inUseCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::OUTLET_INUSE);
 
@@ -44,7 +44,7 @@ final class Valve extends HomeKitProtocol\Services\Generic
 					$inUseCharacteristic->setActualValue($inUseCharacteristic->getValue() > 0);
 					$inUseCharacteristic->setExpectedValue(null);
 				} else {
-					$inUseCharacteristic->setActualValue(true);
+					$inUseCharacteristic->setActualValue(false);
 					$inUseCharacteristic->setExpectedValue(null);
 				}
 			}

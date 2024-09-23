@@ -132,12 +132,9 @@ abstract class Accessory
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(
-		Protocol\Services\Service $service,
-		Protocol\Characteristics\Characteristic $characteristic,
-	): void
+	public function recalculateServices(): void
 	{
-		// Used only for specific accessories
+		// Nothing to do here
 	}
 
 	public function getIidManager(): Helpers\IidManager

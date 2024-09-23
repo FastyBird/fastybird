@@ -203,9 +203,9 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateValues(Protocol\Characteristics\Characteristic $characteristic): void
+	public function recalculateCharacteristics(): void
 	{
-		$this->accessory->recalculateValues($this, $characteristic);
+		// Nothing to do here
 	}
 
 	/**

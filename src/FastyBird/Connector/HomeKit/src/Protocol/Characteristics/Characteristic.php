@@ -75,6 +75,8 @@ class Characteristic
 
 	private bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $expectedValue = null;
 
+	private DateTimeInterface|bool $pending = false;
+
 	private bool $valid = true;
 
 	/**
@@ -207,7 +209,9 @@ class Characteristic
 
 		$this->actualValue = $value;
 
-		$this->service->recalculateValues($this);
+		if ($this->getExpectedValue() === $this->actualValue) {
+			$this->setExpectedValue(null);
+		}
 	}
 
 	public function getExpectedValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
@@ -242,7 +246,23 @@ class Characteristic
 
 		$this->expectedValue = $value;
 
-		$this->service->recalculateValues($this);
+		if ($this->getActualValue() === $this->expectedValue) {
+			$this->expectedValue = null;
+		}
+
+		if ($this->expectedValue === null) {
+			$this->setPending(false);
+		}
+	}
+
+	public function setPending(DateTimeInterface|bool $pending): void
+	{
+		$this->pending = $pending;
+	}
+
+	public function isPending(): bool
+	{
+		return $this->pending instanceof DateTimeInterface || $this->pending === true;
 	}
 
 	public function isAlwaysNull(): bool

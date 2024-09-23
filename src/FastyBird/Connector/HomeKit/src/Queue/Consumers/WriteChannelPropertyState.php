@@ -229,49 +229,23 @@ final class WriteChannelPropertyState implements Queue\Consumer
 			return true;
 		}
 
+		$characteristicService = null;
+
 		foreach ($accessory->getServices() as $service) {
 			foreach ($service->getCharacteristics() as $characteristic) {
 				if (
-					$characteristic->getProperty() !== null
-					&& $characteristic->getProperty()->getId()->equals($property->getId())
+					$characteristic->getProperty() === null
+					|| !$characteristic->getProperty()->getId()->equals($property->getId())
 				) {
-					if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-						$parent = $this->channelsPropertiesConfigurationRepository->find($property->getParent());
+					continue;
+				}
 
-						if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-							if ($message->getState() !== null) {
-								$characteristic->setActualValue($message->getState()->getActualValue());
-								$characteristic->setExpectedValue($message->getState()->getExpectedValue());
-								$characteristic->setValid($message->getState()->isValid());
-							} else {
-								$this->logger->warning(
-									'State entity is missing in event entity',
-									[
-										'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
-										'type' => 'write-channel-property-state-message-consumer',
-										'connector' => [
-											'id' => $connector->getId()->toString(),
-										],
-										'device' => [
-											'id' => $device->getId()->toString(),
-										],
-										'channel' => [
-											'id' => $channel->getId()->toString(),
-										],
-										'property' => [
-											'id' => $property->getId()->toString(),
-										],
-										'hap' => $accessory->toHap(),
-									],
-								);
+				$characteristicService = $service;
 
-								continue;
-							}
-						} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
-							$characteristic->setActualValue($parent->getValue());
-							$characteristic->setValid(true);
-						}
-					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+				if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
+					$parent = $this->channelsPropertiesConfigurationRepository->find($property->getParent());
+
+					if ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 						if ($message->getState() !== null) {
 							$characteristic->setActualValue($message->getState()->getActualValue());
 							$characteristic->setExpectedValue($message->getState()->getExpectedValue());
@@ -300,49 +274,85 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 							continue;
 						}
-					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
-						$characteristic->setActualValue($property->getValue());
+					} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
+						$characteristic->setActualValue($parent->getValue());
 						$characteristic->setValid(true);
 					}
+				} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+					if ($message->getState() !== null) {
+						$characteristic->setActualValue($message->getState()->getActualValue());
+						$characteristic->setExpectedValue($message->getState()->getExpectedValue());
+						$characteristic->setValid($message->getState()->isValid());
+					} else {
+						$this->logger->warning(
+							'State entity is missing in event entity',
+							[
+								'source' => MetadataTypes\Sources\Connector::HOMEKIT->value,
+								'type' => 'write-channel-property-state-message-consumer',
+								'connector' => [
+									'id' => $connector->getId()->toString(),
+								],
+								'device' => [
+									'id' => $device->getId()->toString(),
+								],
+								'channel' => [
+									'id' => $channel->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+								'hap' => $accessory->toHap(),
+							],
+						);
 
-					if (!$characteristic->isVirtual()) {
+						continue;
+					}
+				} elseif ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
+					$characteristic->setActualValue($property->getValue());
+					$characteristic->setValid(true);
+				}
+
+				if (!$characteristic->isVirtual()) {
+					$this->subscriber->publish(
+						intval($accessory->getAid()),
+						intval($accessory->getIidManager()->getIid($characteristic)),
+						Protocol\Transformer::toClient(
+							$characteristic->getProperty(),
+							$characteristic->getDataType(),
+							$characteristic->getValidValues(),
+							$characteristic->getMaxLength(),
+							$characteristic->getMinValue(),
+							$characteristic->getMaxValue(),
+							$characteristic->getMinStep(),
+							$characteristic->isValid() ? $characteristic->getValue() : $characteristic->getDefault(),
+						),
+						$characteristic->immediateNotify(),
+					);
+				} else {
+					foreach ($service->getCharacteristics() as $serviceCharacteristic) {
 						$this->subscriber->publish(
 							intval($accessory->getAid()),
-							intval($accessory->getIidManager()->getIid($characteristic)),
+							intval($accessory->getIidManager()->getIid($serviceCharacteristic)),
 							Protocol\Transformer::toClient(
-								$characteristic->getProperty(),
-								$characteristic->getDataType(),
-								$characteristic->getValidValues(),
-								$characteristic->getMaxLength(),
-								$characteristic->getMinValue(),
-								$characteristic->getMaxValue(),
-								$characteristic->getMinStep(),
-								$characteristic->isValid() ? $characteristic->getValue() : $characteristic->getDefault(),
+								$serviceCharacteristic->getProperty(),
+								$serviceCharacteristic->getDataType(),
+								$serviceCharacteristic->getValidValues(),
+								$serviceCharacteristic->getMaxLength(),
+								$serviceCharacteristic->getMinValue(),
+								$serviceCharacteristic->getMaxValue(),
+								$serviceCharacteristic->getMinStep(),
+								$serviceCharacteristic->isValid() ? $serviceCharacteristic->getValue() : $serviceCharacteristic->getDefault(),
 							),
-							$characteristic->immediateNotify(),
+							$serviceCharacteristic->immediateNotify(),
 						);
-					} else {
-						foreach ($service->getCharacteristics() as $serviceCharacteristic) {
-							$this->subscriber->publish(
-								intval($accessory->getAid()),
-								intval($accessory->getIidManager()->getIid($serviceCharacteristic)),
-								Protocol\Transformer::toClient(
-									$serviceCharacteristic->getProperty(),
-									$serviceCharacteristic->getDataType(),
-									$serviceCharacteristic->getValidValues(),
-									$serviceCharacteristic->getMaxLength(),
-									$serviceCharacteristic->getMinValue(),
-									$serviceCharacteristic->getMaxValue(),
-									$serviceCharacteristic->getMinStep(),
-									$serviceCharacteristic->isValid() ? $serviceCharacteristic->getValue() : $serviceCharacteristic->getDefault(),
-								),
-								$serviceCharacteristic->immediateNotify(),
-							);
-						}
 					}
 				}
+
+				break 2;
 			}
 		}
+
+		$characteristicService?->recalculateCharacteristics();
 
 		$this->logger->debug(
 			'Consumed write device state message',
