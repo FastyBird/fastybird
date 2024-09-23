@@ -34,6 +34,10 @@ parameters:
             count: 2
         -
             message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
+            path: ../src/Controllers/DiagnosticsController.php
+            count: 1
+        -
+            message: '#^Parameter \#1 \$value of function strval expects bool\|float\|int\|resource\|string\|null, mixed given.#'
             path: ../src/Commands/Install.php
             count: 8
         -

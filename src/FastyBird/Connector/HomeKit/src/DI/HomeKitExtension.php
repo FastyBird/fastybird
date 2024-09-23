@@ -316,6 +316,11 @@ class HomeKitExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
 
+		$builder->addDefinition($this->prefix('http.controllers.diagnostics'), new DI\Definitions\ServiceDefinition())
+			->setType(Controllers\DiagnosticsController::class)
+			->addSetup('setLogger', [$logger])
+			->addTag('nette.inject');
+
 		/**
 		 * HOMEKIT
 		 */

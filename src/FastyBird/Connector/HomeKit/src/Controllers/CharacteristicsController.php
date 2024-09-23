@@ -589,8 +589,10 @@ final class CharacteristicsController extends BaseController
 					],
 				);
 			} else {
+				$property = $characteristic->getProperty();
+
 				$value = Protocol\Transformer::fromClient(
-					$characteristic->getProperty(),
+					$property,
 					$characteristic->getDataType(),
 					$valueToWrite,
 				);
@@ -619,7 +621,7 @@ final class CharacteristicsController extends BaseController
 							'id' => $characteristic->getService()->getChannel()?->getId()->toString(),
 						],
 						'property' => [
-							'id' => $characteristic->getProperty()->getId()->toString(),
+							'id' => $property->getId()->toString(),
 						],
 					],
 				);
