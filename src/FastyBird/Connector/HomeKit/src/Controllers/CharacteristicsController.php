@@ -595,6 +595,8 @@ final class CharacteristicsController extends BaseController
 					$valueToWrite,
 				);
 
+				$characteristic->setExpectedValue($value);
+
 				$characteristic->getService()->recalculateCharacteristics();
 
 				$this->logger->info(
