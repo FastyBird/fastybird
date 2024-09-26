@@ -35,34 +35,34 @@ final class TelevisionSpeaker extends HomeKitProtocol\Services\Generic
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		HomeKitProtocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
-		foreach ($this->getCharacteristics() as $characteristic) {
-			if ($characteristic->getExpectedValue() !== null) {
-				continue;
-			}
+		if ($characteristic === null || $characteristic->getExpectedValue() !== null) {
+			return;
+		}
 
-			if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
-				if ($characteristic->getValue() !== null) {
-					if (MetadataUtilities\Value::toString($characteristic->getValue(), true) === '0') {
-						$volumeKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_UP,
-						);
-						$volumeKeyCharacteristic?->setActualValue(null);
-						$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::VOLUME_SELECTOR->value) {
+			if ($characteristic->getValue() !== null) {
+				if (MetadataUtilities\Value::toString($characteristic->getValue(), true) === '0') {
+					$volumeKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_UP,
+					);
+					$volumeKeyCharacteristic?->setActualValue(null);
+					$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
 
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
-						$volumeKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_DOWN,
-						);
-						$volumeKeyCharacteristic?->setActualValue(null);
-						$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-					}
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
+					$volumeKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_VOLUME_DOWN,
+					);
+					$volumeKeyCharacteristic?->setActualValue(null);
+					$volumeKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
 				}
-
-				$characteristic->setActualValue(null);
-				$characteristic->setExpectedValue(null);
 			}
+
+			$characteristic->setActualValue(null);
+			$characteristic->setExpectedValue(null);
 		}
 	}
 

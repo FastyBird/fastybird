@@ -33,8 +33,30 @@ use function is_int;
 final class Lightbulb extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		HomeKitProtocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
+		if ($characteristic !== null) {
+			if (
+				$characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_RED->value
+				|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_GREEN->value
+				|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_BLUE->value
+				|| $characteristic->getName() === HomeKitTypes\CharacteristicType::COLOR_WHITE->value
+			) {
+				$this->calculateRgbToHsb();
+
+			} elseif (
+				$characteristic->getName() === HomeKitTypes\CharacteristicType::HUE->value
+				|| $characteristic->getName() === HomeKitTypes\CharacteristicType::SATURATION->value
+				|| $characteristic->getName() === HomeKitTypes\CharacteristicType::BRIGHTNESS->value
+			) {
+				$this->calculateHsbToRgb();
+			}
+
+			return;
+		}
+
 		if (
 			$this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED)
 			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN)

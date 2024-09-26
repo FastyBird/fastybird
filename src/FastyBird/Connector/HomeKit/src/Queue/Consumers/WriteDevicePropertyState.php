@@ -182,7 +182,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 			return true;
 		}
 
-		$characteristicService = null;
+		$characteristicService = $updatedCharacteristic = null;
 
 		foreach ($accessory->getServices() as $service) {
 			foreach ($service->getCharacteristics() as $characteristic) {
@@ -194,6 +194,7 @@ final class WriteDevicePropertyState implements Queue\Consumer
 				}
 
 				$characteristicService = $service;
+				$updatedCharacteristic = $characteristic;
 
 				if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
 					$parent = $this->devicesPropertiesConfigurationRepository->find($property->getParent());
@@ -259,47 +260,29 @@ final class WriteDevicePropertyState implements Queue\Consumer
 					$characteristic->setValid(true);
 				}
 
-				if (!$characteristic->isVirtual()) {
-					$this->subscriber->publish(
-						intval($accessory->getAid()),
-						intval($accessory->getIidManager()->getIid($characteristic)),
-						Protocol\Transformer::toClient(
-							$characteristic->getProperty(),
-							$characteristic->getDataType(),
-							$characteristic->getValidValues(),
-							$characteristic->getMaxLength(),
-							$characteristic->getMinValue(),
-							$characteristic->getMaxValue(),
-							$characteristic->getMinStep(),
-							$characteristic->isValid() ? $characteristic->getValue() : $characteristic->getDefault(),
-						),
-						$characteristic->immediateNotify(),
-					);
-				} else {
-					foreach ($service->getCharacteristics() as $serviceCharacteristic) {
-						$this->subscriber->publish(
-							intval($accessory->getAid()),
-							intval($accessory->getIidManager()->getIid($serviceCharacteristic)),
-							Protocol\Transformer::toClient(
-								$serviceCharacteristic->getProperty(),
-								$serviceCharacteristic->getDataType(),
-								$serviceCharacteristic->getValidValues(),
-								$serviceCharacteristic->getMaxLength(),
-								$serviceCharacteristic->getMinValue(),
-								$serviceCharacteristic->getMaxValue(),
-								$serviceCharacteristic->getMinStep(),
-								$serviceCharacteristic->isValid() ? $serviceCharacteristic->getValue() : $serviceCharacteristic->getDefault(),
-							),
-							$serviceCharacteristic->immediateNotify(),
-						);
-					}
-				}
-
 				break 2;
 			}
 		}
 
-		$characteristicService?->recalculateCharacteristics();
+		$characteristicService?->recalculateCharacteristics($updatedCharacteristic);
+
+		foreach ($characteristicService?->getCharacteristics() ?? [] as $characteristic) {
+			$this->subscriber->publish(
+				intval($accessory->getAid()),
+				intval($accessory->getIidManager()->getIid($characteristic)),
+				Protocol\Transformer::toClient(
+					$characteristic->getProperty(),
+					$characteristic->getDataType(),
+					$characteristic->getValidValues(),
+					$characteristic->getMaxLength(),
+					$characteristic->getMinValue(),
+					$characteristic->getMaxValue(),
+					$characteristic->getMinStep(),
+					$characteristic->isValid() ? $characteristic->getValue() : $characteristic->getDefault(),
+				),
+				$characteristic->immediateNotify(),
+			);
+		}
 
 		$this->logger->debug(
 			'Consumed write device state message',

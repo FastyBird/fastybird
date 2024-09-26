@@ -38,118 +38,118 @@ final class Television extends HomeKitProtocol\Services\Generic
 	/**
 	 * @throws MetadataExceptions\InvalidArgument
 	 */
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		HomeKitProtocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
-		foreach ($this->getCharacteristics() as $characteristic) {
-			if ($characteristic->getExpectedValue() !== null) {
-				continue;
-			}
+		if ($characteristic === null || $characteristic->getExpectedValue() !== null) {
+			return;
+		}
 
-			if ($characteristic->getName() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION->value) {
-				if ($characteristic->getValue() === MetadataTypes\Payloads\Button::CLICKED->value) {
-					$characteristic->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-				} else {
-					$characteristic->setActualValue(null);
-					$characteristic->setExpectedValue(null);
-				}
-			} elseif ($characteristic->getName() === HomeKitTypes\CharacteristicType::REMOTE_KEY->value) {
-				if ($characteristic->getValue() !== null) {
-					if (MetadataUtilities\Value::toString($characteristic->getValue()) === '0') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_REWIND,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_FAST_FORWARD,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '2') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_NEXT_TRACK,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '3') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_PREVIOUS_TRACK,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '4') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_UP,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '5') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_DOWN,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '6') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_LEFT,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '7') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_RIGHT,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '8') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_SELECT,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '9') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '10') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '11') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_PLAY_PAUSE,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-
-					} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '15') {
-						$remoteKeyCharacteristic = $this->findCharacteristic(
-							HomeKitTypes\CharacteristicType::REMOTE_KEY_INFORMATION,
-						);
-						$remoteKeyCharacteristic?->setActualValue(null);
-						$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
-					}
-				}
-
+		if ($characteristic->getName() === HomeKitTypes\CharacteristicType::POWER_MODE_SELECTION->value) {
+			if ($characteristic->getValue() === MetadataTypes\Payloads\Button::CLICKED->value) {
+				$characteristic->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+			} else {
 				$characteristic->setActualValue(null);
 				$characteristic->setExpectedValue(null);
 			}
+		} elseif ($characteristic->getName() === HomeKitTypes\CharacteristicType::REMOTE_KEY->value) {
+			if ($characteristic->getValue() !== null) {
+				if (MetadataUtilities\Value::toString($characteristic->getValue()) === '0') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_REWIND,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '1') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_FAST_FORWARD,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '2') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_NEXT_TRACK,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '3') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_PREVIOUS_TRACK,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '4') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_UP,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '5') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_DOWN,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '6') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_LEFT,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '7') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_ARROW_RIGHT,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '8') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_SELECT,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '9') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '10') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_EXIT,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '11') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_PLAY_PAUSE,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+
+				} elseif (MetadataUtilities\Value::toString($characteristic->getValue()) === '15') {
+					$remoteKeyCharacteristic = $this->findCharacteristic(
+						HomeKitTypes\CharacteristicType::REMOTE_KEY_INFORMATION,
+					);
+					$remoteKeyCharacteristic?->setActualValue(null);
+					$remoteKeyCharacteristic?->setExpectedValue(MetadataTypes\Payloads\Button::CLICKED->value);
+				}
+			}
+
+			$characteristic->setActualValue(null);
+			$characteristic->setExpectedValue(null);
 		}
 	}
 

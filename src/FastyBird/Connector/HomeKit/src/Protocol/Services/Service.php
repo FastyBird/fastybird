@@ -203,7 +203,9 @@ class Service
 	/**
 	 * @interal
 	 */
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		Protocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
 		// Nothing to do here
 	}

@@ -33,8 +33,30 @@ use function is_int;
 final class LightBulb extends Generic
 {
 
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		Protocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
+		if ($characteristic !== null) {
+			if (
+				$characteristic->getName() === Types\CharacteristicType::COLOR_RED->value
+				|| $characteristic->getName() === Types\CharacteristicType::COLOR_GREEN->value
+				|| $characteristic->getName() === Types\CharacteristicType::COLOR_BLUE->value
+				|| $characteristic->getName() === Types\CharacteristicType::COLOR_WHITE->value
+			) {
+				$this->calculateRgbToHsb();
+
+			} elseif (
+				$characteristic->getName() === Types\CharacteristicType::HUE->value
+				|| $characteristic->getName() === Types\CharacteristicType::SATURATION->value
+				|| $characteristic->getName() === Types\CharacteristicType::BRIGHTNESS->value
+			) {
+				$this->calculateHsbToRgb();
+			}
+
+			return;
+		}
+
 		if (
 			$this->hasCharacteristic(Types\CharacteristicType::COLOR_RED)
 			|| $this->hasCharacteristic(Types\CharacteristicType::COLOR_GREEN)

@@ -599,7 +599,7 @@ final class CharacteristicsController extends BaseController
 
 				$characteristic->setExpectedValue($value);
 
-				$characteristic->getService()->recalculateCharacteristics();
+				$characteristic->getService()->recalculateCharacteristics($characteristic);
 
 				$this->logger->info(
 					'Apple client requested to set expected value to characteristic',
@@ -632,7 +632,7 @@ final class CharacteristicsController extends BaseController
 					$characteristic->setActualValue(null);
 					$characteristic->setExpectedValue(null);
 
-					$characteristic->getService()->recalculateCharacteristics();
+					$characteristic->getService()->recalculateCharacteristics($characteristic);
 
 					$this->storeCharacteristic($connectorId, $characteristic);
 				}

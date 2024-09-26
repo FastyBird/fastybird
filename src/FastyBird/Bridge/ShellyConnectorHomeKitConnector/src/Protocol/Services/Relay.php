@@ -31,7 +31,9 @@ use function is_numeric;
 final class Relay extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateCharacteristics(): void
+	public function recalculateCharacteristics(
+		HomeKitProtocol\Characteristics\Characteristic|null $characteristic = null,
+	): void
 	{
 		$inUseCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::OUTLET_INUSE);
 
