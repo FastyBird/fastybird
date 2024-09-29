@@ -33,6 +33,8 @@ use function round;
 final readonly class HsbTransformer implements Transformer
 {
 
+	private const RGB_THRESHOLD = 10; // Define a threshold for how close RGB values should be when calculate white level
+
 	public function __construct(
 		private float $hue,
 		private float $saturation,
@@ -154,9 +156,26 @@ final readonly class HsbTransformer implements Transformer
 		$dG = intval(round($dG));
 		$dB = intval(round($dB));
 
-		$dW = intval(round(min($dR, $dG, $dB) * $brightness / 100));
+		return new RgbTransformer($dR, $dG, $dB);
+	}
 
-		return new RgbTransformer($dR, $dG, $dB, $dW);
+	public function toRgbw(int $brightness): RgbTransformer
+	{
+		$rgb = $this->toRgb();
+
+		// Calculate the white component (W) based on the correct brightness
+		// The white value is the minimum of R, G, and B, adjusted by the actual brightness
+		$whiteLevel = $brightness / 100.0; // Brightness factor
+
+		// Check if RGB values are close enough to each other to justify a white component
+		$dW = (
+			abs($rgb->getRed() - $rgb->getGreen()) <= self::RGB_THRESHOLD
+			&& abs($rgb->getGreen() - $rgb->getBlue()) <= self::RGB_THRESHOLD
+		)
+			? intval(round(min($rgb->getRed(), $rgb->getGreen(), $rgb->getBlue()) * $whiteLevel))
+			: 0; // No white component for strongly colored light
+
+		return new RgbTransformer($rgb->getRed(), $rgb->getGreen(), $rgb->getBlue(), $dW);
 	}
 
 	public function toMired(): MiredTransformer

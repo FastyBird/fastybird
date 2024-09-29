@@ -33,7 +33,10 @@ interface Characteristic extends Mapping\Mapping
 
 	public function getChannel(): string|null;
 
-	public function getProperty(): string|null;
+	/**
+	 * @return string|array<string>|null
+	 */
+	public function getProperty(): string|array|null;
 
 	public function isNullable(): bool;
 

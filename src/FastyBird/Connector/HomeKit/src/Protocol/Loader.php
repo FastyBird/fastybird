@@ -303,7 +303,7 @@ class Loader
 										[
 											'connector' => $accessory->getDevice()->getConnector(),
 											'device' => $accessory->getDevice()->getId(),
-											'channel' => $property->getChannel(),
+											'channel' => $service->getChannel()?->getId(),
 											'property' => $property->getId(),
 											'value' => $property->getDefault(),
 										],
@@ -319,7 +319,7 @@ class Loader
 										[
 											'connector' => $accessory->getDevice()->getConnector(),
 											'device' => $accessory->getDevice()->getId(),
-											'channel' => $property->getChannel(),
+											'channel' => $service->getChannel()?->getId(),
 											'property' => $property->getId(),
 											'value' => $state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue(),
 										],
@@ -404,6 +404,27 @@ class Loader
 				}
 
 				$service->recalculateCharacteristics();
+
+				if ($service->getChannel() !== null) {
+					foreach ($service->getCharacteristics() as $characteristic) {
+						if ($characteristic->getProperty() === null) {
+							continue;
+						}
+
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\StoreChannelPropertyState::class,
+								[
+									'connector' => $accessory->getDevice()->getConnector(),
+									'device' => $accessory->getDevice()->getId(),
+									'channel' => $service->getChannel()->getId(),
+									'property' => $characteristic->getProperty()->getId(),
+									'value' => MetadataUtilities\Value::flattenValue($characteristic->getValue()),
+								],
+							),
+						);
+					}
+				}
 			}
 		}
 	}

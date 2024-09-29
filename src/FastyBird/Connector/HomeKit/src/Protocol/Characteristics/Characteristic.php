@@ -209,7 +209,10 @@ class Characteristic
 
 		$this->actualValue = $value;
 
-		if ($this->getExpectedValue() === $this->actualValue) {
+		if (
+			$this->getExpectedValue() === $this->actualValue
+			&& $this->getExpectedValue() !== null
+		) {
 			$this->setExpectedValue(null);
 		}
 	}

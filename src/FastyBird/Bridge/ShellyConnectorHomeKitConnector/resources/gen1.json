@@ -426,7 +426,7 @@
           {
             "type": "Brightness",
             "channel": null,
-            "property": "_S_brightness",
+            "property": ["_S_brightness", "_S_gain"],
             "nullable": true,
             "require": []
           }

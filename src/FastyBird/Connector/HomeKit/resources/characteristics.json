@@ -1265,7 +1265,7 @@
     "MinStep": 1,
     "MinValue": 0,
     "Unit": "percentage",
-    "DataType": "uchar",
+    "DataType": "float",
     "Default": 0
   },
   "SecuritySystemAlarmType": {

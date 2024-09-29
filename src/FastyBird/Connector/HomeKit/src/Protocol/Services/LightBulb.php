@@ -59,16 +59,16 @@ final class LightBulb extends Generic
 
 		if (
 			$this->hasCharacteristic(Types\CharacteristicType::COLOR_RED)
-			|| $this->hasCharacteristic(Types\CharacteristicType::COLOR_GREEN)
-			|| $this->hasCharacteristic(Types\CharacteristicType::COLOR_BLUE)
+			&& $this->hasCharacteristic(Types\CharacteristicType::COLOR_GREEN)
+			&& $this->hasCharacteristic(Types\CharacteristicType::COLOR_BLUE)
 		) {
 			$this->calculateRgbToHsb();
 		}
 
 		if (
 			$this->hasCharacteristic(Types\CharacteristicType::HUE)
-			|| $this->hasCharacteristic(Types\CharacteristicType::SATURATION)
-			|| $this->hasCharacteristic(Types\CharacteristicType::BRIGHTNESS)
+			&& $this->hasCharacteristic(Types\CharacteristicType::SATURATION)
+			&& $this->hasCharacteristic(Types\CharacteristicType::BRIGHTNESS)
 		) {
 			$this->calculateHsbToRgb();
 		}
@@ -188,14 +188,12 @@ final class LightBulb extends Generic
 				$brightness,
 			);
 
-			$rgb = $hsb->toRgb();
+			$rgb = $this->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)
+				? $hsb->toRgbw($brightnessCharacteristic->getValue())
+				: $hsb->toRgb();
 
 		} else {
 			$rgb = new ToolsTransformers\RgbTransformer(0, 0, 0);
-		}
-
-		if ($this->hasCharacteristic(Types\CharacteristicType::COLOR_WHITE)) {
-			$rgb = $rgb->toHsi()->toRgbw();
 		}
 
 		$red = $this->findCharacteristic(Types\CharacteristicType::COLOR_RED);

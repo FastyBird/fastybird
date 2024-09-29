@@ -52,6 +52,7 @@ use function array_values;
 use function assert;
 use function floatval;
 use function in_array;
+use function is_array;
 use function is_string;
 use function preg_replace;
 use function sprintf;
@@ -734,14 +735,26 @@ class Builder
 				throw new Exceptions\InvalidState('Shelly device channel for mapping property could not be loaded');
 			}
 
-			$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-			$findPropertyQuery->forChannel($channel);
-			$findPropertyQuery->endWithIdentifier($characteristicMapping->getProperty());
+			$propertyIdentifiers = is_array($characteristicMapping->getProperty())
+				? $characteristicMapping->getProperty()
+				: [$characteristicMapping->getProperty()];
 
-			$connectProperty = $this->channelsPropertiesRepository->findOneBy(
-				$findPropertyQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
-			);
+			$connectProperty = null;
+
+			foreach ($propertyIdentifiers as $propertyIdentifier) {
+				$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+				$findPropertyQuery->forChannel($channel);
+				$findPropertyQuery->endWithIdentifier($propertyIdentifier);
+
+				$connectProperty = $this->channelsPropertiesRepository->findOneBy(
+					$findPropertyQuery,
+					DevicesEntities\Channels\Properties\Dynamic::class,
+				);
+
+				if ($connectProperty !== null) {
+					break;
+				}
+			}
 
 			if ($connectProperty === null && !$characteristicMapping->isNullable()) {
 				return false;

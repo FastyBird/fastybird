@@ -59,18 +59,10 @@ final class Lightbulb extends HomeKitProtocol\Services\Generic
 
 		if (
 			$this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED)
-			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN)
-			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_BLUE)
+			&& $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_GREEN)
+			&& $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_BLUE)
 		) {
 			$this->calculateRgbToHsb();
-		}
-
-		if (
-			$this->hasCharacteristic(HomeKitTypes\CharacteristicType::HUE)
-			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::SATURATION)
-			|| $this->hasCharacteristic(HomeKitTypes\CharacteristicType::BRIGHTNESS)
-		) {
-			$this->calculateHsbToRgb();
 		}
 	}
 
@@ -188,14 +180,12 @@ final class Lightbulb extends HomeKitProtocol\Services\Generic
 				$brightness,
 			);
 
-			$rgb = $hsb->toRgb();
+			$rgb = $this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_WHITE)
+				? $hsb->toRgbw($brightnessCharacteristic->getValue())
+				: $hsb->toRgb();
 
 		} else {
 			$rgb = new ToolsTransformers\RgbTransformer(0, 0, 0);
-		}
-
-		if ($this->hasCharacteristic(HomeKitTypes\CharacteristicType::COLOR_WHITE)) {
-			$rgb = $rgb->toHsi()->toRgbw();
 		}
 
 		$red = $this->findCharacteristic(HomeKitTypes\CharacteristicType::COLOR_RED);
