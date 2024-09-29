@@ -15,10 +15,11 @@
 
 namespace FastyBird\Module\Devices\Models\States\Connectors;
 
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 
 /**
@@ -35,7 +36,7 @@ final class Repository
 	use Nette\SmartObject;
 
 	public function __construct(
-		private readonly Caching\Cache $cache,
+		private readonly Caching\Container $moduleCaching,
 		private readonly IRepository|null $repository = null,
 	)
 	{
@@ -53,7 +54,7 @@ final class Repository
 		}
 
 		/** @phpstan-var States\ConnectorProperty|null $state */
-		$state = $this->cache->load(
+		$state = $this->moduleCaching->getStateStorageCache()->load(
 			$id->toString(),
 			function () use ($id): States\ConnectorProperty|null {
 				if ($this->repository === null) {
@@ -63,7 +64,7 @@ final class Repository
 				return $this->repository->find($id);
 			},
 			[
-				Caching\Cache::Tags => [$id->toString()],
+				NetteCaching\Cache::Tags => [$id->toString()],
 			],
 		);
 

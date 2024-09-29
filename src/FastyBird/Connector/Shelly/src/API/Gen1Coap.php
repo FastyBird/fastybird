@@ -71,6 +71,9 @@ final class Gen1Coap
 	/** @var array<string, string> */
 	private array $validationSchemas = [];
 
+	/** @var array<string, string> */
+	private array $lastMessage = [];
+
 	private Datagram\SocketInterface|null $server = null;
 
 	public function __construct(
@@ -249,6 +252,15 @@ final class Gen1Coap
 		string $remote,
 	): void
 	{
+		if (
+			array_key_exists($deviceIdentifier, $this->lastMessage)
+			&& $this->lastMessage[$deviceIdentifier] === $message
+		) {
+			return;
+		}
+
+		$this->lastMessage[$deviceIdentifier] = $message;
+
 		$parsedMessage = $this->validatePayload($message, self::STATE_MESSAGE_SCHEMA_FILENAME);
 
 		if (

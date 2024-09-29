@@ -17,7 +17,7 @@ namespace FastyBird\Bridge\DevicesModuleUiModule\Subscribers;
 
 use FastyBird\Bridge\DevicesModuleUiModule\Documents;
 use FastyBird\Bridge\DevicesModuleUiModule\Queries;
-use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
@@ -28,7 +28,6 @@ use FastyBird\Module\Ui\Exceptions as UiExceptions;
 use FastyBird\Module\Ui\Models as UiModels;
 use Nette;
 use Nette\Caching;
-use React\Promise;
 use Symfony\Component\EventDispatcher;
 use function array_map;
 use function assert;
@@ -46,11 +45,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	use Nette\SmartObject;
 
-	private bool $useAsync = false;
-
 	public function __construct(
 		private readonly UiModels\Configuration\Widgets\DataSources\Repository $dataSourcesRepository,
 		private readonly UiCaching\Container $uiModuleCaching,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -62,17 +60,10 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 		return [
 			DevicesEvents\ConnectorPropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\ConnectorPropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\ConnectorPropertyStateEntityDeleted::class => 'stateDeleted',
 			DevicesEvents\DevicePropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\DevicePropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\DevicePropertyStateEntityDeleted::class => 'stateDeleted',
 			DevicesEvents\ChannelPropertyStateEntityCreated::class => 'stateCreated',
 			DevicesEvents\ChannelPropertyStateEntityUpdated::class => 'stateUpdated',
-			DevicesEvents\ChannelPropertyStateEntityDeleted::class => 'stateDeleted',
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
 		];
 	}
 
@@ -96,27 +87,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	): void
 	{
 		$this->processProperty($event->getProperty());
-	}
-
-	/**
-	 * @throws UiExceptions\InvalidState
-	 */
-	public function stateDeleted(
-		// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-		DevicesEvents\ConnectorPropertyStateEntityUpdated|DevicesEvents\DevicePropertyStateEntityUpdated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
-	): void
-	{
-		$this->processProperty($event->getProperty());
-	}
-
-	public function enableAsync(): void
-	{
-		$this->useAsync = true;
-	}
-
-	public function disableAsync(): void
-	{
-		$this->useAsync = false;
 	}
 
 	/**
@@ -160,19 +130,15 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 			);
 			assert($dataSource !== null);
 
-			$this->publishDocument($this->useAsync, $dataSource);
+			$this->publishDocument($dataSource);
 		}
 	}
 
-	/**
-	 * @return ($async is true ? Promise\PromiseInterface<bool> : bool)
-	 */
 	private function publishDocument(
-		bool $async,
 		Documents\Widgets\DataSources\Property $dataSource,
-	): Promise\PromiseInterface|bool
+	): void
 	{
-		return $this->getPublisher($async)->publish(
+		$this->getPublisher($this->eventLoopStatus->isRunning())->publish(
 			MetadataTypes\Sources\Bridge::DEVICES_MODULE_UI_MODULE,
 			Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_REPORTED_ROUTING_KEY,
 			$dataSource,

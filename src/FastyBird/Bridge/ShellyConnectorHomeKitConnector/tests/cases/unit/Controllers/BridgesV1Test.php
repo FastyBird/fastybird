@@ -241,55 +241,32 @@ final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 					&& is_array($actual['data']['relationships']['properties'])
 					&& isset($actual['data']['relationships']['properties']['data'])
 					&& is_array($actual['data']['relationships']['properties']['data'])
-					&& isset($actual['data']['relationships']['properties']['data'][0])
-					&& is_array($actual['data']['relationships']['properties']['data'][0])
-					&& isset($actual['data']['relationships']['properties']['data'][0]['id'])
 				) {
-					$expectation = str_replace(
-						'__PROPERTY_1_PLACEHOLDER__',
-						strval($actual['data']['relationships']['properties']['data'][0]['id']),
-						$expectation,
-					);
-				}
+					$variable = $dynamic = 1;
 
-				if (
-					isset($actual['data'])
-					&& is_array($actual['data'])
-					&& isset($actual['data']['relationships'])
-					&& is_array($actual['data']['relationships'])
-					&& isset($actual['data']['relationships']['properties'])
-					&& is_array($actual['data']['relationships']['properties'])
-					&& isset($actual['data']['relationships']['properties']['data'])
-					&& is_array($actual['data']['relationships']['properties']['data'])
-					&& isset($actual['data']['relationships']['properties']['data'][1])
-					&& is_array($actual['data']['relationships']['properties']['data'][1])
-					&& isset($actual['data']['relationships']['properties']['data'][1]['id'])
-				) {
-					$expectation = str_replace(
-						'__PROPERTY_2_PLACEHOLDER__',
-						strval($actual['data']['relationships']['properties']['data'][1]['id']),
-						$expectation,
-					);
-				}
+					foreach ($actual['data']['relationships']['properties']['data'] as $data) {
+						if (!isset($data['id']) || !isset($data['type'])) {
+							continue;
+						}
 
-				if (
-					isset($actual['data'])
-					&& is_array($actual['data'])
-					&& isset($actual['data']['relationships'])
-					&& is_array($actual['data']['relationships'])
-					&& isset($actual['data']['relationships']['properties'])
-					&& is_array($actual['data']['relationships']['properties'])
-					&& isset($actual['data']['relationships']['properties']['data'])
-					&& is_array($actual['data']['relationships']['properties']['data'])
-					&& isset($actual['data']['relationships']['properties']['data'][2])
-					&& is_array($actual['data']['relationships']['properties']['data'][2])
-					&& isset($actual['data']['relationships']['properties']['data'][2]['id'])
-				) {
-					$expectation = str_replace(
-						'__PROPERTY_3_PLACEHOLDER__',
-						strval($actual['data']['relationships']['properties']['data'][2]['id']),
-						$expectation,
-					);
+						if ($data['type'] === 'com.fastybird.devices-module/property/device/variable') {
+							$expectation = str_replace(
+								'__PROPERTY_VARIABLE_' . $variable . '_PLACEHOLDER__',
+								strval($data['id']),
+								$expectation,
+							);
+
+							++$variable;
+						} elseif ($data['type'] === 'com.fastybird.devices-module/property/device/dynamic') {
+							$expectation = str_replace(
+								'__PROPERTY_DYNAMIC_' . $dynamic . '_PLACEHOLDER__',
+								strval($data['id']),
+								$expectation,
+							);
+
+							++$dynamic;
+						}
+					}
 				}
 
 				if (
@@ -301,15 +278,22 @@ final class BridgesV1Test extends Tests\Cases\Unit\DbTestCase
 					&& is_array($actual['data']['relationships']['channels'])
 					&& isset($actual['data']['relationships']['channels']['data'])
 					&& is_array($actual['data']['relationships']['channels']['data'])
-					&& isset($actual['data']['relationships']['channels']['data'][0])
-					&& is_array($actual['data']['relationships']['channels']['data'][0])
-					&& isset($actual['data']['relationships']['channels']['data'][0]['id'])
 				) {
-					$expectation = str_replace(
-						'__CHANNEL_1_PLACEHOLDER__',
-						strval($actual['data']['relationships']['channels']['data'][0]['id']),
-						$expectation,
-					);
+					$channel = 1;
+
+					foreach ($actual['data']['relationships']['channels']['data'] as $data) {
+						if (!isset($data['id']) || !isset($data['type'])) {
+							continue;
+						}
+
+						$expectation = str_replace(
+							'__CHANNEL_' . $channel . '_PLACEHOLDER__',
+							strval($data['id']),
+							$expectation,
+						);
+
+						++$channel;
+					}
 				}
 
 				return $expectation;

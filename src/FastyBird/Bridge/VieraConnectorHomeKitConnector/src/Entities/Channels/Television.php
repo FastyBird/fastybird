@@ -1,0 +1,33 @@
+<?php declare(strict_types = 1);
+
+/**
+ * Television.php
+ *
+ * @license        More in LICENSE.md
+ * @copyright      https://www.fastybird.com
+ * @author         Adam Kadlec <adam.kadlec@fastybird.com>
+ * @package        FastyBird:VieraConnectorHomeKitConnectorBridge!
+ * @subpackage     Entities
+ * @since          1.0.0
+ *
+ * @date           24.08.24
+ */
+
+namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Entities\Channels;
+
+use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+
+#[ORM\Entity]
+#[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]
+class Television extends Viera
+{
+
+	public const TYPE = 'viera-connector-homekit-connector-bridge-television';
+
+	public static function getType(): string
+	{
+		return self::TYPE;
+	}
+
+}

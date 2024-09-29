@@ -55,6 +55,7 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
+
 			$info = $this->consumers->getInfo();
 
 			if (
@@ -94,6 +95,7 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
+
 			$info = $this->consumers->getInfo();
 
 			if ($consumer::class === $name) {
@@ -122,6 +124,7 @@ class Container implements Consumer
 
 		while ($this->consumers->valid()) {
 			$consumer = $this->consumers->current();
+
 			$info = $this->consumers->getInfo();
 
 			if ($consumer::class === $name) {

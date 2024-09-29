@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -33,7 +34,7 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -67,10 +68,10 @@ final class DevicePropertiesManager extends PropertiesManager
 		private readonly Models\Configuration\Devices\Properties\Repository $devicePropertiesConfigurationRepository,
 		private readonly Models\States\Devices\Repository $devicePropertyStateRepository,
 		private readonly Models\States\Devices\Manager $devicePropertiesStatesManager,
+		private readonly Caching\Container $moduleCaching,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
-		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -117,11 +118,11 @@ final class DevicePropertiesManager extends PropertiesManager
 				);
 			}
 		} else {
-			$document = $this->cache->load(
+			$document = $this->moduleCaching->getStateCache()->load(
 				'read_' . $property->getId()->toString(),
 				fn () => $this->readState($property),
 				[
-					Caching\Cache::Tags => array_merge(
+					NetteCaching\Cache::Tags => array_merge(
 						[$property->getId()->toString()],
 						$property instanceof Documents\Devices\Properties\Mapped
 							? [$property->getParent()->toString()]
@@ -678,7 +679,7 @@ final class DevicePropertiesManager extends PropertiesManager
 		try {
 			if ($state !== null) {
 				$actualValue = MetadataUtilities\Value::flattenValue(
-					$this->convertReadValue($state->getActualValue(), $property, null, false),
+					$this->convertReadValue($state->getActualValue(), $property, null, true),
 				);
 				$expectedValue = MetadataUtilities\Value::flattenValue(
 					$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),
@@ -688,13 +689,27 @@ final class DevicePropertiesManager extends PropertiesManager
 					$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 					&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
 				) {
-					$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
-					$data->offsetUnset(States\Property::PENDING_FIELD);
+					// If the new expected value is same as actual value
+					// then the expected filed could be reset
+					if ($expectedValue !== null) {
+						// Expected value is set in the database
+						// so it have to be cleared
+						$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+						$data->offsetSet(States\Property::PENDING_FIELD, false);
+					} else {
+						// Expected value is not present
+						// si it could be omitted
+						$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
+						$data->offsetUnset(States\Property::PENDING_FIELD);
+					}
+				}
 
-				} elseif (
+				if (
 					$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
 					&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
 				) {
+					// If the new actual value is same as expected value
+					// then the expected field could be reset
 					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 					$data->offsetSet(States\Property::PENDING_FIELD, false);
 				}

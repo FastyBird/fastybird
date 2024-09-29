@@ -33,7 +33,10 @@
 			:size="'80%'"
 			:class="[ns.e('mobile-menu')]"
 		>
-			<app-navigation @click="onToggleMenu" />
+			<app-navigation
+				:collapsed="menuCollapsed"
+				@click="onToggleMenu"
+			/>
 		</el-drawer>
 	</el-container>
 
@@ -46,10 +49,10 @@
 	>
 		<el-aside
 			v-if="sessionStore.isSignedIn()"
-			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: menuCollapsed }]"
+			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: smallMenuCollapsed }]"
 			class="bg-menu-background"
 		>
-			<app-sidebar :menu-collapsed="menuCollapsed" />
+			<app-sidebar :menu-collapsed="smallMenuCollapsed" />
 		</el-aside>
 
 		<el-container
@@ -58,7 +61,7 @@
 		>
 			<app-topbar
 				v-if="sessionStore.isSignedIn()"
-				v-model:menu-collapsed="menuCollapsed"
+				v-model:menu-collapsed="smallMenuCollapsed"
 			/>
 
 			<el-main class="flex-1">
@@ -99,7 +102,8 @@ const isXsBreakpoint = breakpoints.smaller('sm');
 
 const loadingOverlay = ref<boolean>(false);
 const menuState = ref<boolean>(false);
-const menuCollapsed = ref<boolean>(!isXlBreakpoint.value);
+const menuCollapsed = ref<boolean>(isXlBreakpoint.value);
+const smallMenuCollapsed = ref<boolean>(!isXlBreakpoint.value);
 
 // Processing timer
 let overlayTimer: number;

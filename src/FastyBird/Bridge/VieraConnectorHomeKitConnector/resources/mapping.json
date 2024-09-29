@@ -1,0 +1,239 @@
+{
+  "services": [
+    {
+      "type": "Television",
+      "class": "\\FastyBird\\Bridge\\VieraConnectorHomeKitConnector\\Entities\\Channels\\Television",
+      "channel": "television",
+      "characteristics": [
+        {
+          "type": "Name",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "ConfiguredName",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "Active",
+          "channel": null,
+          "property": "state",
+          "nullable": false
+        },
+        {
+          "type": "SleepDiscoveryMode",
+          "channel": null,
+          "property": null,
+          "nullable": true,
+          "value": 1
+        },
+        {
+          "type": "PowerModeSelection",
+          "channel": null,
+          "property": "key_menu",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKey",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "RemoteKeyRewind",
+          "channel": null,
+          "property": "key_rewind",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyFastForward",
+          "channel": null,
+          "property": "key_fast_forward",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyNextTrack",
+          "channel": null,
+          "property": "key_skip_next",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyPreviousTrack",
+          "channel": null,
+          "property": "key_skip_prev",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowUp",
+          "channel": null,
+          "property": "key_arrow_up",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowDown",
+          "channel": null,
+          "property": "key_arrow_down",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowLeft",
+          "channel": null,
+          "property": "key_arrow_left",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyArrowRight",
+          "channel": null,
+          "property": "key_arrow_right",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeySelect",
+          "channel": null,
+          "property": "key_ok",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyBack",
+          "channel": null,
+          "property": "key_cancel",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyExit",
+          "channel": null,
+          "property": "key_cancel",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyPlayPause",
+          "channel": null,
+          "property": "key_play",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyInformation",
+          "channel": null,
+          "property": "key_info",
+          "nullable": false
+        },
+        {
+          "type": "ActiveIdentifier",
+          "channel": null,
+          "property": "input_source",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "type": "TelevisionSpeaker",
+      "class": "\\FastyBird\\Bridge\\VieraConnectorHomeKitConnector\\Entities\\Channels\\TelevisionSpeaker",
+      "channel": "television",
+      "characteristics": [
+        {
+          "type": "Name",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "Active",
+          "channel": null,
+          "property": "state",
+          "nullable": false
+        },
+        {
+          "type": "Volume",
+          "channel": null,
+          "property": "volume",
+          "nullable": false
+        },
+        {
+          "type": "VolumeControlType",
+          "channel": null,
+          "property": null,
+          "nullable": true,
+          "value": 3
+        },
+        {
+          "type": "VolumeSelector",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "RemoteKeyVolumeUp",
+          "channel": null,
+          "property": "key_volume_up",
+          "nullable": false
+        },
+        {
+          "type": "RemoteKeyVolumeDown",
+          "channel": null,
+          "property": "key_volume_down",
+          "nullable": false
+        },
+        {
+          "type": "Mute",
+          "channel": null,
+          "property": "mute",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "type": "InputSource",
+      "class": "\\FastyBird\\Bridge\\VieraConnectorHomeKitConnector\\Entities\\Channels\\InputSource",
+      "channel": "television",
+      "multiple": true,
+      "characteristics": [
+        {
+          "type": "ConfiguredName",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "Name",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "InputSourceType",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "IsConfigured",
+          "channel": null,
+          "property": null,
+          "nullable": true,
+          "value": 1
+        },
+        {
+          "type": "Identifier",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "CurrentVisibilityState",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        },
+        {
+          "type": "TargetVisibilityState",
+          "channel": null,
+          "property": null,
+          "nullable": true
+        }
+      ]
+    }
+  ]
+}

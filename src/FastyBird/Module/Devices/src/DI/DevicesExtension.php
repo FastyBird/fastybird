@@ -26,6 +26,7 @@ use FastyBird\Library\Metadata;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Commands;
 use FastyBird\Module\Devices\Connectors;
 use FastyBird\Module\Devices\Consumers;
@@ -40,7 +41,7 @@ use FastyBird\Module\Devices\Utilities;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Application;
 use Nette\Bootstrap;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\DI;
 use Nette\Schema;
 use Nettrine\ORM as NettrineORM;
@@ -106,7 +107,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('caching.configuration.repository'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_repository',
 			])
@@ -116,7 +117,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('caching.configuration.builder'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_configuration_builder',
 			])
@@ -126,7 +127,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('caching.state'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state',
 			])
@@ -136,11 +137,23 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('caching.stateStorage'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Caching\Cache::class)
+			->setType(NetteCaching\Cache::class)
 			->setArguments([
 				'namespace' => MetadataTypes\Sources\Module::DEVICES->value . '_state_storage',
 			])
 			->setAutowired(false);
+
+		$builder->addDefinition(
+			$this->prefix('caching.container'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Caching\Container::class)
+			->setArguments([
+				'configurationBuilderCache' => $configurationBuilderCache,
+				'configurationRepositoryCache' => $configurationRepositoryCache,
+				'stateCache' => $stateCache,
+				'stateStorageCache' => $stateStorageCache,
+			]);
 
 		/**
 		 * ROUTE MIDDLEWARES & ROUTING
@@ -286,98 +299,65 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * MODELS - CONFIGURATION
 		 */
 
-		$builder->addDefinition(
-			$this->prefix('models.configuration.builder'),
-			new DI\Definitions\ServiceDefinition(),
-		)
-			->setType(Models\Configuration\Builder::class)
-			->setArguments([
-				'cache' => $configurationBuilderCache,
-			]);
+		$builder->addDefinition($this->prefix('models.configuration.builder'), new DI\Definitions\ServiceDefinition())
+			->setType(Models\Configuration\Builder::class);
 
 		// CONNECTORS
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.connectors'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Connectors\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Properties\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Connectors\Properties\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.connectorsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Connectors\Controls\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Connectors\Controls\Repository::class);
 
 		// DEVICES
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devices'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Devices\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Properties\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Devices\Properties\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.devicesControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Devices\Controls\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Devices\Controls\Repository::class);
 
 		// CHANNELS
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channels'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Channels\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Properties\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Channels\Properties\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.configuration.repositories.channelsControls'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\Configuration\Channels\Controls\Repository::class)
-			->setArguments([
-				'cache' => $configurationRepositoryCache,
-			]);
+			->setType(Models\Configuration\Channels\Controls\Repository::class);
 
 		/**
 		 * MODELS - STATES
@@ -388,10 +368,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.connectorsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Connectors\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.connectorsProperties'),
@@ -403,10 +380,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.connectorsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Connectors\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Connectors\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.connectorsProperties.async'),
@@ -419,10 +393,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.devicesProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Devices\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.devicesProperties'),
@@ -434,10 +405,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.devicesProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Devices\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Devices\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.devicesProperties.async'),
@@ -450,10 +418,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.channelsProperties'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Channels\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.channelsProperties'),
@@ -465,10 +430,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			$this->prefix('models.states.repositories.channelsProperties.async'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Models\States\Channels\Async\Repository::class)
-			->setArguments([
-				'cache' => $stateStorageCache,
-			]);
+			->setType(Models\States\Channels\Async\Repository::class);
 
 		$builder->addDefinition(
 			$this->prefix('models.states.managers.channelsProperties.async'),
@@ -484,7 +446,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -495,19 +456,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ConnectorPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
 		// MANAGERS - DEVICES
-		$builder->addDefinition(
-			$this->prefix('models.states.devices.states'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('models.states.devices.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -518,19 +474,14 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\DevicePropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
 		// MANAGERS - CHANNELS
-		$builder->addDefinition(
-			$this->prefix('models.states.channels.states'),
-			new DI\Definitions\ServiceDefinition(),
-		)
+		$builder->addDefinition($this->prefix('models.states.channels.states'), new DI\Definitions\ServiceDefinition())
 			->setType(Models\States\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -541,7 +492,6 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Models\States\Async\ChannelPropertiesManager::class)
 			->setArguments([
 				'useExchange' => $configuration->exchange,
-				'cache' => $stateCache,
 				'logger' => $logger,
 			]);
 
@@ -550,18 +500,16 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('subscribers.entities'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\ModuleEntities::class)
-			->setArguments([
-				'configurationBuilderCache' => $configurationBuilderCache,
-				'configurationRepositoryCache' => $configurationRepositoryCache,
-			]);
+			->setType(Subscribers\ModuleEntities::class);
+
+		$builder->addDefinition(
+			$this->prefix('subscribers.cache.configuration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Subscribers\ConfigurationCache::class);
 
 		$builder->addDefinition($this->prefix('subscribers.states'), new DI\Definitions\ServiceDefinition())
-			->setType(Subscribers\StateEntities::class)
-			->setArguments([
-				'stateCache' => $stateCache,
-				'stateStorageCache' => $stateStorageCache,
-			]);
+			->setType(Subscribers\StateEntities::class);
 
 		$builder->addDefinition($this->prefix('subscribers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Connector::class);
@@ -920,14 +868,12 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Commands\Connector::class)
 			->setArguments([
 				'logger' => $logger,
-				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
 
 		$builder->addDefinition($this->prefix('commands.exchange'), new DI\Definitions\ServiceDefinition())
 			->setType(Commands\Exchange::class)
 			->setArguments([
 				'logger' => $logger,
-				'exchangeFactories' => $builder->findByType(ExchangeExchange\Factory::class),
 			]);
 
 		$builder->addDefinition($this->prefix('commands.diagnostics'), new DI\Definitions\ServiceDefinition())
@@ -942,6 +888,16 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			new DI\Definitions\ServiceDefinition(),
 		)
 			->setType(Consumers\StatesActions::class)
+			->setArguments([
+				'logger' => $logger,
+			])
+			->addTag(ExchangeDI\ExchangeExtension::CONSUMER_STATE, false);
+
+		$builder->addDefinition(
+			$this->prefix('exchange.consumer.moduleEntities'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Consumers\ModuleEntities::class)
 			->setArguments([
 				'logger' => $logger,
 			])
@@ -980,6 +936,24 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		parent::beforeCompile();
 
 		$builder = $this->getContainerBuilder();
+
+		$connectorCommandServiceName = $builder->getByType(Commands\Connector::class);
+		assert(is_string($connectorCommandServiceName));
+		$connectorCommandService = $builder->getDefinition($connectorCommandServiceName);
+		assert($connectorCommandService instanceof DI\Definitions\ServiceDefinition);
+		$connectorCommandService->setArgument(
+			'exchangeFactories',
+			$builder->findByType(ExchangeExchange\Factory::class),
+		);
+
+		$exchangeCommandServiceName = $builder->getByType(Commands\Exchange::class);
+		assert(is_string($exchangeCommandServiceName));
+		$exchangeCommandService = $builder->getDefinition($exchangeCommandServiceName);
+		assert($exchangeCommandService instanceof DI\Definitions\ServiceDefinition);
+		$exchangeCommandService->setArgument(
+			'exchangeFactories',
+			$builder->findByType(ExchangeExchange\Factory::class),
+		);
 
 		/**
 		 * DOCTRINE ENTITIES

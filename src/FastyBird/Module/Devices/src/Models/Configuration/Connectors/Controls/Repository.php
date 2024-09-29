@@ -16,15 +16,17 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Connectors\Controls;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Types;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 use Throwable;
 use function array_map;
+use function array_merge;
 use function is_array;
 
 /**
@@ -39,7 +41,7 @@ final class Repository extends Models\Configuration\Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly Caching\Cache $cache,
+		private readonly Caching\Container $moduleCaching,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
 	{
@@ -69,7 +71,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var Documents\Connectors\Controls\Control|false $document */
-			$document = $this->cache->load(
+			$document = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyOne($queryObject),
 				function (&$dependencies) use ($queryObject): Documents\Connectors\Controls\Control|false {
 					$space = $this->builder
@@ -87,13 +89,16 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => [$document->getId()->toString()],
+						NetteCaching\Cache::Tags => [
+							Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+							$document->getId()->toString(),
+						],
 					];
 
 					return $document;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::CONNECTORS_CONTROLS->value,
 					],
 				],
@@ -122,7 +127,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var array<Documents\Connectors\Controls\Control> $documents */
-			$documents = $this->cache->load(
+			$documents = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyAll($queryObject),
 				function (&$dependencies) use ($queryObject): array {
 					$space = $this->builder
@@ -143,16 +148,21 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => array_map(
-							static fn (Documents\Connectors\Controls\Control $document): string => $document->getId()->toString(),
-							$documents,
+						NetteCaching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::CONNECTORS_CONTROLS->value,
+							],
+							array_map(
+								static fn (Documents\Connectors\Controls\Control $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 
 					return $documents;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::CONNECTORS_CONTROLS->value,
 					],
 				],

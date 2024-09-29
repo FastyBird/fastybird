@@ -97,15 +97,17 @@ final class ConnectionManager
 		Entities\Devices\Device|Documents\Devices\Device $device,
 	): Gen2WsApi
 	{
-		if (!array_key_exists($device->getId()->toString(), $this->gen2WsApiConnection)) {
-			$this->gen2WsApiConnection[$device->getId()->toString()] = $this->wsApiFactory->create(
-				$device->getId(),
-				$this->getIpAddress($device),
-				$this->getDomain($device),
-				$this->getUsername($device),
-				$this->getPassword($device),
-			);
+		if (array_key_exists($device->getId()->toString(), $this->gen2WsApiConnection)) {
+			$this->gen2WsApiConnection[$device->getId()->toString()]->disconnect();
 		}
+
+		$this->gen2WsApiConnection[$device->getId()->toString()] = $this->wsApiFactory->create(
+			$device->getId(),
+			$this->getIpAddress($device),
+			$this->getDomain($device),
+			$this->getUsername($device),
+			$this->getPassword($device),
+		);
 
 		return $this->gen2WsApiConnection[$device->getId()->toString()];
 	}

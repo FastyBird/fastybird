@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "author": "FastyBird team",
+    "copyright": "FastyBird s.r.o"
+  },
+  "jsonapi": {
+    "version": "1.1"
+  },
+  "links": {
+    "self": "/api/devices-module/v1/devices/1d0f40bf-e023-4e62-8bec-7a5d81e40e84/relationships/channels",
+    "related": "/api/devices-module/v1/devices/1d0f40bf-e023-4e62-8bec-7a5d81e40e84/channels"
+  },
+  "data": [
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "11ba6989-03f3-492d-b393-c1b62578eba1"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-television",
+      "id": "26c20fa0-d99a-40a4-8df0-8c8511afaf8d"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "3a703d4b-6611-4313-94ce-dfb216526d15"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-television-speaker",
+      "id": "3bd76184-42a9-46b0-a1d5-f2dc7adde564"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "3fb7c3de-e582-4c83-8c68-b238b61facde"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "56c4ab06-f1f0-40b9-85b6-f52810d53b6d"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "806279bb-3ebb-4758-87f5-7f5f801dc7a1"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "9d8fd4db-e246-4367-95fa-58d7b85cf106"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "a7094776-db01-4090-9393-16a693fc4dd0"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "abe474ca-a748-453f-9d0c-588c13c552c8"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "dc6a2085-5a3b-4f0e-9e9a-f0f0700d8d46"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "e203faf7-722f-45ac-97e3-3851d965f9f7"
+    },
+    {
+      "type": "com.fastybird.viera-connector-homekit-connector-bridge/channel/viera-connector-homekit-connector-bridge-input-source",
+      "id": "fe7ebbeb-7198-404f-b330-247f6ceae414"
+    }
+  ]
+}

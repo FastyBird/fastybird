@@ -1,7 +1,7 @@
 <?php declare(strict_types = 1);
 
 /**
- * Storage.php
+ * Journal.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com

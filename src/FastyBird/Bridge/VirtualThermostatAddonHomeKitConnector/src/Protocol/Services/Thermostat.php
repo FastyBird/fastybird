@@ -41,6 +41,7 @@ final class Thermostat extends HomeKitProtocol\Services\Generic
 				$validValues = $characteristic->getValidValues();
 
 				$characteristic->setActualValue($validValues !== null ? $validValues[0] : null);
+				$characteristic->setExpectedValue(null);
 			}
 		}
 

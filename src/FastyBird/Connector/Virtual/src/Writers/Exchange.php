@@ -15,24 +15,29 @@
 
 namespace FastyBird\Connector\Virtual\Writers;
 
+use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices\Constants as DevicesConstants;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use React\EventLoop;
+use Throwable;
 use function array_merge;
+use function str_starts_with;
 
 /**
  * Exchange based properties writer
@@ -51,6 +56,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		Documents\Connectors\Connector $connector,
 		Helpers\MessageBuilder $messageBuilder,
 		Queue\Queue $queue,
+		Virtual\Logger $logger,
 		DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -66,6 +72,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 			$connector,
 			$messageBuilder,
 			$queue,
+			$logger,
 			$devicesConfigurationRepository,
 			$channelsConfigurationRepository,
 			$devicesPropertiesConfigurationRepository,
@@ -110,156 +117,172 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 		$this->consumer->disable(self::class);
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
 		MetadataDocuments\Document|null $document,
 	): void
 	{
-		if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
-			$findDeviceQuery = new Queries\Configuration\FindDevices();
-			$findDeviceQuery->forConnector($this->connector);
-			$findDeviceQuery->byId($document->getDevice());
+		try {
+			if ($document instanceof DevicesDocuments\States\Devices\Properties\Property) {
+				if (str_starts_with($routingKey, DevicesConstants::MESSAGE_BUS_DELETED_ROUTING_KEY)) {
+					return;
+				}
 
-			$device = $this->devicesConfigurationRepository->findOneBy(
-				$findDeviceQuery,
-				Documents\Devices\Device::class,
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($document->getDevice());
+
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
+
+				if ($device === null) {
+					return;
+				}
+
+				$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
+				$findPropertyQuery->byId($document->getId());
+				$findPropertyQuery->forDevice($device);
+
+				$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+
+				if ($property === null) {
+					return;
+				}
+
+				if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $document->getId(),
+								'state' => array_merge(
+									$document->getRead()->toArray(),
+									[
+										'id' => $document->getId(),
+										'valid' => $document->isValid(),
+										'pending' => $document->getPending(),
+									],
+								),
+							],
+						),
+					);
+				} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\WriteDevicePropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'property' => $document->getId(),
+								'state' => array_merge(
+									$document->getGet()->toArray(),
+									[
+										'id' => $document->getId(),
+										'valid' => $document->isValid(),
+										'pending' => $document->getPending(),
+									],
+								),
+							],
+						),
+					);
+				}
+			} elseif ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
+				if (str_starts_with($routingKey, DevicesConstants::MESSAGE_BUS_DELETED_ROUTING_KEY)) {
+					return;
+				}
+
+				$findChannelQuery = new Queries\Configuration\FindChannels();
+				$findChannelQuery->byId($document->getChannel());
+
+				$channel = $this->channelsConfigurationRepository->findOneBy(
+					$findChannelQuery,
+					Documents\Channels\Channel::class,
+				);
+
+				if ($channel === null) {
+					return;
+				}
+
+				$findDeviceQuery = new Queries\Configuration\FindDevices();
+				$findDeviceQuery->forConnector($this->connector);
+				$findDeviceQuery->byId($channel->getDevice());
+
+				$device = $this->devicesConfigurationRepository->findOneBy(
+					$findDeviceQuery,
+					Documents\Devices\Device::class,
+				);
+
+				if ($device === null) {
+					return;
+				}
+
+				$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
+				$findPropertyQuery->byId($document->getId());
+				$findPropertyQuery->forChannel($channel);
+
+				$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
+
+				if ($property === null) {
+					return;
+				}
+
+				if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'channel' => $channel->getId(),
+								'property' => $document->getId(),
+								'state' => array_merge(
+									$document->getRead()->toArray(),
+									[
+										'id' => $document->getId(),
+										'valid' => $document->isValid(),
+										'pending' => $document->getPending(),
+									],
+								),
+							],
+						),
+					);
+				} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\WriteChannelPropertyState::class,
+							[
+								'connector' => $device->getConnector(),
+								'device' => $device->getId(),
+								'channel' => $channel->getId(),
+								'property' => $document->getId(),
+								'state' => array_merge(
+									$document->getGet()->toArray(),
+									[
+										'id' => $document->getId(),
+										'valid' => $document->isValid(),
+										'pending' => $document->getPending(),
+									],
+								),
+							],
+						),
+					);
+				}
+			}
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'Characteristic value could not be prepared for writing',
+				[
+					'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+					'type' => 'exchange-writer',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
 			);
-
-			if ($device === null) {
-				return;
-			}
-
-			$findPropertyQuery = new DevicesQueries\Configuration\FindDeviceProperties();
-			$findPropertyQuery->byId($document->getId());
-			$findPropertyQuery->forDevice($device);
-
-			$property = $this->devicesPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
-
-			if ($property === null) {
-				return;
-			}
-
-			if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\WriteDevicePropertyState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'property' => $document->getId(),
-							'state' => array_merge(
-								$document->getRead()->toArray(),
-								[
-									'id' => $document->getId(),
-									'valid' => $document->isValid(),
-									'pending' => $document->getPending(),
-								],
-							),
-						],
-					),
-				);
-			} elseif ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\WriteDevicePropertyState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'property' => $document->getId(),
-							'state' => array_merge(
-								$document->getGet()->toArray(),
-								[
-									'id' => $document->getId(),
-									'valid' => $document->isValid(),
-									'pending' => $document->getPending(),
-								],
-							),
-						],
-					),
-				);
-			}
-		} elseif ($document instanceof DevicesDocuments\States\Channels\Properties\Property) {
-			$findChannelQuery = new Queries\Configuration\FindChannels();
-			$findChannelQuery->byId($document->getChannel());
-
-			$channel = $this->channelsConfigurationRepository->findOneBy(
-				$findChannelQuery,
-				Documents\Channels\Channel::class,
-			);
-
-			if ($channel === null) {
-				return;
-			}
-
-			$findDeviceQuery = new Queries\Configuration\FindDevices();
-			$findDeviceQuery->forConnector($this->connector);
-			$findDeviceQuery->byId($channel->getDevice());
-
-			$device = $this->devicesConfigurationRepository->findOneBy(
-				$findDeviceQuery,
-				Documents\Devices\Device::class,
-			);
-
-			if ($device === null) {
-				return;
-			}
-
-			$findPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-			$findPropertyQuery->byId($document->getId());
-			$findPropertyQuery->forChannel($channel);
-
-			$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findPropertyQuery);
-
-			if ($property === null) {
-				return;
-			}
-
-			if ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\WriteChannelPropertyState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'channel' => $channel->getId(),
-							'property' => $document->getId(),
-							'state' => array_merge(
-								$document->getRead()->toArray(),
-								[
-									'id' => $document->getId(),
-									'valid' => $document->isValid(),
-									'pending' => $document->getPending(),
-								],
-							),
-						],
-					),
-				);
-			} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\WriteChannelPropertyState::class,
-						[
-							'connector' => $device->getConnector(),
-							'device' => $device->getId(),
-							'channel' => $channel->getId(),
-							'property' => $document->getId(),
-							'state' => array_merge(
-								$document->getGet()->toArray(),
-								[
-									'id' => $document->getId(),
-									'valid' => $document->isValid(),
-									'pending' => $document->getPending(),
-								],
-							),
-						],
-					),
-				);
-			}
 		}
 	}
 

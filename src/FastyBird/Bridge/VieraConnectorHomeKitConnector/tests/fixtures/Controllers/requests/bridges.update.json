@@ -1,0 +1,10 @@
+{
+  "data": {
+    "id": "1d0f40bf-e023-4e62-8bec-7a5d81e40e84",
+    "type": "com.fastybird.viera-connector-homekit-connector-bridge/device/viera-connector-homekit-connector-bridge",
+    "attributes": {
+      "identifier": "updated-device",
+      "name": "With name"
+    }
+  }
+}

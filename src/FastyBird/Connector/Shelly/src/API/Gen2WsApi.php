@@ -17,6 +17,7 @@ namespace FastyBird\Connector\Shelly\API;
 
 use Closure;
 use DateTimeInterface;
+use DomainException;
 use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
@@ -27,21 +28,26 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Fig\Http\Message\StatusCodeInterface;
+use GuzzleHttp\Psr7 as gPsr;
+use InvalidArgumentException;
 use Nette;
 use Nette\Utils;
 use Orisai\ObjectMapper;
+use Psr\Http\Message;
 use Ramsey\Uuid;
 use Ratchet;
 use Ratchet\RFC6455;
 use React\EventLoop;
 use React\Promise;
+use React\Socket;
+use RuntimeException;
 use stdClass;
 use Throwable;
 use function array_key_exists;
+use function array_keys;
 use function array_merge;
-use function assert;
+use function array_reduce;
 use function gethostbyname;
 use function hash;
 use function implode;
@@ -51,6 +57,8 @@ use function md5;
 use function preg_match;
 use function property_exists;
 use function React\Async\async;
+use function str_replace;
+use function strpos;
 use function strval;
 use function time;
 use function uniqid;
@@ -175,427 +183,174 @@ final class Gen2WsApi
 
 		$deferred = new Promise\Deferred();
 
+		if ($this->domain !== null) {
+			$address = gethostbyname($this->domain);
+		} elseif ($this->ipAddress !== null) {
+			$address = $this->ipAddress;
+		}
+
+		if ($address === null) {
+			return Promise\reject(new Exceptions\InvalidState('Device ip address or domain is not configured'));
+		}
+
 		try {
-			if ($this->domain !== null) {
-				$address = gethostbyname($this->domain);
-			} elseif ($this->ipAddress !== null) {
-				$address = $this->ipAddress;
-			}
-
-			if ($address === null) {
-				Promise\reject(new DevicesExceptions\InvalidState('Device ip address or domain is not configured'));
-			}
-
-			$connector = new Ratchet\Client\Connector($this->eventLoop);
-
-			$connector(
-				'ws://' . $address . '/rpc',
-				[],
+			$connector = new Socket\Connector(
 				[
-					'Connection' => 'Upgrade',
+					'timeout' => 20,
 				],
-			)
-				->then(function (mixed $connection) use ($deferred): void {
-					assert($connection instanceof Ratchet\Client\WebSocket);
+				$this->eventLoop,
+			);
+		} catch (InvalidArgumentException $ex) {
+			return Promise\reject(
+				new Exceptions\InvalidState('Socket connector could not be created', $ex->getCode(), $ex),
+			);
+		}
 
-					$this->connection = $connection;
-					$this->connecting = false;
-					$this->connected = true;
+		$negotiator = new RFC6455\Handshake\ClientNegotiator();
 
-					$this->lost = null;
-					$this->disconnected = null;
+		$url = 'ws://' . $address . '/rpc';
 
-					$this->logger->debug(
-						'Connected to device sockets server',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-							'type' => 'gen2-ws-api',
-							'device' => [
-								'id' => $this->id->toString(),
-							],
-						],
-					);
+		$headers = [
+			'Connection' => 'Upgrade',
+		];
 
-					$connection->on(
-						'message',
-						function (RFC6455\Messaging\MessageInterface $socketMessage): void {
-							try {
-								$payload = Utils\Json::decode($socketMessage->getPayload());
+		try {
+			$uri = gPsr\Utils::uriFor($url);
+			$uri = $uri->withScheme('HTTP');
 
-							} catch (Utils\JsonException $ex) {
-								$this->logger->debug(
-									'Received message from device could not be decoded',
-									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-										'type' => 'gen2-ws-api',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
-										'device' => [
-											'id' => $this->id->toString(),
-										],
-									],
-								);
+			$headers += ['User-Agent' => 'Ratchet-Pawl/0.4.1'];
 
-								Utils\Arrays::invoke($this->onError, $ex);
-
-								return;
-							}
-
-							if (!$payload instanceof stdClass) {
-								return;
-							}
-
-							if (
-								property_exists($payload, 'method')
-								&& property_exists($payload, 'params')
-							) {
-								if (
-									$payload->method === self::NOTIFY_STATUS_METHOD
-									|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
-								) {
-									try {
-										$message = $this->parseDeviceStatusResponse(
-											Utils\Json::encode($payload->params),
-										);
-
-										Utils\Arrays::invoke($this->onMessage, $message);
-									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
-										$this->logger->error(
-											'Could not handle received device status message',
-											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-												'type' => 'gen2-ws-api',
-												'exception' => ApplicationHelpers\Logger::buildException($ex),
-												'device' => [
-													'id' => $this->id->toString(),
-												],
-												'response' => [
-													'body' => Utils\Json::encode($payload->params),
-													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-												],
-											],
-										);
-
-										Utils\Arrays::invoke($this->onError, $ex);
-									}
-								} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
-									try {
-										$message = $this->parseDeviceEventsResponse(
-											Utils\Json::encode($payload->params),
-										);
-
-										Utils\Arrays::invoke($this->onMessage, $message);
-									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
-										$this->logger->error(
-											'Could not handle received event message',
-											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-												'type' => 'gen2-ws-api',
-												'exception' => ApplicationHelpers\Logger::buildException($ex),
-												'device' => [
-													'id' => $this->id->toString(),
-												],
-												'response' => [
-													'body' => Utils\Json::encode($payload->params),
-													'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
-												],
-											],
-										);
-
-										Utils\Arrays::invoke($this->onError, $ex);
-									}
-								} else {
-									$this->logger->warning(
-										'Device respond with unsupported method',
-										[
-											'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-											'type' => 'gen2-ws-api',
-											'device' => [
-												'id' => $this->id->toString(),
-											],
-											'response' => [
-												'method' => $payload->method,
-												'payload' => $socketMessage->getPayload(),
-											],
-										],
-									);
-								}
-							}
-
-							if (
-								!property_exists($payload, 'id')
-								|| !array_key_exists($payload->id, $this->messages)
-							) {
-								return;
-							}
-
-							if (property_exists($payload, 'result')) {
-								if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
-									try {
-										$message = $this->parseDeviceStatusResponse(
-											Utils\Json::encode($payload->result),
-										);
-
-										$this->messages[$payload->id]->getDeferred()?->resolve($message);
-									} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
-										$this->logger->error(
-											'Could not handle received response device status message',
-											[
-												'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-												'type' => 'gen2-ws-api',
-												'exception' => ApplicationHelpers\Logger::buildException($ex),
-												'device' => [
-													'id' => $this->id->toString(),
-												],
-												'response' => [
-													'body' => Utils\Json::encode($payload->result),
-													'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
-												],
-											],
-										);
-
-										$this->messages[$payload->id]->getDeferred()?->reject(
-											new Exceptions\WsCall('Could not decode received payload'),
-										);
-									}
-								} elseif (
-									$this->messages[$payload->id]->getFrame()->getMethod() === self::SWITCH_SET_METHOD
-									|| $this->messages[$payload->id]->getFrame()->getMethod() === self::COVER_GO_TO_POSITION_METHOD
-									|| $this->messages[$payload->id]->getFrame()->getMethod() === self::LIGHT_SET_METHOD
-								) {
-									$this->messages[$payload->id]->getDeferred()?->resolve(true);
-								} else {
-									$this->messages[$payload->id]->getDeferred()?->reject(
-										new Exceptions\WsCall('Received response could not be processed'),
-									);
-								}
-
-								if ($this->messages[$payload->id]->getTimer() !== null) {
-									$this->eventLoop->cancelTimer($this->messages[$payload->id]->getTimer());
-								}
-
-								unset($this->messages[$payload->id]);
-
-								return;
-							} elseif (property_exists($payload, 'error')) {
-								if (
-									property_exists($payload->error, 'code')
-									&& property_exists($payload->error, 'message')
-									&& $payload->error->code === StatusCodeInterface::STATUS_UNAUTHORIZED
-									&& $this->session === null
-								) {
-									$errorMessage = Utils\Json::decode(strval($payload->error->message));
-
-									if (
-										$errorMessage instanceof stdClass
-										&& property_exists($errorMessage, 'realm')
-										&& property_exists($errorMessage, 'nonce')
-									) {
-										$nc = 1;
-										$clientNonce = time();
-
-										$ha1 = hash(
-											'sha256',
-											implode(
-												':',
-												[
-													$this->username,
-													$errorMessage->realm,
-													$this->password,
-												],
-											),
-										);
-										$ha2 = hash('sha256', 'dummy_method:dummy_uri');
-										$response = hash(
-											'sha256',
-											implode(
-												':',
-												[
-													$ha1,
-													$errorMessage->nonce,
-													$nc,
-													$clientNonce,
-													'auth',
-													$ha2,
-												],
-											),
-										);
-
-										try {
-											$this->session = $this->objectMapper->process(
-												[
-													'realm' => $errorMessage->realm,
-													'username' => strval($this->username),
-													'nonce' => $errorMessage->nonce,
-													'cnonce' => $clientNonce,
-													'response' => $response,
-													'nc' => $nc,
-													'algorithm' => 'SHA-256',
-												],
-												ValueObjects\WsSession::class,
-											);
-										} catch (ObjectMapper\Exception\InvalidData $ex) {
-											$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-												new ObjectMapper\Printers\TypeToStringConverter(),
-											);
-
-											throw new Exceptions\WsError(
-												'Connection session could not be created: ' . $errorPrinter->printError(
-													$ex,
-												),
-											);
-										}
-
-										try {
-											$messageFrame = $this->objectMapper->process(
-												[
-													'id' => $this->messages[$payload->id]->getFrame()->getId(),
-													'src' => $this->messages[$payload->id]->getFrame()->getSrc(),
-													'method' => $this->messages[$payload->id]->getFrame()->getMethod(),
-													'params' => $this->messages[$payload->id]->getFrame()->getParams(),
-													'auth' => $this->session->toArray(),
-												],
-												ValueObjects\WsFrame::class,
-											);
-										} catch (ObjectMapper\Exception\InvalidData $ex) {
-											$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
-												new ObjectMapper\Printers\TypeToStringConverter(),
-											);
-
-											throw new Exceptions\WsError(
-												'Message frame could not be created: ' . $errorPrinter->printError($ex),
-											);
-										}
-
-										$this->sendRequest(
-											$messageFrame,
-											$this->messages[$payload->id]->getDeferred(),
-										);
-
-										return;
-									}
-								}
-
-								$this->logger->warning(
-									'Device respond with error',
-									[
-										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-										'type' => 'gen2-ws-api',
-										'device' => [
-											'id' => $this->id->toString(),
-										],
-										'error' => [
-											'code' => property_exists(
-												$payload->error,
-												'message',
-											) ? $payload->code : null,
-											'message' => property_exists(
-												$payload->error,
-												'message',
-											) ? $payload->message : null,
-										],
-									],
-								);
-							}
-
-							$this->messages[$payload->id]->getDeferred()?->reject(
-								new Exceptions\WsCall('Received device response could not be processed'),
-							);
-
-							if ($this->messages[$payload->id]->getTimer() !== null) {
-								$this->eventLoop->cancelTimer($this->messages[$payload->id]->getTimer());
-							}
-
-							unset($this->messages[$payload->id]);
-						},
-					);
-
-					$connection->on('error', function (Throwable $ex): void {
-						$this->logger->error(
-							'An error occurred on device connection',
-							[
-								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-								'type' => 'gen2-ws-api',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
-								'device' => [
-									'id' => $this->id->toString(),
-								],
-							],
-						);
-
-						$this->lost();
-
-						Utils\Arrays::invoke($this->onError, $ex);
-					});
-
-					$connection->on('close', function ($code = null, $reason = null): void {
-						$this->logger->debug(
-							'Connection with device was closed',
-							[
-								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-								'type' => 'gen2-ws-api',
-								'connection' => [
-									'code' => $code,
-									'reason' => $reason,
-								],
-								'device' => [
-									'id' => $this->id->toString(),
-								],
-							],
-						);
-
-						$this->disconnect();
-
-						Utils\Arrays::invoke($this->onDisconnected);
-					});
-
-					Utils\Arrays::invoke($this->onConnected);
-
-					$deferred->resolve(true);
-				})
-				->catch(function (Throwable $ex) use ($deferred): void {
-					$this->logger->error(
-						'Connection to device failed',
-						[
-							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-							'type' => 'gen2-ws-api',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
-							'device' => [
-								'id' => $this->id->toString(),
-							],
-						],
-					);
-
-					$this->connection = null;
-
-					$this->connecting = false;
-					$this->connected = false;
-
-					Utils\Arrays::invoke($this->onError, $ex);
-
-					$deferred->reject($ex);
-				});
-		} catch (Throwable $ex) {
-			$this->connection = null;
-
-			$this->connecting = false;
-			$this->connected = false;
-
-			$this->logger->error(
-				'Could not create device client',
-				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-					'type' => 'gen2-ws-api',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'device' => [
-						'id' => $this->id->toString(),
-					],
-				],
+			$request = array_reduce(
+				array_keys($headers),
+				static fn (Message\RequestInterface $request, $header) => $request->withHeader(
+					$header,
+					$headers[$header],
+				),
+				$negotiator->generateRequest($uri),
 			);
 
-			Utils\Arrays::invoke($this->onError, $ex);
-
-			$deferred->reject($ex);
+			if (!$request->hasHeader('Origin')) {
+				$request = $request->withHeader(
+					'Origin',
+					str_replace('ws', 'http', $uri->getScheme()) . '://' . $uri->getHost(),
+				);
+			}
+		} catch (Throwable $ex) {
+			return Promise\reject(
+				new Exceptions\InvalidState(
+					'Device address to create WS connection could not be parsed',
+					$ex->getCode(),
+					$ex,
+				),
+			);
 		}
+
+		$port = $uri->getPort() ?? 80;
+
+		$uriString = 'tcp://' . $uri->getHost() . ':' . $port;
+
+		$connecting = $connector->connect($uriString);
+
+		$connecting
+			->then(
+				function (Socket\ConnectionInterface $conn) use ($request, $negotiator, $connecting, $deferred): void {
+					$earlyClose = static function () use ($deferred): void {
+						$deferred->reject(new RuntimeException('Connection closed before handshake'));
+					};
+
+					$stream = $conn;
+
+					$stream->on('close', $earlyClose);
+
+					$buffer = '';
+
+					$headerParser = function ($data) use (
+						$stream,
+						&$headerParser,
+						&$buffer,
+						$request,
+						$negotiator,
+						$connecting,
+						$earlyClose,
+						$deferred,
+					): void {
+						$buffer .= $data;
+
+						if (strpos($buffer, "\r\n\r\n") === false) {
+							return;
+						}
+
+						$stream->removeListener('data', $headerParser);
+
+						$response = gPsr\Message::parseResponse($buffer);
+
+						if (!$negotiator->validateResponse($request, $response)) {
+							$connecting->then(static function (Socket\ConnectionInterface $connection): void {
+								$connection->close();
+							});
+							$connecting->cancel();
+
+							$this->logger->error(
+								'Connection to device failed',
+								[
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+									'type' => 'gen2-ws-api',
+									'device' => [
+										'id' => $this->id->toString(),
+									],
+								],
+							);
+
+							$this->connection = null;
+
+							$this->connecting = false;
+							$this->connected = false;
+
+							$deferred->reject(new DomainException(gPsr\Message::toString($response)));
+
+							$stream->close();
+
+							return;
+						}
+
+						$stream->removeListener('close', $earlyClose);
+
+						$connection = new Ratchet\Client\WebSocket($stream, $response, $request);
+
+						$stream->emit('data', [$connection->response->getBody(), $stream]);
+
+						$this->connectionCreated($connection);
+					};
+
+					$stream->on('data', $headerParser);
+					$stream->write(gPsr\Message::toString($request));
+				},
+			)
+			->catch(function (Throwable $ex) use ($connecting, $deferred): void {
+				$this->connection = null;
+
+				$this->connecting = false;
+				$this->connected = false;
+
+				$this->logger->error(
+					'Could not create device client',
+					[
+						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+						'type' => 'gen2-ws-api',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'device' => [
+							'id' => $this->id->toString(),
+						],
+					],
+				);
+
+				$connecting->then(static function (Socket\ConnectionInterface $connection): void {
+					$connection->close();
+				});
+				$connecting->cancel();
+
+				$deferred->reject($ex);
+			});
 
 		return $deferred->promise();
 	}
@@ -766,6 +521,370 @@ final class Gen2WsApi
 		return $deferred->promise();
 	}
 
+	private function connectionCreated(Ratchet\Client\WebSocket $connection): void
+	{
+		$this->connection = $connection;
+		$this->connecting = false;
+		$this->connected = true;
+
+		$this->lost = null;
+		$this->disconnected = null;
+
+		$this->logger->debug(
+			'Connected to device sockets server',
+			[
+				'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+				'type' => 'gen2-ws-api',
+				'device' => [
+					'id' => $this->id->toString(),
+				],
+			],
+		);
+
+		$connection->on(
+			'message',
+			function (RFC6455\Messaging\MessageInterface $socketMessage): void {
+				try {
+					$payload = Utils\Json::decode($socketMessage->getPayload());
+
+				} catch (Utils\JsonException $ex) {
+					$this->logger->debug(
+						'Received message from device could not be decoded',
+						[
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+							'type' => 'gen2-ws-api',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'device' => [
+								'id' => $this->id->toString(),
+							],
+						],
+					);
+
+					Utils\Arrays::invoke($this->onError, $ex);
+
+					return;
+				}
+
+				if (!$payload instanceof stdClass) {
+					return;
+				}
+
+				if (
+					property_exists($payload, 'method')
+					&& property_exists($payload, 'params')
+				) {
+					if (
+						$payload->method === self::NOTIFY_STATUS_METHOD
+						|| $payload->method === self::NOTIFY_FULL_STATUS_METHOD
+					) {
+						try {
+							$message = $this->parseDeviceStatusResponse(
+								Utils\Json::encode($payload->params),
+							);
+
+							Utils\Arrays::invoke($this->onMessage, $message);
+						} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
+							$this->logger->error(
+								'Could not handle received device status message',
+								[
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+									'type' => 'gen2-ws-api',
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
+									'device' => [
+										'id' => $this->id->toString(),
+									],
+									'response' => [
+										'body' => Utils\Json::encode($payload->params),
+										'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+									],
+								],
+							);
+
+							Utils\Arrays::invoke($this->onError, $ex);
+						}
+					} elseif ($payload->method === self::NOTIFY_EVENT_METHOD) {
+						try {
+							$message = $this->parseDeviceEventsResponse(
+								Utils\Json::encode($payload->params),
+							);
+
+							Utils\Arrays::invoke($this->onMessage, $message);
+						} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
+							$this->logger->error(
+								'Could not handle received event message',
+								[
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+									'type' => 'gen2-ws-api',
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
+									'device' => [
+										'id' => $this->id->toString(),
+									],
+									'response' => [
+										'body' => Utils\Json::encode($payload->params),
+										'schema' => self::DEVICE_EVENT_MESSAGE_SCHEMA_FILENAME,
+									],
+								],
+							);
+
+							Utils\Arrays::invoke($this->onError, $ex);
+						}
+					} else {
+						$this->logger->warning(
+							'Device respond with unsupported method',
+							[
+								'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+								'type' => 'gen2-ws-api',
+								'device' => [
+									'id' => $this->id->toString(),
+								],
+								'response' => [
+									'method' => $payload->method,
+									'payload' => $socketMessage->getPayload(),
+								],
+							],
+						);
+					}
+				}
+
+				if (
+					!property_exists($payload, 'id')
+					|| !array_key_exists($payload->id, $this->messages)
+				) {
+					return;
+				}
+
+				if (property_exists($payload, 'result')) {
+					if ($this->messages[$payload->id]->getFrame()->getMethod() === self::DEVICE_STATUS_METHOD) {
+						try {
+							$message = $this->parseDeviceStatusResponse(
+								Utils\Json::encode($payload->result),
+							);
+
+							$this->messages[$payload->id]->getDeferred()?->resolve($message);
+						} catch (Exceptions\WsCall | Exceptions\WsError $ex) {
+							$this->logger->error(
+								'Could not handle received response device status message',
+								[
+									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+									'type' => 'gen2-ws-api',
+									'exception' => ApplicationHelpers\Logger::buildException(
+										$ex,
+										$ex instanceof Exceptions\WsError,
+									),
+									'device' => [
+										'id' => $this->id->toString(),
+									],
+									'response' => [
+										'body' => Utils\Json::encode($payload->result),
+										'schema' => self::DEVICE_STATUS_MESSAGE_SCHEMA_FILENAME,
+									],
+								],
+							);
+
+							$this->messages[$payload->id]->getDeferred()?->reject(
+								new Exceptions\WsError('Could not decode received payload'),
+							);
+						}
+					} elseif (
+						$this->messages[$payload->id]->getFrame()->getMethod() === self::SWITCH_SET_METHOD
+						|| $this->messages[$payload->id]->getFrame()->getMethod() === self::COVER_GO_TO_POSITION_METHOD
+						|| $this->messages[$payload->id]->getFrame()->getMethod() === self::LIGHT_SET_METHOD
+					) {
+						$this->messages[$payload->id]->getDeferred()?->resolve(true);
+					} else {
+						$this->messages[$payload->id]->getDeferred()?->reject(
+							new Exceptions\WsCall('Received response could not be processed'),
+						);
+					}
+
+					if ($this->messages[$payload->id]->getTimer() !== null) {
+						$this->eventLoop->cancelTimer($this->messages[$payload->id]->getTimer());
+					}
+
+					unset($this->messages[$payload->id]);
+
+					return;
+				} elseif (property_exists($payload, 'error')) {
+					if (
+						property_exists($payload->error, 'code')
+						&& property_exists($payload->error, 'message')
+						&& $payload->error->code === StatusCodeInterface::STATUS_UNAUTHORIZED
+						&& $this->session === null
+					) {
+						$errorMessage = Utils\Json::decode(strval($payload->error->message));
+
+						if (
+							$errorMessage instanceof stdClass
+							&& property_exists($errorMessage, 'realm')
+							&& property_exists($errorMessage, 'nonce')
+						) {
+							$nc = 1;
+							$clientNonce = time();
+
+							$ha1 = hash(
+								'sha256',
+								implode(
+									':',
+									[
+										$this->username,
+										$errorMessage->realm,
+										$this->password,
+									],
+								),
+							);
+							$ha2 = hash('sha256', 'dummy_method:dummy_uri');
+							$response = hash(
+								'sha256',
+								implode(
+									':',
+									[
+										$ha1,
+										$errorMessage->nonce,
+										$nc,
+										$clientNonce,
+										'auth',
+										$ha2,
+									],
+								),
+							);
+
+							try {
+								$this->session = $this->objectMapper->process(
+									[
+										'realm' => $errorMessage->realm,
+										'username' => strval($this->username),
+										'nonce' => $errorMessage->nonce,
+										'cnonce' => $clientNonce,
+										'response' => $response,
+										'nc' => $nc,
+										'algorithm' => 'SHA-256',
+									],
+									ValueObjects\WsSession::class,
+								);
+							} catch (ObjectMapper\Exception\InvalidData $ex) {
+								$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+									new ObjectMapper\Printers\TypeToStringConverter(),
+								);
+
+								throw new Exceptions\WsError(
+									'Connection session could not be created: ' . $errorPrinter->printError(
+										$ex,
+									),
+								);
+							}
+
+							try {
+								$messageFrame = $this->objectMapper->process(
+									[
+										'id' => $this->messages[$payload->id]->getFrame()->getId(),
+										'src' => $this->messages[$payload->id]->getFrame()->getSrc(),
+										'method' => $this->messages[$payload->id]->getFrame()->getMethod(),
+										'params' => $this->messages[$payload->id]->getFrame()->getParams(),
+										'auth' => $this->session->toArray(),
+									],
+									ValueObjects\WsFrame::class,
+								);
+							} catch (ObjectMapper\Exception\InvalidData $ex) {
+								$errorPrinter = new ObjectMapper\Printers\ErrorVisualPrinter(
+									new ObjectMapper\Printers\TypeToStringConverter(),
+								);
+
+								throw new Exceptions\WsError(
+									'Message frame could not be created: ' . $errorPrinter->printError($ex),
+								);
+							}
+
+							$this->sendRequest(
+								$messageFrame,
+								$this->messages[$payload->id]->getDeferred(),
+							);
+
+							return;
+						}
+					}
+
+					$this->logger->warning(
+						'Device respond with error',
+						[
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+							'type' => 'gen2-ws-api',
+							'device' => [
+								'id' => $this->id->toString(),
+							],
+							'error' => [
+								'code' => property_exists(
+									$payload->error,
+									'message',
+								) ? $payload->code : null,
+								'message' => property_exists(
+									$payload->error,
+									'message',
+								) ? $payload->message : null,
+							],
+						],
+					);
+				}
+
+				$this->messages[$payload->id]->getDeferred()?->reject(
+					new Exceptions\WsError('Received device response could not be processed'),
+				);
+
+				if ($this->messages[$payload->id]->getTimer() !== null) {
+					$this->eventLoop->cancelTimer($this->messages[$payload->id]->getTimer());
+				}
+
+				unset($this->messages[$payload->id]);
+			},
+		);
+
+		$connection->on('error', function (Throwable $ex): void {
+			$this->logger->error(
+				'An error occurred on device connection',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+					'type' => 'gen2-ws-api',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'device' => [
+						'id' => $this->id->toString(),
+					],
+				],
+			);
+
+			$this->lost();
+
+			Utils\Arrays::invoke($this->onError, $ex);
+		});
+
+		$connection->on('close', function ($code = null, $reason = null): void {
+			$this->logger->debug(
+				'Connection with device was closed',
+				[
+					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+					'type' => 'gen2-ws-api',
+					'connection' => [
+						'code' => $code,
+						'reason' => $reason,
+					],
+					'device' => [
+						'id' => $this->id->toString(),
+					],
+				],
+			);
+
+			$this->disconnect();
+
+			Utils\Arrays::invoke($this->onDisconnected);
+		});
+
+		Utils\Arrays::invoke($this->onConnected);
+	}
+
 	private function lost(): void
 	{
 		$this->lost = $this->clock->getNow();
@@ -818,7 +937,6 @@ final class Gen2WsApi
 	}
 
 	/**
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	private function parseDeviceStatusResponse(
@@ -965,7 +1083,6 @@ final class Gen2WsApi
 	}
 
 	/**
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	private function parseDeviceEventsResponse(
@@ -1028,7 +1145,6 @@ final class Gen2WsApi
 	/**
 	 * @return ($throw is true ? Utils\ArrayHash : Utils\ArrayHash|false)
 	 *
-	 * @throws Exceptions\WsCall
 	 * @throws Exceptions\WsError
 	 */
 	protected function validatePayload(
@@ -1044,7 +1160,7 @@ final class Gen2WsApi
 			);
 		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
 			if ($throw) {
-				throw new Exceptions\WsCall(
+				throw new Exceptions\WsError(
 					'Could not validate received payload',
 					$ex->getCode(),
 					$ex,

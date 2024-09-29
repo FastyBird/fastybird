@@ -87,7 +87,7 @@ final readonly class RgbTransformer implements Transformer
 
 		$hue = 60 * $hue;
 
-		return new HsbTransformer(round($hue), round($saturation), $brightness);
+		return new HsbTransformer(round($hue), round($saturation, 2), $brightness);
 	}
 
 	public function toHsi(): HsiTransformer

@@ -39,8 +39,10 @@ use React\EventLoop;
 use Throwable;
 use TypeError;
 use ValueError;
+use function array_filter;
 use function array_key_exists;
 use function array_map;
+use function assert;
 use function in_array;
 use function React\Async\async;
 
@@ -60,6 +62,8 @@ final class Cloud implements Client
 	private const HANDLER_START_DELAY = 2.0;
 
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
+
+	public const REFRESH_SLEEP_DELAY = 300.0;
 
 	private const CMD_STATE = 'state';
 
@@ -172,36 +176,50 @@ final class Cloud implements Client
 			->getCloudWsConnection($this->connector);
 
 		$wsClient->onMessage[] = function (API\Messages\Message $message): void {
-			if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreDeviceConnectionState::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $message->getIdentifier(),
-							'state' => $message->isOnline()
-								? DevicesTypes\ConnectionState::CONNECTED
-								: DevicesTypes\ConnectionState::DISCONNECTED,
-						],
-					),
+			if (
+				$message instanceof API\Messages\Response\ReportDeviceOnline
+				|| $message instanceof API\Messages\Response\ReportDeviceState
+			) {
+				$knowDevices = array_filter(
+					$this->devices,
+					static fn (Documents\Devices\Device $device): bool => $device->getIdentifier() === $message->getIdentifier(),
 				);
-			} elseif ($message instanceof API\Messages\Response\ReportDeviceState) {
-				$this->queue->append(
-					$this->messageBuilder->create(
-						Queue\Messages\StoreChannelPropertyState::class,
-						[
-							'connector' => $this->connector->getId(),
-							'identifier' => $message->getIdentifier(),
-							'data_points' => array_map(
-								static fn (API\Messages\Response\DataPointState $dps): array => [
-									'code' => $dps->getCode(),
-									'value' => $dps->getValue(),
-								],
-								$message->getDataPoints(),
-							),
-						],
-					),
-				);
+
+				if ($knowDevices === []) {
+					return;
+				}
+
+				if ($message instanceof API\Messages\Response\ReportDeviceOnline) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'identifier' => $message->getIdentifier(),
+								'state' => $message->isOnline()
+									? DevicesTypes\ConnectionState::CONNECTED
+									: DevicesTypes\ConnectionState::DISCONNECTED,
+							],
+						),
+					);
+				} else {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreChannelPropertyState::class,
+							[
+								'connector' => $this->connector->getId(),
+								'identifier' => $message->getIdentifier(),
+								'data_points' => array_map(
+									static fn (API\Messages\Response\DataPointState $dps): array => [
+										'code' => $dps->getCode(),
+										'value' => $dps->getValue(),
+									],
+									$message->getDataPoints(),
+								),
+							],
+						),
+					);
+				}
 			}
 		};
 
@@ -304,6 +322,17 @@ final class Cloud implements Client
 	private function handleCommunication(): void
 	{
 		if (!$this->connectionManager->getCloudApiConnection($this->connector)->isConnected()) {
+			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
+		}
+
+		if ($this->connectionManager->getCloudApiConnection($this->connector)->isRefreshFailed()) {
+			$refreshFailedAt = $this->connectionManager->getCloudApiConnection($this->connector)->getRefreshFailed();
+			assert($refreshFailedAt instanceof DateTimeInterface);
+
+			if ($this->clock->getNow()->getTimestamp() - $refreshFailedAt->getTimestamp() < self::REFRESH_SLEEP_DELAY) {
+				return;
+			}
+
 			$this->connectionManager->getCloudApiConnection($this->connector)->connect(false);
 		}
 
@@ -411,17 +440,7 @@ final class Cloud implements Client
 				);
 			})
 			->catch(function (Throwable $ex) use ($device): void {
-				$this->logger->error(
-					'Could not call cloud openapi',
-					[
-						'source' => MetadataTypes\Sources\Connector::TUYA->value,
-						'type' => 'cloud-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'connector' => [
-							'id' => $this->connector->getId()->toString(),
-						],
-					],
-				);
+				$renderException = true;
 
 				if ($ex instanceof Exceptions\OpenApiError) {
 					$this->queue->append(
@@ -445,6 +464,8 @@ final class Cloud implements Client
 							],
 						),
 					);
+
+					$renderException = false;
 				} else {
 					$this->dispatcher?->dispatch(
 						new DevicesEvents\TerminateConnector(
@@ -453,6 +474,18 @@ final class Cloud implements Client
 						),
 					);
 				}
+
+				$this->logger->error(
+					'Could not call cloud openapi',
+					[
+						'source' => MetadataTypes\Sources\Connector::TUYA->value,
+						'type' => 'cloud-client',
+						'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
+						'connector' => [
+							'id' => $this->connector->getId()->toString(),
+						],
+					],
+				);
 			});
 
 		return true;

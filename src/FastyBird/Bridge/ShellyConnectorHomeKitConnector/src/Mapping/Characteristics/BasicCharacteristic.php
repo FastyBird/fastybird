@@ -31,6 +31,7 @@ readonly class BasicCharacteristic implements Characteristic
 {
 
 	/**
+	 * @param string|array<string>|null $property
 	 * @param array<HomeKitTypes\CharacteristicType> $require
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 */
@@ -44,9 +45,13 @@ readonly class BasicCharacteristic implements Characteristic
 		private string|null $channel = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
+			new ObjectMapper\Rules\ArrayOf(
+				new ObjectMapper\Rules\StringValue(notEmpty: true),
+				new ObjectMapper\Rules\IntValue(unsigned: true),
+			),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private string|null $property = null,
+		private string|array|null $property = null,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
 		private bool $nullable = false,
 		#[ObjectMapper\Rules\ArrayOf(
@@ -137,7 +142,7 @@ readonly class BasicCharacteristic implements Characteristic
 		return $this->channel;
 	}
 
-	public function getProperty(): string|null
+	public function getProperty(): string|array|null
 	{
 		return $this->property;
 	}

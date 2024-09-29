@@ -28,22 +28,26 @@
           "related": {
             "href": "/api/devices-module/v1/devices/8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce/properties",
             "meta": {
-              "count": 3
+              "count": 4
             }
           }
         },
         "data": [
           {
             "type": "com.fastybird.devices-module/property/device/variable",
-            "id": "__PROPERTY_1_PLACEHOLDER__"
+            "id": "__PROPERTY_VARIABLE_1_PLACEHOLDER__"
           },
           {
             "type": "com.fastybird.devices-module/property/device/variable",
-            "id": "__PROPERTY_2_PLACEHOLDER__"
+            "id": "__PROPERTY_VARIABLE_2_PLACEHOLDER__"
           },
           {
             "type": "com.fastybird.devices-module/property/device/variable",
-            "id": "__PROPERTY_3_PLACEHOLDER__"
+            "id": "__PROPERTY_VARIABLE_3_PLACEHOLDER__"
+          },
+          {
+            "type": "com.fastybird.devices-module/property/device/dynamic",
+            "id": "__PROPERTY_DYNAMIC_1_PLACEHOLDER__"
           }
         ]
       },

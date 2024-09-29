@@ -96,17 +96,17 @@ final class Constants
 
 	public const ADDON_VIRTUAL_THERMOSTAT_SOURCE = 'com.fastybird.virtual-thermostat-addon';
 
+	public const BRIDGE_DEVICES_MODULE_UI_MODULE_SOURCE = 'com.fastybird.devices-module-ui-module-bridge';
+
 	public const BRIDGE_REDISDB_PLUGIN_DEVICES_MODULE_SOURCE = 'com.fastybird.redisdb-plugin-devices-module-bridge';
 
 	public const BRIDGE_REDISDB_PLUGIN_TRIGGERS_MODULE_SOURCE = 'com.fastybird.redisdb-plugin-triggers-module-bridge';
-
-	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
 
 	public const BRIDGE_SHELLY_CONNECTOR_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.shelly-connector-homekit-connector-bridge';
 
 	public const BRIDGE_VIERA_CONNECTOR_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.viera-connector-homekit-connector-bridge';
 
-	public const BRIDGE_DEVICES_MODULE_UI_MODULE_SOURCE = 'com.fastybird.devices-module-ui-module-bridge';
+	public const BRIDGE_VIRTUAL_THERMOSTAT_ADDON_HOMEKIT_CONNECTOR_SOURCE = 'com.fastybird.virtual-thermostat-addon-homekit-connector-bridge';
 
 	/**
 	 * MODULE PREFIXES

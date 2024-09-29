@@ -25,6 +25,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -32,7 +33,7 @@ use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\States;
 use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Nette\Utils;
 use Orisai\ObjectMapper;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -69,10 +70,10 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 		private readonly bool $useExchange,
 		private readonly Models\States\Connectors\Async\Repository $connectorPropertyStateRepository,
 		private readonly Models\States\Connectors\Async\Manager $connectorPropertiesStatesManager,
+		private readonly Caching\Container $moduleCaching,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Async\Publisher $publisher,
-		private readonly Caching\Cache $cache,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
@@ -112,7 +113,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			}
 		} else {
 			/** @phpstan-var Documents\States\Connectors\Properties\Property|null $document */
-			$document = $this->cache->load('read_' . $property->getId()->toString());
+			$document = $this->moduleCaching->getStateCache()->load('read_' . $property->getId()->toString());
 
 			if ($document !== null) {
 				return Promise\resolve($document);
@@ -123,11 +124,11 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 			$this->readState($property)
 				->then(
 					function (Documents\States\Connectors\Properties\Property|null $document) use ($deferred, $property): void {
-						$this->cache->save(
+						$this->moduleCaching->getStateCache()->save(
 							'read_' . $property->getId()->toString(),
 							$document,
 							[
-								Caching\Cache::Tags => [$property->getId()->toString()],
+								NetteCaching\Cache::Tags => [$property->getId()->toString()],
 							],
 						);
 
@@ -695,7 +696,7 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 					try {
 						if ($state !== null) {
 							$actualValue = MetadataUtilities\Value::flattenValue(
-								$this->convertReadValue($state->getActualValue(), $property, null, false),
+								$this->convertReadValue($state->getActualValue(), $property, null, true),
 							);
 							$expectedValue = MetadataUtilities\Value::flattenValue(
 								$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),
@@ -705,13 +706,27 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 								$data->offsetExists(States\Property::EXPECTED_VALUE_FIELD)
 								&& $data->offsetGet(States\Property::EXPECTED_VALUE_FIELD) === $actualValue
 							) {
-								$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
-								$data->offsetUnset(States\Property::PENDING_FIELD);
+								// If the new expected value is same as actual value
+								// then the expected filed could be reset
+								if ($expectedValue !== null) {
+									// Expected value is set in the database
+									// so it have to be cleared
+									$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
+									$data->offsetSet(States\Property::PENDING_FIELD, false);
+								} else {
+									// Expected value is not present
+									// si it could be omitted
+									$data->offsetUnset(States\Property::EXPECTED_VALUE_FIELD);
+									$data->offsetUnset(States\Property::PENDING_FIELD);
+								}
+							}
 
-							} elseif (
+							if (
 								$data->offsetExists(States\Property::ACTUAL_VALUE_FIELD)
 								&& $data->offsetGet(States\Property::ACTUAL_VALUE_FIELD) === $expectedValue
 							) {
+								// If the new actual value is same as expected value
+								// then the expected field could be reset
 								$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 								$data->offsetSet(States\Property::PENDING_FIELD, false);
 							}
@@ -747,8 +762,8 @@ final class ConnectorPropertiesManager extends Models\States\PropertiesManager
 							}
 						}
 
-						$this->cache->clean([
-							Caching\Cache::Tags => [$property->getId()->toString()],
+						$this->moduleCaching->getStateCache()->clean([
+							NetteCaching\Cache::Tags => [$property->getId()->toString()],
 						]);
 
 						$readValue = $this->convertStoredState($property, null, $result, true);

@@ -18,7 +18,7 @@ namespace FastyBird\Module\Triggers\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -53,10 +53,9 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	private const ACTION_DELETED = 'deleted';
 
-	private bool $useAsync = false;
-
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
@@ -72,14 +71,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			0 => ORM\Events::prePersist,
-			1 => ORM\Events::postPersist,
-			2 => ORM\Events::postUpdate,
-			3 => ORM\Events::postRemove,
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			ORM\Events::prePersist,
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
+			ORM\Events::postRemove,
 		];
 	}
 
@@ -180,16 +175,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		$this->publishEntity($entity, self::ACTION_DELETED);
 	}
 
-	public function enableAsync(): void
-	{
-		$this->useAsync = true;
-	}
-
-	public function disableAsync(): void
-	{
-		$this->useAsync = false;
-	}
-
 	/**
 	 * @throws ExchangeExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
@@ -235,7 +220,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		if ($publishRoutingKey !== null) {
-			$this->getPublisher()->publish(
+			$this->getPublisher($this->eventLoopStatus->isRunning())->publish(
 				MetadataTypes\Sources\Module::TRIGGERS,
 				$publishRoutingKey,
 				$this->documentFactory->create(
@@ -263,9 +248,9 @@ final class ModuleEntities implements Common\EventSubscriber
 		return false;
 	}
 
-	private function getPublisher(): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
+	private function getPublisher(bool $async): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
 	{
-		return $this->useAsync ? $this->asyncPublisher : $this->publisher;
+		return $async ? $this->asyncPublisher : $this->publisher;
 	}
 
 }

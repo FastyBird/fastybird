@@ -39,23 +39,13 @@ final class HttpServerCommandTest extends TestCase
 					$valid = [
 						[
 							'Starting HTTP Server',
-						],
-						[
-							'Listening on "http://127.0.0.1:8001"',
-						],
-					];
-
-					return in_array($args, $valid, true);
-				}),
-				self::callback(static function (...$args): bool {
-					$valid = [
-						[
 							[
 								'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 								'type' => 'server-command',
 							],
 						],
 						[
+							'Listening on "http://127.0.0.1:8001"',
 							[
 								'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 								'type' => 'factory',

@@ -26,8 +26,8 @@ use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
-use FastyBird\Module\Devices\Utilities;
 use Orisai\ObjectMapper;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
@@ -86,7 +86,7 @@ abstract class PropertiesManager
 					$mappedProperty,
 					$forReading,
 				);
-			} catch (MetadataExceptions\InvalidValue $ex) {
+			} catch (MetadataExceptions\InvalidValue | MetadataExceptions\InvalidState $ex) {
 				if ($mappedProperty !== null) {
 					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
 					$updateValues[States\Property::VALID_FIELD] = false;
@@ -95,7 +95,26 @@ abstract class PropertiesManager
 						'Property stored actual value could not be converted to mapped property',
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
-							'type' => 'channel-properties-states',
+							'type' => 'properties-states',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'property' => $property->getId()->toString(),
+							'mapped_property' => $mappedProperty->getId()->toString(),
+						],
+					);
+
+				} else {
+					throw new Exceptions\InvalidActualValue('Property stored actual value was not valid');
+				}
+			} catch (Throwable $ex) {
+				if ($mappedProperty !== null) {
+					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
+					$updateValues[States\Property::VALID_FIELD] = false;
+
+					$this->logger->error(
+						'Property stored actual value could not be converted to mapped property',
+						[
+							'source' => MetadataTypes\Sources\Module::DEVICES->value,
+							'type' => 'properties-states',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 						],
 					);
@@ -249,17 +268,6 @@ abstract class PropertiesManager
 		}
 
 		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-
 			if (is_string($mappedProperty->getValueTransformer())) {
 				$transformer = new ToolsTransformers\EquationTransformer($mappedProperty->getValueTransformer());
 
@@ -364,17 +372,6 @@ abstract class PropertiesManager
 	): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		if ($mappedProperty !== null) {
-			if (
-				!Utilities\Value::compareDataTypes(
-					$mappedProperty->getDataType(),
-					$property->getDataType(),
-				)
-			) {
-				throw new Exceptions\InvalidState(
-					'Mapped property data type is not compatible with dynamic property data type',
-				);
-			}
-
 			/**
 			 * Transform value to mapped property defined data type
 			 */

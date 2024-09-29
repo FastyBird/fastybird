@@ -1,0 +1,28 @@
+{
+  "data": {
+    "id": "8ed8b414-b8c6-4c80-b91a-c5aaf10f7cce",
+    "type": "com.fastybird.viera-connector-homekit-connector-bridge/device/invalid-bridge-type",
+    "attributes": {
+      "identifier": "connected-bedroom-tv",
+      "comment": null,
+      "enabled": true,
+      "name": "Connected bedroom TV"
+    },
+    "relationships": {
+      "connector": {
+        "data": {
+          "type": "com.fastybird.homekit-connector/connector/homekit-connector",
+          "id": "451ab010-f500-4eff-8289-9ed09e56a887"
+        }
+      },
+      "parents": {
+        "data": [
+          {
+            "type": "com.fastybird.viera-connector/device/viera-connector",
+            "id": "8bb73f8a-006e-4a0b-81fe-384d01c3fca2"
+          }
+        ]
+      }
+    }
+  }
+}

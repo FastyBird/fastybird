@@ -38,6 +38,8 @@ enum DevicePropertyIdentifier: string
 
 	case FIRMWARE_VERSION = DevicesTypes\DevicePropertyIdentifier::FIRMWARE_VERSION->value;
 
+	case SERIAL_NUMBER = DevicesTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value;
+
 	case DOMAIN = 'domain';
 
 	case USERNAME = 'username';

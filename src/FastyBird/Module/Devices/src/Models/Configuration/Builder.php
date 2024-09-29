@@ -17,11 +17,12 @@ namespace FastyBird\Module\Devices\Models\Configuration;
 
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Types;
 use Flow\JSONPath;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Throwable;
 use TypeError;
 use ValueError;
@@ -48,7 +49,7 @@ final class Builder
 		private readonly Models\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly Models\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly Models\Entities\Channels\Controls\ControlsRepository $channelsControlsRepository,
-		private readonly Caching\Cache $cache,
+		private readonly Caching\Container $moduleCaching,
 	)
 	{
 	}
@@ -60,14 +61,14 @@ final class Builder
 	{
 		try {
 			if ($force) {
-				$this->cache->remove($type->value);
+				$this->moduleCaching->getConfigurationBuilderCache()->remove($type->value);
 			}
 
-			$data = $this->cache->load(
+			$data = $this->moduleCaching->getConfigurationBuilderCache()->load(
 				$type->value,
 				fn (): JSONPath\JSONPath => new JSONPath\JSONPath($this->build($type)),
 				[
-					Caching\Cache::Tags => [$type->value],
+					NetteCaching\Cache::Tags => [$type->value],
 				],
 			);
 			assert($data instanceof JSONPath\JSONPath);

@@ -36,7 +36,7 @@ final class Constants
 
 	public const COAP_PORT = 5_683;
 
-	public const STATE_READING_DELAY = 5_000.0;
+	public const STATE_READING_DELAY = 300.0;
 
 	public const EVENT_ERROR = 'error';
 

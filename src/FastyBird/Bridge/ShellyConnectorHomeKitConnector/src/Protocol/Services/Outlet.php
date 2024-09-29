@@ -17,6 +17,7 @@ namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Protocol\Services;
 
 use FastyBird\Connector\HomeKit\Protocol as HomeKitProtocol;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
+use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use function is_numeric;
 
 /**
@@ -30,17 +31,25 @@ use function is_numeric;
 final class Outlet extends HomeKitProtocol\Services\Generic
 {
 
-	public function recalculateValues(
-		HomeKitProtocol\Characteristics\Characteristic $characteristic,
-		bool $fromDevice,
+	public function recalculateCharacteristics(
+		HomeKitProtocol\Characteristics\Characteristic|null $characteristic = null,
 	): void
 	{
 		$inUseCharacteristic = $this->findCharacteristic(HomeKitTypes\CharacteristicType::OUTLET_INUSE);
 
-		if (is_numeric($inUseCharacteristic?->getValue())) {
-			$inUseCharacteristic->setValue($inUseCharacteristic->getValue() > 0);
-		} elseif ($inUseCharacteristic?->getValue() === null) {
-			$inUseCharacteristic?->setValue(false);
+		if ($inUseCharacteristic !== null) {
+			if ($inUseCharacteristic->getProperty() instanceof DevicesDocuments\Channels\Properties\Variable) {
+				$inUseCharacteristic->setActualValue(true);
+				$inUseCharacteristic->setExpectedValue(null);
+			} else {
+				if (is_numeric($inUseCharacteristic->getValue())) {
+					$inUseCharacteristic->setActualValue($inUseCharacteristic->getValue() > 0);
+					$inUseCharacteristic->setExpectedValue(null);
+				} else {
+					$inUseCharacteristic->setActualValue(false);
+					$inUseCharacteristic->setExpectedValue(null);
+				}
+			}
 		}
 	}
 

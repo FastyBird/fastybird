@@ -37,6 +37,7 @@ use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Localization;
@@ -51,6 +52,7 @@ use function array_values;
 use function assert;
 use function floatval;
 use function in_array;
+use function is_array;
 use function is_string;
 use function preg_replace;
 use function sprintf;
@@ -205,7 +207,7 @@ class Builder
 					throw new Exceptions\InvalidState('Device identifier could not be calculated');
 				}
 
-				$categoryProperty = $modelProperty = $manufacturerProperty = null;
+				$categoryProperty = $modelProperty = $manufacturerProperty = $serialNumberProperty = null;
 			} else {
 				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 				$findDevicePropertyQuery->forDevice($accessory);
@@ -248,7 +250,31 @@ class Builder
 
 					$manufacturerProperty = null;
 				}
+
+				$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+				$findDevicePropertyQuery->forDevice($accessory);
+				$findDevicePropertyQuery->byIdentifier(HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value);
+
+				$serialNumberProperty = $this->devicesPropertiesRepository->findOneBy($findDevicePropertyQuery);
+
+				if (
+					$serialNumberProperty !== null
+					&& !$serialNumberProperty instanceof DevicesEntities\Devices\Properties\Variable
+				) {
+					$this->devicesPropertiesManager->delete($serialNumberProperty);
+
+					$serialNumberProperty = null;
+				}
 			}
+
+			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
+			$findDevicePropertyQuery->forDevice($shelly);
+			$findDevicePropertyQuery->byIdentifier(ShellyTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value);
+
+			$shellySerialNumberProperty = $this->devicesPropertiesRepository->findOneBy(
+				$findDevicePropertyQuery,
+				DevicesEntities\Devices\Properties\Variable::class,
+			);
 
 			$findDevicePropertyQuery = new DevicesQueries\Entities\FindDeviceProperties();
 			$findDevicePropertyQuery->forDevice($shelly);
@@ -271,10 +297,6 @@ class Builder
 				$findDevicePropertyQuery,
 				DevicesEntities\Devices\Properties\Variable::class,
 			);
-
-			if ($shellyModelProperty === null) {
-				throw new Exceptions\InvalidState('Shelly device model info could not be loaded');
-			}
 
 			$devicesMapping = $this->loadShellyMapping($shelly);
 
@@ -308,6 +330,7 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value,
+					'name' => DevicesUtilities\Name::createName(HomeKitTypes\DevicePropertyIdentifier::CATEGORY->value),
 					'dataType' => MetadataTypes\DataType::UCHAR,
 					'value' => $category->value,
 					'device' => $accessory,
@@ -330,14 +353,15 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MODEL->value,
+					'name' => DevicesUtilities\Name::createName(HomeKitTypes\DevicePropertyIdentifier::MODEL->value),
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $shellyModelProperty->getValue(),
+					'value' => $shellyModelProperty?->getValue() ?? ShellyConnectorHomeKitConnector\Constants::MODEL,
 					'device' => $accessory,
 				]));
 			} else {
 				$this->devicesPropertiesManager->update($modelProperty, Utils\ArrayHash::from([
 					'dataType' => MetadataTypes\DataType::STRING,
-					'value' => $shellyModelProperty->getValue(),
+					'value' => $shellyModelProperty?->getValue() ?? ShellyConnectorHomeKitConnector\Constants::MODEL,
 				]));
 			}
 
@@ -345,6 +369,9 @@ class Builder
 				$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
 					'entity' => DevicesEntities\Devices\Properties\Variable::class,
 					'identifier' => HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
+					'name' => DevicesUtilities\Name::createName(
+						HomeKitTypes\DevicePropertyIdentifier::MANUFACTURER->value,
+					),
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => ShellyConnectorHomeKitConnector\Constants::MANUFACTURER,
 					'device' => $accessory,
@@ -354,6 +381,26 @@ class Builder
 					'dataType' => MetadataTypes\DataType::STRING,
 					'value' => ShellyConnectorHomeKitConnector\Constants::MANUFACTURER,
 				]));
+			}
+
+			if ($shellySerialNumberProperty !== null) {
+				if ($serialNumberProperty === null) {
+					$this->devicesPropertiesManager->create(Utils\ArrayHash::from([
+						'entity' => DevicesEntities\Devices\Properties\Variable::class,
+						'identifier' => HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+						'name' => DevicesUtilities\Name::createName(
+							HomeKitTypes\DevicePropertyIdentifier::SERIAL_NUMBER->value,
+						),
+						'dataType' => MetadataTypes\DataType::STRING,
+						'value' => $shellySerialNumberProperty->getValue(),
+						'device' => $accessory,
+					]));
+				} else {
+					$this->devicesPropertiesManager->update($serialNumberProperty, Utils\ArrayHash::from([
+						'dataType' => MetadataTypes\DataType::STRING,
+						'value' => $shellySerialNumberProperty->getValue(),
+					]));
+				}
 			}
 
 			$this->databaseHelper->commitTransaction();
@@ -688,14 +735,26 @@ class Builder
 				throw new Exceptions\InvalidState('Shelly device channel for mapping property could not be loaded');
 			}
 
-			$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-			$findPropertyQuery->forChannel($channel);
-			$findPropertyQuery->endWithIdentifier($characteristicMapping->getProperty());
+			$propertyIdentifiers = is_array($characteristicMapping->getProperty())
+				? $characteristicMapping->getProperty()
+				: [$characteristicMapping->getProperty()];
 
-			$connectProperty = $this->channelsPropertiesRepository->findOneBy(
-				$findPropertyQuery,
-				DevicesEntities\Channels\Properties\Dynamic::class,
-			);
+			$connectProperty = null;
+
+			foreach ($propertyIdentifiers as $propertyIdentifier) {
+				$findPropertyQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+				$findPropertyQuery->forChannel($channel);
+				$findPropertyQuery->endWithIdentifier($propertyIdentifier);
+
+				$connectProperty = $this->channelsPropertiesRepository->findOneBy(
+					$findPropertyQuery,
+					DevicesEntities\Channels\Properties\Dynamic::class,
+				);
+
+				if ($connectProperty !== null) {
+					break;
+				}
+			}
 
 			if ($connectProperty === null && !$characteristicMapping->isNullable()) {
 				return false;

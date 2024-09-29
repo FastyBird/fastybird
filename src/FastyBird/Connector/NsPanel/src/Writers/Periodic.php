@@ -16,12 +16,14 @@
 namespace FastyBird\Connector\NsPanel\Writers;
 
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
@@ -32,6 +34,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use React\EventLoop;
+use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
@@ -81,6 +84,7 @@ abstract class Periodic implements Writer
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
 		protected readonly Queue\Queue $queue,
+		protected readonly NsPanel\Logger $logger,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
@@ -300,29 +304,45 @@ abstract class Periodic implements Writer
 				&& (float) $now->format('Uv') - (float) $pending->format('Uv') > self::HANDLER_PENDING_DELAY
 			)
 		) {
-			$this->processedProperties[$property->getId()->toString()] = $now;
+			try {
+				$this->processedProperties[$property->getId()->toString()] = $now;
 
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteSubDeviceState::class,
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteSubDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'state' => array_merge(
+								$state->getGet()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
+						],
+					),
+				);
+
+				return true;
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
 					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
-						'state' => array_merge(
-							$state->getGet()->toArray(),
-							[
-								'id' => $state->getId(),
-								'valid' => $state->isValid(),
-								'pending' => $state->getPending() instanceof DateTimeInterface
-									? $state->getPending()->format(DateTimeInterface::ATOM)
-									: $state->getPending(),
-							],
-						),
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
-				),
-			);
+				);
+
+				return false;
+			}
 		}
 
 		return false;
@@ -398,28 +418,42 @@ abstract class Periodic implements Writer
 				return false;
 			}
 
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteThirdPartyDeviceState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
-						'state' => array_merge(
-							$state->getRead()->toArray(),
-							[
-								'id' => $state->getId(),
-								'valid' => $state->isValid(),
-								'pending' => $state->getPending() instanceof DateTimeInterface
-									? $state->getPending()->format(DateTimeInterface::ATOM)
-									: $state->getPending(),
-							],
-						),
-					],
-				),
-			);
+			try {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'state' => array_merge(
+								$state->getRead()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
+						],
+					),
+				);
 
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
+					[
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return false;
+			}
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$state = await($this->channelPropertiesStatesManager->read(
 				$property,
@@ -439,40 +473,69 @@ abstract class Periodic implements Writer
 				return false;
 			}
 
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteThirdPartyDeviceState::class,
-					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
-						'state' => array_merge(
-							$state->getGet()->toArray(),
-							[
-								'id' => $state->getId(),
-								'valid' => $state->isValid(),
-								'pending' => $state->getPending() instanceof DateTimeInterface
-									? $state->getPending()->format(DateTimeInterface::ATOM)
-									: $state->getPending(),
-							],
-						),
-					],
-				),
-			);
+			try {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+							'state' => array_merge(
+								$state->getGet()->toArray(),
+								[
+									'id' => $state->getId(),
+									'valid' => $state->isValid(),
+									'pending' => $state->getPending() instanceof DateTimeInterface
+										? $state->getPending()->format(DateTimeInterface::ATOM)
+										: $state->getPending(),
+								],
+							),
+						],
+					),
+				);
 
-		} else {
-			$this->queue->append(
-				$this->messageBuilder->create(
-					Queue\Messages\WriteThirdPartyDeviceState::class,
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
 					[
-						'connector' => $device->getConnector(),
-						'device' => $device->getId(),
-						'channel' => $property->getChannel(),
-						'property' => $property->getId(),
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
 					],
-				),
-			);
+				);
+
+				return false;
+			}
+		} else {
+			try {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\WriteThirdPartyDeviceState::class,
+						[
+							'connector' => $device->getConnector(),
+							'device' => $device->getId(),
+							'channel' => $property->getChannel(),
+							'property' => $property->getId(),
+						],
+					),
+				);
+
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'Characteristic value could not be prepared for writing',
+					[
+						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+						'type' => 'periodic-writer',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				return false;
+			}
 		}
 
 		return false;

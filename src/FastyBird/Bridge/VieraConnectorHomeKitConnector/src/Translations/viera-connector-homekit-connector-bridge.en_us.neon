@@ -1,0 +1,138 @@
+#
+# Bridge translations
+#
+# @language       en_US
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:VieraConnectorHomeKitConnectorBridge!
+# @subpackage     Translations
+# @since          1.0.0
+#
+# @date           24.08.24
+#
+
+base:
+    misc:
+        services:
+            television: "Television"
+            televisionspeaker: "Television speaker"
+            inputsource: "Input source"
+        speaker: "Speaker"
+
+    messages:
+        notValidJson:
+            heading: "Not valid content"
+            message: "Provided request content is not valid JSON content"
+        notValidJsonApi:
+            heading: "Not valid content"
+            message: "Provided request content is not valid {JSON:API} content"
+        failed:
+            heading: "Request failed"
+            message: "Provided request failed and can't be finished"
+        forbidden:
+            heading: "Not allowed"
+            message: "You are not allowed to perform this action"
+        unauthorized:
+            heading: "Not authorized"
+            message: "You are not authorized to perform this action"
+        notFound:
+            heading: "Not found"
+            message: "Requested entity was not found"
+        notCreated:
+            heading: "System error"
+            message: "Something went wrong, entity could not be created"
+        notUpdated:
+            heading: "System error"
+            message: "Something went wrong, entity could not be updated"
+        notDeleted:
+            heading: "System error"
+            message: "Something went wrong, entity could not be deleted"
+        invalidIdentifier:
+            heading: "Invalid identifier"
+            message: "Provided entity identifier is not valid"
+        invalidType:
+            heading: "Invalid type"
+            message: "Provided entity type is not valid"
+        invalidAttribute:
+            heading: "Invalid attribute"
+            message: "Provided entity attribute is not valid"
+        invalidRelation:
+            heading: "Invalid relation"
+            message: "Provided relation is not valid"
+        unknownRelation:
+            heading: "Relation not found"
+            message: "Requested unknown relation"
+        relationNotFound:
+            heading: "Relation not found"
+            message: "Requested relation %relation% was not found"
+        missingAttribute:
+            heading: "Missing attribute"
+            message: "Provided request is missing required attribute"
+        missingRelation:
+            heading: "Missing required relation"
+            message: "Provided request is missing required relation"
+        uniqueIdentifier:
+            heading: "Identifier not unique"
+            message: "Provided identifier is not unique"
+        uniqueAttribute:
+            heading: "Attribute not unique"
+            message: "Provided attribute is not unique"
+
+cmd:
+    base:
+        questions:
+            continue: "Would you like to continue?"
+            whatToDo: "What would you like to do?"
+
+        messages:
+            answerNotValid: "Selected answer: \"%s\" is not valid."
+
+    build:
+        title: "Viera devices & HomeKit connector bridge"
+        subtitle: "This action will build bridge between viera device and homekit connector"
+
+        actions:
+            create:
+                bridge: "Create bridge"
+            update:
+                bridge: "Edit bridge"
+            remove:
+                bridge: "Delete bridge"
+            list:
+                bridges: "List bridges"
+            nothing: "Nothing"
+
+        questions:
+            create:
+                bridge: "Would you like to create new bridge?"
+            select:
+                item:
+                    connector: "Please select HomeKit connector to create bridge"
+                    device: "Please select Viera device to create bridge"
+                category: "Please select the HomeKit accessory category to which the Viera should be assigned."
+
+        data:
+            name: "Name"
+            viera: "Viera device"
+            connector: "HomeKit connector"
+
+        messages:
+            create:
+                bridge:
+                    success: "Bridge \"%name%\" was successfully created."
+                    error: "Something went wrong, bridge could not be created. Error was logged."
+            update:
+                bridge:
+                    success: "Bridge \"%name%\" was successfully updated."
+                    error: "Something went wrong, bridge could not be updated. Error was logged."
+            remove:
+                bridge:
+                    confirm: "This action will remove \"%name%\" bridge. This action can not be undone."
+                    success: "Bridge \"%name%\" was successfully removed."
+                    error: "Something went wrong, bridge could not be removed. Error was logged."
+            noVieraDevices: "No Viera devices registered in system."
+            noHomeKitConnectors: "No HomeKit connectors registered in system."
+            noCategory: "For selected device we could not match any accessory category. Viera device could not be bridged."
+            noBridges: "No bridges created."

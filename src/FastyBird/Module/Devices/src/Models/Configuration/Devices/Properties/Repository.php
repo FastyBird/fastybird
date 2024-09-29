@@ -16,16 +16,18 @@
 namespace FastyBird\Module\Devices\Models\Configuration\Devices\Properties;
 
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Types;
-use Nette\Caching;
+use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 use Throwable;
 use function array_filter;
 use function array_map;
+use function array_merge;
 use function assert;
 use function is_array;
 use function md5;
@@ -42,7 +44,7 @@ final class Repository extends Models\Configuration\Repository
 
 	public function __construct(
 		private readonly Models\Configuration\Builder $builder,
-		private readonly Caching\Cache $cache,
+		private readonly Caching\Container $moduleCaching,
 		private readonly MetadataDocuments\Mapping\ClassMetadataFactory $classMetadataFactory,
 		private readonly MetadataDocuments\DocumentFactory $documentFactory,
 	)
@@ -92,7 +94,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var T|false $document */
-			$document = $this->cache->load(
+			$document = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyOne($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): Documents\Devices\Properties\Property|false {
 					$space = $this->builder
@@ -122,7 +124,10 @@ final class Repository extends Models\Configuration\Repository
 							assert($document instanceof $type);
 
 							$dependencies = [
-								Caching\Cache::Tags => [$document->getId()->toString()],
+								NetteCaching\Cache::Tags => [
+									Types\ConfigurationType::DEVICES_PROPERTIES->value,
+									$document->getId()->toString(),
+								],
 							];
 
 							return $document;
@@ -134,7 +139,7 @@ final class Repository extends Models\Configuration\Repository
 					return false;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::DEVICES_PROPERTIES->value,
 					],
 				],
@@ -167,7 +172,7 @@ final class Repository extends Models\Configuration\Repository
 	{
 		try {
 			/** @phpstan-var array<T> $documents */
-			$documents = $this->cache->load(
+			$documents = $this->moduleCaching->getConfigurationRepositoryCache()->load(
 				$this->createKeyAll($queryObject) . '_' . md5($type),
 				function (&$dependencies) use ($queryObject, $type): array {
 					$space = $this->builder
@@ -210,16 +215,21 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						Caching\Cache::Tags => array_map(
-							static fn (Documents\Devices\Properties\Property $document): string => $document->getId()->toString(),
-							$documents,
+						NetteCaching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::DEVICES_PROPERTIES->value,
+							],
+							array_map(
+								static fn (Documents\Devices\Properties\Property $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 
 					return $documents;
 				},
 				[
-					Caching\Cache::Tags => [
+					NetteCaching\Cache::Tags => [
 						Types\ConfigurationType::DEVICES_PROPERTIES->value,
 					],
 				],

@@ -18,7 +18,7 @@ namespace FastyBird\Module\Devices\Subscribers;
 use Doctrine\Common;
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Events as ApplicationEvents;
+use FastyBird\Library\Application\Utilities as ApplicationUtilities;
 use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
 use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
@@ -27,9 +27,7 @@ use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
-use FastyBird\Module\Devices\Types;
 use Nette;
-use Nette\Caching;
 use Nette\Utils;
 use ReflectionClass;
 use function count;
@@ -55,8 +53,6 @@ final class ModuleEntities implements Common\EventSubscriber
 
 	private const ACTION_DELETED = 'deleted';
 
-	private bool $useAsync = false;
-
 	public function __construct(
 		private readonly ORM\EntityManagerInterface $entityManager,
 		private readonly Models\States\ConnectorPropertiesManager $connectorPropertiesStatesManager,
@@ -65,11 +61,10 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly Models\States\Async\DevicePropertiesManager $asyncDevicePropertiesStatesManager,
 		private readonly Models\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly Models\States\Async\ChannelPropertiesManager $asyncChannelPropertiesStatesManager,
+		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
-		private readonly Caching\Cache $configurationBuilderCache,
-		private readonly Caching\Cache $configurationRepositoryCache,
 	)
 	{
 	}
@@ -77,14 +72,10 @@ final class ModuleEntities implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			0 => ORM\Events::postPersist,
-			1 => ORM\Events::postUpdate,
-			2 => ORM\Events::preRemove,
-			3 => ORM\Events::postRemove,
-
-			ApplicationEvents\EventLoopStarted::class => 'enableAsync',
-			ApplicationEvents\EventLoopStopped::class => 'disableAsync',
-			ApplicationEvents\EventLoopStopping::class => 'disableAsync',
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
+			ORM\Events::preRemove,
+			ORM\Events::postRemove,
 		];
 	}
 
@@ -99,15 +90,12 @@ final class ModuleEntities implements Common\EventSubscriber
 	 */
 	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
 		if (!$entity instanceof Entities\Entity || !$this->validateNamespace($entity)) {
 			return;
 		}
-
-		$this->cleanCache($entity);
 
 		$this->publishEntity($entity, self::ACTION_CREATED);
 	}
@@ -125,7 +113,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	{
 		$uow = $this->entityManager->getUnitOfWork();
 
-		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
 
 		// Get changes => should be already computed here (is a listener)
@@ -145,8 +132,6 @@ final class ModuleEntities implements Common\EventSubscriber
 			return;
 		}
 
-		$this->cleanCache($entity);
-
 		$this->publishEntity($entity, self::ACTION_UPDATED);
 	}
 
@@ -155,7 +140,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 */
 	public function preRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
@@ -165,19 +149,19 @@ final class ModuleEntities implements Common\EventSubscriber
 
 		// Property states cleanup
 		if ($entity instanceof Entities\Connectors\Properties\Dynamic) {
-			if ($this->useAsync) {
+			if ($this->eventLoopStatus->isRunning()) {
 				$this->asyncConnectorPropertiesStatesManager->delete($entity->getId());
 			} else {
 				$this->connectorPropertiesStatesManager->delete($entity->getId());
 			}
 		} elseif ($entity instanceof Entities\Devices\Properties\Dynamic) {
-			if ($this->useAsync) {
+			if ($this->eventLoopStatus->isRunning()) {
 				$this->asyncDevicePropertiesStatesManager->delete($entity->getId());
 			} else {
 				$this->devicePropertiesStatesManager->delete($entity->getId());
 			}
 		} elseif ($entity instanceof Entities\Channels\Properties\Dynamic) {
-			if ($this->useAsync) {
+			if ($this->eventLoopStatus->isRunning()) {
 				$this->asyncChannelPropertiesStatesManager->delete($entity->getId());
 			} else {
 				$this->channelPropertiesStatesManager->delete($entity->getId());
@@ -196,7 +180,6 @@ final class ModuleEntities implements Common\EventSubscriber
 	 */
 	public function postRemove(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
-		// onFlush was executed before, everything already initialized
 		$entity = $eventArgs->getObject();
 
 		// Check for valid entity
@@ -205,122 +188,6 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		$this->publishEntity($entity, self::ACTION_DELETED);
-
-		$this->cleanCache($entity);
-	}
-
-	public function enableAsync(): void
-	{
-		$this->useAsync = true;
-	}
-
-	public function disableAsync(): void
-	{
-		$this->useAsync = false;
-	}
-
-	private function cleanCache(Entities\Entity $entity): void
-	{
-		if ($entity instanceof Entities\Connectors\Connector) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CONNECTORS->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Connectors\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_PROPERTIES->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CONNECTORS_PROPERTIES->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Connectors\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CONNECTORS_CONTROLS->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CONNECTORS_CONTROLS->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Devices\Device) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::DEVICES->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Devices\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_PROPERTIES->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::DEVICES_PROPERTIES->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Devices\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::DEVICES_CONTROLS->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::DEVICES_CONTROLS->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Channels\Channel) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CHANNELS->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Channels\Properties\Property) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_PROPERTIES->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CHANNELS_PROPERTIES->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		} elseif ($entity instanceof Entities\Channels\Controls\Control) {
-			$this->configurationBuilderCache->clean([
-				Caching\Cache::Tags => [Types\ConfigurationType::CHANNELS_CONTROLS->value],
-			]);
-
-			$this->configurationRepositoryCache->clean([
-				Caching\Cache::Tags => [
-					Types\ConfigurationType::CHANNELS_CONTROLS->value,
-					$entity->getId()->toString(),
-				],
-			]);
-		}
 	}
 
 	/**
@@ -368,7 +235,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		}
 
 		if ($publishRoutingKey !== null) {
-			$this->getPublisher()->publish(
+			$this->getPublisher($this->eventLoopStatus->isRunning())->publish(
 				MetadataTypes\Sources\Module::DEVICES,
 				$publishRoutingKey,
 				$this->documentFactory->create(
@@ -396,9 +263,9 @@ final class ModuleEntities implements Common\EventSubscriber
 		return false;
 	}
 
-	private function getPublisher(): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
+	private function getPublisher(bool $async): ExchangePublisher\Publisher|ExchangePublisher\Async\Publisher
 	{
-		return $this->useAsync ? $this->asyncPublisher : $this->publisher;
+		return $async ? $this->asyncPublisher : $this->publisher;
 	}
 
 }

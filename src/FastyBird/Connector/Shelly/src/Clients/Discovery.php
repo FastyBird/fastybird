@@ -201,14 +201,6 @@ final class Discovery
 			$serviceName = null;
 			$serviceData = [];
 
-			if (
-				$sender !== null
-				&& preg_match(self::MATCH_IP_ADDRESS_PORT, $sender, $matches) === 1
-				&& array_key_exists('port', $matches)
-			) {
-				$serviceIpAddress = $matches['address'];
-			}
-
 			foreach ($response->answers as $answer) {
 				if (
 					$answer->type === Dns\Model\Message::TYPE_A
@@ -250,6 +242,15 @@ final class Discovery
 						$serviceData[$key] = $value;
 					}
 				}
+			}
+
+			if (
+				$serviceIpAddress === null
+				&& $sender !== null
+				&& preg_match(self::MATCH_IP_ADDRESS_PORT, $sender, $matches) === 1
+				&& array_key_exists('port', $matches)
+			) {
+				$serviceIpAddress = $matches['address'];
 			}
 
 			if ($serviceIpAddress !== null && $serviceName !== null) {
@@ -483,6 +484,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
+						'serial_number' => $id,
 						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,
@@ -527,6 +529,7 @@ final class Discovery
 					[
 						'connector' => $this->connector->getId(),
 						'identifier' => $identifier,
+						'serial_number' => $id,
 						'generation' => $generation->value,
 						'ip_address' => $ipAddress,
 						'domain' => $domain,

@@ -26,6 +26,7 @@ use Nette\Caching as NetteCaching;
 use Ramsey\Uuid;
 use Throwable;
 use function array_map;
+use function array_merge;
 use function is_array;
 
 /**
@@ -89,7 +90,10 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						NetteCaching\Cache::Tags => [$document->getId()->toString()],
+						NetteCaching\Cache::Tags => [
+							Types\ConfigurationType::DASHBOARDS->value,
+							$document->getId()->toString(),
+						],
 					];
 
 					return $document;
@@ -145,9 +149,14 @@ final class Repository extends Models\Configuration\Repository
 					);
 
 					$dependencies = [
-						NetteCaching\Cache::Tags => array_map(
-							static fn (Documents\Dashboards\Dashboard $document): string => $document->getId()->toString(),
-							$documents,
+						NetteCaching\Cache::Tags => array_merge(
+							[
+								Types\ConfigurationType::DASHBOARDS->value,
+							],
+							array_map(
+								static fn (Documents\Dashboards\Dashboard $document): string => $document->getId()->toString(),
+								$documents,
+							),
 						),
 					];
 

@@ -44,6 +44,7 @@ use Throwable;
 use TypeError;
 use ValueError;
 use function array_key_exists;
+use function assert;
 use function count;
 use function in_array;
 use function preg_match;
@@ -67,6 +68,8 @@ final class Local implements Client
 	private const HANDLER_PROCESSING_INTERVAL = 0.01;
 
 	private const RECONNECT_COOL_DOWN_TIME = 300.0;
+
+	private const DEVICE_RECONNECT_COOL_DOWN_TIME = 300.0;
 
 	private const COMPONENT_KEY = '/^(?P<component>[a-zA-Z]+)(:(?P<channel>[0-9_]+))?$/';
 
@@ -221,6 +224,19 @@ final class Local implements Client
 							);
 						})
 						->catch(function (Throwable $ex) use ($device): void {
+							$this->queue->append(
+								$this->messageBuilder->create(
+									Queue\Messages\StoreDeviceConnectionState::class,
+									[
+										'connector' => $device->getConnector(),
+										'identifier' => $device->getIdentifier(),
+										'state' => DevicesTypes\ConnectionState::DISCONNECTED,
+									],
+								),
+							);
+
+							unset($this->gen2DevicesWsClients[$device->getId()->toString()]);
+
 							$this->logger->error(
 								'Device websocket connection could not be created',
 								[
@@ -360,11 +376,42 @@ final class Local implements Client
 			return false;
 		}
 
+		if (
+			$deviceState === DevicesTypes\ConnectionState::LOST
+			|| $deviceState === DevicesTypes\ConnectionState::DISCONNECTED
+		) {
+			$deviceStateTime = $this->deviceConnectionManager->getStateTime($device);
+			assert($deviceStateTime instanceof DateTimeInterface);
+
+			if ($this->clock->getNow()->getTimestamp() - $deviceStateTime->getTimestamp() < self::DEVICE_RECONNECT_COOL_DOWN_TIME) {
+				return false;
+			}
+		}
+
 		if ($this->deviceHelper->getGeneration($device) === Types\DeviceGeneration::GENERATION_2) {
 			$client = $this->getGen2DeviceWsClient($device);
 
 			if ($client === null) {
-				$client = $this->createGen2DeviceWsClient($device);
+				try {
+					$client = $this->createGen2DeviceWsClient($device);
+				} catch (Throwable $ex) {
+					$this->logger->error(
+						'Device websocket connection could not be created',
+						[
+							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
+							'type' => 'local-client',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'connector' => [
+								'id' => $this->connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+						],
+					);
+
+					return false;
+				}
 			}
 
 			if (!$client->isConnected()) {
@@ -433,12 +480,18 @@ final class Local implements Client
 					$this->processGen2DeviceGetState($device, $response);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
+					if ($ex instanceof Exceptions\HttpApiCall) {
+						$renderException = false;
+					}
+
 					$this->logger->error(
 						'Could not read device state',
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -489,6 +542,8 @@ final class Local implements Client
 					$this->processGen1DeviceGetState($device, $response);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
 					if ($ex instanceof Exceptions\HttpApiError) {
 						$this->queue->append(
 							$this->messageBuilder->create(
@@ -540,11 +595,13 @@ final class Local implements Client
 									[
 										'connector' => $device->getConnector(),
 										'identifier' => $device->getIdentifier(),
-										'state' => DevicesTypes\ConnectionState::UNKNOWN,
+										'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 									],
 								),
 							);
 						}
+
+						$renderException = false;
 					}
 
 					$this->logger->error(
@@ -552,7 +609,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -568,13 +625,7 @@ final class Local implements Client
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
 	 */
 	private function createGen2DeviceWsClient(Documents\Devices\Device $device): API\Gen2WsApi
 	{
@@ -584,7 +635,11 @@ final class Local implements Client
 
 		unset($this->processedDevicesCommands[$device->getId()->toString()]);
 
-		$client = $this->connectionManager->getGen2WsApiConnection($device);
+		try {
+			$client = $this->connectionManager->getGen2WsApiConnection($device);
+		} catch (Throwable $ex) {
+			throw new Exceptions\InvalidState('Gen 2 device WS client is already created', $ex->getCode(), $ex);
+		}
 
 		$client->onMessage[] = function (API\Messages\Message $message) use ($device): void {
 			try {
@@ -670,6 +725,12 @@ final class Local implements Client
 					$this->processGen2DeviceGetState($device, $state);
 				})
 				->catch(function (Throwable $ex) use ($device): void {
+					$renderException = true;
+
+					if ($ex instanceof Exceptions\HttpApiCall) {
+						$renderException = false;
+					}
+
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
@@ -682,11 +743,11 @@ final class Local implements Client
 					);
 
 					$this->logger->error(
-						'An error occurred on initial Gen 2 device state reading',
+						'An error occurred on Gen 2 device state reading',
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],

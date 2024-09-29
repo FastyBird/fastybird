@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:UiModule!
- * @subpackage     common
+ * @subpackage     Caching
  * @since          1.0.0
  *
  * @date           18.03.20
@@ -21,7 +21,7 @@ use Nette\Caching;
  * Module cache container
  *
  * @package        FastyBird:UiModule!
- * @subpackage     common
+ * @subpackage     Caching
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

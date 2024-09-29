@@ -16,7 +16,6 @@
 namespace FastyBird\Library\Exchange\Publisher\Async;
 
 use FastyBird\Library\Exchange\Events;
-use FastyBird\Library\Exchange\Publisher;
 use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Psr\EventDispatcher as PsrEventDispatcher;
@@ -32,10 +31,10 @@ use Throwable;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Container implements Publisher\Async\Publisher
+class Container implements Publisher
 {
 
-	/** @var SplObjectStorage<Publisher\Async\Publisher, null> */
+	/** @var SplObjectStorage<Publisher, null> */
 	private SplObjectStorage $publishers;
 
 	public function __construct(
@@ -79,7 +78,7 @@ class Container implements Publisher\Async\Publisher
 		return $deferred->promise();
 	}
 
-	public function register(Publisher\Async\Publisher $publisher): void
+	public function register(Publisher $publisher): void
 	{
 		if (!$this->publishers->contains($publisher)) {
 			$this->publishers->attach($publisher);

@@ -85,6 +85,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws RuntimeException
+	 * @throws Throwable
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -300,6 +301,48 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					$client->connect();
 				}
 
+				if ($client->isRefreshFailed()) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $connector->getId(),
+								'device' => $device->getId(),
+								'state' => DevicesTypes\ConnectionState::SLEEPING,
+							],
+						),
+					);
+
+					await($this->channelPropertiesStatesManager->setPendingState(
+						$property,
+						false,
+						MetadataTypes\Sources\Connector::TUYA,
+					));
+
+					$this->logger->error(
+						'Connection with Tuya cloud needs to be refreshed',
+						[
+							'source' => MetadataTypes\Sources\Connector::TUYA->value,
+							'type' => 'write-channel-property-state-message-consumer',
+							'connector' => [
+								'id' => $connector->getId()->toString(),
+							],
+							'device' => [
+								'id' => $device->getId()->toString(),
+							],
+							'channel' => [
+								'id' => $channel->getId()->toString(),
+							],
+							'property' => [
+								'id' => $property->getId()->toString(),
+							],
+							'data' => $message->toArray(),
+						],
+					);
+
+					return true;
+				}
+
 				$result = $client->setDeviceState(
 					$device->getIdentifier(),
 					$property->getIdentifier(),
@@ -435,7 +478,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					[
 						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'write-channel-property-state-message-consumer',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ApplicationHelpers\Logger::buildException($ex, false),
 						'connector' => [
 							'id' => $connector->getId()->toString(),
 						],
@@ -489,20 +532,22 @@ final class WriteChannelPropertyState implements Queue\Consumer
 
 				$extra = [];
 
-				if ($ex instanceof Exceptions\OpenApiCall) {
-					$extra = [
-						'request' => [
-							'method' => $ex->getRequest()?->getMethod(),
-							'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
-							'body' => $ex->getRequest()?->getBody()->getContents(),
-						],
-						'response' => [
-							'body' => $ex->getResponse()?->getBody()->getContents(),
-						],
-					];
-				}
+				$renderException = true;
 
 				if ($ex instanceof Exceptions\OpenApiCall || $ex instanceof Exceptions\LocalApiCall) {
+					if ($ex instanceof Exceptions\OpenApiCall) {
+						$extra = [
+							'request' => [
+								'method' => $ex->getRequest()?->getMethod(),
+								'url' => $ex->getRequest() !== null ? strval($ex->getRequest()->getUri()) : null,
+								'body' => $ex->getRequest()?->getBody()->getContents(),
+							],
+							'response' => [
+								'body' => $ex->getResponse()?->getBody()->getContents(),
+							],
+						];
+					}
+
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
@@ -513,6 +558,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							],
 						),
 					);
+
+					$renderException = false;
 
 				} elseif ($ex instanceof Exceptions\OpenApiError || $ex instanceof Exceptions\LocalApiError) {
 					$this->queue->append(
@@ -545,7 +592,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $connector->getId()->toString(),
 							],

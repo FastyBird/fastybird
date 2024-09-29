@@ -16,12 +16,14 @@
 namespace FastyBird\Connector\Virtual\Writers;
 
 use DateTimeInterface;
+use FastyBird\Connector\Virtual;
 use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Helpers;
 use FastyBird\Connector\Virtual\Queries;
 use FastyBird\Connector\Virtual\Queue;
 use FastyBird\DateTimeFactory;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
@@ -31,6 +33,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use Nette;
 use React\EventLoop;
+use Throwable;
 use function array_key_exists;
 use function array_merge;
 use function in_array;
@@ -77,6 +80,7 @@ abstract class Periodic implements Writer
 		protected readonly Documents\Connectors\Connector $connector,
 		protected readonly Helpers\MessageBuilder $messageBuilder,
 		protected readonly Queue\Queue $queue,
+		protected readonly Virtual\Logger $logger,
 		protected readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		protected readonly DevicesModels\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
@@ -318,100 +322,128 @@ abstract class Periodic implements Writer
 					)
 				)
 			) {
-				if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\WriteDevicePropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'property' => $property->getId(),
-								'state' => array_merge(
-									$state->getGet()->toArray(),
-									[
-										'id' => $state->getId(),
-										'valid' => $state->isValid(),
-										'pending' => $state->getPending() instanceof DateTimeInterface
-											? $state->getPending()->format(DateTimeInterface::ATOM)
-											: $state->getPending(),
-									],
-								),
-							],
-						),
+				try {
+					if ($property instanceof DevicesDocuments\Devices\Properties\Dynamic) {
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\WriteDevicePropertyState::class,
+								[
+									'connector' => $device->getConnector(),
+									'device' => $device->getId(),
+									'property' => $property->getId(),
+									'state' => array_merge(
+										$state->getGet()->toArray(),
+										[
+											'id' => $state->getId(),
+											'valid' => $state->isValid(),
+											'pending' => $state->getPending() instanceof DateTimeInterface
+												? $state->getPending()->format(DateTimeInterface::ATOM)
+												: $state->getPending(),
+										],
+									),
+								],
+							),
+						);
+					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\WriteChannelPropertyState::class,
+								[
+									'connector' => $device->getConnector(),
+									'device' => $device->getId(),
+									'channel' => $property->getChannel(),
+									'property' => $property->getId(),
+									'state' => array_merge(
+										$state->getGet()->toArray(),
+										[
+											'id' => $state->getId(),
+											'valid' => $state->isValid(),
+											'pending' => $state->getPending() instanceof DateTimeInterface
+												? $state->getPending()->format(DateTimeInterface::ATOM)
+												: $state->getPending(),
+										],
+									),
+								],
+							),
+						);
+					}
+				} catch (Throwable $ex) {
+					// Log caught exception
+					$this->logger->error(
+						'Characteristic value could not be prepared for writing',
+						[
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+							'type' => 'periodic-writer',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
 					);
-				} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\WriteChannelPropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'channel' => $property->getChannel(),
-								'property' => $property->getId(),
-								'state' => array_merge(
-									$state->getGet()->toArray(),
-									[
-										'id' => $state->getId(),
-										'valid' => $state->isValid(),
-										'pending' => $state->getPending() instanceof DateTimeInterface
-											? $state->getPending()->format(DateTimeInterface::ATOM)
-											: $state->getPending(),
-									],
-								),
-							],
-						),
-					);
+
+					return false;
 				}
 			} elseif (
 				$property instanceof DevicesDocuments\Devices\Properties\Mapped
 				|| $property instanceof DevicesDocuments\Channels\Properties\Mapped
 			) {
-				if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\WriteDevicePropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'property' => $property->getId(),
-								'state' => array_merge(
-									$state->getRead()->toArray(),
-									[
-										'id' => $state->getId(),
-										'valid' => $state->isValid(),
-										'pending' => $state->getPending() instanceof DateTimeInterface
-											? $state->getPending()->format(DateTimeInterface::ATOM)
-											: $state->getPending(),
-									],
-								),
-							],
-						),
-					);
-				} else {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\WriteChannelPropertyState::class,
-							[
-								'connector' => $device->getConnector(),
-								'device' => $device->getId(),
-								'channel' => $property->getChannel(),
-								'property' => $property->getId(),
-								'state' => array_merge(
-									$state->getRead()->toArray(),
-									[
-										'id' => $state->getId(),
-										'valid' => $state->isValid(),
-										'pending' => $state->getPending() instanceof DateTimeInterface
-											? $state->getPending()->format(DateTimeInterface::ATOM)
-											: $state->getPending(),
-									],
-								),
-							],
-						),
-					);
-				}
+				try {
+					if ($property instanceof DevicesDocuments\Devices\Properties\Mapped) {
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\WriteDevicePropertyState::class,
+								[
+									'connector' => $device->getConnector(),
+									'device' => $device->getId(),
+									'property' => $property->getId(),
+									'state' => array_merge(
+										$state->getRead()->toArray(),
+										[
+											'id' => $state->getId(),
+											'valid' => $state->isValid(),
+											'pending' => $state->getPending() instanceof DateTimeInterface
+												? $state->getPending()->format(DateTimeInterface::ATOM)
+												: $state->getPending(),
+										],
+									),
+								],
+							),
+						);
+					} else {
+						$this->queue->append(
+							$this->messageBuilder->create(
+								Queue\Messages\WriteChannelPropertyState::class,
+								[
+									'connector' => $device->getConnector(),
+									'device' => $device->getId(),
+									'channel' => $property->getChannel(),
+									'property' => $property->getId(),
+									'state' => array_merge(
+										$state->getRead()->toArray(),
+										[
+											'id' => $state->getId(),
+											'valid' => $state->isValid(),
+											'pending' => $state->getPending() instanceof DateTimeInterface
+												? $state->getPending()->format(DateTimeInterface::ATOM)
+												: $state->getPending(),
+										],
+									),
+								],
+							),
+						);
+					}
 
-				return true;
+					return true;
+				} catch (Throwable $ex) {
+					// Log caught exception
+					$this->logger->error(
+						'Characteristic value could not be prepared for writing',
+						[
+							'source' => MetadataTypes\Sources\Connector::VIRTUAL->value,
+							'type' => 'periodic-writer',
+							'exception' => ApplicationHelpers\Logger::buildException($ex),
+						],
+					);
+
+					return false;
+				}
 			}
 		}
 

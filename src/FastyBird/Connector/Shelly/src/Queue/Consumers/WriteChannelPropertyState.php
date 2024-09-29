@@ -442,6 +442,8 @@ final class WriteChannelPropertyState implements Queue\Consumer
 				);
 			},
 			async(function (Throwable $ex) use ($connector, $device, $channel, $property, $message): void {
+				$renderException = true;
+
 				await($this->channelPropertiesStatesManager->setPendingState(
 					$property,
 					false,
@@ -461,9 +463,9 @@ final class WriteChannelPropertyState implements Queue\Consumer
 							'body' => $ex->getResponse()?->getBody()->getContents(),
 						],
 					];
-				}
 
-				if ($ex instanceof Exceptions\HttpApiCall) {
+					$renderException = false;
+
 					if (
 						$ex->getResponse() !== null
 						&& $ex->getResponse()->getStatusCode() >= StatusCodeInterface::STATUS_BAD_REQUEST
@@ -503,7 +505,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 								[
 									'connector' => $device->getConnector(),
 									'identifier' => $device->getIdentifier(),
-									'state' => DevicesTypes\ConnectionState::UNKNOWN,
+									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
 						);
@@ -539,7 +541,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'write-channel-property-state-message-consumer',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $connector->getId()->toString(),
 							],

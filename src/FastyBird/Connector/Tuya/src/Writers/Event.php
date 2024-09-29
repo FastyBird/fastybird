@@ -16,12 +16,13 @@
 namespace FastyBird\Connector\Tuya\Writers;
 
 use FastyBird\Connector\Tuya\Documents;
-use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
+use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
-use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Symfony\Component\EventDispatcher;
+use Throwable;
 
 /**
  * Event based properties writer
@@ -44,58 +45,67 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 		];
 	}
 
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\Runtime
-	 */
 	public function stateChanged(
 		DevicesEvents\ChannelPropertyStateEntityCreated|DevicesEvents\ChannelPropertyStateEntityUpdated $event,
 	): void
 	{
-		if (
-			$event->getGet()->getExpectedValue() === null
-			|| $event->getGet()->getPending() !== true
-		) {
-			return;
-		}
+		try {
+			if (
+				$event->getGet()->getExpectedValue() === null
+				|| $event->getGet()->getPending() !== true
+			) {
+				return;
+			}
 
-		$findChannelQuery = new Queries\Configuration\FindChannels();
-		$findChannelQuery->byId($event->getProperty()->getChannel());
+			$findChannelQuery = new Queries\Configuration\FindChannels();
+			$findChannelQuery->byId($event->getProperty()->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy(
-			$findChannelQuery,
-			Documents\Channels\Channel::class,
-		);
+			$channel = $this->channelsConfigurationRepository->findOneBy(
+				$findChannelQuery,
+				Documents\Channels\Channel::class,
+			);
 
-		if ($channel === null) {
-			return;
-		}
+			if ($channel === null) {
+				return;
+			}
 
-		$findDeviceQuery = new Queries\Configuration\FindDevices();
-		$findDeviceQuery->forConnector($this->connector);
-		$findDeviceQuery->byId($channel->getDevice());
+			$findDeviceQuery = new Queries\Configuration\FindDevices();
+			$findDeviceQuery->forConnector($this->connector);
+			$findDeviceQuery->byId($channel->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy(
-			$findDeviceQuery,
-			Documents\Devices\Device::class,
-		);
+			$device = $this->devicesConfigurationRepository->findOneBy(
+				$findDeviceQuery,
+				Documents\Devices\Device::class,
+			);
 
-		if ($device === null) {
-			return;
-		}
+			if ($device === null) {
+				return;
+			}
 
-		$this->queue->append(
-			$this->messageBuilder->create(
-				Queue\Messages\WriteChannelPropertyState::class,
+			$this->queue->append(
+				$this->messageBuilder->create(
+					Queue\Messages\WriteChannelPropertyState::class,
+					[
+						'connector' => $this->connector->getId(),
+						'device' => $device->getId(),
+						'channel' => $channel->getId(),
+						'property' => $event->getProperty()->getId(),
+						'state' => $event->getGet()->toArray(),
+					],
+				),
+			);
+
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'Characteristic value could not be prepared for writing',
 				[
-					'connector' => $this->connector->getId(),
-					'device' => $device->getId(),
-					'channel' => $channel->getId(),
-					'property' => $event->getProperty()->getId(),
-					'state' => $event->getGet()->toArray(),
+					'source' => MetadataTypes\Sources\Connector::TUYA->value,
+					'type' => 'event-writer',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
 				],
-			),
-		);
+			);
+		}
 	}
 
 }
