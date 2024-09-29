@@ -62,6 +62,7 @@ class ConnectorPropertiesManager implements DevicesModels\States\Connectors\IMan
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ConnectorProperty|false
