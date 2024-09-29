@@ -637,7 +637,7 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 							'category' => 'generic',
 							'identifier' => 'saturation',
 							'name' => null,
-							'data_type' => 'uchar',
+							'data_type' => 'float',
 							'unit' => null,
 							'format' => [
 								0 => 0.0,
@@ -656,11 +656,11 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 							'children' => [],
 						],
 						'brightness' => [
-							'type' => 'dynamic',
+							'type' => 'mapped',
 							'category' => 'generic',
 							'identifier' => 'brightness',
 							'name' => null,
-							'data_type' => 'uchar',
+							'data_type' => 'int',
 							'unit' => null,
 							'format' => [
 								0 => 0.0,
@@ -677,7 +677,6 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 							'queryable' => true,
 							'owner' => null,
 							'parent' => 'c3ea1254-a71b-46ba-9bd1-dde826615d34',
-							'children' => [],
 						],
 					],
 				],
