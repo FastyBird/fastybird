@@ -62,6 +62,7 @@ class ChannelPropertiesManager implements DevicesModels\States\Channels\IManager
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\ChannelProperty|false

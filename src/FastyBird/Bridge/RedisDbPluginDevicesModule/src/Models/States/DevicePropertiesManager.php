@@ -62,6 +62,7 @@ class DevicePropertiesManager implements DevicesModels\States\Devices\IManager
 	}
 
 	/**
+	 * @throws RedisDbExceptions\InvalidArgument
 	 * @throws RedisDbExceptions\InvalidState
 	 */
 	public function update(Uuid\UuidInterface $id, Utils\ArrayHash $values): States\DeviceProperty|false

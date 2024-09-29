@@ -112,6 +112,7 @@ class StatesManager
 	/**
 	 * @phpstan-return T
 	 *
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 */
 	public function update(
@@ -125,6 +126,8 @@ class StatesManager
 
 		} catch (Exceptions\NotUpdated) {
 			return false;
+		} catch (Exceptions\NotFound) {
+			$raw = $this->createKey($id, $values, $this->entity::getCreateFields(), $database);
 		}
 
 		try {
@@ -253,7 +256,7 @@ class StatesManager
 			$raw = $this->client->get($id->toString());
 
 			if (!is_string($raw)) {
-				throw new Exceptions\InvalidState('Stored record could not be loaded from database');
+				throw new Exceptions\NotFound('Stored record could not be loaded from database');
 			}
 
 			$data = Utils\Json::decode($raw);
