@@ -147,11 +147,6 @@ final class LightBulb extends Generic
 		) {
 			$brightness->setActualValue($hsb->getBrightness());
 			$brightness->setExpectedValue(null);
-		} elseif (
-			$brightness?->getProperty() !== null
-			&& $brightness->getProperty()::getType() === DevicesTypes\PropertyType::MAPPED->value
-		) {
-			$brightness->setExpectedValue($hsb->getBrightness());
 		}
 	}
 
