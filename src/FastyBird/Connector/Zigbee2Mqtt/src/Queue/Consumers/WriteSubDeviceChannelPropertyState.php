@@ -35,6 +35,7 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use Nette;
 use Nette\Utils;
 use stdClass;
@@ -310,6 +311,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 			DevicesDocuments\Channels\Properties\Dynamic::class,
 		);
 
+		$updateCallbacks = [];
+
 		if (
 			preg_match(Zigbee2Mqtt\Constants::CHANNEL_IDENTIFIER_REGEX, $channel->getIdentifier(), $matches) === 1
 			&& Types\ExposeType::tryFrom($matches['type']) !== null
@@ -322,6 +325,16 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 						$state->getExpectedValue(),
 					);
 
+					$updateCallbacks[] = function () use ($property, $state): void {
+						await($this->channelPropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+							]),
+							MetadataTypes\Sources\Connector::SHELLY,
+						));
+					};
 				} else {
 					try {
 						$value = $this->stateRepository->get($property->getId());
@@ -355,6 +368,17 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
 						$state->getExpectedValue(),
 					);
+
+					$updateCallbacks[] = function () use ($property, $state): void {
+						await($this->channelPropertiesStatesManager->set(
+							$property,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+							]),
+							MetadataTypes\Sources\Connector::SHELLY,
+						));
+					};
 
 				} else {
 					try {
@@ -447,7 +471,9 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					),
 					Utils\Json::encode($payload),
 				)
-				->then(function () use ($connector, $bridge, $device, $channel, $message): void {
+				->then(function () use ($connector, $bridge, $device, $channel, $updateCallbacks, $message): void {
+					Utils\Arrays::invoke($updateCallbacks);
+
 					$this->logger->debug(
 						'Channel state was successfully sent to device',
 						[
