@@ -849,10 +849,16 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 */
 
 		$builder->addDefinition($this->prefix('utilities.devices.connection'), new DI\Definitions\ServiceDefinition())
-			->setType(Utilities\DeviceConnection::class);
+			->setType(Utilities\DeviceConnection::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		$builder->addDefinition($this->prefix('utilities.connector.connection'), new DI\Definitions\ServiceDefinition())
-			->setType(Utilities\ConnectorConnection::class);
+			->setType(Utilities\ConnectorConnection::class)
+			->setArguments([
+				'logger' => $logger,
+			]);
 
 		/**
 		 * COMMANDS
