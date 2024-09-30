@@ -23,9 +23,6 @@ final class ScalarEntity extends Entity
 		parent::__construct($value);
 	}
 
-	/**
-	 * @return static
-	 */
 	public static function from(mixed $value): self
 	{
 		return new self($value);

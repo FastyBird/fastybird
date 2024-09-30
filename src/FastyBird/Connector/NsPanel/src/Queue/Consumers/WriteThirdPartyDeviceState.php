@@ -33,12 +33,15 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
+use Nette\Utils;
 use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
+use function assert;
 use function React\Async\await;
 use function strval;
 
@@ -411,6 +414,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
+		assert($state !== null);
+
 		try {
 			$this->getApiClient($connector)->reportDeviceState(
 				$serialNumber,
@@ -418,7 +423,16 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($connector, $device, $channel, $propertyToUpdate, $message): void {
+				->then(function () use ($connector, $device, $channel, $propertyToUpdate, $state, $message): void {
+					await($this->channelPropertiesStatesManager->set(
+						$propertyToUpdate,
+						Utils\ArrayHash::from([
+							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+						]),
+						MetadataTypes\Sources\Connector::SHELLY,
+					));
+
 					$this->logger->debug(
 						'Channel state was successfully sent to device',
 						[
@@ -442,13 +456,11 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				})
 				->catch(
 					function (Throwable $ex) use ($message, $connector, $gateway, $device, $channel, $propertyToUpdate): void {
-						if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-							await($this->channelPropertiesStatesManager->setPendingState(
-								$propertyToUpdate,
-								false,
-								MetadataTypes\Sources\Connector::NS_PANEL,
-							));
-						}
+						await($this->channelPropertiesStatesManager->setPendingState(
+							$propertyToUpdate,
+							false,
+							MetadataTypes\Sources\Connector::NS_PANEL,
+						));
 
 						$extra = [];
 

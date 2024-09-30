@@ -427,7 +427,6 @@ final class WriteChannelPropertyState implements Queue\Consumer
 					Utils\ArrayHash::from([
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-						DevicesStates\Property::PENDING_FIELD => false,
 					]),
 					MetadataTypes\Sources\Connector::SHELLY,
 				));

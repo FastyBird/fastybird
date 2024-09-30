@@ -34,8 +34,10 @@ use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
+use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
+use Nette\Utils;
 use RuntimeException;
 use Throwable;
 use TypeError;
@@ -501,7 +503,16 @@ final class WriteChannelPropertyState implements Queue\Consumer
 		}
 
 		$result->then(
-			function () use ($connector, $device, $channel, $property, $message): void {
+			function () use ($connector, $device, $channel, $property, $state, $message): void {
+				await($this->channelPropertiesStatesManager->set(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					]),
+					MetadataTypes\Sources\Connector::SHELLY,
+				));
+
 				$this->logger->debug(
 					'Channel state was successfully sent to device',
 					[
