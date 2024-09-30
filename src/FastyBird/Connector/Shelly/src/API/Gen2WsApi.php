@@ -332,18 +332,6 @@ final class Gen2WsApi
 				$this->connecting = false;
 				$this->connected = false;
 
-				$this->logger->error(
-					'Could not create device client',
-					[
-						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-						'type' => 'gen2-ws-api',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
-						'device' => [
-							'id' => $this->id->toString(),
-						],
-					],
-				);
-
 				$connecting->then(static function (Socket\ConnectionInterface $connection): void {
 					$connection->close();
 				});
@@ -844,18 +832,6 @@ final class Gen2WsApi
 		);
 
 		$connection->on('error', function (Throwable $ex): void {
-			$this->logger->error(
-				'An error occurred on device connection',
-				[
-					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
-					'type' => 'gen2-ws-api',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
-					'device' => [
-						'id' => $this->id->toString(),
-					],
-				],
-			);
-
 			$this->lost();
 
 			Utils\Arrays::invoke($this->onError, $ex);

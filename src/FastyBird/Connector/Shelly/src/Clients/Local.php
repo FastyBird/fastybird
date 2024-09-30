@@ -238,7 +238,7 @@ final class Local implements Client
 							unset($this->gen2DevicesWsClients[$device->getId()->toString()]);
 
 							$this->logger->error(
-								'Device websocket connection could not be created',
+								'Connection with device through websocket could not be created',
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'local-client',
