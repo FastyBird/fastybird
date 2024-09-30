@@ -23,6 +23,7 @@ jobs:
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
+      redis: true
 
     strategy:
       fail-fast: false
@@ -40,6 +41,7 @@ jobs:
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
+      redis: true
 
     strategy:
       fail-fast: false
@@ -57,6 +59,7 @@ jobs:
     secrets: inherit
     with:
       php: "${{ matrix.php-version }}"
+      redis: true
 
     strategy:
       fail-fast: false

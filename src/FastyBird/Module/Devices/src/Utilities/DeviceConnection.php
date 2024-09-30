@@ -23,6 +23,7 @@ use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -35,6 +36,7 @@ use Nette\Utils;
 use TypeError;
 use ValueError;
 use function assert;
+use function sprintf;
 
 /**
  * Device connection states manager
@@ -55,6 +57,7 @@ final class DeviceConnection
 		private readonly Models\Configuration\Devices\Properties\Repository $devicesPropertiesConfigurationRepository,
 		private readonly Models\States\DevicePropertiesManager $propertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly Devices\Logger $logger,
 	)
 	{
 	}
@@ -129,6 +132,16 @@ final class DeviceConnection
 				States\Property::EXPECTED_VALUE_FIELD => null,
 			]),
 			MetadataTypes\Sources\Module::DEVICES,
+		);
+
+		$this->logger->info(
+			sprintf('Device state was changed to: %s', $state->value),
+			[
+				'source' => MetadataTypes\Sources\Module::DEVICES->value,
+				'type' => 'device-connection-helper',
+				'device' => $device->getId()->toString(),
+				'state' => $state->value,
+			],
 		);
 
 		return false;
