@@ -31,9 +31,9 @@ final readonly class Press implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PressPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PRESS->value)]
-		private Types\Payloads\PressPayload $press,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Press::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::PRESS->value)]
+		private Types\Payloads\Press $press,
 	)
 	{
 	}
@@ -43,10 +43,10 @@ final readonly class Press implements State
 		return Types\Capability::PRESS;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::PRESS->value => $this->press,
+			Types\Attribute::PRESS->value => $this->press,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class Press implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::PRESS->value} = $this->press->value;
+		$json->{Types\Attribute::PRESS->value} = $this->press->value;
 
 		return $json;
 	}

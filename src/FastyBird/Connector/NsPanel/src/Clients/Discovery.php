@@ -157,9 +157,7 @@ final class Discovery
 	{
 		$deferred = new Promise\Deferred();
 
-		$lanApi = $this->lanApiFactory->create(
-			$this->connector->getIdentifier(),
-		);
+		$lanApi = $this->lanApiFactory->create($this->connector->getId());
 
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null

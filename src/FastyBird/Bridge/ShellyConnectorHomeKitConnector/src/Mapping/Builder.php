@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Helpers
+ * @subpackage     Mapping
  * @since          1.0.0
  *
  * @date           30.11.23
@@ -27,7 +27,7 @@ use const DIRECTORY_SEPARATOR;
  * Mapping builder
  *
  * @package        FastyBird:HomeKitConnector!
- * @subpackage     Helpers
+ * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

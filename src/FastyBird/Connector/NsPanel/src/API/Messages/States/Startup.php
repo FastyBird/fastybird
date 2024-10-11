@@ -31,9 +31,9 @@ final readonly class Startup implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP->value)]
-		private Types\Payloads\StartupPayload $startup,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Startup::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::STARTUP->value)]
+		private Types\Payloads\Startup $startup,
 	)
 	{
 	}
@@ -43,10 +43,10 @@ final readonly class Startup implements State
 		return Types\Capability::STARTUP;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::STARTUP->value => $this->startup,
+			Types\Attribute::STARTUP->value => $this->startup,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class Startup implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::STARTUP->value} = $this->startup->value;
+		$json->{Types\Attribute::STARTUP->value} = $this->startup->value;
 
 		return $json;
 	}

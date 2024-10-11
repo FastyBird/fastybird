@@ -11,7 +11,6 @@ use FastyBird\Connector\NsPanel\Controllers;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
 use FastyBird\Connector\NsPanel\Middleware;
-use FastyBird\Connector\NsPanel\Models;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
@@ -70,9 +69,6 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Hydrators\Devices\ThirdPartyDevice::class, false));
 		self::assertNotNull($container->getByType(Hydrators\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Models\StateRepository::class, false));
-
-		self::assertNotNull($container->getByType(Helpers\Loader::class, false));
 		self::assertNotNull($container->getByType(Helpers\MessageBuilder::class, false));
 		self::assertNotNull($container->getByType(Helpers\Connectors\Connector::class, false));
 		self::assertNotNull($container->getByType(Helpers\Devices\Gateway::class, false));

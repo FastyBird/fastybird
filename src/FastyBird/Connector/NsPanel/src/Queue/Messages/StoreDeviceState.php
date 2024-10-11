@@ -19,7 +19,6 @@ use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_map;
-use function array_merge;
 
 /**
  * Store device state message
@@ -29,29 +28,40 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDeviceState extends Device implements Message
+final readonly class StoreDeviceState implements Message
 {
 
 	/**
 	 * @param array<CapabilityState> $state
 	 */
 	public function __construct(
-		Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $gateway,
-		string $identifier,
+		private Uuid\UuidInterface $connector,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $gateway,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(CapabilityState::class),
 		)]
-		private readonly array $state,
+		private array $state,
 	)
 	{
-		parent::__construct($connector, $identifier);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
 	}
 
 	public function getGateway(): Uuid\UuidInterface
 	{
 		return $this->gateway;
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
 	}
 
 	/**
@@ -67,13 +77,15 @@ final class StoreDeviceState extends Device implements Message
 	 */
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
+		return [
+			'connector' => $this->getConnector()->toString(),
 			'gateway' => $this->getGateway()->toString(),
+			'device' => $this->getDevice()->toString(),
 			'state' => array_map(
 				static fn (CapabilityState $state): array => $state->toArray(),
 				$this->getState(),
 			),
-		]);
+		];
 	}
 
 }

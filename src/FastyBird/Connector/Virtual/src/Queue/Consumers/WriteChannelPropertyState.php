@@ -358,7 +358,7 @@ final class WriteChannelPropertyState implements Queue\Consumer
 						DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
 						DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
 					]),
-					MetadataTypes\Sources\Connector::SHELLY,
+					MetadataTypes\Sources\Connector::VIRTUAL,
 				));
 
 				$this->logger->debug(

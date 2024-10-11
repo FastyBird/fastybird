@@ -67,7 +67,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 
 		$findDeviceQuery = new Queries\Entities\FindThirdPartyDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
-		$findDeviceQuery->byIdentifier($message->getIdentifier());
+		$findDeviceQuery->byId($message->getDevice());
 
 		$device = $this->devicesRepository->findOneBy($findDeviceQuery, Entities\Devices\ThirdPartyDevice::class);
 
@@ -84,7 +84,7 @@ final class StoreThirdPartyDevice implements Queue\Consumer
 						'id' => $message->getGateway()->toString(),
 					],
 					'device' => [
-						'identifier' => $message->getIdentifier(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'data' => $message->toArray(),
 				],

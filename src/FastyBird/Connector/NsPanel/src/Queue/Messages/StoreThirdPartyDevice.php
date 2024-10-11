@@ -18,7 +18,6 @@ namespace FastyBird\Connector\NsPanel\Queue\Messages;
 use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_merge;
 
 /**
  * Store NS Panel third-party device details message
@@ -28,25 +27,36 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreThirdPartyDevice extends Device implements Message
+final readonly class StoreThirdPartyDevice implements Message
 {
 
 	public function __construct(
-		Uuid\UuidInterface $connector,
 		#[ApplicationObjectMapper\Rules\UuidValue()]
-		private readonly Uuid\UuidInterface $gateway,
-		string $identifier,
+		private Uuid\UuidInterface $connector,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $gateway,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('gateway_identifier')]
-		private readonly string $gatewayIdentifier,
+		private string $gatewayIdentifier,
 	)
 	{
-		parent::__construct($connector, $identifier);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
 	}
 
 	public function getGateway(): Uuid\UuidInterface
 	{
 		return $this->gateway;
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
 	}
 
 	public function getGatewayIdentifier(): string
@@ -59,10 +69,12 @@ final class StoreThirdPartyDevice extends Device implements Message
 	 */
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
+		return [
+			'connector' => $this->getConnector()->toString(),
 			'gateway' => $this->getGateway()->toString(),
+			'device' => $this->getDevice()->toString(),
 			'gateway_identifier' => $this->getGatewayIdentifier(),
-		]);
+		];
 	}
 
 }

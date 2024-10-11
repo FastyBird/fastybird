@@ -26,8 +26,9 @@ use FastyBird\Connector\NsPanel\Controllers;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Hydrators;
+use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Middleware;
-use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Schemas;
@@ -265,10 +266,118 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Devices\ThirdPartyDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('schemas.channel'),
+			$this->prefix('schemas.channel.battery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Schemas\Channels\Channel::class);
+			->setType(Schemas\Channels\Battery::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.brightness'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Brightness::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.cameraStream'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\CameraStream::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.colorRgb'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\ColorRgb::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.colorTemperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\ColorTemperature::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.detect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Detect::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.fault'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Fault::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.humidity'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Humidity::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.illuminationLevel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\IlluminationLevel::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.motorCalibration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\MotorCalibration::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.motorControl'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\MotorControl::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.motorReverse'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\MotorReverse::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.percentage'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Percentage::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.power'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Power::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.press'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Press::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.rssi'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Rssi::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.startup'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Startup::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.temperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Temperature::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.toggle'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Toggle::class);
 
 		/**
 		 * JSON-API HYDRATORS
@@ -299,24 +408,122 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Devices\ThirdPartyDevice::class);
 
 		$builder->addDefinition(
-			$this->prefix('hydrators.channel'),
+			$this->prefix('hydrators.channel.battery'),
 			new DI\Definitions\ServiceDefinition(),
 		)
-			->setType(Hydrators\Channels\Channel::class);
+			->setType(Hydrators\Channels\Battery::class);
 
-		/**
-		 * MODELS
-		 */
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.brightness'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Brightness::class);
 
-		$builder->addDefinition($this->prefix('models.stateRepository'), new DI\Definitions\ServiceDefinition())
-			->setType(Models\StateRepository::class);
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.cameraStream'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\CameraStream::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.colorRgb'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\ColorRgb::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.colorTemperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\ColorTemperature::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.detect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Detect::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.fault'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Fault::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.humidity'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Humidity::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.illuminationLevel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\IlluminationLevel::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.motorCalibration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\MotorCalibration::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.motorControl'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\MotorControl::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.motorReverse'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\MotorReverse::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.percentage'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Percentage::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.power'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Power::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.press'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Press::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.rssi'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Rssi::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.startup'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Startup::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.temperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Temperature::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.toggle'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Toggle::class);
 
 		/**
 		 * HELPERS
 		 */
-
-		$builder->addDefinition($this->prefix('helpers.loader'), new DI\Definitions\ServiceDefinition())
-			->setType(Helpers\Loader::class);
 
 		$builder->addDefinition($this->prefix('helpers.connector'), new DI\Definitions\ServiceDefinition())
 			->setType(Helpers\Connectors\Connector::class);
@@ -363,6 +570,30 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Controllers\DirectiveController::class)
 			->addSetup('setLogger', [$logger])
 			->addTag('nette.inject');
+
+		/**
+		 * METADATA MAPPING
+		 */
+
+		$builder->addDefinition($this->prefix('mapping.builder'), new DI\Definitions\ServiceDefinition())
+			->setType(Mapping\Builder::class);
+
+		/**
+		 * COMMUNICATION PROTOCOL
+		 */
+
+		$builder->addDefinition($this->prefix('protocol.driver'), new DI\Definitions\ServiceDefinition())
+			->setType(Protocol\Driver::class);
+
+		$builder->addDefinition($this->prefix('protocol.loader'), new DI\Definitions\ServiceDefinition())
+			->setType(Protocol\Loader::class)
+			->setArguments([
+				'logger' => $logger,
+				'deviceFactories' => [],
+				'capabilityFactories' => [],
+				'attributeFactories' => [],
+				'configurationsFactories' => [],
+			]);
 
 		/**
 		 * COMMANDS

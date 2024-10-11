@@ -33,13 +33,14 @@ use function strval;
 /**
  * NS Panel channel entity hydrator
  *
- * @extends DevicesHydrators\Channels\Channel<Entities\Channels\Channel>
+ * @template  T of Entities\Channels\Channel
+ * @extends   DevicesHydrators\Channels\Channel<T>
  *
  * @package        FastyBird:NsPanelConnector!
  * @subpackage     Hydrators
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class Channel extends DevicesHydrators\Channels\Channel
+abstract class Channel extends DevicesHydrators\Channels\Channel
 {
 
 	public function __construct(
@@ -50,11 +51,6 @@ final class Channel extends DevicesHydrators\Channels\Channel
 	)
 	{
 		parent::__construct($managerRegistry, $translator, $crudReader);
-	}
-
-	public function getEntityName(): string
-	{
-		return Entities\Channels\Channel::class;
 	}
 
 	/**

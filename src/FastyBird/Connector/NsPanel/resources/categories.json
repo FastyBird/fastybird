@@ -1,121 +1,155 @@
 {
   "plug": {
-    "capabilities": [
-      "power",
-      "rssi"
+    "category": "plug",
+    "description": "Plug",
+    "requiredCapabilities": [
+      "power"
     ],
     "optionalCapabilities": [
-      "startup"
+      "startup-power",
+      "rssi"
     ]
   },
   "switch": {
-    "capabilities": [
-      "power",
-      "rssi"
+    "category": "switch",
+    "description": "Switch",
+    "requiredCapabilities": [
+      "power"
     ],
     "optionalCapabilities": [
-      "startup",
-      "toggle"
+      "toggle",
+      "startup-power",
+      "startup-toggle",
+      "rssi"
     ]
   },
   "light": {
-    "capabilities": [
-      "power",
-      "brightness",
-      "color-temperature",
-      "rssi"
+    "category": "light",
+    "description": "Light",
+    "requiredCapabilities": [
+      "power"
     ],
     "optionalCapabilities": [
-      "color-rgb"
+      "brightness",
+      "color-rgb",
+      "color-temperature",
+      "rssi"
     ]
   },
   "curtain": {
-    "capabilities": [
+    "category": "curtain",
+    "description": "Curtain",
+    "requiredCapabilities": [
       "motor-control",
       "motor-reverse",
       "motor-clb",
-      "percentage",
-      "battery",
-      "rssi"
+      "percentage"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "contactSensor": {
-    "capabilities": [
-      "detect",
-      "battery",
-      "rssi"
+    "category": "contactSensor",
+    "description": "Door or window sensor",
+    "requiredCapabilities": [
+      "detect"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "motionSensor": {
-    "capabilities": [
-      "detect",
-      "battery",
-      "rssi"
+    "category": "motionSensor",
+    "description": "Motion sensor",
+    "requiredCapabilities": [
+      "detect"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "temperatureSensor": {
-    "capabilities": [
+    "category": "temperatureSensor",
+    "description": "Temperature sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "humiditySensor": {
-    "capabilities": [
+    "category": "humiditySensor",
+    "description": "Humidity sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "temperatureAndHumiditySensor": {
-    "capabilities": [
+    "category": "temperatureAndHumiditySensor",
+    "description": "Temperature and humidity sensor",
+    "requiredCapabilities": [
       "temperature",
-      "humidity",
-      "battery",
-      "rssi"
+      "humidity"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "waterLeakDetector": {
-    "capabilities": [
-      "detect",
-      "battery",
-      "rssi"
+    "category": "waterLeakDetector",
+    "description": "Water leak detector",
+    "requiredCapabilities": [
+      "detect"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "smokeDetector": {
-    "capabilities": [
-      "detect",
-      "battery",
-      "rssi"
+    "category": "smokeDetector",
+    "description": "Smoke detector",
+    "requiredCapabilities": [
+      "detect"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "button": {
-    "capabilities": [
-      "press",
-      "battery",
-      "rssi"
+    "category": "button",
+    "description": "Wireless button",
+    "requiredCapabilities": [
+      "press"
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
   "camera": {
-    "capabilities": [
+    "category": "camera",
+    "description": "Camera",
+    "requiredCapabilities": [
+      "camera-stream"
     ],
     "optionalCapabilities": [
     ]
   },
   "sensor": {
-    "capabilities": [
+    "category": "sensor",
+    "description": "General sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
     ]

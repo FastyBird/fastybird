@@ -188,7 +188,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
-									'identifier' => $device->getIdentifier(),
+									'device' => $device->getId(),
 									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
@@ -206,7 +206,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								'channel' => $channel->getId(),
 								'property' => $document->getId(),
 								'state' => array_merge(
-									$document->getRead()->toArray(),
+									$document->getGet()->toArray(),
 									[
 										'id' => $document->getId(),
 										'valid' => $document->isValid(),
@@ -267,7 +267,7 @@ class Exchange extends Periodic implements Writer, ExchangeConsumers\Consumer
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $device->getConnector(),
-									'identifier' => $device->getIdentifier(),
+									'device' => $device->getId(),
 									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),

@@ -312,7 +312,7 @@ final class StoreSubDevice implements Queue\Consumer
 					'id' => $message->getGateway()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'identifier' => $message->getIdentifier(),
 				],
 				'data' => $message->toArray(),
 			],

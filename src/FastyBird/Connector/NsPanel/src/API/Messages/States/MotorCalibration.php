@@ -31,9 +31,9 @@ final readonly class MotorCalibration implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibrationPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CALIBRATION->value)]
-		private Types\Payloads\MotorCalibrationPayload $motorCalibration,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibration::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::MOTOR_CALIBRATION->value)]
+		private Types\Payloads\MotorCalibration $motorCalibration,
 	)
 	{
 	}
@@ -43,10 +43,10 @@ final readonly class MotorCalibration implements State
 		return Types\Capability::MOTOR_CALIBRATION;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::MOTOR_CALIBRATION->value => $this->motorCalibration,
+			Types\Attribute::MOTOR_CALIBRATION->value => $this->motorCalibration,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class MotorCalibration implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CALIBRATION->value} = $this->motorCalibration->value;
+		$json->{Types\Attribute::MOTOR_CALIBRATION->value} = $this->motorCalibration->value;
 
 		return $json;
 	}

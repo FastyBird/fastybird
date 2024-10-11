@@ -27,7 +27,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class WriteDeviceState implements Message
+abstract readonly class WriteDeviceState implements Message
 {
 
 	public function __construct(

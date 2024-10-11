@@ -20,34 +20,21 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
-use FastyBird\Module\Devices\Documents as DevicesDocuments;
-use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
-use Nette\Utils;
-use Psr\EventDispatcher as PsrEventDispatcher;
 use React\Promise;
 use Throwable;
 use TypeError;
 use ValueError;
-use function array_diff;
-use function array_key_exists;
 use function array_merge;
-use function is_array;
-use function is_string;
-use function preg_match;
-use function sprintf;
 use function strval;
 
 /**
@@ -70,36 +57,23 @@ final class Device implements Client
 		private readonly API\LanApiFactory $lanApiFactory,
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
-		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
-		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
-		private readonly Helpers\Channels\Channel $channelHelper,
-		private readonly Helpers\Loader $loader,
-		private readonly Models\StateRepository $stateRepository,
+		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->lanApi = $this->lanApiFactory->create($this->connector->getIdentifier());
+		$this->lanApi = $this->lanApiFactory->create($this->connector->getId());
 	}
 
 	/**
-	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
-	 * @throws Nette\IOException
 	 * @throws TypeError
-	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws ValueError
 	 */
 	public function connect(): void
@@ -118,33 +92,36 @@ final class Device implements Client
 			$accessToken = $this->gatewayHelper->getAccessToken($gateway);
 
 			if ($ipAddress === null || $accessToken === null) {
+				$this->queue->append(
+					$this->messageBuilder->create(
+						Queue\Messages\StoreDeviceConnectionState::class,
+						[
+							'connector' => $gateway->getConnector(),
+							'device' => $gateway->getId(),
+							'state' => DevicesTypes\ConnectionState::ALERT,
+						],
+					),
+				);
+
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
-			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->forParent($gateway);
+			$protocolDevices = $this->devicesDriver->findDevices($gateway->getId());
 
-			$devices = $this->devicesConfigurationRepository->findAllBy(
-				$findDevicesQuery,
-				Documents\Devices\ThirdPartyDevice::class,
-			);
+			$devicesToSync = [];
 
-			$categoriesMetadata = $this->loader->loadCategories();
+			foreach ($protocolDevices as $protocolDevice) {
+				if (!$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice) {
+					continue;
+				}
 
-			$syncDevices = [];
-
-			foreach ($devices as $device) {
-				if (!array_key_exists(
-					$this->thirdPartyDeviceHelper->getDisplayCategory($device)->value,
-					(array) $categoriesMetadata,
-				)) {
+				if ($protocolDevice->getGatewayIdentifier() === null) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
 							[
-								'connector' => $gateway->getConnector(),
-								'identifier' => $gateway->getIdentifier(),
+								'connector' => $protocolDevice->getConnector(),
+								'device' => $protocolDevice->getId(),
 								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
@@ -153,154 +130,7 @@ final class Device implements Client
 					continue;
 				}
 
-				if (
-					!$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
-						$device,
-					)->value] instanceof Utils\ArrayHash
-					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
-						$device,
-					)->value]->offsetExists('capabilities')
-					|| !$categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
-						$device,
-					)->value]->offsetGet(
-						'capabilities',
-					) instanceof Utils\ArrayHash
-				) {
-					$this->dispatcher?->dispatch(new DevicesEvents\TerminateConnector(
-						MetadataTypes\Sources\Connector::NS_PANEL,
-						'Connector configuration is corrupted',
-					));
-
-					return;
-				}
-
-				$requiredCapabilities = (array) $categoriesMetadata[$this->thirdPartyDeviceHelper->getDisplayCategory(
-					$device,
-				)->value]->offsetGet('capabilities');
-				$deviceCapabilities = [];
-
-				$capabilities = [];
-				$tags = [];
-
-				$findChannelsQuery = new Queries\Configuration\FindChannels();
-				$findChannelsQuery->forDevice($device);
-
-				$channels = $this->channelsConfigurationRepository->findAllBy(
-					$findChannelsQuery,
-					Documents\Channels\Channel::class,
-				);
-
-				foreach ($channels as $channel) {
-					$deviceCapabilities[] = $this->channelHelper->getCapability($channel)->value;
-
-					$capabilityName = null;
-
-					if (
-						preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches) === 1
-						&& array_key_exists('key', $matches)
-					) {
-						$capabilityName = $matches['key'];
-					}
-
-					$capabilities[] = [
-						'capability' => $this->channelHelper->getCapability($channel)->value,
-						'permission' => (
-							$this->channelHelper->getCapability($channel)->hasReadWritePermission()
-								? Types\Permission::READ_WRITE
-								: Types\Permission::READ
-						)->value,
-						'name' => $capabilityName,
-					];
-
-					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelVariableProperties();
-					$findChannelPropertiesQuery->forChannel($channel);
-
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findChannelPropertiesQuery,
-						DevicesDocuments\Channels\Properties\Variable::class,
-					);
-
-					foreach ($properties as $property) {
-						if (
-							is_string($property->getValue())
-							&& preg_match(
-								NsPanel\Constants::PROPERTY_TAG_IDENTIFIER,
-								$property->getIdentifier(),
-								$matches,
-							) === 1
-						) {
-							$tags[$matches['tag']] = $property->getValue();
-						}
-					}
-
-					$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-					$findChannelPropertiesQuery->forChannel($channel);
-
-					$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-						$findChannelPropertiesQuery,
-						DevicesDocuments\Channels\Properties\Dynamic::class,
-					);
-
-					foreach ($properties as $property) {
-						$state = $this->channelPropertiesStatesManager->read(
-							$property,
-							MetadataTypes\Sources\Connector::NS_PANEL,
-						);
-
-						if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
-							$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
-						}
-					}
-
-					if (
-						$capabilityName !== null
-						&& $this->channelHelper->getCapability($channel) === Types\Capability::TOGGLE
-					) {
-						if (!array_key_exists('toggle', $tags)) {
-							$tags['toggle'] = [];
-						}
-
-						if (is_array($tags['toggle'])) {
-							$tags['toggle'][$capabilityName] = $channel->getName() ?? $channel->getIdentifier();
-						}
-					}
-				}
-
-				// Device have to have configured all required capabilities
-				if (array_diff($requiredCapabilities, $deviceCapabilities) !== []) {
-					$this->queue->append(
-						$this->messageBuilder->create(
-							Queue\Messages\StoreDeviceConnectionState::class,
-							[
-								'connector' => $device->getConnector(),
-								'identifier' => $device->getIdentifier(),
-								'state' => DevicesTypes\ConnectionState::ALERT,
-							],
-						),
-					);
-
-					continue;
-				}
-
-				$syncDevices[] = [
-					'third_serial_number' => $device->getId()->toString(),
-					'name' => $device->getName() ?? $device->getIdentifier(),
-					'display_category' => $this->thirdPartyDeviceHelper->getDisplayCategory($device)->value,
-					'capabilities' => $capabilities,
-					'state' => [],
-					'tags' => $tags,
-					'manufacturer' => $this->thirdPartyDeviceHelper->getManufacturer($device),
-					'model' => $this->thirdPartyDeviceHelper->getModel($device),
-					'firmware_version' => $this->thirdPartyDeviceHelper->getFirmwareVersion($device),
-					'service_address' => sprintf(
-						'http://%s:%d/do-directive/%s/%s',
-						Helpers\Network::getLocalAddress(),
-						$this->connectorHelper->getPort($this->connector),
-						$gateway->getId()->toString(),
-						$device->getId()->toString(),
-					),
-					'online' => true, // Virtual device is always online
-				];
+				$devicesToSync[] = $protocolDevice->toRepresentation();
 			}
 
 			$deferred = new Promise\Deferred();
@@ -308,20 +138,20 @@ final class Device implements Client
 			$promise = $deferred->promise();
 
 			try {
-				if ($syncDevices !== []) {
+				if ($devicesToSync !== []) {
 					$this->lanApi->synchroniseDevices(
-						$syncDevices,
+						$devicesToSync,
 						$ipAddress,
 						$accessToken,
 					)
 						->then(function (API\Messages\Response\SyncDevices $response) use ($gateway, $deferred): void {
 							$this->logger->debug(
-								'NS Panel third-party devices was successfully synchronised',
+								'NS Panel third-party devices were successfully synchronised',
 								[
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $this->connector->getId()->toString(),
+										'id' => $gateway->getConnector()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
@@ -330,23 +160,15 @@ final class Device implements Client
 							);
 
 							foreach ($response->getPayload()->getEndpoints() as $endpoint) {
-								$findDeviceQuery = new Queries\Configuration\FindDevices();
-								$findDeviceQuery->byId($endpoint->getThirdSerialNumber());
-								$findDeviceQuery->forConnector($this->connector);
-								$findDeviceQuery->forParent($gateway);
+								$protocolDevice = $this->devicesDriver->findDevice($endpoint->getThirdSerialNumber());
 
-								$device = $this->devicesConfigurationRepository->findOneBy(
-									$findDeviceQuery,
-									Documents\Devices\Device::class,
-								);
-
-								if ($device !== null) {
+								if ($protocolDevice instanceof Protocol\Devices\ThirdPartyDevice) {
 									$this->queue->append(
 										$this->messageBuilder->create(
 											Queue\Messages\StoreDeviceConnectionState::class,
 											[
-												'connector' => $device->getConnector(),
-												'identifier' => $device->getIdentifier(),
+												'connector' => $protocolDevice->getConnector(),
+												'device' => $protocolDevice->getId(),
 												'state' => DevicesTypes\ConnectionState::CONNECTED,
 											],
 										),
@@ -356,27 +178,29 @@ final class Device implements Client
 										$this->messageBuilder->create(
 											Queue\Messages\StoreThirdPartyDevice::class,
 											[
-												'connector' => $device->getConnector(),
+												'connector' => $protocolDevice->getConnector(),
 												'gateway' => $gateway->getId(),
-												'identifier' => $device->getIdentifier(),
+												'device' => $protocolDevice->getId(),
 												'gateway_identifier' => $endpoint->getSerialNumber(),
 											],
 										),
 									);
+
+									$protocolDevice->setProvisioned(true);
 								} else {
 									$this->logger->error(
-										'Could not finish third-party device synchronisation',
+										'Could not finish third-party devices synchronisation',
 										[
 											'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 											'type' => 'device-client',
 											'connector' => [
-												'id' => $this->connector->getId()->toString(),
+												'id' => $gateway->getConnector()->toString(),
 											],
 											'gateway' => [
 												'id' => $gateway->getId()->toString(),
 											],
 											'device' => [
-												'id' => $endpoint->getThirdSerialNumber()->toString(),
+												'id' => $endpoint->getThirdSerialNumber(),
 											],
 										],
 									);
@@ -407,7 +231,7 @@ final class Device implements Client
 										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
-											'identifier' => $gateway->getIdentifier(),
+											'device' => $gateway->getId(),
 											'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 										],
 									),
@@ -419,7 +243,7 @@ final class Device implements Client
 										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
-											'identifier' => $gateway->getIdentifier(),
+											'device' => $gateway->getId(),
 											'state' => DevicesTypes\ConnectionState::ALERT,
 										],
 									),
@@ -434,7 +258,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -459,16 +283,11 @@ final class Device implements Client
 										continue;
 									}
 
-									$findDevicesQuery = new Queries\Configuration\FindDevices();
-									$findDevicesQuery->forParent($gateway);
-									$findDevicesQuery->byId($subDevice->getThirdSerialNumber());
-
-									$device = $this->devicesConfigurationRepository->findOneBy(
-										$findDevicesQuery,
-										Documents\Devices\Device::class,
+									$protocolDevice = $this->devicesDriver->findDevice(
+										$subDevice->getThirdSerialNumber(),
 									);
 
-									if ($device !== null) {
+									if ($protocolDevice instanceof Protocol\Devices\ThirdPartyDevice) {
 										continue;
 									}
 
@@ -479,12 +298,12 @@ final class Device implements Client
 									)
 										->then(function () use ($gateway, $subDevice): void {
 											$this->logger->debug(
-												'Removed third-party from NS Panel',
+												'Removed unrecognized third-party device from NS Panel',
 												[
 													'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 													'type' => 'device-client',
 													'connector' => [
-														'id' => $this->connector->getId()->toString(),
+														'id' => $gateway->getConnector()->toString(),
 													],
 													'gateway' => [
 														'id' => $gateway->getId()->toString(),
@@ -517,7 +336,7 @@ final class Device implements Client
 														Queue\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $gateway->getConnector(),
-															'identifier' => $gateway->getIdentifier(),
+															'device' => $gateway->getId(),
 															'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 														],
 													),
@@ -529,7 +348,7 @@ final class Device implements Client
 														Queue\Messages\StoreDeviceConnectionState::class,
 														[
 															'connector' => $gateway->getConnector(),
-															'identifier' => $gateway->getIdentifier(),
+															'device' => $gateway->getId(),
 															'state' => DevicesTypes\ConnectionState::ALERT,
 														],
 													),
@@ -544,7 +363,7 @@ final class Device implements Client
 														'type' => 'device-client',
 														'exception' => ApplicationHelpers\Logger::buildException($ex),
 														'connector' => [
-															'id' => $this->connector->getId()->toString(),
+															'id' => $gateway->getConnector()->toString(),
 														],
 														'gateway' => [
 															'id' => $gateway->getId()->toString(),
@@ -582,7 +401,7 @@ final class Device implements Client
 										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
-											'identifier' => $gateway->getIdentifier(),
+											'device' => $gateway->getId(),
 											'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 										],
 									),
@@ -594,7 +413,7 @@ final class Device implements Client
 										Queue\Messages\StoreDeviceConnectionState::class,
 										[
 											'connector' => $gateway->getConnector(),
-											'identifier' => $gateway->getIdentifier(),
+											'device' => $gateway->getId(),
 											'state' => DevicesTypes\ConnectionState::ALERT,
 										],
 									),
@@ -609,7 +428,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -629,7 +448,7 @@ final class Device implements Client
 						'type' => 'device-client',
 						'exception' => ApplicationHelpers\Logger::buildException($ex),
 						'connector' => [
-							'id' => $this->connector->getId()->toString(),
+							'id' => $gateway->getConnector()->toString(),
 						],
 						'gateway' => [
 							'id' => $gateway->getId()->toString(),
@@ -642,7 +461,7 @@ final class Device implements Client
 						Queue\Messages\StoreDeviceConnectionState::class,
 						[
 							'connector' => $gateway->getConnector(),
-							'identifier' => $gateway->getIdentifier(),
+							'device' => $gateway->getId(),
 							'state' => DevicesTypes\ConnectionState::ALERT,
 						],
 					),
@@ -679,58 +498,62 @@ final class Device implements Client
 				continue;
 			}
 
-			$findDevicesQuery = new Queries\Configuration\FindThirdPartyDevices();
-			$findDevicesQuery->forConnector($this->connector);
-			$findDevicesQuery->forParent($gateway);
+			$protocolDevices = $this->devicesDriver->findDevices($gateway->getId());
 
-			$devices = $this->devicesConfigurationRepository->findAllBy(
-				$findDevicesQuery,
-				Documents\Devices\ThirdPartyDevice::class,
-			);
+			foreach ($protocolDevices as $protocolDevice) {
+				if (!$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice) {
+					continue;
+				}
 
-			foreach ($devices as $device) {
+				$protocolDevice->setProvisioned(false);
+
+				if ($protocolDevice->getGatewayIdentifier() === null) {
+					$this->queue->append(
+						$this->messageBuilder->create(
+							Queue\Messages\StoreDeviceConnectionState::class,
+							[
+								'connector' => $protocolDevice->getConnector(),
+								'device' => $protocolDevice->getId(),
+								'state' => DevicesTypes\ConnectionState::ALERT,
+							],
+						),
+					);
+
+					continue;
+				}
+
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\StoreDeviceConnectionState::class,
 						[
-							'connector' => $gateway->getConnector(),
-							'identifier' => $device->getIdentifier(),
+							'connector' => $protocolDevice->getConnector(),
+							'device' => $protocolDevice->getId(),
 							'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 						],
 					),
 				);
 
 				try {
-					$serialNumber = $this->thirdPartyDeviceHelper->getGatewayIdentifier($device);
-
-					if ($serialNumber === null) {
-						continue;
-					}
-				} catch (Throwable) {
-					continue;
-				}
-
-				try {
 					$this->lanApi->reportDeviceOnline(
-						$serialNumber,
+						$protocolDevice->getGatewayIdentifier(),
 						false,
 						$ipAddress,
 						$accessToken,
 					)
-						->then(function () use ($gateway, $device): void {
+						->then(function () use ($gateway, $protocolDevice): void {
 							$this->logger->debug(
-								'State for NS Panel third-party device was successfully updated',
+								'State for NS Panel third-party device was successfully published',
 								[
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'device-client',
 									'connector' => [
-										'id' => $this->connector->getId()->toString(),
+										'id' => $gateway->getConnector()->toString(),
 									],
 									'gateway' => [
 										'id' => $gateway->getId()->toString(),
 									],
 									'device' => [
-										'id' => $device->getId()->toString(),
+										'id' => $protocolDevice->getId()->toString(),
 									],
 								],
 							);
@@ -761,7 +584,7 @@ final class Device implements Client
 										'type' => 'device-client',
 										'exception' => ApplicationHelpers\Logger::buildException($ex),
 										'connector' => [
-											'id' => $this->connector->getId()->toString(),
+											'id' => $gateway->getConnector()->toString(),
 										],
 										'gateway' => [
 											'id' => $gateway->getId()->toString(),
@@ -779,7 +602,7 @@ final class Device implements Client
 							'type' => 'device-client',
 							'exception' => ApplicationHelpers\Logger::buildException($ex),
 							'connector' => [
-								'id' => $this->connector->getId()->toString(),
+								'id' => $gateway->getConnector()->toString(),
 							],
 							'gateway' => [
 								'id' => $gateway->getId()->toString(),
@@ -794,7 +617,7 @@ final class Device implements Client
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
-						'identifier' => $gateway->getIdentifier(),
+						'device' => $gateway->getId(),
 						'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 					],
 				),
