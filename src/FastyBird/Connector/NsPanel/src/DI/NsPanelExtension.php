@@ -46,6 +46,7 @@ use Nette\DI;
 use Nettrine\ORM as NettrineORM;
 use function array_keys;
 use function array_pop;
+use function assert;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -699,6 +700,35 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 					]);
 				}
 			}
+		}
+
+		/**
+		 * PANEL PROTOCOL
+		 */
+
+		$protocolLoaderServiceName = $builder->getByType(Protocol\Loader::class);
+
+		if ($protocolLoaderServiceName !== null) {
+			$protocolLoaderService = $builder->getDefinition($protocolLoaderServiceName);
+			assert($protocolLoaderService instanceof DI\Definitions\ServiceDefinition);
+
+			$devicesFactories = $builder->findByType(
+				Protocol\Devices\DeviceFactory::class,
+			);
+			$capabilitiesFactories = $builder->findByType(
+				Protocol\Capabilities\CapabilityFactory::class,
+			);
+			$attributesFactories = $builder->findByType(
+				Protocol\Attributes\AttributeFactory::class,
+			);
+			$configurationsFactories = $builder->findByType(
+				Protocol\Configurations\ConfigurationFactory::class,
+			);
+
+			$protocolLoaderService->setArgument('devicesFactories', $devicesFactories);
+			$protocolLoaderService->setArgument('capabilitiesFactories', $capabilitiesFactories);
+			$protocolLoaderService->setArgument('attributesFactories', $attributesFactories);
+			$protocolLoaderService->setArgument('configurationsFactories', $configurationsFactories);
 		}
 	}
 

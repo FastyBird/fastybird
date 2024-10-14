@@ -51,16 +51,16 @@ readonly class Loader
 {
 
 	/**
-	 * @param array<Protocol\Devices\DeviceFactory> $deviceFactories
-	 * @param array<Protocol\Capabilities\CapabilityFactory> $capabilityFactories
-	 * @param array<Protocol\Attributes\AttributeFactory> $attributeFactories
+	 * @param array<Protocol\Devices\DeviceFactory> $devicesFactories
+	 * @param array<Protocol\Capabilities\CapabilityFactory> $capabilitiesFactories
+	 * @param array<Protocol\Attributes\AttributeFactory> $attributesFactories
 	 * @param array<Protocol\Configurations\ConfigurationFactory> $configurationsFactories
 	 */
 	public function __construct(
 		private Protocol\Driver $devicesDriver,
-		private array $deviceFactories,
-		private array $capabilityFactories,
-		private array $attributeFactories,
+		private array $devicesFactories,
+		private array $capabilitiesFactories,
+		private array $attributesFactories,
 		private array $configurationsFactories,
 		private Helpers\MessageBuilder $messageBuilder,
 		private Helpers\Channels\Channel $channelHelper,
@@ -144,13 +144,48 @@ readonly class Loader
 					);
 
 					foreach ($properties as $property) {
-						$protocolAttribute = $this->buildAttribute($property, $protocolCapability);
+						$attributeType = Helpers\Name::convertPropertyToAttribute($property->getIdentifier(), false);
 
-						$protocolCapability->addAttribute($protocolAttribute);
+						if ($attributeType !== null) {
+							$protocolAttribute = $this->buildAttribute($property, $protocolCapability);
 
-						$protocolConfiguration = $this->buildConfiguration($property, $protocolCapability);
+							$protocolCapability->addAttribute($protocolAttribute);
 
-						$protocolCapability->addConfiguration($protocolConfiguration);
+							continue;
+						}
+
+						$configurationType = Helpers\Name::convertPropertyToConfiguration(
+							$property->getIdentifier(),
+							false,
+						);
+
+						if ($configurationType !== null) {
+							$protocolConfiguration = $this->buildConfiguration($property, $protocolCapability);
+
+							$protocolCapability->addConfiguration($protocolConfiguration);
+
+							continue;
+						}
+
+						$this->logger->warning(
+							'Channel property is not supported',
+							[
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+								'type' => 'protocol-loader',
+								'connector' => [
+									'id' => $connector->getId()->toString(),
+								],
+								'device' => [
+									'id' => $protocolDevice->getId()->toString(),
+								],
+								'channel' => [
+									'id' => $protocolCapability->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							],
+						);
 					}
 
 					$protocolDevice->addCapability($protocolCapability);
@@ -364,7 +399,7 @@ readonly class Loader
 
 		$metadata = $this->mappingBuilder->getCategoriesMapping();
 
-		foreach ($this->deviceFactories as $deviceFactory) {
+		foreach ($this->devicesFactories as $deviceFactory) {
 			if ($device::getType() === $deviceFactory->getEntityClass()::getType()) {
 				$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
 				$findPropertyQuery->forDevice($device);
@@ -429,7 +464,7 @@ readonly class Loader
 			));
 		}
 
-		foreach ($this->capabilityFactories as $capabilityFactory) {
+		foreach ($this->capabilitiesFactories as $capabilityFactory) {
 			if ($channel::getType() === $capabilityFactory->getEntityClass()::getType()) {
 				return $capabilityFactory->create(
 					$channel,
@@ -483,7 +518,7 @@ readonly class Loader
 
 		$format = $property->getFormat();
 
-		foreach ($this->attributeFactories as $attributeFactory) {
+		foreach ($this->attributesFactories as $attributeFactory) {
 			if ($attributeMetadata->getAttribute() === $attributeFactory->getType()) {
 				return $attributeFactory->create(
 					$property->getId(),

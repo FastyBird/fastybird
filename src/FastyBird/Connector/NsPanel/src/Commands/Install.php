@@ -2126,8 +2126,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws TypeError
-	 * @throws ValueError
+	 * @throws Exceptions\InvalidArgument
 	 */
 	private function listCapabilities(Style\SymfonyStyle $io, Entities\Devices\ThirdPartyDevice $device): void
 	{
@@ -2565,6 +2564,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument

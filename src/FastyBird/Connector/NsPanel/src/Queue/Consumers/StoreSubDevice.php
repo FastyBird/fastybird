@@ -20,17 +20,22 @@ use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
+use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
+use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
 use Nette\Utils;
 use function assert;
+use function in_array;
 use function is_array;
 
 /**
@@ -48,6 +53,7 @@ final class StoreSubDevice implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		protected readonly Mapping\Capabilities $capabilitiesMapping,
 		protected readonly NsPanel\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
@@ -57,6 +63,8 @@ final class StoreSubDevice implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
+		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 	)
 	{
 	}
@@ -65,6 +73,7 @@ final class StoreSubDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
 	 * @throws DBAL\Exception
 	 */
 	public function consume(Queue\Messages\Message $message): bool
@@ -205,14 +214,10 @@ final class StoreSubDevice implements Queue\Consumer
 
 		foreach ($message->getCapabilities() as $capability) {
 			$this->databaseHelper->transaction(function () use ($message, $device, $capability): bool {
-				$identifier = Helpers\Name::convertCapabilityToChannel($capability->getCapability());
-
-				if (
-					$capability->getCapability() === Types\Capability::TOGGLE
-					&& $capability->getName() !== null
-				) {
-					$identifier .= '_' . $capability->getName();
-				}
+				$identifier = Helpers\Name::convertCapabilityToChannel(
+					$capability->getCapability(),
+					$capability->getName(),
+				);
 
 				$findChannelQuery = new Queries\Entities\FindChannels();
 				$findChannelQuery->byIdentifier($identifier);
@@ -250,6 +255,156 @@ final class StoreSubDevice implements Queue\Consumer
 
 				return true;
 			});
+		}
+
+		foreach ($message->getState() as $state) {
+			$identifier = Helpers\Name::convertCapabilityToChannel($state->getCapability(), $state->getIdentifier());
+
+			$findChannelQuery = new Queries\Entities\FindChannels();
+			$findChannelQuery->byIdentifier($identifier);
+			$findChannelQuery->forDevice($device);
+
+			$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
+
+			if ($channel === null) {
+				continue;
+			}
+
+			$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+				$state->getCapability(),
+				$state->getIdentifier(),
+			);
+
+			if ($capabilityMetadata === null) {
+				continue;
+			}
+
+			$attributeMetadata = $capabilityMetadata->findAttribute($state->getAttribute());
+
+			if ($attributeMetadata === null) {
+				continue;
+			}
+
+			$this->databaseHelper->transaction(
+				function () use ($message, $device, $channel, $state, $capabilityMetadata, $attributeMetadata): bool {
+					$dataTypes = $attributeMetadata->getDataType();
+					$dataTypes = is_array($dataTypes) ? $dataTypes : [$dataTypes];
+
+					$format = null;
+
+					if (
+						$attributeMetadata->getMinValue() !== null
+						|| $attributeMetadata->getMaxValue() !== null
+					) {
+						$format = new MetadataFormats\NumberRange([
+							$attributeMetadata->getMinValue(),
+							$attributeMetadata->getMaxValue(),
+						]);
+					}
+
+					if (
+						(
+							in_array(MetadataTypes\DataType::ENUM, $dataTypes, true)
+							|| in_array(MetadataTypes\DataType::SWITCH, $dataTypes, true)
+							|| in_array(MetadataTypes\DataType::BUTTON, $dataTypes, true)
+						)
+						&& $attributeMetadata->getValidValues() !== []
+					) {
+						$format = new MetadataFormats\StringEnum($attributeMetadata->getValidValues());
+					}
+
+					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
+					$findPropertyQuery->byIdentifier(Helpers\Name::convertAttributeToProperty($state->getAttribute()));
+					$findPropertyQuery->forChannel($channel);
+
+					$property = $this->channelsPropertiesRepository->findOneBy($findPropertyQuery);
+
+					if ($property === null) {
+						$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
+							'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
+							'channel' => $channel,
+							'identifier' => Helpers\Name::convertAttributeToProperty($state->getAttribute()),
+							'dataType' => $dataTypes[0],
+							'format' => $format,
+							'invalid' => $attributeMetadata->getInvalidValue(),
+							'settable' => in_array(
+								$capabilityMetadata->getPermission(),
+								[Types\Permission::READ_WRITE, Types\Permission::WRITE],
+								true,
+							),
+							'queryable' => in_array(
+								$capabilityMetadata->getPermission(),
+								[Types\Permission::READ_WRITE, Types\Permission::READ],
+								true,
+							),
+						]));
+
+						$this->logger->debug(
+							'Device channel property was created',
+							[
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+								'type' => 'store-sub-device-message-consumer',
+								'connector' => [
+									'id' => $message->getConnector()->toString(),
+								],
+								'gateway' => [
+									'id' => $message->getGateway()->toString(),
+								],
+								'device' => [
+									'id' => $device->getId()->toString(),
+								],
+								'channel' => [
+									'id' => $channel->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							],
+						);
+					} else {
+						$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
+							'dataType' => $dataTypes[0],
+							'format' => $format,
+							'invalid' => $attributeMetadata->getInvalidValue(),
+							'settable' => in_array(
+								$capabilityMetadata->getPermission(),
+								[Types\Permission::READ_WRITE, Types\Permission::WRITE],
+								true,
+							),
+							'queryable' => in_array(
+								$capabilityMetadata->getPermission(),
+								[Types\Permission::READ_WRITE, Types\Permission::READ],
+								true,
+							),
+						]));
+
+						$this->logger->debug(
+							'Device channel property was updated',
+							[
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+								'type' => 'store-sub-device-message-consumer',
+								'connector' => [
+									'id' => $message->getConnector()->toString(),
+								],
+								'gateway' => [
+									'id' => $message->getGateway()->toString(),
+								],
+								'device' => [
+									'id' => $device->getId()->toString(),
+								],
+								'channel' => [
+									'id' => $channel->getId()->toString(),
+								],
+								'property' => [
+									'id' => $property->getId()->toString(),
+								],
+							],
+						);
+					}
+
+					return true;
+				},
+			);
 		}
 
 		foreach ($message->getTags() as $tag => $value) {
