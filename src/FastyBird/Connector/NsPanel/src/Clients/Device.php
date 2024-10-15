@@ -115,7 +115,10 @@ final class Device implements Client
 					continue;
 				}
 
-				if ($protocolDevice->getGatewayIdentifier() === null) {
+				if (
+					$protocolDevice->getGatewayIdentifier() === null
+					|| $protocolDevice->isCorrupted()
+				) {
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
@@ -126,6 +129,25 @@ final class Device implements Client
 							],
 						),
 					);
+
+					if ($protocolDevice->isCorrupted()) {
+						$this->logger->warning(
+							'NS Panel third-party device is not correctly configured.',
+							[
+								'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+								'type' => 'device-client',
+								'connector' => [
+									'id' => $gateway->getConnector()->toString(),
+								],
+								'gateway' => [
+									'id' => $gateway->getId()->toString(),
+								],
+								'device' => [
+									'id' => $protocolDevice->getId()->toString(),
+								],
+							],
+						);
+					}
 
 					continue;
 				}

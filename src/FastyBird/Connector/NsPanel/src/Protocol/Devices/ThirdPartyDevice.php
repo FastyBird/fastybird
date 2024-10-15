@@ -32,6 +32,8 @@ class ThirdPartyDevice extends Device
 
 	private bool $provisioned = false;
 
+	private bool $corrupted = false;
+
 	/**
 	 * @param array<int, Types\Capability> $requiredCapabilities
 	 * @param array<int, Types\Capability> $optionalCapabilities
@@ -96,6 +98,16 @@ class ThirdPartyDevice extends Device
 	public function setProvisioned(bool $provisioned): void
 	{
 		$this->provisioned = $provisioned;
+	}
+
+	public function setCorrupted(bool $corrupted): void
+	{
+		$this->corrupted = $corrupted;
+	}
+
+	public function isCorrupted(): bool
+	{
+		return $this->corrupted;
 	}
 
 	/**

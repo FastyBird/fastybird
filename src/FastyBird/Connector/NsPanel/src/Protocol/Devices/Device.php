@@ -109,20 +109,30 @@ abstract class Device
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Types\Capability>
 	 */
 	public function getAllowedACapabilitiesTypes(): array
 	{
 		return array_merge(
-			array_map(
-				static fn (Types\Capability $capability): string => $capability->value,
-				$this->requiredCapabilities,
-			),
-			array_map(
-				static fn (Types\Capability $capability): string => $capability->value,
-				$this->optionalCapabilities,
-			),
+			$this->requiredCapabilities,
+			$this->optionalCapabilities,
 		);
+	}
+
+	/**
+	 * @return array<Types\Capability>
+	 */
+	public function getRequiredCapabilities(): array
+	{
+		return $this->requiredCapabilities;
+	}
+
+	/**
+	 * @return array<Types\Capability>
+	 */
+	public function getOptionalCapabilities(): array
+	{
+		return $this->optionalCapabilities;
 	}
 
 	/**
@@ -146,7 +156,7 @@ abstract class Device
 	 */
 	public function addCapability(Protocol\Capabilities\Capability $capability): void
 	{
-		if (!in_array($capability->getType()->value, $this->getAllowedACapabilitiesTypes(), true)) {
+		if (!in_array($capability->getType(), $this->getAllowedACapabilitiesTypes(), true)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Capability: %s is not allowed for device in category: %s',
 				$capability->getType()->value,

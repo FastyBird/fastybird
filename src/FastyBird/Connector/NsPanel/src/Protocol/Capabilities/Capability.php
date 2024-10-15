@@ -159,13 +159,13 @@ class Capability
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<Types\Attribute>
 	 */
 	public function getAllowedAttributesTypes(): array
 	{
 		return array_merge(
-			array_map(static fn (Types\Attribute $attribute): string => $attribute->value, $this->requiredAttributes),
-			array_map(static fn (Types\Attribute $attribute): string => $attribute->value, $this->optionalAttributes),
+			$this->requiredAttributes,
+			$this->optionalAttributes,
 		);
 	}
 
@@ -190,7 +190,7 @@ class Capability
 	 */
 	public function addAttribute(Protocol\Attributes\Attribute $attribute): void
 	{
-		if (!in_array($attribute->getType()->value, $this->getAllowedAttributesTypes(), true)) {
+		if (!in_array($attribute->getType(), $this->getAllowedAttributesTypes(), true)) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Attribute: %s is not allowed for capability: %s',
 				$attribute->getType()->value,

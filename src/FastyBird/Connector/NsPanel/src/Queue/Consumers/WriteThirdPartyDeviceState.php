@@ -121,6 +121,31 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
+		if ($protocolDevice->isCorrupted()) {
+			$this->logger->warning(
+				'Device is not correctly configured therefore could not be updated on NS Panel',
+				[
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+					'type' => 'write-third-party-device-state-message-consumer',
+					'connector' => [
+						'id' => $message->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $message->getDevice()->toString(),
+					],
+					'channel' => [
+						'id' => $message->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
+				],
+			);
+
+			return true;
+		}
+
 		$findDeviceQuery = new Queries\Configuration\FindGatewayDevices();
 		$findDeviceQuery->byId($protocolDevice->getParent());
 

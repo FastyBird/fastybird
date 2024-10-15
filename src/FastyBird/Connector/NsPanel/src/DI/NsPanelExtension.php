@@ -232,6 +232,9 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * SUBSCRIBERS
 		 */
 
+		$builder->addDefinition($this->prefix('subscribers.devices'), new DI\Definitions\ServiceDefinition())
+			->setType(Subscribers\Devices::class);
+
 		$builder->addDefinition($this->prefix('subscribers.properties'), new DI\Definitions\ServiceDefinition())
 			->setType(Subscribers\Properties::class);
 

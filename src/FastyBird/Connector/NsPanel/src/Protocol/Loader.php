@@ -36,6 +36,7 @@ use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
+use function array_diff;
 use function assert;
 use function sprintf;
 
@@ -133,6 +134,8 @@ readonly class Loader
 					Documents\Channels\Channel::class,
 				);
 
+				$createdCapabilities = [];
+
 				foreach ($channels as $channel) {
 					$protocolCapability = $this->buildCapability($channel, $protocolDevice);
 
@@ -143,6 +146,8 @@ readonly class Loader
 						$findChannelPropertiesQuery,
 					);
 
+					$createdAttributes = $createdConfigurations = [];
+
 					foreach ($properties as $property) {
 						$attributeType = Helpers\Name::convertPropertyToAttribute($property->getIdentifier(), false);
 
@@ -150,6 +155,8 @@ readonly class Loader
 							$protocolAttribute = $this->buildAttribute($property, $protocolCapability);
 
 							$protocolCapability->addAttribute($protocolAttribute);
+
+							$createdAttributes[] = $protocolAttribute->getType();
 
 							continue;
 						}
@@ -163,6 +170,8 @@ readonly class Loader
 							$protocolConfiguration = $this->buildConfiguration($property, $protocolCapability);
 
 							$protocolCapability->addConfiguration($protocolConfiguration);
+
+							$createdConfigurations[] = $protocolConfiguration->getType();
 
 							continue;
 						}
@@ -188,7 +197,33 @@ readonly class Loader
 						);
 					}
 
+					if (
+						$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
+						&& array_diff($protocolCapability->getAllowedAttributesTypes(), $createdAttributes) !== []
+					) {
+						$protocolDevice->setCorrupted(true);
+					}
+
+					if (
+						$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
+						&& array_diff(
+							$protocolCapability->getAllowedConfigurationsTypes(),
+							$createdConfigurations,
+						) !== []
+					) {
+						$protocolDevice->setCorrupted(true);
+					}
+
 					$protocolDevice->addCapability($protocolCapability);
+
+					$createdCapabilities[] = $protocolCapability->getType();
+				}
+
+				if (
+					$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
+					&& array_diff($protocolDevice->getRequiredCapabilities(), $createdCapabilities) !== []
+				) {
+					$protocolDevice->setCorrupted(true);
 				}
 
 				$protocolDevices[] = $protocolDevice;

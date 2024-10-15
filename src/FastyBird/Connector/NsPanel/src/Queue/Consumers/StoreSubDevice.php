@@ -36,7 +36,6 @@ use Nette;
 use Nette\Utils;
 use function assert;
 use function in_array;
-use function is_array;
 
 /**
  * Store NS Panel sub-device message consumer
