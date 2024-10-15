@@ -406,54 +406,6 @@ final class StoreSubDevice implements Queue\Consumer
 			);
 		}
 
-		foreach ($message->getTags() as $tag => $value) {
-			if ($tag === Types\Capability::TOGGLE->value && is_array($value)) {
-				$this->databaseHelper->transaction(function () use ($message, $device, $value): void {
-					foreach ($value as $key => $name) {
-						$findChannelQuery = new Queries\Entities\FindChannels();
-						$findChannelQuery->byIdentifier(
-							Helpers\Name::convertCapabilityToChannel(
-								Types\Capability::TOGGLE,
-								$key,
-							),
-						);
-						$findChannelQuery->forDevice($device);
-
-						$channel = $this->channelsRepository->findOneBy(
-							$findChannelQuery,
-							Entities\Channels\Channel::class,
-						);
-
-						if ($channel !== null) {
-							$channel = $this->channelsManager->update($channel, Utils\ArrayHash::from([
-								'name' => $name,
-							]));
-
-							$this->logger->debug(
-								'Toggle channel name was set',
-								[
-									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
-									'type' => 'store-sub-device-message-consumer',
-									'connector' => [
-										'id' => $message->getConnector()->toString(),
-									],
-									'gateway' => [
-										'id' => $message->getGateway()->toString(),
-									],
-									'device' => [
-										'id' => $device->getId()->toString(),
-									],
-									'channel' => [
-										'id' => $channel->getId()->toString(),
-									],
-								],
-							);
-						}
-					}
-				});
-			}
-		}
-
 		$this->logger->debug(
 			'Consumed store device message',
 			[
