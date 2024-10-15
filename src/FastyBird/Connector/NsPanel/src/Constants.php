@@ -36,8 +36,4 @@ final class Constants
 
 	public const CHANNEL_IDENTIFIER = '/^(?P<capability>[a-z\-]+)(?:_(?P<name>[0-9a-zA-Z\-]+))?$/';
 
-	public const PROPERTY_TAG_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
-
-	public const EVENT_FINISHED = 'finished';
-
 }
