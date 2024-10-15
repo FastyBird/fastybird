@@ -287,9 +287,6 @@ final class StoreSubDevice implements Queue\Consumer
 
 			$this->databaseHelper->transaction(
 				function () use ($message, $device, $channel, $state, $capabilityMetadata, $attributeMetadata): bool {
-					$dataTypes = $attributeMetadata->getDataType();
-					$dataTypes = is_array($dataTypes) ? $dataTypes : [$dataTypes];
-
 					$format = null;
 
 					if (
@@ -303,14 +300,16 @@ final class StoreSubDevice implements Queue\Consumer
 					}
 
 					if (
-						(
-							in_array(MetadataTypes\DataType::ENUM, $dataTypes, true)
-							|| in_array(MetadataTypes\DataType::SWITCH, $dataTypes, true)
-							|| in_array(MetadataTypes\DataType::BUTTON, $dataTypes, true)
-						)
-						&& $attributeMetadata->getValidValues() !== []
+						$attributeMetadata->getDataType() === MetadataTypes\DataType::ENUM
+						|| $attributeMetadata->getDataType() === MetadataTypes\DataType::SWITCH
+						|| $attributeMetadata->getDataType() === MetadataTypes\DataType::BUTTON
+						|| $attributeMetadata->getDataType() === MetadataTypes\DataType::COVER
 					) {
-						$format = new MetadataFormats\StringEnum($attributeMetadata->getValidValues());
+						if ($attributeMetadata->getMappedValues() !== []) {
+							$format = $attributeMetadata->getMappedValues();
+						} elseif ($attributeMetadata->getValidValues() !== []) {
+							$format = $attributeMetadata->getValidValues();
+						}
 					}
 
 					$findPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
@@ -324,7 +323,7 @@ final class StoreSubDevice implements Queue\Consumer
 							'entity' => DevicesEntities\Channels\Properties\Dynamic::class,
 							'channel' => $channel,
 							'identifier' => Helpers\Name::convertAttributeToProperty($state->getAttribute()),
-							'dataType' => $dataTypes[0],
+							'dataType' => $attributeMetadata->getDataType(),
 							'format' => $format,
 							'invalid' => $attributeMetadata->getInvalidValue(),
 							'settable' => in_array(
@@ -363,7 +362,7 @@ final class StoreSubDevice implements Queue\Consumer
 						);
 					} else {
 						$property = $this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
-							'dataType' => $dataTypes[0],
+							'dataType' => $attributeMetadata->getDataType(),
 							'format' => $format,
 							'invalid' => $attributeMetadata->getInvalidValue(),
 							'settable' => in_array(

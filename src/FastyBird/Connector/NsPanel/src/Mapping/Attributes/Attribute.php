@@ -32,22 +32,15 @@ readonly class Attribute implements Mapping\Mapping
 {
 
 	/**
-	 * @param array<MetadataTypes\DataType>|MetadataTypes\DataType $dataType
 	 * @param array<int, string> $validValues
 	 * @param array<int, array<int, string>> $mappedValues
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Attribute::class)]
 		private Types\Attribute $attribute,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
-			new ObjectMapper\Rules\ArrayOf(
-				new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
-				new ObjectMapper\Rules\IntValue(unsigned: true),
-			),
-		])]
+		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
-		private MetadataTypes\DataType|array $dataType,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
@@ -116,10 +109,7 @@ readonly class Attribute implements Mapping\Mapping
 		return $this->attribute;
 	}
 
-	/**
-	 * @return array<int, MetadataTypes\DataType>|MetadataTypes\DataType
-	 */
-	public function getDataType(): array|MetadataTypes\DataType
+	public function getDataType(): MetadataTypes\DataType
 	{
 		return $this->dataType;
 	}

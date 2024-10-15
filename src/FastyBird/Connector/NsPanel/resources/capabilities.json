@@ -14,10 +14,7 @@
         "attributes": [
           {
             "attribute": "powerState",
-            "data_type": [
-              "enum",
-              "switch"
-            ],
+            "data_type": "switch",
             "valid_values": [
               "on",
               "off"
@@ -53,10 +50,7 @@
         "attributes": [
           {
             "attribute": "toggleState",
-            "data_type": [
-              "enum",
-              "switch"
-            ],
+            "data_type": "switch",
             "valid_values": [
               "on",
               "off",
@@ -206,12 +200,34 @@
         "attributes": [
           {
             "attribute": "motorControl",
-            "data_type": "enum",
+            "data_type": "cover",
             "valid_values": [
               "open",
               "close",
               "stop",
               "lock"
+            ],
+            "mapped_values": [
+              [
+                "cover_open",
+                "open",
+                "open"
+              ],
+              [
+                "cover_close",
+                "close",
+                "close"
+              ],
+              [
+                "cover_stop",
+                "stop",
+                "stop"
+              ],
+              [
+                "cover_lock",
+                "lock",
+                "lock"
+              ]
             ]
           }
         ]
@@ -484,10 +500,7 @@
         "attributes": [
           {
             "attribute": "press",
-            "data_type": [
-              "enum",
-              "button"
-            ],
+            "data_type": "button",
             "valid_values": [
               "singlePress",
               "doublePress",

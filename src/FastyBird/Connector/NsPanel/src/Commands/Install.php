@@ -2198,7 +2198,12 @@ class Install extends Console\Command\Command
 		Entities\Channels\Channel $channel,
 	): DevicesEntities\Channels\Properties\Property|null
 	{
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName($channel->getCapability());
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
+
+		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+			$channel->getCapability(),
+			array_key_exists('name', $matches) ? $matches['name'] : null,
+		);
 
 		if ($capabilityMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
@@ -2223,8 +2228,6 @@ class Install extends Console\Command\Command
 		}
 
 		$capabilityPermission = $capabilityMetadata->getPermission();
-
-		$dataType = $attributeMetadata->getDataType();
 
 		$question = new Console\Question\ConfirmationQuestion(
 			(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.connectAttribute'),
@@ -2264,7 +2267,7 @@ class Install extends Console\Command\Command
 					'//ns-panel-connector.cmd.base.attribute.' . $attributeType->value,
 				),
 				'channel' => $channel,
-				'dataType' => $dataType,
+				'dataType' => $attributeMetadata->getDataType(),
 				'format' => $format,
 				'invalid' => $attributeMetadata->getInvalidValue(),
 				'settable' => $connectProperty->isSettable(),
@@ -2283,7 +2286,7 @@ class Install extends Console\Command\Command
 				'//ns-panel-connector.cmd.base.attribute.' . $attributeType->value,
 			),
 			'channel' => $channel,
-			'dataType' => is_array($dataType) ? $dataType[0] : null,
+			'dataType' => $attributeMetadata->getDataType(),
 			'format' => $format,
 			'value' => $value,
 			'invalid' => $attributeMetadata->getInvalidValue(),
@@ -2309,7 +2312,12 @@ class Install extends Console\Command\Command
 		Entities\Channels\Channel $channel,
 	): void
 	{
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName($channel->getCapability());
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
+
+		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+			$channel->getCapability(),
+			array_key_exists('name', $matches) ? $matches['name'] : null,
+		);
 
 		if ($capabilityMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
@@ -2326,20 +2334,18 @@ class Install extends Console\Command\Command
 			return;
 		}
 
-		$attribute = Helpers\Name::convertPropertyToAttribute($property->getIdentifier());
+		$attributeType = Helpers\Name::convertPropertyToAttribute($property->getIdentifier());
 
-		$attributeMetadata = $capabilityMetadata->findAttribute($attribute);
+		$attributeMetadata = $capabilityMetadata->findAttribute($attributeType);
 
 		if ($attributeMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for attribute: %s was not found',
-				$attribute->value,
+				$attributeType->value,
 			));
 		}
 
 		$capabilityPermission = $capabilityMetadata->getPermission();
-
-		$dataType = $attributeMetadata->getDataType();
 
 		try {
 			// Start transaction connection to the database
@@ -2355,12 +2361,9 @@ class Install extends Console\Command\Command
 			if ($connect) {
 				$connectProperty = $this->askProperty(
 					$io,
-					(
-						$property instanceof DevicesEntities\Channels\Properties\Mapped
-						&& $property->getParent() instanceof DevicesEntities\Channels\Properties\Dynamic
-							? $property->getParent()
-							: null
-					),
+					$property instanceof DevicesEntities\Channels\Properties\Mapped
+						? $property->getParent()
+						: null,
 					in_array(
 						$capabilityPermission,
 						[Types\Permission::WRITE, Types\Permission::READ_WRITE],
@@ -2382,20 +2385,27 @@ class Install extends Console\Command\Command
 					} else {
 						$this->channelsPropertiesManager->delete($property);
 
-						$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from([
-							'entity' => DevicesEntities\Channels\Properties\Mapped::class,
-							'parent' => $connectProperty,
-							'identifier' => $property->getIdentifier(),
-							'name' => (string) $this->translator->translate(
-								'//ns-panel-connector.cmd.base.attribute.' . $attribute->value,
+						$property = $this->channelsPropertiesManager->create(Utils\ArrayHash::from(
+							array_merge(
+								[
+									'entity' => DevicesEntities\Channels\Properties\Mapped::class,
+									'parent' => $connectProperty,
+									'identifier' => $property->getIdentifier(),
+									'name' => (string) $this->translator->translate(
+										'//ns-panel-connector.cmd.base.attribute.' . $attributeType->value,
+									),
+									'channel' => $channel,
+									'dataType' => $attributeMetadata->getDataType(),
+									'format' => $format,
+									'invalid' => $attributeMetadata->getInvalidValue(),
+								],
+								$connectProperty instanceof DevicesEntities\Channels\Properties\Dynamic
+									? [
+										'settable' => $connectProperty->isSettable(),
+										'queryable' => $connectProperty->isQueryable(),
+									] : [],
 							),
-							'channel' => $channel,
-							'dataType' => $dataType,
-							'format' => $format,
-							'invalid' => $attributeMetadata->getInvalidValue(),
-							'settable' => $connectProperty->isSettable(),
-							'queryable' => $connectProperty->isQueryable(),
-						]));
+						));
 					}
 
 					if (!$device->hasParent($connectProperty->getChannel()->getDevice())) {
@@ -2420,11 +2430,18 @@ class Install extends Console\Command\Command
 					$property instanceof DevicesEntities\Channels\Properties\Variable
 					|| $property instanceof DevicesEntities\Channels\Properties\Dynamic
 				) {
-					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from([
-						'value' => $value,
-						'format' => $format,
-						'invalid' => $attributeMetadata->getInvalidValue(),
-					]));
+					$this->channelsPropertiesManager->update($property, Utils\ArrayHash::from(
+						array_merge(
+							[
+								'format' => $format,
+								'invalid' => $attributeMetadata->getInvalidValue(),
+							],
+							$property instanceof DevicesEntities\Channels\Properties\Variable
+								? [
+									'value' => $value,
+								] : [],
+						),
+					));
 				} else {
 					$this->channelsPropertiesManager->delete($property);
 
@@ -2432,13 +2449,13 @@ class Install extends Console\Command\Command
 						'entity' => DevicesEntities\Channels\Properties\Variable::class,
 						'identifier' => $property->getIdentifier(),
 						'name' => (string) $this->translator->translate(
-							'//ns-panel-connector.cmd.base.attribute.' . $attribute->value,
+							'//ns-panel-connector.cmd.base.attribute.' . $attributeType->value,
 						),
 						'channel' => $channel,
-						'dataType' => $dataType,
+						'dataType' => $attributeMetadata->getDataType(),
 						'format' => $format,
-						'value' => $value,
 						'invalid' => $attributeMetadata->getInvalidValue(),
+						'value' => $value,
 					]));
 				}
 			}
@@ -2593,12 +2610,27 @@ class Install extends Console\Command\Command
 			(string) $this->translator->translate('//ns-panel-connector.cmd.install.data.value'),
 		]);
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName($channel->getCapability());
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
+
+		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+			$channel->getCapability(),
+			array_key_exists('name', $matches) ? $matches['name'] : null,
+		);
 
 		foreach ($channelProperties as $index => $property) {
 			$type = Helpers\Name::convertPropertyToAttribute($property->getIdentifier());
 
-			$value = $property instanceof DevicesEntities\Channels\Properties\Variable ? $property->getValue() : 'N/A';
+			$value = 'N/A';
+
+			if (
+				$property instanceof DevicesEntities\Channels\Properties\Variable
+				|| (
+					$property instanceof DevicesEntities\Channels\Properties\Mapped
+					&& $property->getParent() instanceof DevicesEntities\Channels\Properties\Variable
+				)
+			) {
+				$value = $property->getValue();
+			}
 
 			$attributeMetadata = $capabilityMetadata?->findAttribute($type) ?? null;
 
@@ -3286,9 +3318,7 @@ class Install extends Console\Command\Command
 			}
 
 			if (
-				$answer === (string) $this->translator->translate(
-					'//ns-panel-connector.cmd.install.answers.mode.both',
-				)
+				$answer === (string) $this->translator->translate('//ns-panel-connector.cmd.install.answers.mode.both')
 				|| $answer === '2'
 			) {
 				return Types\ClientMode::BOTH;
@@ -3533,9 +3563,14 @@ class Install extends Console\Command\Command
 		Entities\Channels\Channel $channel,
 	): Types\Attribute|null
 	{
-		$capabilityMeta = $this->capabilitiesMapping->findByCapabilityName($channel->getCapability());
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		if ($capabilityMeta === null) {
+		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+			$channel->getCapability(),
+			array_key_exists('name', $matches) ? $matches['name'] : null,
+		);
+
+		if ($capabilityMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
 				'Definition for capability: %s was not found',
 				$channel->getCapability()->value,
@@ -3544,7 +3579,7 @@ class Install extends Console\Command\Command
 
 		$attributes = [];
 
-		foreach ($capabilityMeta->getAttributes() as $attributeMetadata) {
+		foreach ($capabilityMetadata->getAttributes() as $attributeMetadata) {
 			$findChannelPropertyQuery = new DevicesQueries\Entities\FindChannelProperties();
 			$findChannelPropertyQuery->forChannel($channel);
 			$findChannelPropertyQuery->byIdentifier(
@@ -3616,9 +3651,9 @@ class Install extends Console\Command\Command
 	 */
 	private function askProperty(
 		Style\SymfonyStyle $io,
-		DevicesEntities\Channels\Properties\Dynamic|null $connectedProperty = null,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null $connectedProperty = null,
 		bool|null $settable = null,
-	): DevicesEntities\Channels\Properties\Dynamic|null
+	): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null
 	{
 		$devices = [];
 
@@ -3659,17 +3694,24 @@ class Install extends Console\Command\Command
 			$hasProperty = false;
 
 			foreach ($channels as $channel) {
-				$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-				$findChannelPropertiesQuery->forChannel($channel);
+				$findChannelDynamicPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+				$findChannelDynamicPropertiesQuery->forChannel($channel);
 
 				if ($settable === true) {
-					$findChannelPropertiesQuery->settable(true);
+					$findChannelDynamicPropertiesQuery->settable(true);
 				}
+
+				$findChannelVariablePropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+				$findChannelVariablePropertiesQuery->forChannel($channel);
 
 				if (
 					$this->channelsPropertiesRepository->getResultSet(
-						$findChannelPropertiesQuery,
+						$findChannelDynamicPropertiesQuery,
 						DevicesEntities\Channels\Properties\Dynamic::class,
+					)->count() > 0
+					|| $this->channelsPropertiesRepository->getResultSet(
+						$findChannelVariablePropertiesQuery,
+						DevicesEntities\Channels\Properties\Variable::class,
 					)->count() > 0
 				) {
 					$hasProperty = true;
@@ -3768,17 +3810,24 @@ class Install extends Console\Command\Command
 		foreach ($deviceChannels as $channel) {
 			$hasProperty = false;
 
-			$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
+			$findChannelDynamicPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+			$findChannelDynamicPropertiesQuery->forChannel($channel);
 
 			if ($settable === true) {
-				$findChannelPropertiesQuery->settable(true);
+				$findChannelDynamicPropertiesQuery->settable(true);
 			}
+
+			$findChannelVariablePropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+			$findChannelVariablePropertiesQuery->forChannel($channel);
 
 			if (
 				$this->channelsPropertiesRepository->getResultSet(
-					$findChannelPropertiesQuery,
+					$findChannelDynamicPropertiesQuery,
 					DevicesEntities\Channels\Properties\Dynamic::class,
+				)->count() > 0
+				|| $this->channelsPropertiesRepository->getResultSet(
+					$findChannelVariablePropertiesQuery,
+					DevicesEntities\Channels\Properties\Variable::class,
 				)->count() > 0
 			) {
 				$hasProperty = true;
@@ -3854,20 +3903,29 @@ class Install extends Console\Command\Command
 
 		$properties = [];
 
-		$findChannelPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
-		$findChannelPropertiesQuery->forChannel($channel);
+		$findChannelDynamicPropertiesQuery = new DevicesQueries\Entities\FindChannelDynamicProperties();
+		$findChannelDynamicPropertiesQuery->forChannel($channel);
 
 		if ($settable === true) {
-			$findChannelPropertiesQuery->settable(true);
+			$findChannelDynamicPropertiesQuery->settable(true);
 		}
 
-		$channelProperties = $this->channelsPropertiesRepository->findAllBy(
-			$findChannelPropertiesQuery,
+		$channelDynamicProperties = $this->channelsPropertiesRepository->findAllBy(
+			$findChannelDynamicPropertiesQuery,
 			DevicesEntities\Channels\Properties\Dynamic::class,
 		);
+
+		$findChannelVariablePropertiesQuery = new DevicesQueries\Entities\FindChannelVariableProperties();
+		$findChannelVariablePropertiesQuery->forChannel($channel);
+
+		$channelVariableProperties = $this->channelsPropertiesRepository->findAllBy(
+			$findChannelVariablePropertiesQuery,
+			DevicesEntities\Channels\Properties\Variable::class,
+		);
+		$channelProperties = array_merge($channelDynamicProperties, $channelVariableProperties);
 		usort(
 			$channelProperties,
-			static fn (DevicesEntities\Channels\Properties\Dynamic $a, DevicesEntities\Channels\Properties\Dynamic $b): int => (
+			static fn (DevicesEntities\Channels\Properties\Property $a, DevicesEntities\Channels\Properties\Property $b): int => (
 				($a->getName() ?? $a->getIdentifier()) <=> ($b->getName() ?? $b->getIdentifier())
 			),
 		);
@@ -3899,7 +3957,9 @@ class Install extends Console\Command\Command
 			(string) $this->translator->translate('//ns-panel-connector.cmd.base.messages.answerNotValid'),
 		);
 		$question->setValidator(
-			function (string|null $answer) use ($properties): DevicesEntities\Channels\Properties\Dynamic {
+			function (
+				string|null $answer,
+			) use ($properties): DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -3918,12 +3978,12 @@ class Install extends Console\Command\Command
 				$identifier = array_search($answer, $properties, true);
 
 				if ($identifier !== false) {
-					$property = $this->channelsPropertiesRepository->find(
-						Uuid\Uuid::fromString($identifier),
-						DevicesEntities\Channels\Properties\Dynamic::class,
-					);
+					$property = $this->channelsPropertiesRepository->find(Uuid\Uuid::fromString($identifier));
 
-					if ($property !== null) {
+					if (
+						$property instanceof DevicesEntities\Channels\Properties\Dynamic
+						|| $property instanceof DevicesEntities\Channels\Properties\Variable
+					) {
 						return $property;
 					}
 				}
@@ -3938,7 +3998,10 @@ class Install extends Console\Command\Command
 		);
 
 		$property = $io->askQuestion($question);
-		assert($property instanceof DevicesEntities\Channels\Properties\Dynamic);
+		assert(
+			$property instanceof DevicesEntities\Channels\Properties\Dynamic
+			|| $property instanceof DevicesEntities\Channels\Properties\Variable,
+		);
 
 		return $property;
 	}
@@ -3952,12 +4015,9 @@ class Install extends Console\Command\Command
 	private function askAttributeFormat(
 		Style\SymfonyStyle $io,
 		Mapping\Attributes\Attribute $attributeMetadata,
-		DevicesEntities\Channels\Properties\Dynamic|null $connectProperty = null,
+		DevicesEntities\Channels\Properties\Dynamic|DevicesEntities\Channels\Properties\Variable|null $connectProperty = null,
 	): MetadataFormats\NumberRange|MetadataFormats\StringEnum|MetadataFormats\CombinedEnum|null
 	{
-		$dataTypes = $attributeMetadata->getDataType();
-		$dataTypes = is_array($dataTypes) ? $dataTypes : [$dataTypes];
-
 		$format = null;
 
 		if (
@@ -3972,13 +4032,17 @@ class Install extends Console\Command\Command
 
 		if (
 			(
-				in_array(MetadataTypes\DataType::ENUM, $dataTypes, true)
-				|| in_array(MetadataTypes\DataType::SWITCH, $dataTypes, true)
-				|| in_array(MetadataTypes\DataType::BUTTON, $dataTypes, true)
+				$attributeMetadata->getDataType() === MetadataTypes\DataType::ENUM
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::SWITCH
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::BUTTON
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::COVER
 			)
-			&& $attributeMetadata->getValidValues() !== []
 		) {
-			$format = new MetadataFormats\StringEnum($attributeMetadata->getValidValues());
+			if ($attributeMetadata->getMappedValues() !== []) {
+				$format = new MetadataFormats\CombinedEnum($attributeMetadata->getMappedValues());
+			} elseif ($attributeMetadata->getValidValues() !== []) {
+				$format = new MetadataFormats\StringEnum($attributeMetadata->getValidValues());
+			}
 
 			if (
 				$connectProperty !== null
@@ -3988,6 +4052,7 @@ class Install extends Console\Command\Command
 							$connectProperty->getDataType() === MetadataTypes\DataType::ENUM
 							|| $connectProperty->getDataType() === MetadataTypes\DataType::SWITCH
 							|| $connectProperty->getDataType() === MetadataTypes\DataType::BUTTON
+							|| $connectProperty->getDataType() === MetadataTypes\DataType::COVER
 						) && (
 							$connectProperty->getFormat() instanceof MetadataFormats\StringEnum
 							|| $connectProperty->getFormat() instanceof MetadataFormats\CombinedEnum
@@ -4121,9 +4186,6 @@ class Install extends Console\Command\Command
 		bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value = null,
 	): string|int|bool|float
 	{
-		$dataTypes = $attributeMetadata->getDataType();
-		$dataTypes = is_array($dataTypes) ? $dataTypes : [$dataTypes];
-
 		if ($attributeMetadata->getValidValues() !== []) {
 			$options = array_combine(
 				array_values($attributeMetadata->getValidValues()),
@@ -4177,7 +4239,7 @@ class Install extends Console\Command\Command
 			return $value;
 		}
 
-		if (in_array(MetadataTypes\DataType::BOOLEAN, $dataTypes, true)) {
+		if ($attributeMetadata->getDataType() === MetadataTypes\DataType::BOOLEAN) {
 			$question = new Console\Question\ChoiceQuestion(
 				(string) $this->translator->translate('//ns-panel-connector.cmd.install.questions.select.value'),
 				[
@@ -4219,7 +4281,7 @@ class Install extends Console\Command\Command
 			is_object($value) ? MetadataUtilities\Value::toString($value) : $value,
 		);
 		$question->setValidator(
-			function (string|int|null $answer) use ($dataTypes, $minValue, $maxValue, $step): string|int|float {
+			function (string|int|null $answer) use ($attributeMetadata, $minValue, $maxValue, $step): string|int|float {
 				if ($answer === null) {
 					throw new Exceptions\Runtime(
 						sprintf(
@@ -4231,11 +4293,11 @@ class Install extends Console\Command\Command
 					);
 				}
 
-				if (in_array(MetadataTypes\DataType::STRING, $dataTypes, true)) {
+				if ($attributeMetadata->getDataType() === MetadataTypes\DataType::STRING) {
 					return strval($answer);
 				}
 
-				if (in_array(MetadataTypes\DataType::FLOAT, $dataTypes, true)) {
+				if ($attributeMetadata->getDataType() === MetadataTypes\DataType::FLOAT) {
 					if ($minValue !== null && floatval($answer) < $minValue) {
 						throw new Exceptions\Runtime(
 							sprintf(
@@ -4278,12 +4340,12 @@ class Install extends Console\Command\Command
 				}
 
 				if (
-					in_array(MetadataTypes\DataType::CHAR, $dataTypes, true)
-					|| in_array(MetadataTypes\DataType::UCHAR, $dataTypes, true)
-					|| in_array(MetadataTypes\DataType::SHORT, $dataTypes, true)
-					|| in_array(MetadataTypes\DataType::USHORT, $dataTypes, true)
-					|| in_array(MetadataTypes\DataType::INT, $dataTypes, true)
-					|| in_array(MetadataTypes\DataType::UINT, $dataTypes, true)
+					$attributeMetadata->getDataType() === MetadataTypes\DataType::CHAR
+					|| $attributeMetadata->getDataType() === MetadataTypes\DataType::UCHAR
+					|| $attributeMetadata->getDataType() === MetadataTypes\DataType::SHORT
+					|| $attributeMetadata->getDataType() === MetadataTypes\DataType::USHORT
+					|| $attributeMetadata->getDataType() === MetadataTypes\DataType::INT
+					|| $attributeMetadata->getDataType() === MetadataTypes\DataType::UINT
 				) {
 					if ($minValue !== null && intval($answer) < $minValue) {
 						throw new Exceptions\Runtime(

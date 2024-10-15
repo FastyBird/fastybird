@@ -34,7 +34,7 @@ use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use Nette;
 use Nette\Utils;
-use function is_array;
+use function in_array;
 use function sprintf;
 
 /**
@@ -178,10 +178,6 @@ final class Properties implements Common\EventSubscriber
 		}
 
 		foreach ($capabilityMetadata->getAttributes() as $attributeMetadata) {
-			$dataType = $attributeMetadata->getDataType();
-
-			$permission = $capabilityMetadata->getPermission();
-
 			$format = null;
 
 			if (
@@ -195,11 +191,10 @@ final class Properties implements Common\EventSubscriber
 			}
 
 			if (
-				(
-					$dataType === MetadataTypes\DataType::ENUM
-					|| $dataType === MetadataTypes\DataType::SWITCH
-					|| $dataType === MetadataTypes\DataType::BUTTON
-				)
+				$attributeMetadata->getDataType() === MetadataTypes\DataType::ENUM
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::SWITCH
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::BUTTON
+				|| $attributeMetadata->getDataType() === MetadataTypes\DataType::COVER
 			) {
 				if ($attributeMetadata->getMappedValues() !== []) {
 					$format = $attributeMetadata->getMappedValues();
@@ -211,10 +206,18 @@ final class Properties implements Common\EventSubscriber
 			$this->processChannelProperty(
 				$channel,
 				$attributeMetadata->getAttribute(),
-				is_array($dataType) ? $dataType[0] : $dataType,
+				$attributeMetadata->getDataType(),
 				$format,
-				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::WRITE,
-				$permission === Types\Permission::READ_WRITE || $permission === Types\Permission::READ,
+				in_array(
+					$capabilityMetadata->getPermission(),
+					[Types\Permission::READ_WRITE, Types\Permission::WRITE],
+					true,
+				),
+				in_array(
+					$capabilityMetadata->getPermission(),
+					[Types\Permission::READ_WRITE, Types\Permission::READ],
+					true,
+				),
 				$attributeMetadata->getUnit(),
 				$attributeMetadata->getInvalidValue(),
 			);

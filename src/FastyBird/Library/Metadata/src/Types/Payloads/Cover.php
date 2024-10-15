@@ -46,4 +46,6 @@ enum Cover: string implements Payload
 
 	case CALIBRATING = 'cover_calibrating';
 
+	case LOCK = 'cover_lock';
+
 }
