@@ -52,7 +52,7 @@ final class StoreSubDevice implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly Mapping\Capabilities $capabilitiesMapping,
+		private Mapping\Builder $mappingBuilder,
 		protected readonly NsPanel\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
@@ -269,7 +269,7 @@ final class StoreSubDevice implements Queue\Consumer
 				continue;
 			}
 
-			$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+			$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
 				$state->getCapability(),
 				$state->getIdentifier(),
 			);
