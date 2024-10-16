@@ -146,7 +146,7 @@ readonly class Loader
 						$findChannelPropertiesQuery,
 					);
 
-					$createdAttributes = $createdConfigurations = [];
+					$createdAttributes = [];
 
 					foreach ($properties as $property) {
 						$attributeType = Helpers\Name::convertPropertyToAttribute($property->getIdentifier(), false);
@@ -170,8 +170,6 @@ readonly class Loader
 							$protocolConfiguration = $this->buildConfiguration($property, $protocolCapability);
 
 							$protocolCapability->addConfiguration($protocolConfiguration);
-
-							$createdConfigurations[] = $protocolConfiguration->getType();
 
 							continue;
 						}
@@ -200,16 +198,6 @@ readonly class Loader
 					if (
 						$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
 						&& array_diff($protocolCapability->getAllowedAttributesTypes(), $createdAttributes) !== []
-					) {
-						$protocolDevice->setCorrupted(true);
-					}
-
-					if (
-						$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
-						&& array_diff(
-							$protocolCapability->getAllowedConfigurationsTypes(),
-							$createdConfigurations,
-						) !== []
 					) {
 						$protocolDevice->setCorrupted(true);
 					}

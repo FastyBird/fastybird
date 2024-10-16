@@ -378,6 +378,24 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Schemas\Channels\Temperature::class);
 
 		$builder->addDefinition(
+			$this->prefix('schemas.channel.thermostat'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\Thermostat::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.thermostatModeDetect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\ThermostatModeDetect::class);
+
+		$builder->addDefinition(
+			$this->prefix('schemas.channel.thermostatTargetSetPoint'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Schemas\Channels\ThermostatTargetSetPoint::class);
+
+		$builder->addDefinition(
 			$this->prefix('schemas.channel.toggle'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -520,6 +538,24 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Hydrators\Channels\Temperature::class);
 
 		$builder->addDefinition(
+			$this->prefix('hydrators.channel.thermostat'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\Thermostat::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.thermostatModeDetect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\ThermostatModeDetect::class);
+
+		$builder->addDefinition(
+			$this->prefix('hydrators.channel.thermostatTargetSetPoint'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Hydrators\Channels\ThermostatTargetSetPoint::class);
+
+		$builder->addDefinition(
 			$this->prefix('hydrators.channel.toggle'),
 			new DI\Definitions\ServiceDefinition(),
 		)
@@ -598,6 +634,380 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				'attributeFactories' => [],
 				'configurationsFactories' => [],
 			]);
+
+		// DEVICES
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.device.subDevice'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Devices\SubDeviceFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.device.thirdParty'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Devices\ThirdPartyDeviceFactory::class);
+
+		// CAPABILITIES
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.battery'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\BatteryFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.brightness'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\BrightnessFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.cameraStream'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\CameraStreamFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.colorRgb'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ColorRgbFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.colorTemperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ColorTemperatureFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.detect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\DetectFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.fault'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\FaultFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.humidity'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\HumidityFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.illuminationLevel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\IlluminationLevelFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.motorCalibration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\MotorCalibrationFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.motorControl'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\MotorControlFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.motorReverse'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\MotorReverseFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.percentage'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\PercentageFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.power'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\PowerFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.press'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\PressFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.rssi'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\RssiFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.startup'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\StartupFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.temperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\TemperatureFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.thermostat'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ThermostatFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.thermostatModeDetect'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ThermostatModeDetectFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.thermostatTargetSetPoint'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ThermostatTargetSetPointFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.capability.toggle'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Capabilities\ToggleFactory::class);
+
+		// ATTRIBUTES
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.battery'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\BatteryFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.brightness'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\BrightnessFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.colorBlue'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ColorBlueFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.colorGreen'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ColorGreenFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.colorRed'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ColorRedFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.colorTemperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ColorTemperatureFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.detected'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\DetectedFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.fault'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\FaultFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.humidity'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\HumidityFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.illuminationLevel'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\IlluminationLevelFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.motorCalibration'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\MotorCalibrationFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.motorControl'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\MotorControlFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.motorReverse'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\MotorReverseFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.percentage'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\PercentageFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.powerState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\PowerStateFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.press'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\PressFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.rssi'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\RssiFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.startup'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\StartupFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.temperature'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\TemperatureFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.thermostatAdaptiveRecoveryStatus'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ThermostatAdaptiveRecoveryStatusFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.thermostatMode'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ThermostatModeFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.thermostatModeDetection'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ThermostatModeDetectionFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.thermostatTargetSetPoint'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ThermostatTargetSetPointFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.attribute.toggleState'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Attributes\ToggleStateFactory::class);
+
+		// CONFIGURATIONS
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.mappingMode'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\MappingModeFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.rangeMax'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\RangeMaxFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.rangeMin'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\RangeMinFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.streamUrl'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\StreamUrlFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.supportedDetectionLowerSetPointScale'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\SupportedDetectionLowerSetPointScaleFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.supportedDetectionLowerSetPointValue'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\SupportedDetectionLowerSetPointValueFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.supportedDetectionUpperSetPointScale'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\SupportedDetectionUpperSetPointScaleFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.supportedDetectionUpperSetPointValue'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\SupportedDetectionUpperSetPointValueFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.temperatureIncrement'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\TemperatureIncrementFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.temperatureMax'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\TemperatureMaxFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.temperatureMin'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\TemperatureMinFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.temperatureScale'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\TemperatureScaleFactory::class);
+
+		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.thermostatSupportedModes'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\ThermostatSupportedModesFactory::class);
 
 		/**
 		 * COMMANDS

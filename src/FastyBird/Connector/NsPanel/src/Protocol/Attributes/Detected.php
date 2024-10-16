@@ -28,7 +28,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-class Detect extends Attribute
+class Detected extends Attribute
 {
 
 	public function __construct(
