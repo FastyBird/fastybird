@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Types;
 use Orisai\ObjectMapper;
+use function sprintf;
 
 /**
  * Capabilities mapping configuration
@@ -50,6 +51,20 @@ readonly class Capabilities implements Mapping\Mapping
 	public function getGroups(): array
 	{
 		return $this->groups;
+	}
+
+	/**
+	 * @throws Exceptions\InvalidState
+	 */
+	public function getGroup(Types\Group $type): Mapping\Capabilities\Group
+	{
+		foreach ($this->groups as $group) {
+			if ($group->getType() === $type) {
+				return $group;
+			}
+		}
+
+		throw new Exceptions\InvalidState(sprintf('Group type: %s is not configured', $type->value));
 	}
 
 	/**

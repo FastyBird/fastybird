@@ -31,8 +31,8 @@ readonly class Category implements Mapping\Mapping
 {
 
 	/**
-	 * @param array<Types\Capability> $requiredCapabilities
-	 * @param array<Types\Capability> $optionalCapabilities
+	 * @param array<Types\Group> $requiredCapabilities
+	 * @param array<Types\Group> $optionalCapabilities
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Category::class)]
@@ -43,15 +43,15 @@ readonly class Category implements Mapping\Mapping
 		])]
 		private string $description,
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Capability::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Group::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private array $requiredCapabilities,
+		private array $requiredCapabilities = [],
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Capability::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Group::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private array $optionalCapabilities,
+		private array $optionalCapabilities = [],
 	)
 	{
 	}
@@ -67,17 +67,17 @@ readonly class Category implements Mapping\Mapping
 	}
 
 	/**
-	 * @return array<Types\Capability>
+	 * @return array<Types\Group>
 	 */
-	public function getRequiredCapabilities(): array
+	public function getRequiredCapabilitiesGroups(): array
 	{
 		return $this->requiredCapabilities;
 	}
 
 	/**
-	 * @return array<Types\Capability>
+	 * @return array<Types\Group>
 	 */
-	public function getOptionalCapabilities(): array
+	public function getOptionalCapabilitiesGroups(): array
 	{
 		return $this->optionalCapabilities;
 	}

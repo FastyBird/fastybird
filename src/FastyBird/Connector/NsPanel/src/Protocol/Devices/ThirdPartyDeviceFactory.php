@@ -20,10 +20,13 @@ use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Mapping;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use TypeError;
 use ValueError;
+use function array_map;
+use function array_merge;
 use function assert;
 use function sprintf;
 
@@ -39,6 +42,7 @@ class ThirdPartyDeviceFactory implements DeviceFactory
 {
 
 	public function __construct(
+		private readonly Mapping\Builder $mappingBuilder,
 		private readonly Helpers\Connectors\Connector $connectorHelper,
 		private readonly Helpers\Devices\ThirdPartyDevice $deviceHelper,
 	)
@@ -48,6 +52,8 @@ class ThirdPartyDeviceFactory implements DeviceFactory
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -81,8 +87,26 @@ class ThirdPartyDeviceFactory implements DeviceFactory
 				$device->getId()->toString(),
 			),
 			false,
-			$categoryMetadata->getRequiredCapabilities(),
-			$categoryMetadata->getOptionalCapabilities(),
+			array_merge(
+				...array_map(function (Types\Group $type): array {
+					$group = $this->mappingBuilder->getCapabilitiesMapping()->getGroup($type);
+
+					return array_map(
+						static fn (Mapping\Capabilities\Capability $capabilityMeta): Types\Capability => $capabilityMeta->getCapability(),
+						$group->getCapabilities(),
+					);
+				}, $categoryMetadata->getRequiredCapabilitiesGroups()),
+			),
+			array_merge(
+				...array_map(function (Types\Group $type): array {
+					$group = $this->mappingBuilder->getCapabilitiesMapping()->getGroup($type);
+
+					return array_map(
+						static fn (Mapping\Capabilities\Capability $capabilityMeta): Types\Capability => $capabilityMeta->getCapability(),
+						$group->getCapabilities(),
+					);
+				}, $categoryMetadata->getOptionalCapabilitiesGroups()),
+			),
 		);
 	}
 

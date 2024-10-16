@@ -1,5 +1,5 @@
-{
-  "plug": {
+[
+  {
     "category": "plug",
     "description": "Plug",
     "requiredCapabilities": [
@@ -10,7 +10,7 @@
       "rssi"
     ]
   },
-  "switch": {
+  {
     "category": "switch",
     "description": "Switch",
     "requiredCapabilities": [
@@ -23,7 +23,7 @@
       "rssi"
     ]
   },
-  "light": {
+  {
     "category": "light",
     "description": "Light",
     "requiredCapabilities": [
@@ -36,7 +36,7 @@
       "rssi"
     ]
   },
-  "curtain": {
+  {
     "category": "curtain",
     "description": "Curtain",
     "requiredCapabilities": [
@@ -50,7 +50,7 @@
       "rssi"
     ]
   },
-  "contactSensor": {
+  {
     "category": "contactSensor",
     "description": "Door or window sensor",
     "requiredCapabilities": [
@@ -61,7 +61,7 @@
       "rssi"
     ]
   },
-  "motionSensor": {
+  {
     "category": "motionSensor",
     "description": "Motion sensor",
     "requiredCapabilities": [
@@ -72,7 +72,7 @@
       "rssi"
     ]
   },
-  "temperatureSensor": {
+  {
     "category": "temperatureSensor",
     "description": "Temperature sensor",
     "requiredCapabilities": [
@@ -82,7 +82,7 @@
       "rssi"
     ]
   },
-  "humiditySensor": {
+  {
     "category": "humiditySensor",
     "description": "Humidity sensor",
     "requiredCapabilities": [
@@ -92,7 +92,7 @@
       "rssi"
     ]
   },
-  "temperatureAndHumiditySensor": {
+  {
     "category": "temperatureAndHumiditySensor",
     "description": "Temperature and humidity sensor",
     "requiredCapabilities": [
@@ -104,7 +104,7 @@
       "rssi"
     ]
   },
-  "waterLeakDetector": {
+  {
     "category": "waterLeakDetector",
     "description": "Water leak detector",
     "requiredCapabilities": [
@@ -115,7 +115,7 @@
       "rssi"
     ]
   },
-  "smokeDetector": {
+  {
     "category": "smokeDetector",
     "description": "Smoke detector",
     "requiredCapabilities": [
@@ -126,7 +126,7 @@
       "rssi"
     ]
   },
-  "button": {
+  {
     "category": "button",
     "description": "Wireless button",
     "requiredCapabilities": [
@@ -137,7 +137,7 @@
       "rssi"
     ]
   },
-  "camera": {
+  {
     "category": "camera",
     "description": "Camera",
     "requiredCapabilities": [
@@ -146,7 +146,7 @@
     "optionalCapabilities": [
     ]
   },
-  "sensor": {
+  {
     "category": "sensor",
     "description": "General sensor",
     "requiredCapabilities": [
@@ -154,4 +154,4 @@
     "optionalCapabilities": [
     ]
   }
-}
+]

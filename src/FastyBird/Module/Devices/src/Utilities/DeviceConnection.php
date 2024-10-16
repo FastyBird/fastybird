@@ -70,6 +70,8 @@ final class DeviceConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -79,6 +81,12 @@ final class DeviceConnection
 		Types\ConnectionState $state,
 	): bool
 	{
+		$currentState = $this->getState($device);
+
+		if ($currentState === $state) {
+			return true;
+		}
+
 		$findDevicePropertyQuery = new Queries\Configuration\FindDeviceDynamicProperties();
 		$findDevicePropertyQuery->byDeviceId($device->getId());
 		$findDevicePropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::STATE->value);

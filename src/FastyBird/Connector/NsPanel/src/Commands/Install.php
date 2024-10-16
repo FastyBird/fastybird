@@ -3380,9 +3380,7 @@ class Install extends Console\Command\Command
 		$categories = [];
 
 		foreach ($categoriesMetadata as $categoryMetadata) {
-			$requiredCapabilities = $categoryMetadata->getRequiredCapabilities();
-
-			if ($requiredCapabilities !== []) {
+			if ($categoryMetadata->getRequiredCapabilitiesGroups() !== []) {
 				$categories[$categoryMetadata->getCategory()->value] = (string) $this->translator->translate(
 					'//ns-panel-connector.cmd.base.deviceType.' . $categoryMetadata->getCategory()->value,
 				);
@@ -3452,60 +3450,60 @@ class Install extends Console\Command\Command
 
 		if (
 			$categoryMetadata === null
-			|| $categoryMetadata->getRequiredCapabilities() === []
+			|| $categoryMetadata->getRequiredCapabilitiesGroups() === []
 		) {
 			return null;
 		}
 
 		$capabilities = [];
 
-		foreach ($categoryMetadata->getRequiredCapabilities() as $type) {
-			$capabilityMeta = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($type);
+		foreach ($categoryMetadata->getRequiredCapabilitiesGroups() as $groupType) {
+			$group = $this->mappingBuilder->getCapabilitiesMapping()->getGroup($groupType);
 
-			if ($capabilityMeta === null) {
-				continue;
-			}
+			foreach ($group->getCapabilities() as $capabilityMeta) {
+				$allowMultiple = $capabilityMeta->isMultiple();
 
-			$allowMultiple = $capabilityMeta->isMultiple();
-
-			$findChannelQuery = new Queries\Entities\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier(Helpers\Name::convertCapabilityToChannel($capabilityMeta->getCapability()));
-
-			$channel = $this->channelsRepository->findOneBy(
-				$findChannelQuery,
-				Entities\Channels\Channel::class,
-			);
-
-			if ($channel === null || $allowMultiple) {
-				$capabilities[$capabilityMeta->getCapability()->value] = (string) $this->translator->translate(
-					'//ns-panel-connector.cmd.base.capability.' . $capabilityMeta->getCapability()->value,
+				$findChannelQuery = new Queries\Entities\FindChannels();
+				$findChannelQuery->forDevice($device);
+				$findChannelQuery->byIdentifier(
+					Helpers\Name::convertCapabilityToChannel($capabilityMeta->getCapability()),
 				);
+
+				$channel = $this->channelsRepository->findOneBy(
+					$findChannelQuery,
+					Entities\Channels\Channel::class,
+				);
+
+				if ($channel === null || $allowMultiple) {
+					$capabilities[$capabilityMeta->getCapability()->value] = (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.base.capability.' . $capabilityMeta->getCapability()->value,
+					);
+				}
 			}
 		}
 
-		foreach ($categoryMetadata->getOptionalCapabilities() as $type) {
-			$capabilityMeta = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($type);
+		foreach ($categoryMetadata->getOptionalCapabilitiesGroups() as $groupType) {
+			$group = $this->mappingBuilder->getCapabilitiesMapping()->getGroup($groupType);
 
-			if ($capabilityMeta === null) {
-				continue;
-			}
+			foreach ($group->getCapabilities() as $capabilityMeta) {
+				$allowMultiple = $capabilityMeta->isMultiple();
 
-			$allowMultiple = $capabilityMeta->isMultiple();
-
-			$findChannelQuery = new Queries\Entities\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier(Helpers\Name::convertCapabilityToChannel($capabilityMeta->getCapability()));
-
-			$channel = $this->channelsRepository->findOneBy(
-				$findChannelQuery,
-				Entities\Channels\Channel::class,
-			);
-
-			if ($channel === null || $allowMultiple) {
-				$capabilities[$capabilityMeta->getCapability()->value] = (string) $this->translator->translate(
-					'//ns-panel-connector.cmd.base.capability.' . $capabilityMeta->getCapability()->value,
+				$findChannelQuery = new Queries\Entities\FindChannels();
+				$findChannelQuery->forDevice($device);
+				$findChannelQuery->byIdentifier(
+					Helpers\Name::convertCapabilityToChannel($capabilityMeta->getCapability()),
 				);
+
+				$channel = $this->channelsRepository->findOneBy(
+					$findChannelQuery,
+					Entities\Channels\Channel::class,
+				);
+
+				if ($channel === null || $allowMultiple) {
+					$capabilities[$capabilityMeta->getCapability()->value] = (string) $this->translator->translate(
+						'//ns-panel-connector.cmd.base.capability.' . $capabilityMeta->getCapability()->value,
+					);
+				}
 			}
 		}
 
