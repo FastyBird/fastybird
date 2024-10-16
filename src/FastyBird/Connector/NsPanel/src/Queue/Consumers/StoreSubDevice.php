@@ -73,6 +73,7 @@ final class StoreSubDevice implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws DBAL\Exception
 	 */
 	public function consume(Queue\Messages\Message $message): bool

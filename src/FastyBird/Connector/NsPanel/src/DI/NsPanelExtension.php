@@ -629,10 +629,6 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Protocol\Loader::class)
 			->setArguments([
 				'logger' => $logger,
-				'deviceFactories' => [],
-				'capabilityFactories' => [],
-				'attributeFactories' => [],
-				'configurationsFactories' => [],
 			]);
 
 		// DEVICES
