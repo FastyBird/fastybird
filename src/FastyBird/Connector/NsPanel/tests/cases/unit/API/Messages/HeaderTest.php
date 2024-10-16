@@ -1,26 +1,25 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API\Request;
+namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\API\Messages;
 
 use Error;
-use FastyBird\Connector\NsPanel\API\Messages\Request\SetDeviceState;
+use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Tests;
+use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
-use Nette\Utils;
 use Orisai\ObjectMapper;
+use Ramsey\Uuid;
 use function assert;
 
-final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
+final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
-	 * @throws Nette\IOException
 	 * @throws ObjectMapper\Exception\InvalidData
-	 * @throws Utils\JsonException
 	 * @throws Error
 	 */
 	public function testCreateMessage(): void
@@ -30,20 +29,20 @@ final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
 		$processor = $container->getByType(ObjectMapper\Processing\Processor::class);
 		assert($processor instanceof ObjectMapper\Processing\DefaultProcessor);
 
+		$id = Uuid\Uuid::uuid4();
+
 		$message = $processor->process(
-			Utils\Json::decode(
-				Utils\FileSystem::read(
-					__DIR__ . '/../../../../../fixtures/Entities/API/Request/set_device_state.json',
-				),
-				forceArrays: true,
-			),
-			SetDeviceState::class,
+			[
+				'name' => Types\Header::ERROR_RESPONSE->value,
+				'message_id' => $id->toString(),
+				'version' => '1',
+			],
+			API\Messages\Header::class,
 		);
 
-		self::assertSame(
-			'c2e2a418-c70c-4363-aa33-8f2de5196bda',
-			$message->getDirective()->getEndpoint()->getSerialNumber(),
-		);
+		self::assertSame(Types\Header::ERROR_RESPONSE, $message->getName());
+		self::assertSame($id->toString(), $message->getMessageId());
+		self::assertSame('1', $message->getVersion());
 	}
 
 }

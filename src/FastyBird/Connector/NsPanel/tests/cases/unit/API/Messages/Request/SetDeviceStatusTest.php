@@ -1,25 +1,26 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Entities\API;
+namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\API\Messages\Request;
 
 use Error;
-use FastyBird\Connector\NsPanel\API\Messages\Header;
+use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Tests;
-use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use Nette;
+use Nette\Utils;
 use Orisai\ObjectMapper;
-use Ramsey\Uuid;
 use function assert;
 
-final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
+final class SetDeviceStatusTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
+	 * @throws Nette\IOException
 	 * @throws ObjectMapper\Exception\InvalidData
+	 * @throws Utils\JsonException
 	 * @throws Error
 	 */
 	public function testCreateMessage(): void
@@ -29,20 +30,20 @@ final class HeaderTest extends Tests\Cases\Unit\BaseTestCase
 		$processor = $container->getByType(ObjectMapper\Processing\Processor::class);
 		assert($processor instanceof ObjectMapper\Processing\DefaultProcessor);
 
-		$id = Uuid\Uuid::uuid4();
-
 		$message = $processor->process(
-			[
-				'name' => Types\Header::ERROR_RESPONSE->value,
-				'message_id' => $id->toString(),
-				'version' => '1',
-			],
-			Header::class,
+			Utils\Json::decode(
+				Utils\FileSystem::read(
+					__DIR__ . '/../../../../../fixtures/API/request/set_device_state.json',
+				),
+				forceArrays: true,
+			),
+			API\Messages\Request\SetDeviceState::class,
 		);
 
-		self::assertSame(Types\Header::ERROR_RESPONSE, $message->getName());
-		self::assertSame($id->toString(), $message->getMessageId());
-		self::assertSame('1', $message->getVersion());
+		self::assertSame(
+			'c2e2a418-c70c-4363-aa33-8f2de5196bda',
+			$message->getDirective()->getEndpoint()->getSerialNumber(),
+		);
 	}
 
 }
