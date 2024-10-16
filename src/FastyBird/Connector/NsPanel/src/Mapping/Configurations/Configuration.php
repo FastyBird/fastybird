@@ -32,22 +32,14 @@ readonly class Configuration implements Mapping\Mapping
 {
 
 	/**
-	 * @param array<MetadataTypes\DataType>|MetadataTypes\DataType $datatype
 	 * @param array<int, string> $validValues
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Configuration::class)]
 		private Types\Configuration $configuration,
-		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
-			new ObjectMapper\Rules\ArrayOf(
-				new ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class),
-				new ObjectMapper\Rules\IntValue(unsigned: true),
-			),
-		])]
+		#[ObjectMapper\Rules\BackedEnumValue(class: MetadataTypes\DataType::class)]
 		#[ObjectMapper\Modifiers\FieldName('data_type')]
-		private MetadataTypes\DataType|array $datatype,
+		private MetadataTypes\DataType $dataType,
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
@@ -105,12 +97,9 @@ readonly class Configuration implements Mapping\Mapping
 		return $this->configuration;
 	}
 
-	/**
-	 * @return array<int, MetadataTypes\DataType>|MetadataTypes\DataType
-	 */
-	public function getDatatype(): array|MetadataTypes\DataType
+	public function getDataType(): MetadataTypes\DataType
 	{
-		return $this->datatype;
+		return $this->dataType;
 	}
 
 	/**

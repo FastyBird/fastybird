@@ -14,7 +14,6 @@ use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Middleware;
 use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Schemas;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Services;
@@ -119,7 +118,6 @@ final class NsPanelExtensionTest extends Tests\Cases\Unit\BaseTestCase
 		self::assertNotNull($container->getByType(Helpers\Devices\SubDevice::class, false));
 		self::assertNotNull($container->getByType(Helpers\Channels\Channel::class, false));
 
-		self::assertNotNull($container->getByType(Router\Router::class, false));
 		self::assertNotNull($container->getByType(Middleware\Router::class, false));
 
 		self::assertNotNull($container->getByType(Mapping\Builder::class, false));

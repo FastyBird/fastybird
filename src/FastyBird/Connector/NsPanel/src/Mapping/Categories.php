@@ -35,9 +35,7 @@ readonly class Categories implements Mapping\Mapping
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\AnyOf([
-				new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Categories\Category::class),
-			]),
+			new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Categories\Category::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		private array $categories,

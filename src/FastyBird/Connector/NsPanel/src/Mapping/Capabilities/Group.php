@@ -45,7 +45,7 @@ readonly class Group implements Mapping\Mapping
 			new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Capabilities\Capability::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private array $capabilities,
+		private array $capabilities = [],
 	)
 	{
 	}

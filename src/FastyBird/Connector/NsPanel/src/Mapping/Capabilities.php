@@ -36,9 +36,7 @@ readonly class Capabilities implements Mapping\Mapping
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\ArrayOf(
-			new ObjectMapper\Rules\AnyOf([
-				new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Capabilities\Group::class),
-			]),
+			new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Capabilities\Group::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
 		private array $groups,

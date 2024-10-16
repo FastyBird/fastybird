@@ -976,6 +976,12 @@ class NsPanelExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			->setType(Protocol\Configurations\SupportedDetectionUpperSetPointValueFactory::class);
 
 		$builder->addDefinition(
+			$this->prefix('protocol.factory.configuration.supportedDetectionModes'),
+			new DI\Definitions\ServiceDefinition(),
+		)
+			->setType(Protocol\Configurations\SupportedDetectionModesFactory::class);
+
+		$builder->addDefinition(
 			$this->prefix('protocol.factory.configuration.temperatureIncrement'),
 			new DI\Definitions\ServiceDefinition(),
 		)

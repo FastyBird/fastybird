@@ -52,4 +52,6 @@ enum Configuration: string
 
 	case MAPPING_MODE = 'mappingMode';
 
+	case WEEKLY_SCHEDULE_MAX_ENTRY_PER_DAY = 'weeklySchedule_maxEntryPerDay';
+
 }

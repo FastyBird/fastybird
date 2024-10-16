@@ -52,12 +52,12 @@ final class StoreSubDevice implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
-		private Mapping\Builder $mappingBuilder,
 		protected readonly NsPanel\Logger $logger,
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
 		protected readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly Mapping\Builder $mappingBuilder,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
 		private readonly DevicesModels\Entities\Channels\ChannelsRepository $channelsRepository,
@@ -226,8 +226,17 @@ final class StoreSubDevice implements Queue\Consumer
 				$channel = $this->channelsRepository->findOneBy($findChannelQuery, Entities\Channels\Channel::class);
 
 				if ($channel === null) {
+					$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
+						$capability->getCapability(),
+						$capability->getName(),
+					);
+
+					if ($capabilityMetadata === null) {
+						return false;
+					}
+
 					$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-						'entity' => Entities\Channels\Channel::class,
+						'entity' => $capabilityMetadata->getClass(),
 						'device' => $device,
 						'identifier' => $identifier,
 					]));

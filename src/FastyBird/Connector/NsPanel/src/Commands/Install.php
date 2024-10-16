@@ -103,8 +103,7 @@ class Install extends Console\Command\Command
 
 	public function __construct(
 		private readonly API\LanApiFactory $lanApiFactory,
-		private readonly Mapping\Categories $categoriesMapping,
-		private readonly Mapping\Capabilities $capabilitiesMapping,
+		private readonly Mapping\Builder $mappingBuilder,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsManager $connectorsManager,
@@ -1380,6 +1379,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -1504,6 +1504,7 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -1790,6 +1791,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -1806,7 +1808,7 @@ class Install extends Console\Command\Command
 			return null;
 		}
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName($capabilityType);
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($capabilityType);
 
 		if ($capabilityMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
@@ -1904,6 +1906,7 @@ class Install extends Console\Command\Command
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -1936,7 +1939,7 @@ class Install extends Console\Command\Command
 
 		$capabilityType = $channel->getCapability();
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName($capabilityType);
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($capabilityType);
 
 		if ($capabilityMetadata === null) {
 			throw new Exceptions\InvalidArgument(sprintf(
@@ -2200,7 +2203,7 @@ class Install extends Console\Command\Command
 	{
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
 			$channel->getCapability(),
 			array_key_exists('name', $matches) ? $matches['name'] : null,
 		);
@@ -2314,7 +2317,7 @@ class Install extends Console\Command\Command
 	{
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
 			$channel->getCapability(),
 			array_key_exists('name', $matches) ? $matches['name'] : null,
 		);
@@ -2583,6 +2586,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
@@ -2612,7 +2616,7 @@ class Install extends Console\Command\Command
 
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
 			$channel->getCapability(),
 			array_key_exists('name', $matches) ? $matches['name'] : null,
 		);
@@ -3365,9 +3369,13 @@ class Install extends Console\Command\Command
 		return is_scalar($name) || $name === null ? strval($name) === '' ? null : strval($name) : null;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 */
 	private function askDeviceCategory(Style\SymfonyStyle $io): Types\Category
 	{
-		$categoriesMetadata = $this->categoriesMapping->getCategories();
+		$categoriesMetadata = $this->mappingBuilder->getCategoriesMapping()->getCategories();
 
 		$categories = [];
 
@@ -3427,6 +3435,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws TypeError
@@ -3437,7 +3446,9 @@ class Install extends Console\Command\Command
 		Entities\Devices\ThirdPartyDevice $device,
 	): Types\Capability|null
 	{
-		$categoryMetadata = $this->categoriesMapping->findByCategory($device->getDisplayCategory());
+		$categoryMetadata = $this->mappingBuilder->getCategoriesMapping()->findByCategory(
+			$device->getDisplayCategory(),
+		);
 
 		if (
 			$categoryMetadata === null
@@ -3449,7 +3460,7 @@ class Install extends Console\Command\Command
 		$capabilities = [];
 
 		foreach ($categoryMetadata->getRequiredCapabilities() as $type) {
-			$capabilityMeta = $this->capabilitiesMapping->findByCapabilityName($type);
+			$capabilityMeta = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($type);
 
 			if ($capabilityMeta === null) {
 				continue;
@@ -3474,7 +3485,7 @@ class Install extends Console\Command\Command
 		}
 
 		foreach ($categoryMetadata->getOptionalCapabilities() as $type) {
-			$capabilityMeta = $this->capabilitiesMapping->findByCapabilityName($type);
+			$capabilityMeta = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName($type);
 
 			if ($capabilityMeta === null) {
 				continue;
@@ -3557,6 +3568,7 @@ class Install extends Console\Command\Command
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
 	 */
 	private function askAttribute(
 		Style\SymfonyStyle $io,
@@ -3565,7 +3577,7 @@ class Install extends Console\Command\Command
 	{
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		$capabilityMetadata = $this->capabilitiesMapping->findByCapabilityName(
+		$capabilityMetadata = $this->mappingBuilder->getCapabilitiesMapping()->findByCapabilityName(
 			$channel->getCapability(),
 			array_key_exists('name', $matches) ? $matches['name'] : null,
 		);

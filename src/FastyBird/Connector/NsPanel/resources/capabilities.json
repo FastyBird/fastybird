@@ -9,6 +9,7 @@
     "capabilities": [
       {
         "capability": "power",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Power",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -45,6 +46,7 @@
     "capabilities": [
       {
         "capability": "toggle",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Toggle",
         "permission": "readWrite",
         "multiple": true,
         "attributes": [
@@ -87,6 +89,7 @@
     "capabilities": [
       {
         "capability": "brightness",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Brightness",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -111,6 +114,7 @@
     "capabilities": [
       {
         "capability": "color-temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ColorTemperature",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -134,6 +138,7 @@
     "capabilities": [
       {
         "capability": "color-rgb",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ColorRgb",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -171,6 +176,7 @@
     "capabilities": [
       {
         "capability": "percentage",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Percentage",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -195,6 +201,7 @@
     "capabilities": [
       {
         "capability": "motor-control",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorControl",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -243,6 +250,7 @@
     "capabilities": [
       {
         "capability": "motor-reverse",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorReverse",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -263,6 +271,7 @@
     "capabilities": [
       {
         "capability": "motor-clb",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorCalibration",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -288,6 +297,7 @@
     "capabilities": [
       {
         "capability": "startup",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Startup",
         "permission": "readWrite",
         "multiple": false,
         "attributes": [
@@ -313,6 +323,7 @@
     "capabilities": [
       {
         "capability": "startup",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Startup",
         "permission": "readWrite",
         "multiple": true,
         "attributes": [
@@ -338,6 +349,7 @@
     "capabilities": [
       {
         "capability": "camera-stream",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\CameraStream",
         "permission": "read",
         "multiple": false,
         "configurations": [
@@ -362,6 +374,7 @@
     "capabilities": [
       {
         "capability": "detect",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Detect",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -382,6 +395,7 @@
     "capabilities": [
       {
         "capability": "humidity",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Humidity",
         "permission": "read",
         "multiple": false,
         "configurations": [
@@ -424,6 +438,7 @@
     "capabilities": [
       {
         "capability": "temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Temperature",
         "permission": "read",
         "multiple": false,
         "configurations": [
@@ -470,6 +485,7 @@
     "capabilities": [
       {
         "capability": "battery",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Battery",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -495,6 +511,7 @@
     "capabilities": [
       {
         "capability": "press",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Press",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -549,6 +566,7 @@
     "capabilities": [
       {
         "capability": "rssi",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Rssi",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -570,6 +588,7 @@
     "capabilities": [
       {
         "capability": "illumination-level",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\IlluminationLevel",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -591,6 +610,7 @@
     "capabilities": [
       {
         "capability": "thermostat-mode-detect_temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatModeDetect",
         "permission": "readWrite",
         "multiple": false,
         "configurations": [
@@ -640,6 +660,7 @@
       },
       {
         "capability": "thermostat-mode-detect_humidity",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatModeDetect",
         "permission": "readWrite",
         "multiple": false,
         "configurations": [
@@ -677,6 +698,7 @@
     "capabilities": [
       {
         "capability": "thermostat_adaptive-recovery-status",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Thermostat",
         "permission": "read",
         "multiple": false,
         "attributes": [
@@ -696,6 +718,7 @@
       },
       {
         "capability": "thermostat_thermostat-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Thermostat",
         "permission": "readWrite",
         "multiple": false,
         "configurations": [
@@ -725,6 +748,7 @@
     "capabilities": [
       {
         "capability": "thermostat-target-setpoint_manual-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
         "permission": "readWrite",
         "multiple": false,
         "configurations": [
@@ -770,6 +794,7 @@
       },
       {
         "capability": "thermostat-target-setpoint_auto-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
         "permission": "read",
         "multiple": false,
         "configurations": [
@@ -820,6 +845,7 @@
       },
       {
         "capability": "thermostat-target-setpoint_eco-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
         "permission": "readWrite",
         "multiple": false,
         "configurations": [
@@ -871,6 +897,7 @@
     "capabilities": [
       {
         "capability": "fault",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Fault",
         "permission": "read",
         "multiple": false,
         "attributes": [

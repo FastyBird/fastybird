@@ -23,6 +23,8 @@ use Orisai\ObjectMapper;
 use TypeError;
 use ValueError;
 use function array_key_exists;
+use function assert;
+use function class_exists;
 use function preg_match;
 
 /**
@@ -37,6 +39,7 @@ readonly class Capability implements Mapping\Mapping
 {
 
 	/**
+	 * @param class-string<NsPanel\Entities\Channels\Channel> $class
 	 * @param array<Mapping\Configurations\Configuration> $configurations
 	 * @param array<Mapping\Attributes\Attribute> $attributes
 	 */
@@ -44,6 +47,8 @@ readonly class Capability implements Mapping\Mapping
 		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
 		#[ObjectMapper\Modifiers\FieldName('capability')]
 		private string $capabilityWithName,
+		#[ObjectMapper\Rules\StringValue(notEmpty: true)]
+		private string $class,
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Permission::class)]
 		private Types\Permission $permission,
 		#[ObjectMapper\Rules\BoolValue(castBoolLike: true)]
@@ -52,14 +57,15 @@ readonly class Capability implements Mapping\Mapping
 			new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Configurations\Configuration::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private array $configurations,
+		private array $configurations = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			new ObjectMapper\Rules\MappedObjectValue(class: Mapping\Attributes\Attribute::class),
 			new ObjectMapper\Rules\IntValue(unsigned: true),
 		)]
-		private array $attributes,
+		private array $attributes = [],
 	)
 	{
+		assert(class_exists($this->class));
 	}
 
 	/**
@@ -85,6 +91,14 @@ readonly class Capability implements Mapping\Mapping
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $this->capabilityWithName, $matches);
 
 		return $matches['name'] ?? null;
+	}
+
+	/**
+	 * @return class-string<NsPanel\Entities\Channels\Channel>
+	 */
+	public function getClass(): string
+	{
+		return $this->class;
 	}
 
 	public function getPermission(): Types\Permission
