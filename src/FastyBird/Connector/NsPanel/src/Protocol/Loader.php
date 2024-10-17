@@ -95,8 +95,6 @@ readonly class Loader
 	{
 		$this->devicesDriver->reset();
 
-		$protocolDevices = [];
-
 		$findDevicesQuery = new Queries\Configuration\FindDevices();
 		$findDevicesQuery->forConnector($connector);
 
@@ -214,11 +212,11 @@ readonly class Loader
 					$protocolDevice->setCorrupted(true);
 				}
 
-				$protocolDevices[] = $protocolDevice;
+				$this->devicesDriver->addDevice($protocolDevice);
 			}
 		}
 
-		foreach ($protocolDevices as $protocolDevice) {
+		foreach ($this->devicesDriver->getDevices() as $protocolDevice) {
 			foreach ($protocolDevice->getCapabilities() as $protocolCapability) {
 				foreach ($protocolCapability->getAttributes() as $protocolAttribute) {
 					$property = $this->channelsPropertiesConfigurationRepository->find($protocolAttribute->getId());
