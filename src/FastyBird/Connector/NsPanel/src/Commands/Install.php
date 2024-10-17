@@ -1198,6 +1198,9 @@ class Install extends Console\Command\Command
 			return;
 		}
 
+		$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+		assert($gateway instanceof Entities\Devices\Gateway);
+
 		$this->askManageGatewayAction($io, $connector, $gateway);
 	}
 
@@ -1391,6 +1394,9 @@ class Install extends Console\Command\Command
 		Entities\Devices\Gateway $gateway,
 	): void
 	{
+		$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+		assert($gateway instanceof Entities\Devices\Gateway);
+
 		$question = new Console\Question\Question(
 			(string) $this->translator->translate(
 				'//ns-panel-connector.cmd.install.questions.provide.device.identifier',
@@ -1495,6 +1501,8 @@ class Install extends Console\Command\Command
 
 		do {
 			$channel = $this->createCapability($io, $device);
+			$device = $this->devicesRepository->find($device->getId(), Entities\Devices\ThirdPartyDevice::class);
+			assert($device instanceof Entities\Devices\ThirdPartyDevice);
 
 		} while ($channel !== null);
 	}
@@ -1850,7 +1858,7 @@ class Install extends Console\Command\Command
 			preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $identifier, $matches);
 
 			$channel = $this->channelsManager->create(Utils\ArrayHash::from([
-				'entity' => Entities\Channels\Channel::class,
+				'entity' => $capabilityMetadata->getClass(),
 				'identifier' => $identifier,
 				'name' => $this->translator->translate(
 					'//ns-panel-connector.cmd.base.capability.' . $capabilityType->value,
@@ -2974,6 +2982,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->createDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -2984,6 +2995,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->editDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -2993,6 +3007,9 @@ class Install extends Console\Command\Command
 				|| $whatToDo === '2'
 			) {
 				$this->deleteDevice($io, $connector, $gateway);
+
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
@@ -3014,6 +3031,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->listDevices($io, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 			}
 		} elseif ($connector->getClientMode() === Types\ClientMode::GATEWAY) {
@@ -3025,6 +3045,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->editDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -3034,6 +3057,9 @@ class Install extends Console\Command\Command
 				|| $whatToDo === '1'
 			) {
 				$this->deleteDevice($io, $connector, $gateway);
+
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
@@ -3066,6 +3092,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->createDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -3075,6 +3104,9 @@ class Install extends Console\Command\Command
 				|| $whatToDo === '1'
 			) {
 				$this->editDevice($io, $connector, $gateway);
+
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
@@ -3086,6 +3118,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->deleteDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -3096,6 +3131,9 @@ class Install extends Console\Command\Command
 			) {
 				$this->manageDevice($io, $connector, $gateway);
 
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
+
 				$this->askManageGatewayAction($io, $connector, $gateway);
 
 			} elseif (
@@ -3105,6 +3143,9 @@ class Install extends Console\Command\Command
 				|| $whatToDo === '4'
 			) {
 				$this->listDevices($io, $gateway);
+
+				$gateway = $this->devicesRepository->find($gateway->getId(), Entities\Devices\Gateway::class);
+				assert($gateway instanceof Entities\Devices\Gateway);
 
 				$this->askManageGatewayAction($io, $connector, $gateway);
 			}

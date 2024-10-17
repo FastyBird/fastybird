@@ -45,6 +45,11 @@ class PowerState extends Attribute
 				Types\Payloads\Power::ON->value,
 				Types\Payloads\Power::OFF->value,
 			],
+			null,
+			null,
+			null,
+			null,
+			Types\Payloads\Power::OFF->value,
 		);
 	}
 

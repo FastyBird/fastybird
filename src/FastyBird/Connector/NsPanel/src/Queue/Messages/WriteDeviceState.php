@@ -82,6 +82,7 @@ abstract readonly class WriteDeviceState implements Message
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
+			'property' => $this->getProperty()->toString(),
 			'state' => $this->getState()?->toArray(),
 		];
 	}

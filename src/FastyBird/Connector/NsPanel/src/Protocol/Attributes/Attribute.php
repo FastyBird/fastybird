@@ -127,12 +127,15 @@ class Attribute
 
 	public function setActualValue(bool|float|int|string|null $value): void
 	{
+		if ($value === null) {
+			$this->actualValue = $this->defaultValue;
+
+			return;
+		}
+
 		$this->actualValue = $value;
 
-		if (
-			$this->getExpectedValue() === $this->actualValue
-			&& $this->getExpectedValue() !== null
-		) {
+		if ($this->getExpectedValue() === $this->actualValue) {
 			$this->setExpectedValue(null);
 		}
 	}

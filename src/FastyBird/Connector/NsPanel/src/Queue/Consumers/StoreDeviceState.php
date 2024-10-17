@@ -262,7 +262,7 @@ final class StoreDeviceState implements Queue\Consumer
 			));
 
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-			await($this->channelPropertiesStatesManager->write(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,

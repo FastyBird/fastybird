@@ -37,6 +37,7 @@ use FastyBird\Module\Devices\Queries as DevicesQueries;
 use TypeError;
 use ValueError;
 use function array_diff;
+use function array_map;
 use function assert;
 use function sprintf;
 
@@ -195,7 +196,13 @@ readonly class Loader
 
 					if (
 						$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
-						&& array_diff($protocolCapability->getAllowedAttributesTypes(), $createdAttributes) !== []
+						&& array_diff(
+							array_map(
+								static fn (Types\Attribute $type): string => $type->value,
+								$protocolCapability->getAllowedAttributesTypes(),
+							),
+							array_map(static fn (Types\Attribute $type): string => $type->value, $createdAttributes),
+						) !== []
 					) {
 						$protocolDevice->setCorrupted(true);
 					}
@@ -207,7 +214,13 @@ readonly class Loader
 
 				if (
 					$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
-					&& array_diff($protocolDevice->getRequiredCapabilities(), $createdCapabilities) !== []
+					&& array_diff(
+						array_map(
+							static fn (Types\Capability $type): string => $type->value,
+							$protocolDevice->getRequiredCapabilities(),
+						),
+						array_map(static fn (Types\Capability $type): string => $type->value, $createdCapabilities),
+					) !== []
 				) {
 					$protocolDevice->setCorrupted(true);
 				}
@@ -334,10 +347,10 @@ readonly class Loader
 
 								if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 									$protocolAttribute->setActualValue(
-										MetadataUtilities\Value::flattenValue($state->getRead()->getActualValue()),
+										MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue()),
 									);
 									$protocolAttribute->setExpectedValue(
-										MetadataUtilities\Value::flattenValue($state->getRead()->getExpectedValue()),
+										MetadataUtilities\Value::flattenValue($state->getGet()->getExpectedValue()),
 									);
 									$protocolAttribute->setValid($state->isValid());
 								}

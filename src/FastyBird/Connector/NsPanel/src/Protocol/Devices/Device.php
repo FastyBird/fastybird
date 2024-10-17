@@ -21,8 +21,10 @@ use FastyBird\Connector\NsPanel\Types;
 use Nette;
 use Ramsey\Uuid;
 use SplObjectStorage;
+use function array_key_first;
 use function array_map;
 use function array_merge;
+use function array_reduce;
 use function in_array;
 use function sprintf;
 
@@ -231,9 +233,17 @@ abstract class Device
 				static fn (Protocol\Capabilities\Capability $capability): array => $capability->toDefinition(),
 				$this->getCapabilities(),
 			),
-			'state' => array_map(
-				static fn (Protocol\Capabilities\Capability $capability): array => $capability->toState(),
+			'state' => array_reduce(
 				$this->getCapabilities(),
+				static function (array $carry, Protocol\Capabilities\Capability $capability): array {
+					$state = $capability->toState();
+					$key = array_key_first($state);
+
+					$carry[$key] = $state[$key];
+
+					return $carry;
+				},
+				[],
 			),
 			'tags' => [],
 			'manufacturer' => $this->getManufacturer(),

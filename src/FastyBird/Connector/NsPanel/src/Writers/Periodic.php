@@ -412,7 +412,7 @@ abstract class Periodic implements Writer
 				return false;
 			}
 
-			$propertyValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
+			$propertyValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 
 			if ($propertyValue === null) {
 				return false;

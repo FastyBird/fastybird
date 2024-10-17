@@ -396,7 +396,9 @@ final class WriteSubDeviceState implements Queue\Consumer
 			MetadataTypes\Sources\Connector::NS_PANEL,
 		));
 
-		$protocolAttribute->setExpectedValue(MetadataUtilities\Value::flattenValue($state->getExpectedValue()));
+		$protocolAttribute->setExpectedValue(
+			MetadataUtilities\Value::flattenValue($state->getExpectedValue()),
+		);
 
 		$mapped = $protocolCapability->toState();
 

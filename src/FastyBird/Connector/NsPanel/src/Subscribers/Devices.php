@@ -39,8 +39,8 @@ final class Devices implements Common\EventSubscriber
 	public function getSubscribedEvents(): array
 	{
 		return [
-			ORM\Events::prePersist,
-			ORM\Events::preUpdate,
+			ORM\Events::postPersist,
+			ORM\Events::postUpdate,
 		];
 	}
 
@@ -50,7 +50,7 @@ final class Devices implements Common\EventSubscriber
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws ORM\ORMInvalidArgumentException
 	 */
-	public function prePersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	public function postPersist(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$entity = $eventArgs->getObject();
 
@@ -65,7 +65,7 @@ final class Devices implements Common\EventSubscriber
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws ORM\ORMInvalidArgumentException
 	 */
-	public function preUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
+	public function postUpdate(Persistence\Event\LifecycleEventArgs $eventArgs): void
 	{
 		$entity = $eventArgs->getObject();
 

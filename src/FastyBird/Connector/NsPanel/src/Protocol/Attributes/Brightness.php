@@ -46,6 +46,7 @@ class Brightness extends Attribute
 			0,
 			100,
 			1,
+			0,
 		);
 	}
 

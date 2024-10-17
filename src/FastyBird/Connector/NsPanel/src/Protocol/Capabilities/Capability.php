@@ -22,8 +22,10 @@ use Nette;
 use Ramsey\Uuid;
 use SplObjectStorage;
 use function array_filter;
+use function array_key_first;
 use function array_map;
 use function array_merge;
+use function array_reduce;
 use function in_array;
 use function sprintf;
 
@@ -270,18 +272,34 @@ class Capability
 		if ($this->getName() !== null) {
 			return [
 				$this->getType()->value => [
-					$this->getName() => array_map(
-						static fn (Protocol\Attributes\Attribute $attribute) => $attribute->toState(),
+					$this->getName() => array_reduce(
 						$this->getAttributes(),
+						static function (array $carry, Protocol\Attributes\Attribute $attribute): array {
+							$state = $attribute->toState();
+							$key = array_key_first($state);
+
+							$carry[$key] = $state[$key];
+
+							return $carry;
+						},
+						[],
 					),
 				],
 			];
 		}
 
 		return [
-			$this->getType()->value => array_map(
-				static fn (Protocol\Attributes\Attribute $attribute) => $attribute->toState(),
+			$this->getType()->value => array_reduce(
 				$this->getAttributes(),
+				static function (array $carry, Protocol\Attributes\Attribute $attribute): array {
+					$state = $attribute->toState();
+					$key = array_key_first($state);
+
+					$carry[$key] = $state[$key];
+
+					return $carry;
+				},
+				[],
 			),
 		];
 	}

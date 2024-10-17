@@ -340,7 +340,9 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 		$state = null;
 
 		if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Variable) {
-			$protocolAttribute->setActualValue(MetadataUtilities\Value::flattenValue($propertyToUpdate->getValue()));
+			$protocolAttribute->setActualValue(
+				MetadataUtilities\Value::flattenValue($propertyToUpdate->getValue()),
+			);
 			$protocolAttribute->setExpectedValue(null);
 			$protocolAttribute->setValid(true);
 			$protocolAttribute->setPending(false);
@@ -378,7 +380,9 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			}
 
 			if ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
-				$protocolAttribute->setActualValue(MetadataUtilities\Value::flattenValue($parent->getValue()));
+				$protocolAttribute->setActualValue(
+					MetadataUtilities\Value::flattenValue($parent->getValue()),
+				);
 				$protocolAttribute->setExpectedValue(null);
 				$protocolAttribute->setValid(true);
 				$protocolAttribute->setPending(false);
@@ -390,8 +394,12 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					return true;
 				}
 
-				$protocolAttribute->setActualValue(MetadataUtilities\Value::flattenValue($state->getActualValue()));
-				$protocolAttribute->setExpectedValue(MetadataUtilities\Value::flattenValue($state->getExpectedValue()));
+				$protocolAttribute->setActualValue(
+					MetadataUtilities\Value::flattenValue($state->getActualValue()),
+				);
+				$protocolAttribute->setExpectedValue(
+					MetadataUtilities\Value::flattenValue($state->getExpectedValue()),
+				);
 				$protocolAttribute->setValid($state->isValid());
 				$protocolAttribute->setPending($state->getPending());
 			}

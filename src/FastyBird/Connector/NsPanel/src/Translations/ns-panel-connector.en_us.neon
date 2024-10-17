@@ -71,6 +71,7 @@ cmd:
             battery: "Battery"
             press: "Press"
             rssi: "RSSI"
+            startup: "Startup"
             illumination-level: "Illumination level"
             fault: "fault"
 
@@ -194,6 +195,7 @@ cmd:
                     name: "Provide device name"
                     value: "Provide attribute value"
                     address: "Provide NS Panel local IP address or domain"
+                value: "Provide attribute value"
             select:
                 item:
                     connector: "Please select connector to manage"
