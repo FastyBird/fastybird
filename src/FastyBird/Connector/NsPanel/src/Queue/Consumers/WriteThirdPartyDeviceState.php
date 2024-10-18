@@ -15,33 +15,31 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
-use DateTimeInterface;
 use FastyBird\Connector\NsPanel;
 use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\DateTimeFactory;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\States as DevicesStates;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Nette;
 use Nette\Utils;
+use Ramsey\Uuid;
 use Throwable;
 use TypeError;
 use ValueError;
 use function array_merge;
-use function assert;
 use function React\Async\await;
 use function strval;
 
@@ -56,28 +54,20 @@ use function strval;
 final class WriteThirdPartyDeviceState implements Queue\Consumer
 {
 
-	use StateWriter;
 	use Nette\SmartObject;
-
-	private const WRITE_PENDING_DELAY = 2_000.0;
 
 	private API\LanApi|null $lanApiApi = null;
 
 	public function __construct(
-		protected readonly Helpers\Channels\Channel $channelHelper,
-		protected readonly Models\StateRepository $stateRepository,
-		protected readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly Queue\Queue $queue,
 		private readonly API\LanApiFactory $lanApiApiFactory,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
-		private readonly Helpers\Devices\ThirdPartyDevice $thirdPartyDeviceHelper,
+		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Logger $logger,
-		private readonly DevicesModels\Configuration\Connectors\Repository $connectorsConfigurationRepository,
+		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly DateTimeFactory\Clock $clock,
 	)
 	{
 	}
@@ -101,17 +91,14 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findConnectorQuery = new Queries\Configuration\FindConnectors();
-		$findConnectorQuery->byId($message->getConnector());
+		$protocolDevice = $this->devicesDriver->findDevice($message->getDevice());
 
-		$connector = $this->connectorsConfigurationRepository->findOneBy(
-			$findConnectorQuery,
-			Documents\Connectors\Connector::class,
-		);
-
-		if ($connector === null) {
+		if (
+			!$protocolDevice instanceof Protocol\Devices\ThirdPartyDevice
+			|| !$protocolDevice->getConnector()->equals($message->getConnector())
+		) {
 			$this->logger->error(
-				'Connector could not be loaded',
+				'Device could not be loaded',
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
@@ -134,23 +121,14 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findDeviceQuery = new Queries\Configuration\FindThirdPartyDevices();
-		$findDeviceQuery->forConnector($connector);
-		$findDeviceQuery->byId($message->getDevice());
-
-		$device = $this->devicesConfigurationRepository->findOneBy(
-			$findDeviceQuery,
-			Documents\Devices\ThirdPartyDevice::class,
-		);
-
-		if ($device === null) {
-			$this->logger->error(
-				'Device could not be loaded',
+		if ($protocolDevice->isCorrupted()) {
+			$this->logger->warning(
+				'Device is not correctly configured therefore could not be updated on NS Panel',
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $message->getDevice()->toString(),
@@ -168,7 +146,38 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$gateway = $this->thirdPartyDeviceHelper->getGateway($device);
+		$findDeviceQuery = new Queries\Configuration\FindGatewayDevices();
+		$findDeviceQuery->byId($protocolDevice->getParent());
+
+		$gateway = $this->devicesConfigurationRepository->findOneBy(
+			$findDeviceQuery,
+			Documents\Devices\Gateway::class,
+		);
+
+		if ($gateway === null) {
+			$this->logger->error(
+				'Device assigned gateway could not be loaded',
+				[
+					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
+					'type' => 'write-third-party-device-state-message-consumer',
+					'connector' => [
+						'id' => $message->getConnector()->toString(),
+					],
+					'device' => [
+						'id' => $message->getDevice()->toString(),
+					],
+					'channel' => [
+						'id' => $message->getChannel()->toString(),
+					],
+					'property' => [
+						'id' => $message->getProperty()->toString(),
+					],
+					'data' => $message->toArray(),
+				],
+			);
+
+			return true;
+		}
 
 		$ipAddress = $this->gatewayHelper->getIpAddress($gateway);
 		$accessToken = $this->gatewayHelper->getAccessToken($gateway);
@@ -178,8 +187,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				$this->messageBuilder->create(
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId(),
-						'identifier' => $gateway->getIdentifier(),
+						'connector' => $gateway->getConnector(),
+						'device' => $gateway->getId(),
 						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
@@ -191,10 +200,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
 						'id' => $message->getChannel()->toString(),
@@ -209,15 +218,15 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$serialNumber = $this->thirdPartyDeviceHelper->getGatewayIdentifier($device);
+		$serialNumber = $protocolDevice->getGatewayIdentifier();
 
 		if ($serialNumber === null) {
 			$this->queue->append(
 				$this->messageBuilder->create(
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
-						'connector' => $connector->getId(),
-						'identifier' => $device->getIdentifier(),
+						'connector' => $gateway->getConnector(),
+						'device' => $gateway->getId(),
 						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
@@ -229,10 +238,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
 						'id' => $message->getChannel()->toString(),
@@ -247,26 +256,19 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelQuery = new Queries\Configuration\FindChannels();
-		$findChannelQuery->forDevice($device);
-		$findChannelQuery->byId($message->getChannel());
+		$protocolCapability = $protocolDevice->findCapability($message->getChannel());
 
-		$channel = $this->channelsConfigurationRepository->findOneBy(
-			$findChannelQuery,
-			Documents\Channels\Channel::class,
-		);
-
-		if ($channel === null) {
+		if ($protocolCapability === null) {
 			$this->logger->error(
-				'Channel could not be loaded',
+				'Device capability could not be loaded',
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
 						'id' => $message->getChannel()->toString(),
@@ -281,26 +283,22 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		$findChannelPropertyQuery = new DevicesQueries\Configuration\FindChannelProperties();
-		$findChannelPropertyQuery->forChannel($channel);
-		$findChannelPropertyQuery->byId($message->getProperty());
+		$protocolAttribute = $protocolCapability->findAttribute($message->getProperty());
 
-		$propertyToUpdate = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertyQuery);
-
-		if ($propertyToUpdate === null) {
+		if ($protocolAttribute === null) {
 			$this->logger->error(
-				'Channel property could not be loaded',
+				'Device capability attribute could not be loaded',
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
 					'property' => [
 						'id' => $message->getProperty()->toString(),
@@ -312,26 +310,25 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if (
-			$propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic
-			&& !$propertyToUpdate->isSettable()
-		) {
-			$this->logger->warning(
-				'Channel property is not writable',
+		$propertyToUpdate = $this->channelsPropertiesConfigurationRepository->find($protocolAttribute->getId());
+
+		if ($propertyToUpdate === null) {
+			$this->logger->error(
+				'Device capability attribute mapped property could not be loaded',
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
-					'type' => 'write-sub-device-state-message-consumer',
+					'type' => 'write-third-party-device-state-message-consumer',
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
 					'property' => [
-						'id' => $propertyToUpdate->getId()->toString(),
+						'id' => $message->getProperty()->toString(),
 					],
 					'data' => $message->toArray(),
 				],
@@ -342,96 +339,96 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 
 		$state = null;
 
-		if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+		if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Variable) {
+			$protocolAttribute->setActualValue(
+				MetadataUtilities\Value::flattenValue($propertyToUpdate->getValue()),
+			);
+			$protocolAttribute->setExpectedValue(null);
+			$protocolAttribute->setValid(true);
+			$protocolAttribute->setPending(false);
+
+		} elseif ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
 			$state = $message->getState();
 
 			if ($state === null) {
 				return true;
 			}
 
-			if ($state->getExpectedValue() === null) {
-				await($this->channelPropertiesStatesManager->setPendingState(
-					$propertyToUpdate,
-					false,
-					MetadataTypes\Sources\Connector::NS_PANEL,
-				));
-
-				return true;
-			}
-
-			$now = $this->clock->getNow();
-			$pending = $state->getPending();
-
-			if (
-				$pending === false
-				|| (
-					$pending instanceof DateTimeInterface
-					&& (float) $now->format('Uv') - (float) $pending->format('Uv') <= self::WRITE_PENDING_DELAY
-				)
-			) {
-				return true;
-			}
-
-			await($this->channelPropertiesStatesManager->setPendingState(
+			await($this->channelPropertiesStatesManager->set(
 				$propertyToUpdate,
-				true,
+				Utils\ArrayHash::from([
+					DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue() ?? $state->getActualValue(),
+					DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+					DevicesStates\Property::PENDING_FIELD => false,
+					DevicesStates\Property::VALID_FIELD => true,
+				]),
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
-		}
 
-		$mapped = $this->mapChannelToState($channel, $propertyToUpdate, $state);
-
-		if ($mapped === null) {
-			$this->logger->error(
-				'Device state could not be created',
-				[
-					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
-					'type' => 'write-third-party-device-state-message-consumer',
-					'connector' => [
-						'id' => $connector->getId()->toString(),
-					],
-					'device' => [
-						'id' => $device->getId()->toString(),
-					],
-					'channel' => [
-						'id' => $channel->getId()->toString(),
-					],
-					'property' => [
-						'id' => $propertyToUpdate->getId()->toString(),
-					],
-					'data' => $message->toArray(),
-				],
+			$protocolAttribute->setActualValue(
+				MetadataUtilities\Value::flattenValue($state->getExpectedValue() ?? $state->getActualValue()),
 			);
+			$protocolAttribute->setExpectedValue(null);
+			$protocolAttribute->setValid(true);
+			$protocolAttribute->setPending(false);
 
-			if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
-				await($this->channelPropertiesStatesManager->setPendingState(
-					$propertyToUpdate,
-					false,
-					MetadataTypes\Sources\Connector::NS_PANEL,
-				));
+		} elseif ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Mapped) {
+			$parent = $this->channelsPropertiesConfigurationRepository->find($propertyToUpdate->getParent());
+
+			if ($parent === null) {
+				return true;
 			}
 
+			if ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
+				$protocolAttribute->setActualValue(
+					MetadataUtilities\Value::flattenValue($parent->getValue()),
+				);
+				$protocolAttribute->setExpectedValue(null);
+				$protocolAttribute->setValid(true);
+				$protocolAttribute->setPending(false);
+
+			} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+				$state = $message->getState();
+
+				if ($state === null) {
+					return true;
+				}
+
+				$protocolAttribute->setActualValue(
+					MetadataUtilities\Value::flattenValue($state->getActualValue()),
+				);
+				$protocolAttribute->setExpectedValue(
+					MetadataUtilities\Value::flattenValue($state->getExpectedValue()),
+				);
+				$protocolAttribute->setValid($state->isValid());
+				$protocolAttribute->setPending($state->getPending());
+			}
+		}
+
+		$mapped = $protocolCapability->toState();
+
+		if (!$protocolDevice->isProvisioned()) {
 			return true;
 		}
 
-		assert($state !== null);
-
 		try {
-			$this->getApiClient($connector)->reportDeviceState(
+			$this->getApiClient($protocolDevice->getConnector())->reportDeviceState(
 				$serialNumber,
 				$mapped,
 				$ipAddress,
 				$accessToken,
 			)
-				->then(function () use ($connector, $device, $channel, $propertyToUpdate, $state, $message): void {
-					await($this->channelPropertiesStatesManager->set(
-						$propertyToUpdate,
-						Utils\ArrayHash::from([
-							DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
-							DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
-						]),
-						MetadataTypes\Sources\Connector::SHELLY,
-					));
+				->then(function () use ($propertyToUpdate, $state, $message): void {
+					if ($state !== null && $propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic) {
+						await($this->channelPropertiesStatesManager->set(
+							$propertyToUpdate,
+							Utils\ArrayHash::from([
+								DevicesStates\Property::ACTUAL_VALUE_FIELD => $state->getExpectedValue(),
+								DevicesStates\Property::EXPECTED_VALUE_FIELD => null,
+							]),
+							MetadataTypes\Sources\Connector::NS_PANEL,
+						));
+					}
 
 					$this->logger->debug(
 						'Channel state was successfully sent to device',
@@ -439,28 +436,33 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 							'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 							'type' => 'write-third-party-device-state-message-consumer',
 							'connector' => [
-								'id' => $connector->getId()->toString(),
+								'id' => $message->getConnector()->toString(),
 							],
 							'device' => [
-								'id' => $device->getId()->toString(),
+								'id' => $message->getDevice()->toString(),
 							],
 							'channel' => [
-								'id' => $channel->getId()->toString(),
+								'id' => $message->getChannel()->toString(),
 							],
 							'property' => [
-								'id' => $propertyToUpdate->getId()->toString(),
+								'id' => $message->getProperty()->toString(),
 							],
 							'data' => $message->toArray(),
 						],
 					);
 				})
 				->catch(
-					function (Throwable $ex) use ($message, $connector, $gateway, $device, $channel, $propertyToUpdate): void {
-						await($this->channelPropertiesStatesManager->setPendingState(
-							$propertyToUpdate,
-							false,
-							MetadataTypes\Sources\Connector::NS_PANEL,
-						));
+					function (Throwable $ex) use ($gateway, $state, $message, $propertyToUpdate): void {
+						if (
+							$state !== null
+							&& $propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Dynamic
+						) {
+							await($this->channelPropertiesStatesManager->setPendingState(
+								$propertyToUpdate,
+								false,
+								MetadataTypes\Sources\Connector::NS_PANEL,
+							));
+						}
 
 						$extra = [];
 
@@ -480,8 +482,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 								$this->messageBuilder->create(
 									Queue\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $connector->getId(),
-										'identifier' => $gateway->getIdentifier(),
+										'connector' => $gateway->getConnector(),
+										'device' => $gateway->getId(),
 										'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 									],
 								),
@@ -492,8 +494,8 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 								$this->messageBuilder->create(
 									Queue\Messages\StoreDeviceConnectionState::class,
 									[
-										'connector' => $connector->getId(),
-										'identifier' => $gateway->getIdentifier(),
+										'connector' => $gateway->getConnector(),
+										'device' => $gateway->getId(),
 										'state' => DevicesTypes\ConnectionState::LOST,
 									],
 								),
@@ -508,16 +510,16 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 									'type' => 'write-third-party-device-state-message-consumer',
 									'exception' => ApplicationHelpers\Logger::buildException($ex),
 									'connector' => [
-										'id' => $connector->getId()->toString(),
+										'id' => $message->getConnector()->toString(),
 									],
 									'device' => [
-										'id' => $device->getId()->toString(),
+										'id' => $message->getDevice()->toString(),
 									],
 									'channel' => [
-										'id' => $channel->getId()->toString(),
+										'id' => $message->getChannel()->toString(),
 									],
 									'property' => [
-										'id' => $propertyToUpdate->getId()->toString(),
+										'id' => $message->getProperty()->toString(),
 									],
 									'data' => $message->toArray(),
 								],
@@ -534,16 +536,16 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 					'type' => 'write-third-party-device-state-message-consumer',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $connector->getId()->toString(),
+						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'id' => $device->getId()->toString(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'channel' => [
-						'id' => $channel->getId()->toString(),
+						'id' => $message->getChannel()->toString(),
 					],
 					'property' => [
-						'id' => $propertyToUpdate->getId()->toString(),
+						'id' => $message->getProperty()->toString(),
 					],
 					'data' => $message->toArray(),
 				],
@@ -556,16 +558,16 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 				'type' => 'write-third-party-device-state-message-consumer',
 				'connector' => [
-					'id' => $connector->getId()->toString(),
+					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $message->getDevice()->toString(),
 				],
 				'channel' => [
-					'id' => $channel->getId()->toString(),
+					'id' => $message->getChannel()->toString(),
 				],
 				'property' => [
-					'id' => $propertyToUpdate->getId()->toString(),
+					'id' => $message->getProperty()->toString(),
 				],
 				'data' => $message->toArray(),
 			],
@@ -574,10 +576,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 		return true;
 	}
 
-	private function getApiClient(Documents\Connectors\Connector $connector): API\LanApi
+	private function getApiClient(Uuid\UuidInterface $connector): API\LanApi
 	{
 		if ($this->lanApiApi === null) {
-			$this->lanApiApi = $this->lanApiApiFactory->create($connector->getIdentifier());
+			$this->lanApiApi = $this->lanApiApiFactory->create($connector);
 		}
 
 		return $this->lanApiApi;

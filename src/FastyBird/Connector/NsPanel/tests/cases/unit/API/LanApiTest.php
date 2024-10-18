@@ -98,7 +98,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->getGatewayInfo(
 			'127.0.0.1',
@@ -186,7 +186,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->getGatewayAccessToken(
 			$connector->getIdentifier(),
@@ -276,7 +276,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$this->expectException(Exceptions\LanApiCall::class);
 		$this->expectExceptionMessage('Getting gateway access token failed: link button not pressed');
@@ -391,7 +391,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->synchroniseDevices(
 			[
@@ -543,7 +543,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->reportDeviceState(
 			'3f89afee-146d-4a7f-ba55-bf2f6bcc862c',
@@ -668,7 +668,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->reportDeviceOnline(
 			'3f89afee-146d-4a7f-ba55-bf2f6bcc862c',
@@ -757,7 +757,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->getSubDevices(
 			'127.0.0.1',
@@ -882,7 +882,7 @@ final class LanApiTest extends Tests\Cases\Unit\DbTestCase
 
 		$lanApiFactory = $this->getContainer()->getByType(API\LanApiFactory::class);
 
-		$lanApi = $lanApiFactory->create($connector->getIdentifier());
+		$lanApi = $lanApiFactory->create($connector->getId());
 
 		$response = $lanApi->setSubDeviceState(
 			'a480062416',

@@ -83,7 +83,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 
 		$findDeviceQuery = new Queries\Configuration\FindDevices();
 		$findDeviceQuery->byConnectorId($message->getConnector());
-		$findDeviceQuery->byIdentifier($message->getIdentifier());
+		$findDeviceQuery->byId($message->getDevice());
 
 		$device = $this->devicesConfigurationRepository->findOneBy(
 			$findDeviceQuery,
@@ -100,7 +100,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $message->getIdentifier(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'data' => $message->toArray(),
 				],
@@ -259,7 +259,7 @@ final class StoreDeviceConnectionState implements Queue\Consumer
 					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $message->getDevice()->toString(),
 				],
 				'data' => $message->toArray(),
 			],

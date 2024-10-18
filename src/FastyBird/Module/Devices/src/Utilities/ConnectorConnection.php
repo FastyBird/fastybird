@@ -69,6 +69,8 @@ final class ConnectorConnection
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -78,6 +80,12 @@ final class ConnectorConnection
 		Types\ConnectionState $state,
 	): bool
 	{
+		$currentState = $this->getState($connector);
+
+		if ($currentState === $state) {
+			return true;
+		}
+
 		$findConnectorPropertyQuery = new Queries\Configuration\FindConnectorDynamicProperties();
 		$findConnectorPropertyQuery->byConnectorId($connector->getId());
 		$findConnectorPropertyQuery->byIdentifier(Types\ConnectorPropertyIdentifier::STATE->value);

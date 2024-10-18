@@ -16,9 +16,8 @@
 namespace FastyBird\Connector\NsPanel\Controllers;
 
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
-use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
@@ -29,11 +28,12 @@ use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
-use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use RuntimeException;
+use function array_key_exists;
+use function is_scalar;
 use function is_string;
 use function preg_match;
 use function strval;
@@ -53,8 +53,8 @@ final class DirectiveController extends BaseController
 
 	public function __construct(
 		private readonly Queue\Queue $queue,
+		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Helpers\MessageBuilder $messageBuilder,
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
 		private readonly MetadataSchemas\Validator $schemaValidator,
 	)
 	{
@@ -89,9 +89,10 @@ final class DirectiveController extends BaseController
 			],
 		);
 
-		$connectorId = strval($request->getAttribute(Servers\Http::REQUEST_ATTRIBUTE_CONNECTOR));
+		$connectorId = $request->getAttribute(Servers\Http::REQUEST_ATTRIBUTE_CONNECTOR);
+		$connectorId = is_scalar($connectorId) ? strval($connectorId) : null;
 
-		if (!Uuid\Uuid::isValid($connectorId)) {
+		if ($connectorId === null || !Uuid\Uuid::isValid($connectorId)) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::INTERNAL_ERROR,
@@ -105,11 +106,53 @@ final class DirectiveController extends BaseController
 
 		$body = $request->getBody()->getContents();
 
-		// At first, try to load gateway
-		$gateway = $this->findGateway($request, $connectorId);
+		$gatewayId = $request->getAttribute(Router\Router::URL_GATEWAY_ID);
+		$gatewayId = is_scalar($gatewayId) ? strval($gatewayId) : null;
+
+		if ($gatewayId === null || !Uuid\Uuid::isValid($gatewayId)) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::INTERNAL_ERROR,
+				'Gateway id could not be determined',
+			);
+		}
+
+		$gatewayId = Uuid\Uuid::fromString($gatewayId);
 
 		// At first, try to load device
-		$device = $this->findDevice($request, $connectorId, $gateway);
+		try {
+			$deviceId = $request->getAttribute(Router\Router::URL_DEVICE_ID);
+			$deviceId = is_scalar($deviceId) ? strval($deviceId) : null;
+
+			if ($deviceId === null || !Uuid\Uuid::isValid($deviceId)) {
+				throw new Exceptions\ServerRequestError(
+					$request,
+					Types\ServerStatus::ENDPOINT_UNREACHABLE,
+					'Device could could not be found',
+				);
+			}
+
+			$protocolDevice = $this->devicesDriver->findDevice(Uuid\Uuid::fromString($deviceId));
+
+		} catch (Uuid\Exception\InvalidUuidStringException) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
+				'Device could could not be found',
+			);
+		}
+
+		if (
+			$protocolDevice === null
+			|| !$protocolDevice->getConnector()->equals($connectorId)
+			|| !$protocolDevice->getParent()->equals($gatewayId)
+		) {
+			throw new Exceptions\ServerRequestError(
+				$request,
+				Types\ServerStatus::ENDPOINT_UNREACHABLE,
+				'Device could could not be found',
+			);
+		}
 
 		try {
 			$body = $this->schemaValidator->validate(
@@ -165,14 +208,15 @@ final class DirectiveController extends BaseController
 			if (
 				is_string($key)
 				&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
+				&& array_key_exists('name', $matches) === true
 			) {
-				$identifier = $matches['identifier'];
+				$identifier = $matches['name'];
 			}
 
-			foreach ($item->getProtocols() as $protocol => $value) {
+			foreach ($item->getState() as $attribute => $value) {
 				$state[] = [
 					'capability' => $item->getType()->value,
-					'protocol' => $protocol,
+					'attribute' => $attribute,
 					'value' => MetadataUtilities\Value::flattenValue($value),
 					'identifier' => $identifier,
 				];
@@ -183,9 +227,9 @@ final class DirectiveController extends BaseController
 			$this->messageBuilder->create(
 				Queue\Messages\StoreDeviceState::class,
 				[
-					'connector' => $connectorId,
-					'gateway' => $gateway->getId(),
-					'identifier' => $device->getIdentifier(),
+					'connector' => $protocolDevice->getConnector(),
+					'gateway' => $protocolDevice->getParent(),
+					'device' => $protocolDevice->getId(),
 					'state' => $state,
 				],
 			),
@@ -233,86 +277,6 @@ final class DirectiveController extends BaseController
 		}
 
 		return $response;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\ServerRequestError
-	 */
-	private function findGateway(
-		Message\ServerRequestInterface $request,
-		Uuid\UuidInterface $connectorId,
-	): Documents\Devices\Gateway
-	{
-		$id = strval($request->getAttribute(Router\Router::URL_GATEWAY_ID));
-
-		try {
-			$findQuery = new Queries\Configuration\FindGatewayDevices();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-			$findQuery->byConnectorId($connectorId);
-
-			$gateway = $this->devicesConfigurationRepository->findOneBy(
-				$findQuery,
-				Documents\Devices\Gateway::class,
-			);
-
-			if ($gateway === null) {
-				throw new Exceptions\ServerRequestError(
-					$request,
-					Types\ServerStatus::ENDPOINT_UNREACHABLE,
-					'Device gateway could could not be found',
-				);
-			}
-		} catch (Uuid\Exception\InvalidUuidStringException) {
-			throw new Exceptions\ServerRequestError(
-				$request,
-				Types\ServerStatus::ENDPOINT_UNREACHABLE,
-				'Device gateway could could not be found',
-			);
-		}
-
-		return $gateway;
-	}
-
-	/**
-	 * @throws DevicesExceptions\InvalidState
-	 * @throws Exceptions\ServerRequestError
-	 */
-	private function findDevice(
-		Message\ServerRequestInterface $request,
-		Uuid\UuidInterface $connectorId,
-		Documents\Devices\Gateway $gateway,
-	): Documents\Devices\Device
-	{
-		$id = strval($request->getAttribute(Router\Router::URL_DEVICE_ID));
-
-		try {
-			$findQuery = new Queries\Configuration\FindDevices();
-			$findQuery->byId(Uuid\Uuid::fromString($id));
-			$findQuery->byConnectorId($connectorId);
-			$findQuery->forParent($gateway);
-
-			$device = $this->devicesConfigurationRepository->findOneBy(
-				$findQuery,
-				Documents\Devices\Device::class,
-			);
-
-			if ($device === null) {
-				throw new Exceptions\ServerRequestError(
-					$request,
-					Types\ServerStatus::ENDPOINT_UNREACHABLE,
-					'Device could could not be found',
-				);
-			}
-		} catch (Uuid\Exception\InvalidUuidStringException) {
-			throw new Exceptions\ServerRequestError(
-				$request,
-				Types\ServerStatus::ENDPOINT_UNREACHABLE,
-				'Device could could not be found',
-			);
-		}
-
-		return $device;
 	}
 
 }

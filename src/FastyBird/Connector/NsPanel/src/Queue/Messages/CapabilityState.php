@@ -34,23 +34,24 @@ final readonly class CapabilityState implements Message
 	public function __construct(
 		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Capability::class)]
 		private Types\Capability $capability,
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Protocol::class)]
-		private Types\Protocol $protocol,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Attribute::class)]
+		private Types\Attribute $attribute,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\FloatValue(),
 			new ObjectMapper\Rules\IntValue(),
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\BoolValue(),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibrationPayload::class),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControlPayload::class),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PowerPayload::class),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PressPayload::class),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class),
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\TogglePayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\IlluminationLevel::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorCalibration::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControl::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Power::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Press::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Startup::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Toggle::class),
 			new ObjectMapper\Rules\DateTimeValue(format: DateTimeInterface::ATOM),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		private int|float|string|bool|Types\Payloads\MotorCalibrationPayload|Types\Payloads\Payload|null $value,
+		private int|float|string|bool|Types\Payloads\MotorCalibration|Types\Payloads\Payload|null $value,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\StringValue(notEmpty: true),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
@@ -65,9 +66,9 @@ final readonly class CapabilityState implements Message
 		return $this->capability;
 	}
 
-	public function getProtocol(): Types\Protocol
+	public function getAttribute(): Types\Attribute
 	{
-		return $this->protocol;
+		return $this->attribute;
 	}
 
 	public function getValue(): int|float|string|bool|Types\Payloads\Payload|null
@@ -87,7 +88,7 @@ final readonly class CapabilityState implements Message
 	{
 		return [
 			'capability' => $this->getCapability()->value,
-			'protocol' => $this->getProtocol()->value,
+			'attribute' => $this->getAttribute()->value,
 			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
 			'identifier' => $this->getIdentifier(),
 		];

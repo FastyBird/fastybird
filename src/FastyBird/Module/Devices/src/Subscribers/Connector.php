@@ -78,6 +78,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -98,6 +100,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -118,6 +122,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -143,6 +149,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -186,6 +194,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	 * @throws Exceptions\InvalidState
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
+	 * @throws MetadataExceptions\Mapping
+	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError

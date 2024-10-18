@@ -31,9 +31,9 @@ final readonly class MotorControl implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControlPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::MOTOR_CONTROL->value)]
-		private Types\Payloads\MotorControlPayload $motorControl,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\MotorControl::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::MOTOR_CONTROL->value)]
+		private Types\Payloads\MotorControl $motorControl,
 	)
 	{
 	}
@@ -43,10 +43,10 @@ final readonly class MotorControl implements State
 		return Types\Capability::MOTOR_CONTROL;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::MOTOR_CONTROL->value => $this->motorControl,
+			Types\Attribute::MOTOR_CONTROL->value => $this->motorControl,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class MotorControl implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::MOTOR_CONTROL->value} = $this->motorControl->value;
+		$json->{Types\Attribute::MOTOR_CONTROL->value} = $this->motorControl->value;
 
 		return $json;
 	}

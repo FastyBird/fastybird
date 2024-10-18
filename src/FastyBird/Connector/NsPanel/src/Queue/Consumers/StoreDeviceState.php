@@ -17,10 +17,8 @@ namespace FastyBird\Connector\NsPanel\Queue\Consumers;
 
 use Doctrine\DBAL;
 use FastyBird\Connector\NsPanel;
-use FastyBird\Connector\NsPanel\Documents;
-use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Models;
-use FastyBird\Connector\NsPanel\Queries;
+use FastyBird\Connector\NsPanel\Exceptions;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
@@ -55,12 +53,10 @@ final class StoreDeviceState implements Queue\Consumer
 	use Nette\SmartObject;
 
 	public function __construct(
+		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Logger $logger,
-		private readonly Models\StateRepository $stateRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly ApplicationHelpers\Database $databaseHelper,
@@ -73,6 +69,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
@@ -85,16 +82,9 @@ final class StoreDeviceState implements Queue\Consumer
 			return false;
 		}
 
-		$findDeviceQuery = new Queries\Configuration\FindDevices();
-		$findDeviceQuery->byConnectorId($message->getConnector());
-		$findDeviceQuery->byIdentifier($message->getIdentifier());
+		$protocolDevice = $this->devicesDriver->findDevice($message->getDevice());
 
-		$device = $this->devicesConfigurationRepository->findOneBy(
-			$findDeviceQuery,
-			Documents\Devices\Device::class,
-		);
-
-		if ($device === null) {
+		if ($protocolDevice === null || !$protocolDevice->getConnector()->equals($message->getConnector())) {
 			$this->logger->error(
 				'Device could not be loaded',
 				[
@@ -104,7 +94,7 @@ final class StoreDeviceState implements Queue\Consumer
 						'id' => $message->getConnector()->toString(),
 					],
 					'device' => [
-						'identifier' => $message->getIdentifier(),
+						'id' => $message->getDevice()->toString(),
 					],
 					'data' => $message->toArray(),
 				],
@@ -113,10 +103,10 @@ final class StoreDeviceState implements Queue\Consumer
 			return true;
 		}
 
-		if ($device instanceof Documents\Devices\ThirdPartyDevice) {
-			$this->processThirdPartyDevice($device, $message->getState());
-		} elseif ($device instanceof Documents\Devices\SubDevice) {
-			$this->processSubDevice($device, $message->getState());
+		if ($protocolDevice instanceof Protocol\Devices\ThirdPartyDevice) {
+			$this->processThirdPartyDevice($protocolDevice, $message->getState());
+		} elseif ($protocolDevice instanceof Protocol\Devices\SubDevice) {
+			$this->processSubDevice($protocolDevice, $message->getState());
 		}
 
 		$this->logger->debug(
@@ -128,7 +118,7 @@ final class StoreDeviceState implements Queue\Consumer
 					'id' => $message->getConnector()->toString(),
 				],
 				'device' => [
-					'id' => $device->getId()->toString(),
+					'id' => $message->getDevice()->toString(),
 				],
 				'data' => $message->toArray(),
 			],
@@ -141,52 +131,48 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @param array<Queue\Messages\CapabilityState> $state
 	 *
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function processSubDevice(Documents\Devices\Device $device, array $state): void
+	private function processSubDevice(Protocol\Devices\SubDevice $device, array $state): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\Configuration\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier(
-				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
-			);
+			$protocolCapabilities = $device->findCapabilities($item->getCapability(), $item->getIdentifier());
 
-			$channel = $this->channelsConfigurationRepository->findOneBy(
-				$findChannelQuery,
-				Documents\Channels\Channel::class,
-			);
+			foreach ($protocolCapabilities as $protocolCapability) {
+				$protocolAttribute = $protocolCapability->findAttribute($item->getAttribute());
 
-			if ($channel === null) {
-				continue;
+				if ($protocolAttribute === null) {
+					continue;
+				}
+
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
+				$findChannelPropertiesQuery->byChannelId($protocolCapability->getId());
+				$findChannelPropertiesQuery->byId($protocolAttribute->getId());
+
+				$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
+					$findChannelPropertiesQuery,
+					DevicesDocuments\Channels\Properties\Dynamic::class,
+				);
+
+				if ($property === null) {
+					continue;
+				}
+
+				await($this->channelPropertiesStatesManager->set(
+					$property,
+					Utils\ArrayHash::from([
+						DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
+					]),
+					MetadataTypes\Sources\Connector::NS_PANEL,
+				));
+
+				$protocolAttribute->setActualValue(MetadataUtilities\Value::flattenValue($item->getValue()));
 			}
-
-			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
-			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
-
-			$property = $this->channelsPropertiesConfigurationRepository->findOneBy(
-				$findChannelPropertiesQuery,
-				DevicesDocuments\Channels\Properties\Dynamic::class,
-			);
-
-			if ($property === null) {
-				continue;
-			}
-
-			await($this->channelPropertiesStatesManager->set(
-				$property,
-				Utils\ArrayHash::from([
-					DevicesStates\Property::ACTUAL_VALUE_FIELD => $item->getValue(),
-				]),
-				MetadataTypes\Sources\Connector::NS_PANEL,
-			));
-
-			$this->stateRepository->set($property->getId(), MetadataUtilities\Value::flattenValue($item->getValue()));
 		}
 	}
 
@@ -197,47 +183,41 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function processThirdPartyDevice(
-		Documents\Devices\Device $device,
-		array $state,
-	): void
+	private function processThirdPartyDevice(Protocol\Devices\ThirdPartyDevice $device, array $state): void
 	{
 		foreach ($state as $item) {
-			$findChannelQuery = new Queries\Configuration\FindChannels();
-			$findChannelQuery->forDevice($device);
-			$findChannelQuery->byIdentifier(
-				Helpers\Name::convertCapabilityToChannel($item->getCapability(), $item->getIdentifier()),
-			);
+			$protocolCapabilities = $device->findCapabilities($item->getCapability(), $item->getIdentifier());
 
-			$channel = $this->channelsConfigurationRepository->findOneBy(
-				$findChannelQuery,
-				Documents\Channels\Channel::class,
-			);
+			foreach ($protocolCapabilities as $protocolCapability) {
+				$protocolAttribute = $protocolCapability->findAttribute($item->getAttribute());
 
-			if ($channel === null) {
-				continue;
+				if ($protocolAttribute === null) {
+					continue;
+				}
+
+				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
+				$findChannelPropertiesQuery->byChannelId($protocolCapability->getId());
+				$findChannelPropertiesQuery->byId($protocolAttribute->getId());
+
+				$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertiesQuery);
+
+				if ($property === null) {
+					continue;
+				}
+
+				$this->writeThirdPartyProperty(
+					$protocolAttribute,
+					$property,
+					MetadataUtilities\Value::flattenValue($item->getValue()),
+				);
 			}
-
-			$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelProperties();
-			$findChannelPropertiesQuery->forChannel($channel);
-			$findChannelPropertiesQuery->byIdentifier(Helpers\Name::convertProtocolToProperty($item->getProtocol()));
-
-			$property = $this->channelsPropertiesConfigurationRepository->findOneBy($findChannelPropertiesQuery);
-
-			if ($property === null) {
-				continue;
-			}
-
-			$this->writeThirdPartyProperty(
-				$property,
-				MetadataUtilities\Value::flattenValue($item->getValue()),
-			);
 		}
 	}
 
@@ -246,6 +226,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
@@ -253,6 +234,7 @@ final class StoreDeviceState implements Queue\Consumer
 	 * @throws ValueError
 	 */
 	private function writeThirdPartyProperty(
+		Protocol\Attributes\Attribute $protocolAttribute,
 		DevicesDocuments\Channels\Properties\Property $property,
 		float|int|string|bool|null $value,
 	): void
@@ -284,19 +266,17 @@ final class StoreDeviceState implements Queue\Consumer
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
 
-			$this->stateRepository->set($property->getId(), $value);
-
 		} elseif ($property instanceof DevicesDocuments\Channels\Properties\Mapped) {
-			await($this->channelPropertiesStatesManager->write(
+			await($this->channelPropertiesStatesManager->set(
 				$property,
 				Utils\ArrayHash::from([
 					DevicesStates\Property::EXPECTED_VALUE_FIELD => $value,
 				]),
 				MetadataTypes\Sources\Connector::NS_PANEL,
 			));
-
-			$this->stateRepository->set($property->getId(), $value);
 		}
+
+		$protocolAttribute->setActualValue($value);
 	}
 
 }

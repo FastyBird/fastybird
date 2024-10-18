@@ -56,22 +56,26 @@ cmd:
             power: "Power"
             toggle: "Toggle"
             brightness: "Brightness"
-            color-temperature: "Color Temperature"
+            color-temperature: "Color temperature"
             color-rgb: "Color RGB"
             percentage: "Percentage"
-            motor-control: "Motor Control"
-            motor-reverse: "Motor Reverse"
-            motor-clb: "Motor Calibration"
-            startup: "Startup"
-            camera-stream: "Camera Stream"
+            motor-control: "Motor control"
+            motor-reverse: "Motor reverse"
+            motor-clb: "Motor calibration"
+            startup-power: "Startup"
+            startup-toggle: "Startup"
+            camera-stream: "Camera stream"
             detect: "Detect"
             humidity: "Humidity"
             temperature: "Temperature"
             battery: "Battery"
             press: "Press"
             rssi: "RSSI"
+            startup: "Startup"
+            illumination-level: "Illumination level"
+            fault: "fault"
 
-        protocol:
+        attribute:
             powerState: "Power State"
             toggleState: "Toggle State"
             brightness: "Brightness"
@@ -84,13 +88,14 @@ cmd:
             motorReverse: "Motor Reverse"
             motorClb: "Motor Calibration"
             startup: "Startup"
-            streamUrl: "Camera Stream Url"
             detect: "Detect"
             humidity: "Humidity"
             temperature: "Temperature"
             battery: "Battery"
             press: "Press"
             rssi: "Signal RSSI"
+            level: "Level"
+            fault: "Fault"
 
     execute:
         title: "NS Panel connector - service"
@@ -148,24 +153,24 @@ cmd:
                 gateway: "Edit NS Panel"
                 device: "Edit device"
                 capability: "Edit device capability"
-                protocol: "Edit capability protocol"
+                attribute: "Edit capability attribute"
             remove:
                 connector: "Delete connector"
                 gateway: "Delete NS Panel"
                 device: "Delete device"
                 capability: "Delete device capability"
-                protocol: "Delete capability protocol"
+                attribute: "Delete capability attribute"
             manage:
                 connector: "Manage connector"
                 gateway: "Manage NS Panel"
                 device: "Manage device"
-                capability: "Manage capability protocols"
+                capability: "Manage capability attributes"
             list:
                 connectors: "List connectors"
                 gateways: "List NS Panels"
                 devices: "List devices"
                 capabilities: "List device capabilities"
-                protocols: "List capability protocols"
+                attributes: "List capability attributes"
             discover:
                 devices: "Discover devices"
             nothing: "Nothing"
@@ -188,26 +193,27 @@ cmd:
                 device:
                     identifier: "Provide device identifier"
                     name: "Provide device name"
-                    value: "Provide protocol value"
+                    value: "Provide attribute value"
                     address: "Provide NS Panel local IP address or domain"
+                value: "Provide attribute value"
             select:
                 item:
                     connector: "Please select connector to manage"
                     gateway: "Please select NS Panel to manage"
                     device: "Please select device to manage"
                     capability: "Please select device's capability"
-                    protocol: "Please select capability's protocol"
+                    attribute: "Please select capability's attribute"
                 connector:
                     mode: "In what mode should this connector communicate with NS Panels?"
                 device:
                     category: "Please select device category"
                     capabilityType: "What type of device capability you would like to add?"
-                    protocolType: "What type of capability protocol you would like to add?"
+                    attributeType: "What type of capability attribute you would like to add?"
                     mappedDevice: "Select device for mapping"
                     mappedDeviceChannel: "Select device channel for mapping"
                     mappedChannelProperty: "Select channel property for mapping"
                     valueMapping: "Select device value which will be mapped to: %value%"
-                    value: "Please select protocol value"
+                    value: "Please select attribute value"
             disable:
                 connector: "Do you want to disable connector?"
             enable:
@@ -216,7 +222,7 @@ cmd:
                 mode: "Do you want to change connector devices support?"
             isGatewayReady: "Is your NS Panel ready?"
             regenerateAccessToken: "Would you like to establish new connection with NS Panel?"
-            connectProtocol: "Connect protocol with device?"
+            connectAttribute: "Connect attribute with device?"
 
         answers:
             mode:
@@ -237,7 +243,7 @@ cmd:
             category: "Category"
             capabilities: "Capabilities"
             type: "Type"
-            protocols: "Protocols"
+            attributes: "Attributes"
             value: "Value"
             gateway: "NS Panel"
             subDevicesCnt: "# Sub-devices"
@@ -264,9 +270,9 @@ cmd:
                 capability:
                     success: "Capability \"%name%\" was successfully created."
                     error: "Something went wrong, capability could not be created. An error was logged."
-                protocol:
-                    success: "Protocol \"%name%\" was successfully created."
-                    error: "Something went wrong, protocol could not be created. An error was logged."
+                attribute:
+                    success: "Attribute \"%name%\" was successfully created."
+                    error: "Something went wrong, attribute could not be created. An error was logged."
             update:
                 connector:
                     success: "Connector \"%name%\" was successfully updated."
@@ -280,9 +286,9 @@ cmd:
                 capability:
                     success: "Capability \"%name%\" was successfully updated."
                     error: "Something went wrong, capability could not be updated. An error was logged."
-                protocol:
-                    success: "Protocol \"%name%\" was successfully updated."
-                    error: "Something went wrong, protocol could not be updated. An error was logged."
+                attribute:
+                    success: "Attribute \"%name%\" was successfully updated."
+                    error: "Something went wrong, attribute could not be updated. An error was logged."
             remove:
                 connector:
                     confirm: "This action will remove \"%name%\" connector. This action can not be undone."
@@ -300,10 +306,10 @@ cmd:
                     confirm: "This action will remove \"%name%\" capability. This action can not be undone."
                     success: "Capability \"%name%\" was successfully removed."
                     error: "Something went wrong, capability could not be removed. An error was logged."
-                protocol:
-                    confirm: "This action will remove \"%name%\" protocol. This action can not be undone."
-                    success: "Protocol \"%name%\" was successfully removed."
-                    error: "Something went wrong, protocol could not be removed. An error was logged."
+                attribute:
+                    confirm: "This action will remove \"%name%\" attribute. This action can not be undone."
+                    success: "Attribute \"%name%\" was successfully removed."
+                    error: "Something went wrong, attribute could not be removed. An error was logged."
             discover:
                 starting: "Starting NS Panel connector discovery..."
                 stopping: "Stopping NS Panel connector discovery..."
@@ -316,9 +322,9 @@ cmd:
             noGateways: "No NS Panels registered in NS Panel connector."
             noDevices: "No devices registered in selected NS Panels."
             noCapabilities: "No capabilities registered in selected device."
-            noProtocols: "This device capability has not configured any protocol."
+            noAttributes: "This device capability has not configured any attribute."
             noMultipleCapabilities: "Capability \"%type%\" is already created under this device"
-            noMissingProtocols: "All available protocols for selected capability are configured"
+            noMissingAttributes: "All available attributes for selected capability are configured"
             noHardwareDevices: "No devices registered in system which could be connected with NS Panel device"
             addressNotReachable: "NS Panel with address \"%address%\" is not reachable."
             removeDeviceFromPanelFailed: "Device \"%name%\" could not be removed from NS panel \"%panel%\""

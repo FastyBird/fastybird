@@ -56,4 +56,12 @@ enum Category: string
 
 	case SENSOR = 'sensor';
 
+	case FAN_LIGHT = 'fanLight';
+
+	case AIR_CONDITIONER = 'airConditioner';
+
+	case FAN = 'fan';
+
+	case THERMOSTAT = 'thermostat';
+
 }

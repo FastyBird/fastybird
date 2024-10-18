@@ -34,6 +34,7 @@ final readonly class StoreSubDevice implements Message
 
 	/**
 	 * @param array<CapabilityDescription> $capabilities
+	 * @param array<CapabilityState> $state
 	 * @param array<string, string|array<string, string>> $tags
 	 */
 	public function __construct(
@@ -94,6 +95,10 @@ final readonly class StoreSubDevice implements Message
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
 		private string|null $protocol = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			new ObjectMapper\Rules\MappedObjectValue(CapabilityState::class),
+		)]
+		private array $state = [],
 		#[ObjectMapper\Rules\ArrayOf(
 			item: new ObjectMapper\Rules\AnyOf([
 				new ObjectMapper\Rules\StringValue(),
@@ -198,6 +203,14 @@ final readonly class StoreSubDevice implements Message
 	}
 
 	/**
+	 * @return array<CapabilityState>
+	 */
+	public function getState(): array
+	{
+		return $this->state;
+	}
+
+	/**
 	 * @return array<string, string|array<string, string>>
 	 */
 	public function getTags(): array
@@ -237,6 +250,10 @@ final readonly class StoreSubDevice implements Message
 				$this->getCapabilities(),
 			),
 			'protocol' => $this->getProtocol(),
+			'state' => array_map(
+				static fn (CapabilityState $state): array => $state->toArray(),
+				$this->getState(),
+			),
 			'tags' => $this->getTags(),
 			'online' => $this->isOnline(),
 			'subnet' => $this->isInSubnet(),

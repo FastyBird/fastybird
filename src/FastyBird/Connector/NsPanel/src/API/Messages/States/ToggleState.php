@@ -31,15 +31,15 @@ final readonly class ToggleState implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\TogglePayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TOGGLE_STATE->value)]
-		private Types\Payloads\TogglePayload $toggleState,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Toggle::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::TOGGLE_STATE->value)]
+		private Types\Payloads\Toggle $toggleState,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\StartupPayload::class),
+			new ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Startup::class),
 			new ObjectMapper\Rules\NullValue(castEmptyString: true),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::STARTUP->value)]
-		private Types\Payloads\StartupPayload|null $startup = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::STARTUP->value)]
+		private Types\Payloads\Startup|null $startup = null,
 	)
 	{
 	}
@@ -49,16 +49,16 @@ final readonly class ToggleState implements State
 		return Types\Capability::TOGGLE;
 	}
 
-	public function getStartup(): Types\Payloads\StartupPayload|null
+	public function getStartup(): Types\Payloads\Startup|null
 	{
 		return $this->startup;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::TOGGLE_STATE->value => $this->toggleState,
-			Types\Protocol::STARTUP->value => $this->getStartup(),
+			Types\Attribute::TOGGLE_STATE->value => $this->toggleState,
+			Types\Attribute::STARTUP->value => $this->getStartup(),
 		];
 	}
 
@@ -76,10 +76,10 @@ final readonly class ToggleState implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::TOGGLE_STATE->value} = $this->toggleState->value;
+		$json->{Types\Attribute::TOGGLE_STATE->value} = $this->toggleState->value;
 
 		if ($this->getStartup() !== null) {
-			$json->{Types\Protocol::STARTUP->value} = $this->getStartup()->value;
+			$json->{Types\Attribute::STARTUP->value} = $this->getStartup()->value;
 		}
 
 		return $json;

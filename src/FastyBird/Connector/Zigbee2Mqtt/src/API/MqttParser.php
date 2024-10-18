@@ -115,6 +115,7 @@ final class MqttParser
 	{
 		if (preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic) === 1) {
 			preg_match(MqttValidator::DEVICE_WITH_ACTION_REGEXP, $topic, $matches);
+			assert(array_key_exists('base_topic', $matches));
 			assert(array_key_exists('name', $matches));
 			assert(array_key_exists('type', $matches));
 
@@ -127,6 +128,7 @@ final class MqttParser
 			];
 		} elseif (preg_match(MqttValidator::DEVICE_REGEXP, $topic) === 1) {
 			preg_match(MqttValidator::DEVICE_REGEXP, $topic, $matches);
+			assert(array_key_exists('base_topic', $matches));
 			assert(array_key_exists('name', $matches));
 
 			return [

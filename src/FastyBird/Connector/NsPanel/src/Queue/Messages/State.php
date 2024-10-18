@@ -31,7 +31,7 @@ use function is_bool;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-readonly class State implements Message
+final readonly class State implements Message
 {
 
 	public function __construct(

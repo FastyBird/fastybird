@@ -31,9 +31,9 @@ final readonly class PowerState implements State
 {
 
 	public function __construct(
-		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\PowerPayload::class)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::POWER_STATE->value)]
-		private Types\Payloads\PowerPayload $powerState,
+		#[ObjectMapper\Rules\BackedEnumValue(class: Types\Payloads\Power::class)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::POWER_STATE->value)]
+		private Types\Payloads\Power $powerState,
 	)
 	{
 	}
@@ -43,10 +43,10 @@ final readonly class PowerState implements State
 		return Types\Capability::POWER;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::POWER_STATE->value => $this->powerState,
+			Types\Attribute::POWER_STATE->value => $this->powerState,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class PowerState implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::POWER_STATE->value} = $this->powerState->value;
+		$json->{Types\Attribute::POWER_STATE->value} = $this->powerState->value;
 
 		return $json;
 	}

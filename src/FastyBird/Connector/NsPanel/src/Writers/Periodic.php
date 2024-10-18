@@ -375,7 +375,7 @@ abstract class Periodic implements Writer
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $device->getConnector(),
-						'identifier' => $device->getIdentifier(),
+						'device' => $device->getId(),
 						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
@@ -412,7 +412,7 @@ abstract class Periodic implements Writer
 				return false;
 			}
 
-			$propertyValue = $state->getRead()->getExpectedValue() ?? ($state->isValid() ? $state->getRead()->getActualValue() : null);
+			$propertyValue = $state->getGet()->getExpectedValue() ?? ($state->isValid() ? $state->getGet()->getActualValue() : null);
 
 			if ($propertyValue === null) {
 				return false;
@@ -428,7 +428,7 @@ abstract class Periodic implements Writer
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
 							'state' => array_merge(
-								$state->getRead()->toArray(),
+								$state->getGet()->toArray(),
 								[
 									'id' => $state->getId(),
 									'valid' => $state->isValid(),

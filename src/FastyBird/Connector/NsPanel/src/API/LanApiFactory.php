@@ -15,6 +15,8 @@
 
 namespace FastyBird\Connector\NsPanel\API;
 
+use Ramsey\Uuid;
+
 /**
  * NS Panel LAN API interface factory
  *
@@ -26,6 +28,6 @@ namespace FastyBird\Connector\NsPanel\API;
 interface LanApiFactory
 {
 
-	public function create(string $identifier): LanApi;
+	public function create(Uuid\UuidInterface $id): LanApi;
 
 }

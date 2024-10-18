@@ -38,11 +38,20 @@ final readonly class State implements Message
 	 */
 	public function __construct(
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Battery::class),
+			new ObjectMapper\Rules\MappedObjectValue(States\PowerState::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BATTERY->value)]
-		private States\Battery|null $battery = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::POWER->value)]
+		private States\PowerState|null $power = null,
+		#[ObjectMapper\Rules\ArrayOf(
+			item: new ObjectMapper\Rules\MappedObjectValue(States\ToggleState::class),
+			key: new ObjectMapper\Rules\AnyOf([
+				new ObjectMapper\Rules\StringValue(),
+				new ObjectMapper\Rules\IntValue(),
+			]),
+		)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TOGGLE->value)]
+		private array $toggle = [],
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Brightness::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -50,11 +59,11 @@ final readonly class State implements Message
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BRIGHTNESS->value)]
 		private States\Brightness|null $brightness = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\CameraStream::class),
+			new ObjectMapper\Rules\MappedObjectValue(States\ColorTemperature::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::CAMERA_STREAM->value)]
-		private States\CameraStream|null $cameraStream = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_TEMPERATURE->value)]
+		private States\ColorTemperature|null $colorTemperature = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\ColorRgb::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -62,33 +71,11 @@ final readonly class State implements Message
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_RGB->value)]
 		private States\ColorRgb|null $colorRgb = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(
-				States\ColorTemperature::class,
-			),
+			new ObjectMapper\Rules\MappedObjectValue(States\Percentage::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::COLOR_TEMPERATURE->value)]
-		private States\ColorTemperature|null $colorTemperature = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Detect::class),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::DETECT->value)]
-		private States\Detect|null $detect = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Humidity::class),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::HUMIDITY->value)]
-		private States\Humidity|null $humidity = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(
-				States\MotorCalibration::class,
-			),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CALIBRATION->value)]
-		private States\MotorCalibration|null $motorCalibration = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PERCENTAGE->value)]
+		private States\Percentage|null $percentage = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\MotorControl::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -102,17 +89,41 @@ final readonly class State implements Message
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_REVERSE->value)]
 		private States\MotorReverse|null $motorReverse = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Percentage::class),
+			new ObjectMapper\Rules\MappedObjectValue(States\MotorCalibration::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::PERCENTAGE->value)]
-		private States\Percentage|null $percentage = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::MOTOR_CALIBRATION->value)]
+		private States\MotorCalibration|null $motorCalibration = null,
 		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\PowerState::class),
+			new ObjectMapper\Rules\MappedObjectValue(States\Startup::class),
 			new ObjectMapper\Rules\NullValue(),
 		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::POWER->value)]
-		private States\PowerState|null $power = null,
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::STARTUP->value)]
+		private States\Startup|null $startup = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(States\Detect::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::DETECT->value)]
+		private States\Detect|null $detect = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(States\Humidity::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::HUMIDITY->value)]
+		private States\Humidity|null $humidity = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(States\Temperature::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TEMPERATURE->value)]
+		private States\Temperature|null $temperature = null,
+		#[ObjectMapper\Rules\AnyOf([
+			new ObjectMapper\Rules\MappedObjectValue(States\Battery::class),
+			new ObjectMapper\Rules\NullValue(),
+		])]
+		#[ObjectMapper\Modifiers\FieldName(Types\Capability::BATTERY->value)]
+		private States\Battery|null $battery = null,
 		#[ObjectMapper\Rules\AnyOf([
 			new ObjectMapper\Rules\MappedObjectValue(States\Press::class),
 			new ObjectMapper\Rules\NullValue(),
@@ -125,27 +136,6 @@ final readonly class State implements Message
 		])]
 		#[ObjectMapper\Modifiers\FieldName(Types\Capability::RSSI->value)]
 		private States\Rssi|null $rssi = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Startup::class),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::STARTUP->value)]
-		private States\Startup|null $startup = null,
-		#[ObjectMapper\Rules\AnyOf([
-			new ObjectMapper\Rules\MappedObjectValue(States\Temperature::class),
-			new ObjectMapper\Rules\NullValue(),
-		])]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TEMPERATURE->value)]
-		private States\Temperature|null $temperature = null,
-		#[ObjectMapper\Rules\ArrayOf(
-			item: new ObjectMapper\Rules\MappedObjectValue(States\ToggleState::class),
-			key: new ObjectMapper\Rules\AnyOf([
-				new ObjectMapper\Rules\StringValue(),
-				new ObjectMapper\Rules\IntValue(),
-			]),
-		)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Capability::TOGGLE->value)]
-		private array $toggle = [],
 	)
 	{
 	}
@@ -166,8 +156,8 @@ final readonly class State implements Message
 
 					break;
 				case Types\Capability::TOGGLE:
-					foreach ($this->toggle as $identifier => $state) {
-						$states[sprintf('%s_%s', $capability->value, strval($identifier))] = $state;
+					foreach ($this->toggle as $name => $state) {
+						$states[sprintf('%s_%s', $capability->value, strval($name))] = $state;
 					}
 
 					break;
@@ -216,12 +206,6 @@ final readonly class State implements Message
 				case Types\Capability::STARTUP:
 					if ($this->startup !== null) {
 						$states[$capability->value] = $this->startup;
-					}
-
-					break;
-				case Types\Capability::CAMERA_STREAM:
-					if ($this->cameraStream !== null) {
-						$states[$capability->value] = $this->cameraStream;
 					}
 
 					break;
@@ -345,12 +329,6 @@ final readonly class State implements Message
 				case Types\Capability::STARTUP:
 					if ($this->startup !== null) {
 						$json->{$capability->value} = $this->startup->toJson();
-					}
-
-					break;
-				case Types\Capability::CAMERA_STREAM:
-					if ($this->cameraStream !== null) {
-						$json->{$capability->value} = $this->cameraStream->toJson();
 					}
 
 					break;

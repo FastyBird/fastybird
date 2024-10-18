@@ -1,123 +1,157 @@
-{
-  "plug": {
-    "capabilities": [
-      "power",
-      "rssi"
+[
+  {
+    "category": "plug",
+    "description": "Plug",
+    "requiredCapabilities": [
+      "power"
     ],
     "optionalCapabilities": [
-      "startup"
+      "startup-power",
+      "rssi"
     ]
   },
-  "switch": {
-    "capabilities": [
-      "power",
-      "rssi"
+  {
+    "category": "switch",
+    "description": "Switch",
+    "requiredCapabilities": [
+      "power"
     ],
     "optionalCapabilities": [
-      "startup",
-      "toggle"
+      "toggle",
+      "startup-power",
+      "startup-toggle",
+      "rssi"
     ]
   },
-  "light": {
-    "capabilities": [
-      "power",
+  {
+    "category": "light",
+    "description": "Light",
+    "requiredCapabilities": [
+      "power"
+    ],
+    "optionalCapabilities": [
       "brightness",
+      "color-rgb",
       "color-temperature",
       "rssi"
-    ],
-    "optionalCapabilities": [
-      "color-rgb"
     ]
   },
-  "curtain": {
-    "capabilities": [
+  {
+    "category": "curtain",
+    "description": "Curtain",
+    "requiredCapabilities": [
       "motor-control",
       "motor-reverse",
       "motor-clb",
-      "percentage",
+      "percentage"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "contactSensor": {
-    "capabilities": [
-      "detect",
+  {
+    "category": "contactSensor",
+    "description": "Door or window sensor",
+    "requiredCapabilities": [
+      "detect"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "motionSensor": {
-    "capabilities": [
-      "detect",
+  {
+    "category": "motionSensor",
+    "description": "Motion sensor",
+    "requiredCapabilities": [
+      "detect"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "temperatureSensor": {
-    "capabilities": [
+  {
+    "category": "temperatureSensor",
+    "description": "Temperature sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
-  "humiditySensor": {
-    "capabilities": [
+  {
+    "category": "humiditySensor",
+    "description": "Humidity sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
+      "battery",
+      "rssi"
     ]
   },
-  "temperatureAndHumiditySensor": {
-    "capabilities": [
+  {
+    "category": "temperatureAndHumiditySensor",
+    "description": "Temperature and humidity sensor",
+    "requiredCapabilities": [
       "temperature",
-      "humidity",
+      "humidity"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "waterLeakDetector": {
-    "capabilities": [
-      "detect",
+  {
+    "category": "waterLeakDetector",
+    "description": "Water leak detector",
+    "requiredCapabilities": [
+      "detect"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "smokeDetector": {
-    "capabilities": [
-      "detect",
+  {
+    "category": "smokeDetector",
+    "description": "Smoke detector",
+    "requiredCapabilities": [
+      "detect"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
-    ],
-    "optionalCapabilities": [
     ]
   },
-  "button": {
-    "capabilities": [
-      "press",
+  {
+    "category": "button",
+    "description": "Wireless button",
+    "requiredCapabilities": [
+      "press"
+    ],
+    "optionalCapabilities": [
       "battery",
       "rssi"
+    ]
+  },
+  {
+    "category": "camera",
+    "description": "Camera",
+    "requiredCapabilities": [
+      "camera-stream"
     ],
     "optionalCapabilities": [
     ]
   },
-  "camera": {
-    "capabilities": [
-    ],
-    "optionalCapabilities": [
-    ]
-  },
-  "sensor": {
-    "capabilities": [
+  {
+    "category": "sensor",
+    "description": "General sensor",
+    "requiredCapabilities": [
     ],
     "optionalCapabilities": [
     ]
   }
-}
+]

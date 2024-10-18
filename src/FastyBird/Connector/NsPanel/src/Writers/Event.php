@@ -105,7 +105,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $device->getConnector(),
-								'identifier' => $device->getIdentifier(),
+								'device' => $device->getId(),
 								'state' => DevicesTypes\ConnectionState::ALERT,
 							],
 						),
@@ -122,7 +122,7 @@ class Event extends Periodic implements Writer, EventDispatcher\EventSubscriberI
 							'device' => $device->getId(),
 							'channel' => $channel->getId(),
 							'property' => $event->getProperty()->getId(),
-							'state' => $event->getRead()->toArray(),
+							'state' => $event->getGet()->toArray(),
 						],
 					),
 				);

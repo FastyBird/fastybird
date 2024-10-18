@@ -161,4 +161,33 @@ final readonly class SubDevice
 		return $value;
 	}
 
+	/**
+	 * @throws DevicesExceptions\InvalidState
+	 * @throws Exceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws MetadataExceptions\InvalidState
+	 * @throws TypeError
+	 * @throws ValueError
+	 */
+	public function getFirmwareVersion(Documents\Devices\SubDevice $device): string
+	{
+		$findPropertyQuery = new Queries\Configuration\FindDeviceVariableProperties();
+		$findPropertyQuery->forDevice($device);
+		$findPropertyQuery->byIdentifier(Types\DevicePropertyIdentifier::FIRMWARE_VERSION);
+
+		$property = $this->devicesPropertiesConfigurationRepository->findOneBy(
+			$findPropertyQuery,
+			DevicesDocuments\Devices\Properties\Variable::class,
+		);
+
+		if ($property?->getValue() === null) {
+			return 'N/A';
+		}
+
+		$value = $property->getValue();
+		assert(is_string($value));
+
+		return $value;
+	}
+
 }

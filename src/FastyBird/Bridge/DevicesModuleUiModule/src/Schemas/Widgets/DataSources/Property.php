@@ -16,7 +16,6 @@
 namespace FastyBird\Bridge\DevicesModuleUiModule\Schemas\Widgets\DataSources;
 
 use FastyBird\Bridge\DevicesModuleUiModule\Entities;
-use FastyBird\Bridge\DevicesModuleUiModule\Entities\Widgets\DataSources\ChannelProperty as T;
 use FastyBird\Module\Ui\Schemas as UiSchemas;
 use Neomerx\JsonApi;
 use function array_merge;

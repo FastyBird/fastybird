@@ -32,7 +32,7 @@ final readonly class Percentage implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\IntValue(min: 0, max: 100, unsigned: true)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::PERCENTAGE->value)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::PERCENTAGE->value)]
 		private int $percentage,
 	)
 	{
@@ -43,10 +43,10 @@ final readonly class Percentage implements State
 		return Types\Capability::PERCENTAGE;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::PERCENTAGE->value => $this->percentage,
+			Types\Attribute::PERCENTAGE->value => $this->percentage,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class Percentage implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::PERCENTAGE->value} = $this->percentage;
+		$json->{Types\Attribute::PERCENTAGE->value} = $this->percentage;
 
 		return $json;
 	}

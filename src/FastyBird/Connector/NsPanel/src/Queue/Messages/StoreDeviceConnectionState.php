@@ -15,10 +15,10 @@
 
 namespace FastyBird\Connector\NsPanel\Queue\Messages;
 
+use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
-use function array_merge;
 
 /**
  * Store device connection state message
@@ -28,17 +28,28 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class StoreDeviceConnectionState extends Device implements Message
+final readonly class StoreDeviceConnectionState implements Message
 {
 
 	public function __construct(
-		Uuid\UuidInterface $connector,
-		string $identifier,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $connector,
+		#[ApplicationObjectMapper\Rules\UuidValue()]
+		private Uuid\UuidInterface $device,
 		#[ObjectMapper\Rules\InstanceOfValue(type: DevicesTypes\ConnectionState::class)]
-		private readonly DevicesTypes\ConnectionState $state,
+		private DevicesTypes\ConnectionState $state,
 	)
 	{
-		parent::__construct($connector, $identifier);
+	}
+
+	public function getConnector(): Uuid\UuidInterface
+	{
+		return $this->connector;
+	}
+
+	public function getDevice(): Uuid\UuidInterface
+	{
+		return $this->device;
 	}
 
 	public function getState(): DevicesTypes\ConnectionState
@@ -51,9 +62,11 @@ final class StoreDeviceConnectionState extends Device implements Message
 	 */
 	public function toArray(): array
 	{
-		return array_merge(parent::toArray(), [
+		return [
+			'connector' => $this->getConnector()->toString(),
+			'device' => $this->getDevice()->toString(),
 			'state' => $this->getState()->value,
-		]);
+		];
 	}
 
 }

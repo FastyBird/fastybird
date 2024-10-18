@@ -15,8 +15,6 @@
 
 namespace FastyBird\Connector\NsPanel\Types;
 
-use function in_array;
-
 /**
  * Capability types
  *
@@ -62,49 +60,14 @@ enum Capability: string
 
 	case RSSI = 'rssi';
 
-	/**
-	 * @return array<Capability>
-	 */
-	public function getReadWrite(): array
-	{
-		return [
-			self::POWER,
-			self::TOGGLE,
-			self::BRIGHTNESS,
-			self::COLOR_TEMPERATURE,
-			self::COLOR_RGB,
-			self::PERCENTAGE,
-			self::MOTOR_CONTROL,
-			self::MOTOR_REVERSE,
-			self::STARTUP,
-		];
-	}
+	case ILLUMINATION_LEVEL = 'illumination-level';
 
-	/**
-	 * @return array<Capability>
-	 */
-	public function getRead(): array
-	{
-		return [
-			self::MOTOR_CALIBRATION,
-			self::CAMERA_STREAM,
-			self::DETECT,
-			self::HUMIDITY,
-			self::TEMPERATURE,
-			self::BATTERY,
-			self::PRESS,
-			self::RSSI,
-		];
-	}
+	case THERMOSTAT_TARGET_SET_POINT = 'thermostat-target-setpoint';
 
-	public function hasReadWritePermission(): bool
-	{
-		return in_array($this, self::getReadWrite(), true);
-	}
+	case THERMOSTAT = 'thermostat';
 
-	public function hasReadPermission(): bool
-	{
-		return in_array($this, self::getRead(), true);
-	}
+	case THERMOSTAT_MODE_DETECT = 'thermostat-mode-detect';
+
+	case FAULT = 'fault';
 
 }

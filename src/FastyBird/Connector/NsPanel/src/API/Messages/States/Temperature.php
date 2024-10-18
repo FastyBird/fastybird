@@ -32,7 +32,7 @@ final readonly class Temperature implements State
 
 	public function __construct(
 		#[ObjectMapper\Rules\FloatValue(min: -40, max: 80)]
-		#[ObjectMapper\Modifiers\FieldName(Types\Protocol::TEMPERATURE->value)]
+		#[ObjectMapper\Modifiers\FieldName(Types\Attribute::TEMPERATURE->value)]
 		private float $temperature,
 	)
 	{
@@ -43,10 +43,10 @@ final readonly class Temperature implements State
 		return Types\Capability::TEMPERATURE;
 	}
 
-	public function getProtocols(): array
+	public function getState(): array
 	{
 		return [
-			Types\Protocol::TEMPERATURE->value => $this->temperature,
+			Types\Attribute::TEMPERATURE->value => $this->temperature,
 		];
 	}
 
@@ -63,7 +63,7 @@ final readonly class Temperature implements State
 	public function toJson(): object
 	{
 		$json = new stdClass();
-		$json->{Types\Protocol::TEMPERATURE->value} = $this->temperature;
+		$json->{Types\Attribute::TEMPERATURE->value} = $this->temperature;
 
 		return $json;
 	}

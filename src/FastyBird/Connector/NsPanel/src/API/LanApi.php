@@ -36,6 +36,7 @@ use function array_key_exists;
 use function assert;
 use function count;
 use function http_build_query;
+use function is_scalar;
 use function md5;
 use function sprintf;
 use function strval;
@@ -76,7 +77,7 @@ final class LanApi
 	private array $validationSchemas = [];
 
 	public function __construct(
-		private readonly string $identifier,
+		private readonly Uuid\UuidInterface $id,
 		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly NsPanel\Logger $logger,
@@ -626,8 +627,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
+			$message = $body->offsetGet('message');
+
 			throw new Exceptions\LanApiCall(
-				sprintf('Getting gateway info failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Getting gateway info failed: %s', is_scalar($message) ? strval($message) : 'unknown'),
 				$request,
 				$response,
 			);
@@ -657,8 +660,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
+			$message = $body->offsetGet('message');
+
 			throw new Exceptions\LanApiCall(
-				sprintf('Getting gateway access token failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Getting gateway access token failed: %s', is_scalar($message) ? strval($message) : 'unknown'),
 				$request,
 				$response,
 			);
@@ -765,8 +770,10 @@ final class LanApi
 		assert($data instanceof Utils\ArrayHash);
 
 		if ($error !== 0) {
+			$message = $body->offsetGet('message');
+
 			throw new Exceptions\LanApiCall(
-				sprintf('Get sub-devices list failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Get sub-devices list failed: %s', is_scalar($message) ? strval($message) : 'unknown'),
 				$request,
 				$response,
 			);
@@ -789,8 +796,10 @@ final class LanApi
 		$error = $body->offsetGet('error');
 
 		if ($error !== 0) {
+			$message = $body->offsetGet('message');
+
 			throw new Exceptions\LanApiCall(
-				sprintf('Set sub-device state failed: %s', strval($body->offsetGet('message'))),
+				sprintf('Set sub-device state failed: %s', is_scalar($message) ? strval($message) : 'unknown'),
 				$request,
 				$response,
 			);
@@ -912,7 +921,7 @@ final class LanApi
 					'body' => $request->getContent(),
 				],
 				'connector' => [
-					'identifier' => $this->identifier,
+					'id' => $this->id->toString(),
 				],
 			],
 		);
@@ -958,7 +967,7 @@ final class LanApi
 										'body' => $responseBody,
 									],
 									'connector' => [
-										'identifier' => $this->identifier,
+										'id' => $this->id->toString(),
 									],
 								],
 							);
@@ -1019,7 +1028,7 @@ final class LanApi
 						'body' => $responseBody,
 					],
 					'connector' => [
-						'identifier' => $this->identifier,
+						'id' => $this->id->toString(),
 					],
 				],
 			);

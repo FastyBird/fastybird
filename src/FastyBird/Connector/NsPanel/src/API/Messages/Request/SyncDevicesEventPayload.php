@@ -68,7 +68,7 @@ final readonly class SyncDevicesEventPayload implements API\Messages\Message
 	{
 		$json = new stdClass();
 		$json->endpoints = array_map(
-			static fn (SyncDevicesEventPayloadEndpoint $description): object => $description->toJson(),
+			static fn (SyncDevicesEventPayloadEndpoint $endpoint): object => $endpoint->toJson(),
 			$this->getEndpoints(),
 		);
 

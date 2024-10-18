@@ -23,7 +23,7 @@ namespace FastyBird\Connector\NsPanel\Queue\Messages;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final class WriteSubDeviceState extends WriteDeviceState
+final readonly class WriteSubDeviceState extends WriteDeviceState
 {
 
 }
