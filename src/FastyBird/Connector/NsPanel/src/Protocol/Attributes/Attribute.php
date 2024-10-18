@@ -16,11 +16,18 @@
 namespace FastyBird\Connector\NsPanel\Protocol\Attributes;
 
 use DateTimeInterface;
+use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Ramsey\Uuid;
+use function implode;
+use function in_array;
+use function is_numeric;
+use function is_string;
+use function sprintf;
+use function strlen;
 
 /**
  * Represents a NS Panel device capability attribute, the smallest unit of the smart home
@@ -56,7 +63,7 @@ class Attribute
 		protected readonly Types\Attribute $type,
 		protected readonly MetadataTypes\DataType $dataType,
 		protected readonly Protocol\Capabilities\Capability $capability,
-		protected readonly array|null $validValues = [],
+		protected readonly array|null $validValues = null,
 		protected readonly int|null $maxLength = null,
 		protected readonly float|null $minValue = null,
 		protected readonly float|null $maxValue = null,
@@ -125,12 +132,19 @@ class Attribute
 		return $this->actualValue;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	public function setActualValue(bool|float|int|string|null $value): void
 	{
 		if ($value === null) {
 			$this->actualValue = $this->defaultValue;
 
 			return;
+		}
+
+		if (!$this->validateValue($value)) {
+			throw new Exceptions\InvalidArgument('Provided actual value is not valid');
 		}
 
 		$this->actualValue = $value;
@@ -145,15 +159,26 @@ class Attribute
 		return $this->expectedValue;
 	}
 
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
 	public function setExpectedValue(bool|float|int|string|null $value): void
 	{
+		if ($value === null) {
+			$this->expectedValue = $value;
+			$this->setPending(false);
+
+			return;
+		}
+
+		if (!$this->validateValue($value)) {
+			throw new Exceptions\InvalidArgument('Provided expected value is not valid');
+		}
+
 		$this->expectedValue = $value;
 
 		if ($this->getActualValue() === $this->expectedValue) {
 			$this->expectedValue = null;
-		}
-
-		if ($this->expectedValue === null) {
 			$this->setPending(false);
 		}
 	}
@@ -194,6 +219,78 @@ class Attribute
 		return [
 			$this->getType()->value => $this->getValue(),
 		];
+	}
+
+	/**
+	 * @throws Exceptions\InvalidArgument
+	 */
+	protected function validateValue(bool|float|int|string|null $value): bool
+	{
+		if ($this->getMinValue() !== null) {
+			if (!is_numeric($value)) {
+				throw new Exceptions\InvalidArgument(sprintf('Provided value: %s is not valid number', $value));
+			}
+
+			if ($value < $this->getMinValue()) {
+				throw new Exceptions\InvalidArgument(
+					sprintf('Provided value: %f is under of allowed range: %f', $value, $this->getMinValue()),
+				);
+			}
+		}
+
+		if ($this->getMaxValue() !== null) {
+			if (!is_numeric($value)) {
+				throw new Exceptions\InvalidArgument(sprintf('Provided value: %s is not valid number', $value));
+			}
+
+			if ($value > $this->getMaxValue()) {
+				throw new Exceptions\InvalidArgument(
+					sprintf('Provided value: %f is over of allowed range: %f', $value, $this->getMaxValue()),
+				);
+			}
+		}
+
+		if ($this->getMinStep() !== null) {
+			if (!is_numeric($value)) {
+				throw new Exceptions\InvalidArgument(sprintf('Provided value: %s is not valid number', $value));
+			}
+
+			if ($value / $this->getMinStep() !== 0.0) {
+				throw new Exceptions\InvalidArgument(
+					sprintf('Provided value: %f is out of allowed steps: %f', $value, $this->getMinStep()),
+				);
+			}
+		}
+
+		if ($this->getValidValues() !== null) {
+			if (!is_numeric($value) && !is_string($value)) {
+				throw new Exceptions\InvalidArgument(sprintf('Provided value: %s is not valid', $value));
+			}
+
+			if (!in_array($value, $this->getValidValues(), true)) {
+				throw new Exceptions\InvalidArgument(
+					sprintf(
+						'Provided value: %s is out of allowed range: %s',
+						$value,
+						implode(', ', $this->getValidValues()),
+					),
+				);
+			}
+		}
+
+		if ($this->getMaxLength() !== null) {
+			if (!is_string($value)) {
+				throw new Exceptions\InvalidArgument(sprintf('Provided value: %s is not valid string', $value));
+			}
+
+			if (strlen($value) > $this->getMaxLength()) {
+				throw new Exceptions\InvalidArgument(
+					sprintf('Provided value: %s is out of allowed length: %d', $value, $this->getMaxLength()),
+				);
+			}
+		}
+
+		return true;
 	}
 
 }
