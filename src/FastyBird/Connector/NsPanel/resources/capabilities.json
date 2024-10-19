@@ -1,87 +1,916 @@
-{
-  "power": {
-    "permission": "readWrite",
-    "protocol": ["powerState"],
-    "multiple": false
+[
+  {
+    "type": "power",
+    "description": "Power control",
+    "categories": [
+      "plug",
+      "switch"
+    ],
+    "capabilities": [
+      {
+        "capability": "power",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Power",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "powerState",
+            "data_type": "switch",
+            "valid_values": [
+              "on",
+              "off"
+            ],
+            "mapped_values": [
+              [
+                "switch_on",
+                "on",
+                "on"
+              ],
+              [
+                "switch_off",
+                "off",
+                "off"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "toggle": {
-    "permission": "readWrite",
-    "protocol": ["toggleState"],
-    "multiple": true
+  {
+    "type": "toggle",
+    "description": "Toggle control",
+    "categories": [
+      "switch"
+    ],
+    "capabilities": [
+      {
+        "capability": "toggle",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Toggle",
+        "permission": "readWrite",
+        "multiple": true,
+        "attributes": [
+          {
+            "attribute": "toggleState",
+            "data_type": "switch",
+            "valid_values": [
+              "on",
+              "off",
+              "toggle"
+            ],
+            "mapped_values": [
+              [
+                "switch_on",
+                "on",
+                "on"
+              ],
+              [
+                "switch_off",
+                "off",
+                "off"
+              ],
+              [
+                "switch_toggle",
+                "toggle",
+                "toggle"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "brightness": {
-    "permission": "readWrite",
-    "protocol": ["brightness"],
-    "multiple": false
+  {
+    "type": "brightness",
+    "description": "Brightness Control",
+    "categories": [
+      "light"
+    ],
+    "capabilities": [
+      {
+        "capability": "brightness",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Brightness",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "brightness",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "unit": "%"
+          }
+        ]
+      }
+    ]
   },
-  "color-temperature": {
-    "permission": "readWrite",
-    "protocol": ["colorTemperature"],
-    "multiple": false
+  {
+    "type": "color-temperature",
+    "description": "Color temperature control",
+    "categories": [
+      "light"
+    ],
+    "capabilities": [
+      {
+        "capability": "color-temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ColorTemperature",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "colorTemperature",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1
+          }
+        ]
+      }
+    ]
   },
-  "color-rgb": {
-    "permission": "readWrite",
-    "protocol": ["red", "green", "blue"],
-    "multiple": false
+  {
+    "type": "color-rgb",
+    "description": "Color control",
+    "categories": [
+      "light"
+    ],
+    "capabilities": [
+      {
+        "capability": "color-rgb",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ColorRgb",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "red",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 255,
+            "step_value": 1
+          },
+          {
+            "attribute": "green",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 255,
+            "step_value": 1
+          },
+          {
+            "attribute": "blue",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 255,
+            "step_value": 1
+          }
+        ]
+      }
+    ]
   },
-  "percentage": {
-    "permission": "readWrite",
-    "protocol": ["percentage"],
-    "multiple": false
+  {
+    "type": "percentage",
+    "description": "Percentage control",
+    "categories": [
+      "curtain"
+    ],
+    "capabilities": [
+      {
+        "capability": "percentage",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Percentage",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "percentage",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "unit": "%"
+          }
+        ]
+      }
+    ]
   },
-  "motor-control": {
-    "permission": "readWrite",
-    "protocol": ["motorControl"],
-    "multiple": false
+  {
+    "type": "motor-control",
+    "description": "Motor control",
+    "categories": [
+      "curtain"
+    ],
+    "capabilities": [
+      {
+        "capability": "motor-control",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorControl",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "motorControl",
+            "data_type": "cover",
+            "valid_values": [
+              "open",
+              "close",
+              "stop",
+              "lock"
+            ],
+            "mapped_values": [
+              [
+                "cover_open",
+                "open",
+                "open"
+              ],
+              [
+                "cover_close",
+                "close",
+                "close"
+              ],
+              [
+                "cover_stop",
+                "stop",
+                "stop"
+              ],
+              [
+                "cover_lock",
+                "lock",
+                "lock"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "motor-reverse": {
-    "permission": "readWrite",
-    "protocol": ["motorReverse"],
-    "multiple": false
+  {
+    "type": "motor-reverse",
+    "description": "Motor reverse",
+    "categories": [
+      "curtain"
+    ],
+    "capabilities": [
+      {
+        "capability": "motor-reverse",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorReverse",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "motorReverse",
+            "data_type": "bool"
+          }
+        ]
+      }
+    ]
   },
-  "motor-clb": {
-    "permission": "read",
-    "protocol": ["motorClb"],
-    "multiple": false
+  {
+    "type": "motor-clb",
+    "description": "Motor calibration detection",
+    "categories": [
+      "curtain"
+    ],
+    "capabilities": [
+      {
+        "capability": "motor-clb",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\MotorCalibration",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "motorClb",
+            "data_type": "enum",
+            "valid_values": [
+              "calibration",
+              "normal"
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "startup": {
-    "permission": "readWrite",
-    "protocol": ["startup"],
-    "multiple": false
+  {
+    "type": "startup-power",
+    "description": "Power on state (Power Supply)",
+    "categories": [
+      "plug",
+      "switch"
+    ],
+    "capabilities": [
+      {
+        "capability": "startup",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Startup",
+        "permission": "readWrite",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "startup",
+            "data_type": "enum",
+            "valid_values": [
+              "on",
+              "off",
+              "stay"
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "camera-stream": {
-    "permission": "read",
-    "protocol": ["streamUrl"],
-    "multiple": false
+  {
+    "type": "startup-toggle",
+    "description": "Toggle power on state (Toggle)",
+    "categories": [
+      "switch"
+    ],
+    "capabilities": [
+      {
+        "capability": "startup",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Startup",
+        "permission": "readWrite",
+        "multiple": true,
+        "attributes": [
+          {
+            "attribute": "startup",
+            "data_type": "enum",
+            "valid_values": [
+              "on",
+              "off",
+              "stay"
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "detect": {
-    "permission": "read",
-    "protocol": ["detect"],
-    "multiple": false
+  {
+    "type": "camera-stream",
+    "description": "Camera stream",
+    "categories": [
+      "camera"
+    ],
+    "capabilities": [
+      {
+        "capability": "camera-stream",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\CameraStream",
+        "permission": "read",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "streamUrl",
+            "data_type": "string"
+          }
+        ],
+        "attributes": []
+      }
+    ]
   },
-  "humidity": {
-    "permission": "read",
-    "protocol": ["humidity"],
-    "multiple": false
+  {
+    "type": "detect",
+    "description": "State detection",
+    "categories": [
+      "contactSensor",
+      "motionSensor",
+      "waterLeakDetector",
+      "smokeDetector"
+    ],
+    "capabilities": [
+      {
+        "capability": "detect",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Detect",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "detected",
+            "data_type": "bool"
+          }
+        ]
+      }
+    ]
   },
-  "temperature": {
-    "permission": "read",
-    "protocol": ["temperature"],
-    "multiple": false
+  {
+    "type": "humidity",
+    "description": "Humidity detection",
+    "categories": [
+      "temperatureAndHumiditySensor"
+    ],
+    "capabilities": [
+      {
+        "capability": "humidity",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Humidity",
+        "permission": "read",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "range_min",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "default_value": 0
+          },
+          {
+            "configuration": "range_max",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "default_value": 100
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "humidity",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "unit": "%"
+          }
+        ]
+      }
+    ]
   },
-  "battery": {
-    "permission": "read",
-    "protocol": ["battery"],
-    "multiple": false
+  {
+    "type": "temperature",
+    "description": "Temperature detection",
+    "categories": [
+      "temperatureAndHumiditySensor"
+    ],
+    "capabilities": [
+      {
+        "capability": "temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Temperature",
+        "permission": "read",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "range_min",
+            "data_type": "float",
+            "step_value": 0.1,
+            "default_value": -40.0
+          },
+          {
+            "configuration": "range_max",
+            "data_type": "float",
+            "step_value": 0.1,
+            "default_value": 80.0
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "temperature",
+            "data_type": "float",
+            "min_value": -40,
+            "max_value": 80,
+            "step_value": 0.1,
+            "unit": "C"
+          }
+        ]
+      }
+    ]
   },
-  "press": {
-    "permission": "read",
-    "protocol": ["press"],
-    "multiple": false
+  {
+    "type": "battery",
+    "description": "Remaining battery detection",
+    "categories": [
+      "contactSensor",
+      "motionSensor",
+      "temperatureSensor",
+      "humiditySensor",
+      "temperatureAndHumiditySensor",
+      "waterLeakDetector",
+      "smokeDetector",
+      "button",
+      "sensor"
+    ],
+    "capabilities": [
+      {
+        "capability": "battery",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Battery",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "battery",
+            "data_type": "uchar",
+            "min_value": 0,
+            "max_value": 100,
+            "step_value": 1,
+            "unit": "%",
+            "invalid_value": -1
+          }
+        ]
+      }
+    ]
   },
-  "rssi": {
-    "permission": "read",
-    "protocol": ["rssi"],
-    "multiple": false
+  {
+    "type": "press",
+    "description": "Press detection",
+    "categories": [
+      "button"
+    ],
+    "capabilities": [
+      {
+        "capability": "press",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Press",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "press",
+            "data_type": "button",
+            "valid_values": [
+              "singlePress",
+              "doublePress",
+              "longPress"
+            ],
+            "mapped_values": [
+              [
+                "btn_clicked",
+                "singlePress",
+                "singlePress"
+              ],
+              [
+                "btn_double_clicked",
+                "doublePress",
+                "doublePress"
+              ],
+              [
+                "btn_long_clicked",
+                "longPress",
+                "longPress"
+              ]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "rssi",
+    "description": "Wireless signal strength detection",
+    "categories": [
+      "plug",
+      "switch",
+      "light",
+      "curtain",
+      "contactSensor",
+      "motionSensor",
+      "temperatureSensor",
+      "humiditySensor",
+      "temperatureAndHumiditySensor",
+      "waterLeakDetector",
+      "smokeDetector",
+      "button",
+      "sensor"
+    ],
+    "capabilities": [
+      {
+        "capability": "rssi",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Rssi",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "rssi",
+            "data_type": "char",
+            "min_value": -128,
+            "max_value": 0,
+            "step_value": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "illumination-level",
+    "description": "Illumination Level",
+    "categories": [],
+    "capabilities": [
+      {
+        "capability": "illumination-level",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\IlluminationLevel",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "level",
+            "data_type": "enum",
+            "valid_values": [
+              "brighter",
+              "darker"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "thermostat-mode-detect",
+    "description": "Thermostat  mode detection",
+    "categories": [],
+    "capabilities": [
+      {
+        "capability": "thermostat-mode-detect_temperature",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatModeDetect",
+        "permission": "readWrite",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "supported_lowerSetpoint_value_value",
+            "data_type": "float"
+          },
+          {
+            "configuration": "supported_lowerSetpoint_value_scale",
+            "data_type": "enum",
+            "valid_values": [
+              "c",
+              "f"
+            ],
+            "default_value": "c"
+          },
+          {
+            "configuration": "supported_upperSetpoint_value_value",
+            "data_type": "float"
+          },
+          {
+            "configuration": "supported_upperSetpoint_value_scale",
+            "data_type": "enum",
+            "valid_values": [
+              "c",
+              "f"
+            ],
+            "default_value": "c"
+          },
+          {
+            "configuration": "supportedModes",
+            "data_type": "string",
+            "default_value": "COMFORT,COLD,HOT"
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "mode",
+            "data_type": "enum",
+            "valid_values": [
+              "COMFORT",
+              "COLD",
+              "HOT"
+            ]
+          }
+        ]
+      },
+      {
+        "capability": "thermostat-mode-detect_humidity",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatModeDetect",
+        "permission": "readWrite",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "supported_lowerSetpoint_value_value",
+            "data_type": "float"
+          },
+          {
+            "configuration": "supported_upperSetpoint_value_value",
+            "data_type": "float"
+          },
+          {
+            "configuration": "supportedModes",
+            "data_type": "string",
+            "default_value": "COMFORT,DRY,WET"
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "mode",
+            "data_type": "enum",
+            "valid_values": [
+              "COMFORT",
+              "DRY",
+              "WET"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "thermostat",
+    "description": "Thermostat feature",
+    "categories": [],
+    "capabilities": [
+      {
+        "capability": "thermostat_adaptive-recovery-status",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Thermostat",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "targetSetpoint",
+            "data_type": "float"
+          },
+          {
+            "attribute": "adaptiveRecoveryStatus",
+            "data_type": "enum",
+            "valid_values": [
+              "HEATING",
+              "INACTIVE"
+            ]
+          }
+        ]
+      },
+      {
+        "capability": "thermostat_thermostat-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Thermostat",
+        "permission": "readWrite",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "supportedModes",
+            "data_type": "string",
+            "default_value": "MANUAL,AUTO,ECO"
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "thermostatMode",
+            "data_type": "enum",
+            "valid_values": [
+              "MANUAL",
+              "AUTO",
+              "ECO"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "thermostat-target-setpoint",
+    "description": "Thermostat target setpoint",
+    "categories": [],
+    "capabilities": [
+      {
+        "capability": "thermostat-target-setpoint_manual-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
+        "permission": "readWrite",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "temperature_min",
+            "data_type": "float",
+            "default_value": 4
+          },
+          {
+            "configuration": "temperature_max",
+            "data_type": "float",
+            "default_value": 35
+          },
+          {
+            "configuration": "temperature_increment",
+            "data_type": "float",
+            "default_value": 0.1
+          },
+          {
+            "configuration": "temperature_scale",
+            "data_type": "enum",
+            "valid_values": [
+              "c",
+              "f"
+            ],
+            "default_value": "c"
+          },
+          {
+            "configuration": "mappingMode",
+            "data_type": "enum",
+            "valid_values": [
+              "MANUAL"
+            ],
+            "default_value": "MANUAL"
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "targetSetpoint",
+            "data_type": "float"
+          }
+        ]
+      },
+      {
+        "capability": "thermostat-target-setpoint_auto-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
+        "permission": "read",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "temperature_min",
+            "data_type": "float",
+            "default_value": 4
+          },
+          {
+            "configuration": "temperature_max",
+            "data_type": "float",
+            "default_value": 35
+          },
+          {
+            "configuration": "temperature_increment",
+            "data_type": "float",
+            "default_value": 0.1
+          },
+          {
+            "configuration": "temperature_scale",
+            "data_type": "enum",
+            "valid_values": [
+              "c",
+              "f"
+            ],
+            "default_value": "c"
+          },
+          {
+            "configuration": "mappingMode",
+            "data_type": "enum",
+            "valid_values": [
+              "AUTO"
+            ],
+            "default_value": "AUTO"
+          },
+          {
+            "configuration": "weeklySchedule_maxEntryPerDay",
+            "data_type": "uchar",
+            "default_value": 2
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "targetSetpoint",
+            "data_type": "float"
+          }
+        ]
+      },
+      {
+        "capability": "thermostat-target-setpoint_eco-mode",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\ThermostatTargetSetPoint",
+        "permission": "readWrite",
+        "multiple": false,
+        "configurations": [
+          {
+            "configuration": "temperature_min",
+            "data_type": "float",
+            "default_value": 4
+          },
+          {
+            "configuration": "temperature_max",
+            "data_type": "float",
+            "default_value": 35
+          },
+          {
+            "configuration": "temperature_increment",
+            "data_type": "float",
+            "default_value": 0.1
+          },
+          {
+            "configuration": "temperature_scale",
+            "data_type": "enum",
+            "valid_values": [
+              "c",
+              "f"
+            ],
+            "default_value": "c"
+          },
+          {
+            "configuration": "mappingMode",
+            "data_type": "enum",
+            "valid_values": [
+              "ECO"
+            ],
+            "default_value": "ECO"
+          }
+        ],
+        "attributes": [
+          {
+            "attribute": "targetSetpoint",
+            "data_type": "float"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fault",
+    "description": "Fault notification capability",
+    "categories": [],
+    "capabilities": [
+      {
+        "capability": "fault",
+        "class": "\\FastyBird\\Connector\\NsPanel\\Entities\\Channels\\Fault",
+        "permission": "read",
+        "multiple": false,
+        "attributes": [
+          {
+            "attribute": "fault",
+            "data_type": "string"
+          }
+        ]
+      }
+    ]
   }
-}
+]

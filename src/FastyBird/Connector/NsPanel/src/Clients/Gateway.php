@@ -21,7 +21,7 @@ use FastyBird\Connector\NsPanel\API;
 use FastyBird\Connector\NsPanel\Documents;
 use FastyBird\Connector\NsPanel\Exceptions;
 use FastyBird\Connector\NsPanel\Helpers;
-use FastyBird\Connector\NsPanel\Models;
+use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\DateTimeFactory;
@@ -29,11 +29,9 @@ use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
-use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
-use FastyBird\Module\Devices\Queries as DevicesQueries;
 use FastyBird\Module\Devices\Types as DevicesTypes;
 use FastyBird\Module\Devices\Utilities as DevicesUtilities;
 use Nette;
@@ -71,13 +69,13 @@ final class Gateway implements Client
 	private const CMD_HEARTBEAT = 'heartbeat';
 
 	/** @var array<string, Documents\Devices\Gateway>  */
-	private array $devices = [];
+	private array $gateways = [];
 
 	/** @var array<string> */
-	private array $processedDevices = [];
+	private array $processedGateways = [];
 
 	/** @var array<string, array<string, DateTimeInterface|bool>> */
-	private array $processedDevicesCommands = [];
+	private array $processedGatewaysCommands = [];
 
 	private API\LanApi $lanApi;
 
@@ -89,19 +87,16 @@ final class Gateway implements Client
 		private readonly Queue\Queue $queue,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Helpers\Devices\Gateway $gatewayHelper,
-		private readonly Models\StateRepository $stateRepository,
+		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Logger $logger,
 		private readonly DevicesModels\Configuration\Devices\Repository $devicesConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Repository $channelsConfigurationRepository,
-		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
-		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
 		private readonly DevicesUtilities\DeviceConnection $deviceConnectionManager,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly PsrEventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
-		$this->lanApi = $this->lanApiFactory->create($this->connector->getIdentifier());
+		$this->lanApi = $this->lanApiFactory->create($this->connector->getId());
 	}
 
 	/**
@@ -119,8 +114,8 @@ final class Gateway implements Client
 	 */
 	public function connect(): void
 	{
-		$this->processedDevices = [];
-		$this->processedDevicesCommands = [];
+		$this->processedGateways = [];
+		$this->processedGatewaysCommands = [];
 
 		$this->handlerTimer = null;
 
@@ -128,42 +123,13 @@ final class Gateway implements Client
 		$findDevicesQuery->forConnector($this->connector);
 		$findDevicesQuery->withoutParents();
 
-		$devices = $this->devicesConfigurationRepository->findAllBy(
+		$gateways = $this->devicesConfigurationRepository->findAllBy(
 			$findDevicesQuery,
 			Documents\Devices\Gateway::class,
 		);
 
-		foreach ($devices as $device) {
-			$this->devices[$device->getId()->toString()] = $device;
-
-			$findChannelsQuery = new Queries\Configuration\FindChannels();
-			$findChannelsQuery->forDevice($device);
-
-			$channels = $this->channelsConfigurationRepository->findAllBy(
-				$findChannelsQuery,
-				Documents\Channels\Channel::class,
-			);
-
-			foreach ($channels as $channel) {
-				$findChannelPropertiesQuery = new DevicesQueries\Configuration\FindChannelDynamicProperties();
-				$findChannelPropertiesQuery->forChannel($channel);
-
-				$properties = $this->channelsPropertiesConfigurationRepository->findAllBy(
-					$findChannelPropertiesQuery,
-					DevicesDocuments\Channels\Properties\Dynamic::class,
-				);
-
-				foreach ($properties as $property) {
-					$state = $this->channelPropertiesStatesManager->read(
-						$property,
-						MetadataTypes\Sources\Connector::NS_PANEL,
-					);
-
-					if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
-						$this->stateRepository->set($property->getId(), $state->getGet()->getActualValue());
-					}
-				}
-			}
+		foreach ($gateways as $gateway) {
+			$this->gateways[$gateway->getId()->toString()] = $gateway;
 		}
 
 		$this->eventLoop->addTimer(
@@ -198,11 +164,11 @@ final class Gateway implements Client
 	 */
 	private function handleCommunication(): void
 	{
-		foreach ($this->devices as $device) {
-			if (!in_array($device->getId()->toString(), $this->processedDevices, true)) {
-				$this->processedDevices[] = $device->getId()->toString();
+		foreach ($this->gateways as $gateway) {
+			if (!in_array($gateway->getId()->toString(), $this->processedGateways, true)) {
+				$this->processedGateways[] = $gateway->getId()->toString();
 
-				if ($this->processDevice($device)) {
+				if ($this->processGateway($gateway)) {
 					$this->registerLoopHandler();
 
 					return;
@@ -210,7 +176,7 @@ final class Gateway implements Client
 			}
 		}
 
-		$this->processedDevices = [];
+		$this->processedGateways = [];
 
 		$this->registerLoopHandler();
 	}
@@ -228,13 +194,13 @@ final class Gateway implements Client
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function processDevice(Documents\Devices\Gateway $device): bool
+	private function processGateway(Documents\Devices\Gateway $gateway): bool
 	{
-		if ($this->readDeviceInformation($device)) {
+		if ($this->readGatewayInformation($gateway)) {
 			return true;
 		}
 
-		return $this->readDeviceState($device);
+		return $this->readGatewayState($gateway);
 	}
 
 	/**
@@ -250,7 +216,7 @@ final class Gateway implements Client
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function readDeviceInformation(Documents\Devices\Gateway $gateway): bool
+	private function readGatewayInformation(Documents\Devices\Gateway $gateway): bool
 	{
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null
@@ -261,39 +227,48 @@ final class Gateway implements Client
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
-						'identifier' => $gateway->getIdentifier(),
+						'device' => $gateway->getId(),
 						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
 
+			// Remove gateway device from list of devices to process
+			unset($this->gateways[$gateway->getId()->toString()]);
+			unset($this->processedGateways[$gateway->getId()->toString()]);
+			unset($this->processedGatewaysCommands[$gateway->getId()->toString()]);
+
 			return true;
 		}
 
-		if (!array_key_exists($gateway->getId()->toString(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$gateway->getId()->toString()] = [];
+		if (!array_key_exists($gateway->getId()->toString(), $this->processedGatewaysCommands)) {
+			$this->processedGatewaysCommands[$gateway->getId()->toString()] = [];
 		}
 
-		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedDevicesCommands[$gateway->getId()->toString()])) {
-			$cmdResult = $this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT];
+		if (array_key_exists(self::CMD_HEARTBEAT, $this->processedGatewaysCommands[$gateway->getId()->toString()])) {
+			$cmdResult = $this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
-					< $this->gatewayHelper->getHeartbeatDelay($gateway)
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $this->gatewayHelper->getHeartbeatDelay(
+						$gateway,
+					)
 				)
 			) {
 				return false;
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
+		$this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
-		$deviceState = $this->deviceConnectionManager->getState($gateway);
+		$gatewayState = $this->deviceConnectionManager->getState($gateway);
 
-		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
-			unset($this->devices[$gateway->getId()->toString()]);
+		if ($gatewayState === DevicesTypes\ConnectionState::ALERT) {
+			// Remove gateway device from list of devices to process
+			unset($this->gateways[$gateway->getId()->toString()]);
+			unset($this->processedGateways[$gateway->getId()->toString()]);
+			unset($this->processedGatewaysCommands[$gateway->getId()->toString()]);
 
 			return false;
 		}
@@ -301,14 +276,14 @@ final class Gateway implements Client
 		try {
 			$this->lanApi->getGatewayInfo($this->gatewayHelper->getIpAddress($gateway))
 				->then(function () use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
+					$this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_HEARTBEAT] = $this->clock->getNow();
 
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $gateway->getConnector(),
-								'identifier' => $gateway->getIdentifier(),
+								'device' => $gateway->getId(),
 								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
@@ -323,7 +298,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -336,7 +311,7 @@ final class Gateway implements Client
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
-									'identifier' => $gateway->getIdentifier(),
+									'device' => $gateway->getId(),
 									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
@@ -349,7 +324,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -370,7 +345,7 @@ final class Gateway implements Client
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
-									'identifier' => $gateway->getIdentifier(),
+									'device' => $gateway->getId(),
 									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
@@ -383,7 +358,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -407,7 +382,7 @@ final class Gateway implements Client
 					'type' => 'gateway-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $gateway->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $gateway->getId()->toString(),
@@ -434,7 +409,7 @@ final class Gateway implements Client
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	private function readDeviceState(Documents\Devices\Gateway $gateway): bool
+	private function readGatewayState(Documents\Devices\Gateway $gateway): bool
 	{
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null
@@ -445,39 +420,48 @@ final class Gateway implements Client
 					Queue\Messages\StoreDeviceConnectionState::class,
 					[
 						'connector' => $gateway->getConnector(),
-						'identifier' => $gateway->getIdentifier(),
+						'device' => $gateway->getId(),
 						'state' => DevicesTypes\ConnectionState::ALERT,
 					],
 				),
 			);
 
+			// Remove gateway device from list of devices to process
+			unset($this->gateways[$gateway->getId()->toString()]);
+			unset($this->processedGateways[$gateway->getId()->toString()]);
+			unset($this->processedGatewaysCommands[$gateway->getId()->toString()]);
+
 			return true;
 		}
 
-		if (!array_key_exists($gateway->getId()->toString(), $this->processedDevicesCommands)) {
-			$this->processedDevicesCommands[$gateway->getId()->toString()] = [];
+		if (!array_key_exists($gateway->getId()->toString(), $this->processedGatewaysCommands)) {
+			$this->processedGatewaysCommands[$gateway->getId()->toString()] = [];
 		}
 
-		if (array_key_exists(self::CMD_STATE, $this->processedDevicesCommands[$gateway->getId()->toString()])) {
-			$cmdResult = $this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE];
+		if (array_key_exists(self::CMD_STATE, $this->processedGatewaysCommands[$gateway->getId()->toString()])) {
+			$cmdResult = $this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_STATE];
 
 			if (
 				$cmdResult instanceof DateTimeInterface
 				&& (
-					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp()
-					< $this->gatewayHelper->getStateReadingDelay($gateway)
+					$this->clock->getNow()->getTimestamp() - $cmdResult->getTimestamp() < $this->gatewayHelper->getStateReadingDelay(
+						$gateway,
+					)
 				)
 			) {
 				return false;
 			}
 		}
 
-		$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
+		$this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 		$deviceState = $this->deviceConnectionManager->getState($gateway);
 
 		if ($deviceState === DevicesTypes\ConnectionState::ALERT) {
-			unset($this->devices[$gateway->getId()->toString()]);
+			// Remove gateway device from list of devices to process
+			unset($this->gateways[$gateway->getId()->toString()]);
+			unset($this->processedGateways[$gateway->getId()->toString()]);
+			unset($this->processedGatewaysCommands[$gateway->getId()->toString()]);
 
 			return false;
 		}
@@ -488,14 +472,14 @@ final class Gateway implements Client
 				$this->gatewayHelper->getAccessToken($gateway),
 			)
 				->then(function (API\Messages\Response\GetSubDevices $subDevices) use ($gateway): void {
-					$this->processedDevicesCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
+					$this->processedGatewaysCommands[$gateway->getId()->toString()][self::CMD_STATE] = $this->clock->getNow();
 
 					$this->queue->append(
 						$this->messageBuilder->create(
 							Queue\Messages\StoreDeviceConnectionState::class,
 							[
 								'connector' => $gateway->getConnector(),
-								'identifier' => $gateway->getIdentifier(),
+								'device' => $gateway->getId(),
 								'state' => DevicesTypes\ConnectionState::CONNECTED,
 							],
 						),
@@ -507,12 +491,18 @@ final class Gateway implements Client
 							continue;
 						}
 
+						$protocolDevice = $this->devicesDriver->findDevice($subDevice->getSerialNumber());
+
+						if ($protocolDevice === null) {
+							continue;
+						}
+
 						$this->queue->append(
 							$this->messageBuilder->create(
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
-									'connector' => $gateway->getConnector(),
-									'identifier' => $subDevice->getSerialNumber(),
+									'connector' => $protocolDevice->getConnector(),
+									'device' => $protocolDevice->getId(),
 									'state' => $subDevice->isOnline()
 										? DevicesTypes\ConnectionState::CONNECTED
 										: DevicesTypes\ConnectionState::DISCONNECTED,
@@ -528,14 +518,15 @@ final class Gateway implements Client
 							if (
 								is_string($key)
 								&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
+								&& array_key_exists('name', $matches) === true
 							) {
-								$identifier = $matches['identifier'];
+								$identifier = $matches['name'];
 							}
 
-							foreach ($item->getProtocols() as $protocol => $value) {
+							foreach ($item->getState() as $attribute => $value) {
 								$state[] = [
 									'capability' => $item->getType()->value,
-									'protocol' => $protocol,
+									'attribute' => $attribute,
 									'value' => $value,
 									'identifier' => $identifier,
 								];
@@ -546,9 +537,9 @@ final class Gateway implements Client
 							$this->messageBuilder->create(
 								Queue\Messages\StoreDeviceState::class,
 								[
-									'connector' => $gateway->getConnector(),
-									'gateway' => $gateway->getId(),
-									'identifier' => $subDevice->getSerialNumber(),
+									'connector' => $protocolDevice->getConnector(),
+									'gateway' => $protocolDevice->getParent(),
+									'device' => $protocolDevice->getId(),
 									'state' => $state,
 								],
 							),
@@ -564,7 +555,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -577,7 +568,7 @@ final class Gateway implements Client
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
-									'identifier' => $gateway->getIdentifier(),
+									'device' => $gateway->getId(),
 									'state' => DevicesTypes\ConnectionState::ALERT,
 								],
 							),
@@ -590,7 +581,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'error' => $ex->getMessage(),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -611,7 +602,7 @@ final class Gateway implements Client
 								Queue\Messages\StoreDeviceConnectionState::class,
 								[
 									'connector' => $gateway->getConnector(),
-									'identifier' => $gateway->getIdentifier(),
+									'device' => $gateway->getId(),
 									'state' => DevicesTypes\ConnectionState::DISCONNECTED,
 								],
 							),
@@ -624,7 +615,7 @@ final class Gateway implements Client
 								'type' => 'gateway-client',
 								'exception' => ApplicationHelpers\Logger::buildException($ex),
 								'connector' => [
-									'id' => $this->connector->getId()->toString(),
+									'id' => $gateway->getConnector()->toString(),
 								],
 								'device' => [
 									'id' => $gateway->getId()->toString(),
@@ -648,7 +639,7 @@ final class Gateway implements Client
 					'type' => 'gateway-client',
 					'exception' => ApplicationHelpers\Logger::buildException($ex),
 					'connector' => [
-						'id' => $this->connector->getId()->toString(),
+						'id' => $gateway->getConnector()->toString(),
 					],
 					'device' => [
 						'id' => $gateway->getId()->toString(),

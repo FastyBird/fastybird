@@ -32,12 +32,8 @@ final class Constants
 
 	public const NS_PANEL_API_VERSION_V1 = '1';
 
-	public const STATE_NAME_KEY = '/^(?P<capability>[a-z\-]+)_(?P<identifier>[a-z0-9_]+)$/';
+	public const STATE_NAME_KEY = '/^(?P<capability>[a-z\-]+)(?:_(?P<name>[0-9a-zA-Z\-]+))?$/';
 
-	public const CHANNEL_IDENTIFIER = '/^(?P<type>[a-z_]+)(?:_(?P<key>[0-9]+){1})?$/';
-
-	public const PROPERTY_TAG_IDENTIFIER = '/^tag_(?P<tag>[a-z_]+)$/';
-
-	public const EVENT_FINISHED = 'finished';
+	public const CHANNEL_IDENTIFIER = '/^(?P<capability>[a-z\-]+)(?:_(?P<name>[0-9a-zA-Z\-]+))?$/';
 
 }

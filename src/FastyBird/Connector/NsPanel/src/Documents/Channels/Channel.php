@@ -15,18 +15,16 @@
 
 namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
-use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Channel::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Channel::TYPE)]
-class Channel extends DevicesDocuments\Channels\Channel
+#[DOC\MappedSuperclass()]
+abstract class Channel extends DevicesDocuments\Channels\Channel
 {
 
-	public static function getType(): string
-	{
-		return Entities\Channels\Channel::TYPE;
-	}
+	/**
+	 * @return array<string, string>
+	 */
+	abstract public function toDefinition(): array;
 
 }

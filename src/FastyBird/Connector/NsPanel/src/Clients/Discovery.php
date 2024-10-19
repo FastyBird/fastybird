@@ -34,7 +34,10 @@ use React\Promise;
 use Throwable;
 use TypeError;
 use ValueError;
+use function array_key_exists;
 use function array_merge;
+use function is_string;
+use function preg_match;
 
 /**
  * Connector sub-devices discovery client
@@ -157,9 +160,7 @@ final class Discovery
 	{
 		$deferred = new Promise\Deferred();
 
-		$lanApi = $this->lanApiFactory->create(
-			$this->connector->getIdentifier(),
-		);
+		$lanApi = $this->lanApiFactory->create($this->connector->getId());
 
 		if (
 			$this->gatewayHelper->getIpAddress($gateway) === null
@@ -215,15 +216,39 @@ final class Discovery
 			}
 
 			try {
+				$state = [];
+
+				foreach ($subDevice->getState() as $key => $item) {
+					$identifier = null;
+
+					if (
+						is_string($key)
+						&& preg_match(NsPanel\Constants::STATE_NAME_KEY, $key, $matches) === 1
+						&& array_key_exists('name', $matches) === true
+					) {
+						$identifier = $matches['name'];
+					}
+
+					foreach ($item->getState() as $attribute => $value) {
+						$state[] = [
+							'capability' => $item->getType()->value,
+							'attribute' => $attribute,
+							'value' => $value,
+							'identifier' => $identifier,
+						];
+					}
+				}
+
 				$this->queue->append(
 					$this->messageBuilder->create(
 						Queue\Messages\StoreSubDevice::class,
 						array_merge(
+							$subDevice->toArray(),
 							[
 								'connector' => $gateway->getConnector(),
 								'gateway' => $gateway->getId(),
+								'state' => $state,
 							],
-							$subDevice->toArray(),
 						),
 					),
 				);

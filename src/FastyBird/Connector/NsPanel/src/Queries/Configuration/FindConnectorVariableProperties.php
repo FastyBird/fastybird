@@ -47,7 +47,7 @@ class FindConnectorVariableProperties extends FindConnectorProperties
 			);
 		}
 
-		parent::byIdentifier($identifier->value);
+		parent::byIdentifier($identifier);
 	}
 
 }

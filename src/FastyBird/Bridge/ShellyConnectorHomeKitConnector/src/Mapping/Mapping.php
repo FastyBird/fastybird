@@ -1,13 +1,13 @@
 <?php declare(strict_types = 1);
 
 /**
- * Message.php
+ * Mapping.php
  *
  * @license        More in LICENSE.md
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnectorHomeKitConnectorBridge!
- * @subpackage     Queue
+ * @subpackage     Mapping
  * @since          1.0.0
  *
  * @date           19.08.24
@@ -21,7 +21,7 @@ use Orisai\ObjectMapper;
  * Mapping base data interface
  *
  * @package        FastyBird:ShellyConnectorHomeKitConnectorBridge!
- * @subpackage     Queue
+ * @subpackage     Mapping
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */

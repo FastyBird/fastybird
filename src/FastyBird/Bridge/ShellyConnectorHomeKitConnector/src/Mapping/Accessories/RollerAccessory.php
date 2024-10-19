@@ -7,7 +7,7 @@
  * @copyright      https://www.fastybird.com
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  * @package        FastyBird:ShellyConnectorHomeKitConnectorBridge!
- * @subpackage     common
+ * @subpackage     Mapping
  * @since          1.0.0
  *
  * @date           22.08.24

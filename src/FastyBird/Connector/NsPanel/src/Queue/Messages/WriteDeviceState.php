@@ -27,7 +27,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-abstract class WriteDeviceState implements Message
+abstract readonly class WriteDeviceState implements Message
 {
 
 	public function __construct(
@@ -82,6 +82,7 @@ abstract class WriteDeviceState implements Message
 			'connector' => $this->getConnector()->toString(),
 			'device' => $this->getDevice()->toString(),
 			'channel' => $this->getChannel()->toString(),
+			'property' => $this->getProperty()->toString(),
 			'state' => $this->getState()?->toArray(),
 		];
 	}

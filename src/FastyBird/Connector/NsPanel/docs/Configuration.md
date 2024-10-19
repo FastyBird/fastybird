@@ -145,7 +145,7 @@ You will have to select which connected **Sonoff NS Panel** you want to configur
 
 ```
  Please select NS Panel to manage:
-  [0] ns-panel-living-room [Panel Obývák]
+  [0] ns-panel-living-room [Panel Living Room]
  > 
 ```
 
@@ -166,7 +166,7 @@ Now you will be asked to provide some device details:
 
 ```
  Provide identifier:
- > livin-room-main-lamp
+ > living-room-main-lamp
 ```
 
 ```
@@ -174,7 +174,7 @@ Now you will be asked to provide some device details:
  > Living room main lamp
 ```
 
-You are now required to select a device category, which will determine the specific capabilities and protocols of the device.
+You are now required to select a device category, which will determine the specific capabilities and attributes of the device.
 
 ```
  Please select device category:
@@ -213,33 +213,33 @@ The list of items may vary depending on the device category.
 Let's create **Brightness** capability:
 
 ```
- What type of capability protocol you would like to add? [Brightness]:
+ What type of capability attribute you would like to add? [Brightness]:
   [0] Brightness
  > Brightness
 ```
 
-These protocols are mandatory and must be configured.
+These attributes are mandatory and must be configured.
 
-You have two options. Connect protocols with FastyBird device or configure it as static value.
+You have two options. Connect attributes with FastyBird device or configure it as static value.
 
 Let's try static configuration value:
 
 ```
- Connect protocol with device? (yes/no) [yes]:
+ Connect attribute with device? (yes/no) [yes]:
  > n
 ```
 
-Some protocols have a defined set of allowed values, while others accept values from a range. Therefore, the next question will vary depending on the selected protocol.
+Some attributes have a defined set of allowed values, while others accept values from a range. Therefore, the next question will vary depending on the selected attribute.
 
 ```
- Provide protocol value:
+ Provide attribute value:
  > 50
 ```
 
 And if you choose to connect characteristic with device:
 
 ```
- Connect protocol with device? (yes/no) [yes]:
+ Connect attribute with device? (yes/no) [yes]:
  > y
 ```
 
@@ -269,7 +269,7 @@ And channel's property:
  > 0
 ```
 
-After all required protocols are configured you will be prompted with question if you want to configure optional protocols.
+After all required attributes are configured you will be prompted with question if you want to configure optional attributes.
 
 ```
  What type of device capability you would like to add? [Color RGB]:

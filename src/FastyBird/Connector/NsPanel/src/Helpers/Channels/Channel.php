@@ -23,7 +23,6 @@ use TypeError;
 use ValueError;
 use function array_key_exists;
 use function preg_match;
-use function str_replace;
 
 /**
  * Channel helper
@@ -45,17 +44,26 @@ final class Channel
 	{
 		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
 
-		if (!array_key_exists('type', $matches)) {
+		if (!array_key_exists('capability', $matches)) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		$type = str_replace(' ', '', str_replace('_', '-', $matches['type']));
-
-		if (Types\Capability::tryFrom($type) === null) {
+		if (Types\Capability::tryFrom($matches['capability']) === null) {
 			throw new Exceptions\InvalidState('Device channel has invalid identifier');
 		}
 
-		return Types\Capability::from($type);
+		return Types\Capability::from($matches['capability']);
+	}
+
+	public function getName(Documents\Channels\Channel $channel): string|null
+	{
+		preg_match(NsPanel\Constants::CHANNEL_IDENTIFIER, $channel->getIdentifier(), $matches);
+
+		if (!array_key_exists('name', $matches)) {
+			return null;
+		}
+
+		return $matches['name'];
 	}
 
 }

@@ -34,6 +34,6 @@ interface State extends API\Messages\Message
 	/**
 	 * @return array<string, int|float|string|bool|Types\Payloads\Payload|null>
 	 */
-	public function getProtocols(): array;
+	public function getState(): array;
 
 }
