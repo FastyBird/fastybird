@@ -583,8 +583,8 @@
   },
   {
     "type": "illumination-level",
-    "categories": [],
     "description": "Illumination Level",
+    "categories": [],
     "capabilities": [
       {
         "capability": "illumination-level",
@@ -607,6 +607,7 @@
   {
     "type": "thermostat-mode-detect",
     "description": "Thermostat  mode detection",
+    "categories": [],
     "capabilities": [
       {
         "capability": "thermostat-mode-detect_temperature",
@@ -695,6 +696,7 @@
   {
     "type": "thermostat",
     "description": "Thermostat feature",
+    "categories": [],
     "capabilities": [
       {
         "capability": "thermostat_adaptive-recovery-status",
@@ -745,6 +747,7 @@
   {
     "type": "thermostat-target-setpoint",
     "description": "Thermostat target setpoint",
+    "categories": [],
     "capabilities": [
       {
         "capability": "thermostat-target-setpoint_manual-mode",
@@ -894,6 +897,7 @@
   {
     "type": "fault",
     "description": "Fault notification capability",
+    "categories": [],
     "capabilities": [
       {
         "capability": "fault",

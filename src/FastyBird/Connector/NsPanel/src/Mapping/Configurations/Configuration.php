@@ -19,6 +19,7 @@ use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Types;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
+use function array_filter;
 
 /**
  * Basic configuration interface
@@ -138,6 +139,25 @@ readonly class Configuration implements Mapping\Mapping
 	public function getUnit(): string|null
 	{
 		return $this->unit;
+	}
+
+	/**
+	 * @return array<string, array<int, array<int, string>|string>|float|int|string|null>
+	 */
+	public function toArray(): array
+	{
+		$data = [
+			'configuration' => $this->getConfiguration()->value,
+			'data_type' => $this->getDataType()->value,
+			'valid_values' => $this->getValidValues(),
+			'min_value' => $this->getMinValue(),
+			'max_value' => $this->getMaxValue(),
+			'step_value' => $this->getStepValue(),
+			'default_value' => $this->getDefaultValue(),
+			'invalid_value' => $this->getInvalidValue(),
+		];
+
+		return array_filter($data, static fn ($item): bool => $item !== null && $item !== []);
 	}
 
 }

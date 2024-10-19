@@ -18,6 +18,7 @@ namespace FastyBird\Connector\NsPanel\Mapping\Categories;
 use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Types;
 use Orisai\ObjectMapper;
+use function array_map;
 
 /**
  * Basic category interface
@@ -80,6 +81,25 @@ readonly class Category implements Mapping\Mapping
 	public function getOptionalCapabilitiesGroups(): array
 	{
 		return $this->optionalCapabilities;
+	}
+
+	/**
+	 * @return array<string, string|array<string>>
+	 */
+	public function toArray(): array
+	{
+		return [
+			'category' => $this->getCategory()->value,
+			'description' => $this->getDescription(),
+			'requiredCapabilities' => array_map(
+				static fn (Types\Group $group) => $group->value,
+				$this->getRequiredCapabilitiesGroups(),
+			),
+			'optionalCapabilities' => array_map(
+				static fn (Types\Group $group) => $group->value,
+				$this->getOptionalCapabilitiesGroups(),
+			),
+		];
 	}
 
 }

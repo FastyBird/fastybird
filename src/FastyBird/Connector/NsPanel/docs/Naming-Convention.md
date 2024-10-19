@@ -52,7 +52,7 @@ or to communicate with device. In case some of the mandatory property is missing
 
 ### Channel Property
 
-Channel related properties are used for mapping devices capabilities protocols which are properties for storing device actual state.
+Channel related properties are used for mapping devices capabilities attributes which are properties for storing device actual state.
 It could be a switch `state` or a light `brightness`. These values are read from device and stored in system.
 
 ## Device Capability
@@ -60,11 +60,11 @@ It could be a switch `state` or a light `brightness`. These values are read from
 A capability is an entity that refers to a specific functionality or feature that a device provides. For example,
 a thermostat device might provide a "temperature control" capability and a "humidity control" capability.
 
-## Device Capability Protocol
+## Device Capability Attribute
 
-A protocol is an entity that refers to the individual attribute of a capability that can be queried or manipulated.
-Protocol represent specific data point that describe the state of a device or allow control over it.
-Examples of protocol include temperature, humidity, on/off status, and brightness level.
+A attribute is an entity that refers to the individual attribute of a capability that can be queried or manipulated.
+Attribute represent specific data point that describe the state of a device or allow control over it.
+Examples of attribute include temperature, humidity, on/off status, and brightness level.
 
 ## Device Mode
 

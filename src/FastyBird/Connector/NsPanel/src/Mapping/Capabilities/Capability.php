@@ -23,6 +23,7 @@ use Orisai\ObjectMapper;
 use TypeError;
 use ValueError;
 use function array_key_exists;
+use function array_map;
 use function assert;
 use function class_exists;
 use function preg_match;
@@ -147,6 +148,35 @@ readonly class Capability implements Mapping\Mapping
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array<string, array<array<string, array<int, array<int, string>|string>|float|int|string|null>>|bool|string>
+	 *
+	 * @throws Exceptions\InvalidState
+	 */
+	public function toArray(): array
+	{
+		$data = [
+			'capability' => $this->getCapability()->value . ($this->getName() !== null ? '_' . $this->getName() : ''),
+			'class' => $this->getClass(),
+			'permission' => $this->getPermission()->value,
+			'multiple' => $this->isMultiple(),
+			'configurations' => array_map(
+				static fn (Mapping\Configurations\Configuration $configuration): array => $configuration->toArray(),
+				$this->getConfigurations(),
+			),
+			'attributes' => array_map(
+				static fn (Mapping\Attributes\Attribute $attribute): array => $attribute->toArray(),
+				$this->getAttributes(),
+			),
+		];
+
+		if ($data['configurations'] === []) {
+			unset($data['configurations']);
+		}
+
+		return $data;
 	}
 
 }

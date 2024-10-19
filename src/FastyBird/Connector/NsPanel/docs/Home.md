@@ -22,11 +22,13 @@ container automatically.
 ```
 \FastyBird\Connector\NsPanel
   \API - Services and helpers related to API - for managing data exchange validation and data parsing
-  \Clients - Services which handle communication with NsPanel devices or clouds
+  \Clients - Services which handle communication with NsPanel devices
   \Commands - Services used for user console interface
   \Controllers - HTTP api services for handling incomming requests
   \Entities - All entities used by connector
   \Helpers - Useful helpers for reading values, bulding entities etc.
+  \Mapping - Services for validating NS panel data structure
+  \Protocol - Services responsible for creating devices configuration for NS Panels
   \Queue - Services related to connector internal communication
   \Schemas - {JSON:API} schemas mapping for API requests
   \Services - Communication services factories
