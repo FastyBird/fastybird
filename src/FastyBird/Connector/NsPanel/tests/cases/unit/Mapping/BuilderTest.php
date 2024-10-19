@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\DI;
+namespace FastyBird\Connector\NsPanel\Tests\Cases\Unit\Mapping;
 
 use Error;
 use FastyBird\Connector\NsPanel\Exceptions;
