@@ -28,14 +28,18 @@ use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
 use FastyBird\Module\Devices\Utilities;
+use Fig\Http\Message\StatusCodeInterface;
 use InvalidArgumentException;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
-use Fig\Http\Message\StatusCodeInterface;
 use Nette\Utils;
 use Psr\Http\Message;
 use Ramsey\Uuid;
 use Throwable;
+use function end;
+use function explode;
+use function preg_match;
+use function str_starts_with;
 use function strval;
 
 /**
@@ -164,8 +168,8 @@ class ConnectorsV1 extends BaseV1
 							),
 							[
 								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
-										Utils\Strings::substring($columnKey, 7),
-									),
+									Utils\Strings::substring($columnKey, 7),
+								),
 							],
 						);
 					}

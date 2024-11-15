@@ -62,11 +62,12 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
-			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		} else {
-			$device = null;
-		}
+		$device = $request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null
+			? $this->findDevice(
+				strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)),
+			)
+			: null;
+
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
@@ -89,11 +90,12 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
-			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		} else {
-			$device = null;
-		}
+		$device = $request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null
+			? $this->findDevice(
+				strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)),
+			)
+			: null;
+
 		// & channel
 		$this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
@@ -124,11 +126,12 @@ final class ChannelControlsV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
-			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
-		} else {
-			$device = null;
-		}
+		$device = $request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null
+			? $this->findDevice(
+				strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)),
+			)
+			: null;
+
 		// & channel
 		$this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
