@@ -1,3 +1,12 @@
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
+import addFormats from 'ajv-formats';
+import Ajv from 'ajv/dist/2020';
+import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
+import get from 'lodash.get';
+import isEqual from 'lodash.isequal';
+
 import {
 	ActionRoutes,
 	ExchangeCommand,
@@ -6,22 +15,15 @@ import {
 	ModulePrefix,
 } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
-import addFormats from 'ajv-formats';
-import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
-import { Jsona } from 'jsona';
-import get from 'lodash.get';
-import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.control.json';
 
+import { connectorsStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useConnectors } from '../../models';
 import { IConnector } from '../connectors/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS_CONTROLS } from '../../utilities/database';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS_CONTROLS } from '../../utilities';
 
 import {
 	IConnectorControl,
@@ -57,7 +59,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IConnectorControlRecordFactoryPayload): Promise<IConnectorControl> => {
-	const connectorsStore = useConnectors();
+	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 	let connector = 'connector' in data ? get(data, 'connector', null) : null;
 
@@ -149,12 +151,18 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					deleting: [],
 				},
 
+				firstLoad: [],
+
 				data: undefined,
 				meta: {},
 			};
 		},
 
 		getters: {
+			firstLoadFinished: (state: IConnectorControlsState): ((connectorId: IConnector['id']) => boolean) => {
+				return (connectorId: IConnector['id']): boolean => state.firstLoad.includes(connectorId);
+			},
+
 			getting: (state: IConnectorControlsState): ((id: IConnectorControl['id']) => boolean) => {
 				return (id: IConnectorControl['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
@@ -292,6 +300,14 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 					this.meta[controlResponseModel.id] = controlResponseModel.type;
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						this.unset({
+							id: payload.id,
+						});
+
+						return true;
+					}
+
 					throw new ApiError('devices-module.connector-controls.get.failed', e, 'Fetching control failed.');
 				} finally {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
@@ -316,7 +332,12 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					return true;
 				}
 
-				this.semaphore.fetching.items.push(payload.connector.id);
+				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+					this.semaphore.fetching.items.push(payload.connector.id);
+				}
+
+				this.firstLoad = this.firstLoad.filter((item) => item !== payload.connector.id);
+				this.firstLoad = [...new Set(this.firstLoad)];
 
 				try {
 					const controlsResponse = await axios.get<IConnectorControlsResponseJson>(
@@ -337,6 +358,9 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 						this.meta[control.id] = control.type;
 					}
 
+					this.firstLoad.push(payload.connector.id);
+					this.firstLoad = [...new Set(this.firstLoad)];
+
 					// Get all current IDs from IndexedDB
 					const allRecords = await getAllRecords<IConnectorControlDatabaseRecord>(DB_TABLE_CONNECTORS_CONTROLS);
 					const indexedDbIds: string[] = allRecords.filter((record) => record.connector.id === payload.connector.id).map((record) => record.id);
@@ -354,6 +378,26 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 						delete this.meta[id];
 					}
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						try {
+							const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+							await connectorsStore.get({
+								id: payload.connector.id,
+							});
+						} catch (e: any) {
+							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+								const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+								connectorsStore.unset({
+									id: payload.connector.id,
+								});
+
+								return true;
+							}
+						}
+					}
+
 					throw new ApiError('devices-module.connector-controls.fetch.failed', e, 'Fetching controls failed.');
 				} finally {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.connector.id);
@@ -388,7 +432,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 					return newControl;
 				} else {
-					const connectorsStore = useConnectors();
+					const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 					const connector = connectorsStore.findById(payload.connector.id);
 
@@ -447,7 +491,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				const recordToSave = this.data[payload.id];
 
-				const connectorsStore = useConnectors();
+				const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 				const connector = connectorsStore.findById(recordToSave.connector.id);
 
@@ -502,7 +546,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				const recordToDelete = this.data[payload.id];
 
-				const connectorsStore = useConnectors();
+				const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 				const connector = connectorsStore.findById(recordToDelete.connector.id);
 
@@ -524,7 +568,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					try {
 						await axios.delete(`/${ModulePrefix.DEVICES}/v1/connectors/${recordToDelete.connector.id}/controls/${recordToDelete.id}`);
 					} catch (e: any) {
-						const connectorsStore = useConnectors();
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 						const connector = connectorsStore.findById(recordToDelete.connector.id);
 
@@ -554,7 +598,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 
 				const control = this.data[payload.id];
 
-				const connectorsStore = useConnectors();
+				const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 				const connector = connectorsStore.findById(control.connector.id);
 
@@ -641,7 +685,7 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 							this.meta[record.id] = record.type;
 						}
 					} else {
-						const connectorsStore = useConnectors();
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 						const connector = connectorsStore.findById(body.connector);
 
@@ -716,6 +760,15 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 					connectorIds.push(doc.connector);
 				}
 
+				if (documents.length > 1) {
+					const uniqueConnectorIds = [...new Set(connectorIds)];
+
+					for (const connectorId of uniqueConnectorIds) {
+						this.firstLoad.push(connectorId);
+						this.firstLoad = [...new Set(this.firstLoad)];
+					}
+				}
+
 				return true;
 			},
 
@@ -761,6 +814,8 @@ export const useConnectorControls = defineStore<string, IConnectorControlsState,
 	}
 );
 
-export const registerConnectorsControlsStore = (pinia: Pinia): Store => {
+export const registerConnectorsControlsStore = (
+	pinia: Pinia
+): Store<string, IConnectorControlsState, IConnectorControlsGetters, IConnectorControlsActions> => {
 	return useConnectorControls(pinia);
 };

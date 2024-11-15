@@ -33,15 +33,17 @@ import {
 	FarCircleQuestion,
 	FarCircleUser,
 	FarCirclePlay,
-	FarCircleCheck,
 	FarCircle,
+	FarCircleCheck,
 } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useConnectorState } from '../../composables';
-import { IConnectorsIconProps } from './connectors-connector-icon.types';
+import { StateColor } from '../../types';
+
+import { IConnectorsConnectorIconProps } from './connectors-connector-icon.types';
 
 import type { Component } from 'vue';
 
@@ -49,7 +51,7 @@ defineOptions({
 	name: 'ConnectorsConnectorIcon',
 });
 
-const props = withDefaults(defineProps<IConnectorsIconProps>(), {
+const props = withDefaults(defineProps<IConnectorsConnectorIconProps>(), {
 	withState: false,
 });
 
@@ -97,17 +99,19 @@ const stateName = computed<string>((): string => {
 	return 'unknown';
 });
 
-const stateColor = computed<string>((): string => {
-	if (!wsStatus || connectorState.value === ConnectionState.SLEEPING) {
-		return 'warning';
-	} else if (connectorState.value === ConnectionState.ALERT) {
-		return 'danger';
-	} else if (connectorState.value === ConnectionState.INIT) {
-		return 'info';
-	} else if ([ConnectionState.RUNNING, ConnectionState.READY].includes(connectorState.value)) {
-		return 'success';
+const stateColor = computed<StateColor>((): StateColor => {
+	if (!wsStatus || [ConnectionState.UNKNOWN].includes(connectorState.value)) {
+		return undefined;
 	}
 
-	return 'primary';
+	if ([ConnectionState.CONNECTED, ConnectionState.READY, ConnectionState.RUNNING].includes(connectorState.value)) {
+		return 'success';
+	} else if ([ConnectionState.INIT].includes(connectorState.value)) {
+		return 'info';
+	} else if ([ConnectionState.DISCONNECTED, ConnectionState.STOPPED, ConnectionState.SLEEPING].includes(connectorState.value)) {
+		return 'warning';
+	}
+
+	return 'danger';
 });
 </script>

@@ -1,0 +1,127 @@
+<template>
+	<el-page-header
+		:class="ns.e('header')"
+		class="pt-4"
+		@back="emit('back')"
+	>
+		<template #content>
+			<div class="flex items-center">
+				<el-avatar
+					:icon="FasPlugCircleBolt"
+					:src="props.plugin.icon?.small"
+					:size="32"
+					:alt="props.plugin.name"
+					class="mr-3"
+				/>
+
+				<span class="text-large font-600 mr-3">
+					{{ props.plugin.name }}
+					<small
+						v-if="!isXXLDevice"
+						class="text-sm block font-400 font-size-[65%]"
+						style="color: var(--el-text-color-regular)"
+					>
+						{{ props.plugin.description }}
+					</small>
+				</span>
+
+				<span
+					class="text-sm mr-2 hidden xxl:block"
+					style="color: var(--el-text-color-regular)"
+				>
+					{{ props.plugin.description }}
+				</span>
+
+				<el-tag v-if="props.plugin.core">core</el-tag>
+			</div>
+		</template>
+
+		<template #extra>
+			<div class="flex items-center">
+				<el-button
+					v-if="isXLDevice"
+					:icon="FasPlus"
+					:class="[{ '!px-4': !isXLDevice }]"
+					type="primary"
+					class="!px-4"
+					@click="emit('addConnector', $event)"
+				>
+					{{ t('devicesModule.buttons.addInstance.title') }}
+				</el-button>
+				<el-button
+					v-else
+					:icon="FasPlus"
+					:circle="!isMDDevice"
+					:class="[{ '!px-4': isMDDevice }]"
+					type="primary"
+					@click="emit('addConnector', $event)"
+				/>
+
+				<el-button
+					v-if="isXXLDevice"
+					:icon="FasTrash"
+					type="warning"
+					class="!px-4"
+					plain
+					@click="emit('remove', $event)"
+				>
+					{{ t('devicesModule.buttons.remove.title') }}
+				</el-button>
+				<el-button
+					v-else
+					:icon="FasTrash"
+					:circle="!isMDDevice"
+					:class="[{ '!px-4': isMDDevice }]"
+					type="warning"
+					plain
+					@click="emit('remove', $event)"
+				/>
+			</div>
+		</template>
+
+		<plugins-plugin-stats
+			:plugin="props.plugin"
+			:connectors-data="props.connectorsData"
+			:alerts="props.alerts"
+			:bridges="props.bridges"
+			class="m-2"
+			@devices="emit('devices', $event)"
+			@bridges="emit('bridges', $event)"
+		/>
+	</el-page-header>
+</template>
+
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import { ElAvatar, ElButton, ElPageHeader, ElTag, useNamespace } from 'element-plus';
+
+import { FasPlus, FasPlugCircleBolt, FasTrash } from '@fastybird/web-ui-icons';
+
+import { PluginsPluginStats } from '../../components';
+import { useBreakpoints } from '../../composables';
+
+import { IPluginsPluginHeaderProps } from './plugins-plugin-header.types';
+
+defineOptions({
+	name: 'PluginsPluginHeader',
+});
+
+const props = defineProps<IPluginsPluginHeaderProps>();
+
+const emit = defineEmits<{
+	(e: 'back'): void;
+	(e: 'remove', event: Event): void;
+	(e: 'devices', event: Event): void;
+	(e: 'bridges', event: Event): void;
+	(e: 'addConnector', event: Event): void;
+}>();
+
+const ns = useNamespace('plugins-plugin-header');
+const { t } = useI18n();
+
+const { isMDDevice, isXLDevice, isXXLDevice } = useBreakpoints();
+</script>
+
+<style rel="stylesheet/scss" lang="scss" scoped>
+@import 'plugins-plugin-header.scss';
+</style>

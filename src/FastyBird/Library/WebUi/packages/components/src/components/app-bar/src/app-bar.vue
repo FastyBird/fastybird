@@ -19,6 +19,13 @@
 			</div>
 
 			<div
+				id="fb-app-bar-button-back"
+				:class="[ns.e('button-back')]"
+			>
+				<slot name="button-back" />
+			</div>
+
+			<div
 				id="fb-app-bar-button-left"
 				:class="[ns.e('button-left')]"
 			>

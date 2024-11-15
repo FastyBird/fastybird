@@ -6,7 +6,7 @@
 	</metainfo>
 
 	<el-container
-		v-if="isXsBreakpoint"
+		v-if="!isMDDevice"
 		v-loading="loadingOverlay"
 		direction="vertical"
 		:class="[ns.b()]"
@@ -34,7 +34,7 @@
 			:class="[ns.e('mobile-menu')]"
 		>
 			<app-navigation
-				:collapsed="menuCollapsed"
+				:collapsed="mobileMenuCollapsed"
 				@click="onToggleMenu"
 			/>
 		</el-drawer>
@@ -49,10 +49,10 @@
 	>
 		<el-aside
 			v-if="sessionStore.isSignedIn()"
-			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: smallMenuCollapsed }]"
+			:class="[ns.e('aside'), { [ns.em('aside', 'collapsed')]: mainMenuCollapsed }]"
 			class="bg-menu-background"
 		>
-			<app-sidebar :menu-collapsed="smallMenuCollapsed" />
+			<app-sidebar :menu-collapsed="mainMenuCollapsed" />
 		</el-aside>
 
 		<el-container
@@ -61,7 +61,7 @@
 		>
 			<app-topbar
 				v-if="sessionStore.isSignedIn()"
-				v-model:menu-collapsed="smallMenuCollapsed"
+				v-model:menu-collapsed="mainMenuCollapsed"
 			/>
 
 			<el-main class="flex-1">
@@ -72,17 +72,17 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
+import { inject, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMeta } from 'vue-meta';
 import { ElContainer, ElAside, ElMain, ElDrawer, vLoading, useNamespace } from 'element-plus';
 
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
 import { FbAppBar } from '@fastybird/web-ui-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 import { useSession } from '@fastybird/accounts-module';
 
 import { AppNavigation, AppSidebar, AppTopbar } from './components';
+import { useBreakpoints } from './composables';
 import { eventBusInjectionKey } from './plugins';
 
 import { description } from './../package.json';
@@ -93,17 +93,14 @@ const router = useRouter();
 const ns = useNamespace('app');
 const sessionStore = useSession();
 const wampV1Client = useWampV1Client();
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
+const { isMDDevice, isXLDevice } = useBreakpoints();
 
 const eventBus = inject(eventBusInjectionKey);
 
-const isXlBreakpoint = breakpoints.greaterOrEqual('xl');
-const isXsBreakpoint = breakpoints.smaller('sm');
-
 const loadingOverlay = ref<boolean>(false);
 const menuState = ref<boolean>(false);
-const menuCollapsed = ref<boolean>(isXlBreakpoint.value);
-const smallMenuCollapsed = ref<boolean>(!isXlBreakpoint.value);
+const mobileMenuCollapsed = ref<boolean>(isXLDevice.value);
+const mainMenuCollapsed = ref<boolean>(!isXLDevice.value);
 
 // Processing timer
 let overlayTimer: number;
@@ -161,6 +158,13 @@ onBeforeUnmount((): void => {
 	eventBus?.off('loadingOverlay', overlayLoadingListener);
 	eventBus?.off('userSigned', userSignStatusListener);
 });
+
+watch(
+	(): boolean => isXLDevice.value,
+	(val: boolean): void => {
+		mainMenuCollapsed.value = !val;
+	}
+);
 
 useMeta({
 	title: 'IoT control',

@@ -72,6 +72,7 @@ export enum DataType {
 	COLOR = 'color',
 	BUTTON = 'button',
 	SWITCH = 'switch',
+	COVER = 'cover',
 	UNKNOWN = 'unknown',
 }
 

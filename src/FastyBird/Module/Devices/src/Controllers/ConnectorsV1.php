@@ -22,10 +22,15 @@ use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities;
+use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 use FastyBird\Module\Devices\Router;
 use FastyBird\Module\Devices\Schemas;
+use FastyBird\Module\Devices\Utilities;
+use InvalidArgumentException;
+use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
+use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Fig\Http\Message\StatusCodeInterface;
 use Nette\Utils;
 use Psr\Http\Message;
@@ -51,6 +56,7 @@ class ConnectorsV1 extends BaseV1
 		private readonly Models\Entities\Connectors\Properties\PropertiesRepository $propertiesRepository,
 		private readonly Models\Entities\Connectors\Controls\ControlsRepository $controlsRepository,
 		private readonly Models\Entities\Devices\DevicesRepository $devicesRepository,
+		private readonly Models\Entities\Devices\DevicesManager $devicesManager,
 		private readonly Models\Entities\Connectors\ConnectorsManager $connectorsManager,
 	)
 	{
@@ -84,6 +90,128 @@ class ConnectorsV1 extends BaseV1
 		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
 
 		return $this->buildResponse($request, $response, $connector);
+	}
+
+	/**
+	 * @throws Doctrine\DBAL\Exception
+	 * @throws Exception
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
+	 */
+	public function create(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$document = $this->createDocument($request);
+
+		$hydrator = $this->hydratorsContainer->findHydrator($document);
+
+		if ($hydrator !== null) {
+			try {
+				// Start transaction connection to the database
+				$this->getOrmConnection()->beginTransaction();
+
+				$connector = $this->connectorsManager->create($hydrator->hydrate($document));
+
+				// Commit all changes into database
+				$this->getOrmConnection()->commit();
+
+			} catch (JsonApiExceptions\JsonApi $ex) {
+				throw $ex;
+			} catch (DoctrineCrudExceptions\MissingRequiredField $ex) {
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					strval($this->translator->translate('//devices-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.missingAttribute.message')),
+					[
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
+					],
+				);
+			} catch (DoctrineCrudExceptions\EntityCreation $ex) {
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					strval($this->translator->translate('//devices-module.base.messages.missingAttribute.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.missingAttribute.message')),
+					[
+						'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi($ex->getField()),
+					],
+				);
+			} catch (Doctrine\DBAL\Exception\UniqueConstraintViolationException $ex) {
+				if (preg_match("%PRIMARY'%", $ex->getMessage(), $match) === 1) {
+					throw new JsonApiExceptions\JsonApiError(
+						StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+						strval($this->translator->translate('//devices-module.base.messages.uniqueIdentifier.heading')),
+						strval($this->translator->translate('//devices-module.base.messages.uniqueIdentifier.message')),
+						[
+							'pointer' => '/data/id',
+						],
+					);
+				} elseif (preg_match("%key '(?P<key>.+)_unique'%", $ex->getMessage(), $match) === 1) {
+					$columnParts = explode('.', $match['key']);
+					$columnKey = end($columnParts);
+
+					if (str_starts_with($columnKey, 'connector_')) {
+						throw new JsonApiExceptions\JsonApiError(
+							StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+							strval(
+								$this->translator->translate('//devices-module.base.messages.uniqueAttribute.heading'),
+							),
+							strval(
+								$this->translator->translate('//devices-module.base.messages.uniqueAttribute.message'),
+							),
+							[
+								'pointer' => '/data/attributes/' . Utilities\Api::fieldToJsonApi(
+										Utils\Strings::substring($columnKey, 7),
+									),
+							],
+						);
+					}
+				}
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					strval($this->translator->translate('//devices-module.base.messages.uniqueAttribute.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.uniqueAttribute.message')),
+				);
+			} catch (Throwable $ex) {
+				// Log caught exception
+				$this->logger->error(
+					'An unhandled error occurred',
+					[
+						'source' => MetadataTypes\Sources\Module::DEVICES->value,
+						'type' => 'connectors-controller',
+						'exception' => ApplicationHelpers\Logger::buildException($ex),
+					],
+				);
+
+				throw new JsonApiExceptions\JsonApiError(
+					StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+					strval($this->translator->translate('//devices-module.base.messages.notCreated.heading')),
+					strval($this->translator->translate('//devices-module.base.messages.notCreated.message')),
+				);
+			} finally {
+				// Revert all changes when error occur
+				if ($this->getOrmConnection()->isTransactionActive()) {
+					$this->getOrmConnection()->rollBack();
+				}
+			}
+
+			$response = $this->buildResponse($request, $response, $connector);
+
+			return $response->withStatus(StatusCodeInterface::STATUS_CREATED);
+		}
+
+		throw new JsonApiExceptions\JsonApiError(
+			StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+			strval($this->translator->translate('//devices-module.base.messages.invalidType.heading')),
+			strval($this->translator->translate('//devices-module.base.messages.invalidType.message')),
+			[
+				'pointer' => '/data/type',
+			],
+		);
 	}
 
 	/**
@@ -153,6 +281,69 @@ class ConnectorsV1 extends BaseV1
 				'pointer' => '/data/type',
 			],
 		);
+	}
+
+	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws Doctrine\DBAL\Exception
+	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
+	 * @throws DoctrineOrmQueryExceptions\QueryException
+	 * @throws Exceptions\InvalidState
+	 * @throws Exceptions\Runtime
+	 * @throws InvalidArgumentException
+	 * @throws JsonApiExceptions\JsonApi
+	 * @throws JsonApiExceptions\JsonApiError
+	 *
+	 * @Secured\Role(manager,administrator)
+	 */
+	public function delete(
+		Message\ServerRequestInterface $request,
+		Message\ResponseInterface $response,
+	): Message\ResponseInterface
+	{
+		$connector = $this->findConnector(strval($request->getAttribute(Router\ApiRoutes::URL_ITEM_ID)));
+
+		try {
+			// Start transaction connection to the database
+			$this->getOrmConnection()->beginTransaction();
+
+			$findDevicesQuery = new Queries\Entities\FindDevices();
+			$findDevicesQuery->forConnector($connector);
+
+			foreach ($this->devicesRepository->findAllBy($findDevicesQuery) as $device) {
+				$this->devicesManager->delete($device);
+			}
+
+			// Move connector back into warehouse
+			$this->connectorsManager->delete($connector);
+
+			// Commit all changes into database
+			$this->getOrmConnection()->commit();
+
+		} catch (Throwable $ex) {
+			// Log caught exception
+			$this->logger->error(
+				'An unhandled error occurred',
+				[
+					'source' => MetadataTypes\Sources\Module::DEVICES->value,
+					'type' => 'connectors-controller',
+					'exception' => ApplicationHelpers\Logger::buildException($ex),
+				],
+			);
+
+			throw new JsonApiExceptions\JsonApiError(
+				StatusCodeInterface::STATUS_UNPROCESSABLE_ENTITY,
+				strval($this->translator->translate('//devices-module.base.messages.notDeleted.heading')),
+				strval($this->translator->translate('//devices-module.base.messages.notDeleted.message')),
+			);
+		} finally {
+			// Revert all changes when error occur
+			if ($this->getOrmConnection()->isTransactionActive()) {
+				$this->getOrmConnection()->rollBack();
+			}
+		}
+
+		return $response->withStatus(StatusCodeInterface::STATUS_NO_CONTENT);
 	}
 
 	/**

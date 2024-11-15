@@ -1,0 +1,16 @@
+@use 'element-plus/theme-chalk/src/mixins/mixins' as *;
+
+@include b(plugins-plugin-header) {
+	@include e(header) {
+		:deep(.el-page-header__header) {
+			padding: 0 0.5rem;
+		}
+
+		:deep(.el-page-header__back),
+		:deep(.el-divider) {
+			@media only screen and (min-width: 992px) {
+				display: none;
+			}
+		}
+	}
+}

@@ -1,9 +1,9 @@
 <template>
-	<RouterView v-if="populated" />
+	<router-view v-if="populated" />
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { inject, onBeforeMount, ref } from 'vue';
 import get from 'lodash.get';
 
 import {
@@ -19,30 +19,45 @@ import {
 } from '@fastybird/metadata-library';
 
 import {
-	useChannelControls,
-	useChannelProperties,
-	useChannels,
-	useConnectorControls,
-	useConnectorProperties,
-	useConnectors,
-	useDeviceControls,
-	useDeviceProperties,
-	useDevices,
-} from '../models';
+	channelControlsStoreKey,
+	channelPropertiesStoreKey,
+	channelsStoreKey,
+	connectorControlsStoreKey,
+	connectorPropertiesStoreKey,
+	connectorsStoreKey,
+	deviceControlsStoreKey,
+	devicePropertiesStoreKey,
+	devicesStoreKey,
+} from '../configuration';
+import { ApplicationError } from '../errors';
 
 defineOptions({
 	name: 'LayoutDefault',
 });
 
-const connectorsStore = useConnectors();
-const connectorPropertiesStore = useConnectorProperties();
-const connectorControlsStore = useConnectorControls();
-const devicesStore = useDevices();
-const devicePropertiesStore = useDeviceProperties();
-const deviceControlsStore = useDeviceControls();
-const channelsStore = useChannels();
-const channelPropertiesStore = useChannelProperties();
-const channelControlsStore = useChannelControls();
+const connectorsStore = inject(connectorsStoreKey);
+const connectorPropertiesStore = inject(connectorPropertiesStoreKey);
+const connectorControlsStore = inject(connectorControlsStoreKey);
+const devicesStore = inject(devicesStoreKey);
+const devicePropertiesStore = inject(devicePropertiesStoreKey);
+const deviceControlsStore = inject(deviceControlsStoreKey);
+const channelsStore = inject(channelsStoreKey);
+const channelPropertiesStore = inject(channelPropertiesStoreKey);
+const channelControlsStore = inject(channelControlsStoreKey);
+
+if (
+	typeof connectorsStore === 'undefined' ||
+	typeof connectorPropertiesStore === 'undefined' ||
+	typeof connectorControlsStore === 'undefined' ||
+	typeof devicesStore === 'undefined' ||
+	typeof devicePropertiesStore === 'undefined' ||
+	typeof deviceControlsStore === 'undefined' ||
+	typeof channelsStore === 'undefined' ||
+	typeof channelPropertiesStore === 'undefined' ||
+	typeof channelControlsStore === 'undefined'
+) {
+	throw new ApplicationError('Something went wrong, module is wrongly configured', null);
+}
 
 const populated = ref<boolean>(false);
 

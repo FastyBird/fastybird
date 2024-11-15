@@ -4,38 +4,44 @@ import defaultsDeep from 'lodash.defaultsdeep';
 
 import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
-import { registerChannelsStore } from './models/channels';
-import { registerChannelsControlsStore } from './models/channels-controls';
-import { registerChannelsPropertiesStore } from './models/channels-properties';
-import { registerConnectorsStore } from './models/connectors';
-import { registerConnectorsControlsStore } from './models/connectors-controls';
-import { registerConnectorsPropertiesStore } from './models/connectors-properties';
-import { registerDevicesStore } from './models/devices';
-import { registerDevicesControlsStore } from './models/devices-controls';
-import { registerDevicesPropertiesStore } from './models/devices-properties';
 
+import {
+	registerChannelsStore,
+	registerChannelsControlsStore,
+	registerChannelsPropertiesStore,
+	registerConnectorsStore,
+	registerConnectorsControlsStore,
+	registerConnectorsPropertiesStore,
+	registerDevicesStore,
+	registerDevicesControlsStore,
+	registerDevicesPropertiesStore,
+	StoresManager,
+} from './models';
 import moduleRouter from './router';
 import { IDevicesModuleOptions, InstallFunction } from './types';
-import { configurationKey, metaKey } from './configuration';
 import {
-	useChannelControls,
-	useChannelProperties,
-	useChannels,
-	useConnectorControls,
-	useConnectorProperties,
-	useConnectors,
-	useDeviceControls,
-	useDeviceProperties,
-	useDevices,
-} from './models';
+	channelControlsStoreKey,
+	channelPropertiesStoreKey,
+	channelsStoreKey,
+	configurationKey,
+	connectorControlsStoreKey,
+	connectorPropertiesStoreKey,
+	connectorsStoreKey,
+	deviceControlsStoreKey,
+	devicePropertiesStoreKey,
+	devicesStoreKey,
+	metaKey,
+} from './configuration';
 import { useFlashMessage } from './composables';
 import locales from './locales';
 
 import 'virtual:uno.css';
 
-export function createDevicesModule(): InstallFunction {
+export const storesManager = new StoresManager();
+
+export default function createDevicesModule(): InstallFunction {
 	return {
-		install(app: App, options: IDevicesModuleOptions): void {
+		async install(app: App, options: IDevicesModuleOptions): Promise<void> {
 			if (this.installed) {
 				return;
 			}
@@ -54,20 +60,39 @@ export function createDevicesModule(): InstallFunction {
 
 			for (const [locale, translations] of Object.entries(locales)) {
 				const currentMessages = options.i18n?.global.getLocaleMessage(locale);
-				const mergedMessages = defaultsDeep(currentMessages, translations);
+				const mergedMessages = defaultsDeep(currentMessages, { devicesModule: translations });
 
 				options.i18n?.global.setLocaleMessage(locale, mergedMessages);
 			}
 
-			registerChannelsStore(options.store);
-			registerChannelsControlsStore(options.store);
-			registerChannelsPropertiesStore(options.store);
-			registerConnectorsStore(options.store);
-			registerConnectorsControlsStore(options.store);
-			registerConnectorsPropertiesStore(options.store);
-			registerDevicesStore(options.store);
-			registerDevicesControlsStore(options.store);
-			registerDevicesPropertiesStore(options.store);
+			const channelsStore = registerChannelsStore(options.store);
+			const channelControlsStore = registerChannelsControlsStore(options.store);
+			const channelPropertiesStore = registerChannelsPropertiesStore(options.store);
+			const connectorsStore = registerConnectorsStore(options.store);
+			const connectorControlsStore = registerConnectorsControlsStore(options.store);
+			const connectorPropertiesStore = registerConnectorsPropertiesStore(options.store);
+			const devicesStore = registerDevicesStore(options.store);
+			const deviceControlsStore = registerDevicesControlsStore(options.store);
+			const devicePropertiesStore = registerDevicesPropertiesStore(options.store);
+
+			app.provide(channelsStoreKey, channelsStore);
+			storesManager.addStore(channelsStoreKey, channelsStore);
+			app.provide(channelControlsStoreKey, channelControlsStore);
+			storesManager.addStore(channelControlsStoreKey, channelControlsStore);
+			app.provide(channelPropertiesStoreKey, channelPropertiesStore);
+			storesManager.addStore(channelPropertiesStoreKey, channelPropertiesStore);
+			app.provide(connectorsStoreKey, connectorsStore);
+			storesManager.addStore(connectorsStoreKey, connectorsStore);
+			app.provide(connectorControlsStoreKey, connectorControlsStore);
+			storesManager.addStore(connectorControlsStoreKey, connectorControlsStore);
+			app.provide(connectorPropertiesStoreKey, connectorPropertiesStore);
+			storesManager.addStore(connectorPropertiesStoreKey, connectorPropertiesStore);
+			app.provide(devicesStoreKey, devicesStore);
+			storesManager.addStore(devicesStoreKey, devicesStore);
+			app.provide(deviceControlsStoreKey, deviceControlsStore);
+			storesManager.addStore(deviceControlsStoreKey, deviceControlsStore);
+			app.provide(devicePropertiesStoreKey, devicePropertiesStore);
+			storesManager.addStore(devicePropertiesStoreKey, devicePropertiesStore);
 		},
 	};
 }
@@ -78,15 +103,15 @@ const onWsMessage = (data: string): void => {
 	const body = JSON.parse(data);
 
 	const stores = [
-		useChannels(),
-		useChannelControls(),
-		useChannelProperties(),
-		useConnectors(),
-		useConnectorControls(),
-		useConnectorProperties(),
-		useDevices(),
-		useDeviceControls(),
-		useDeviceProperties(),
+		storesManager.getStore(channelsStoreKey),
+		storesManager.getStore(channelControlsStoreKey),
+		storesManager.getStore(channelPropertiesStoreKey),
+		storesManager.getStore(connectorsStoreKey),
+		storesManager.getStore(connectorControlsStoreKey),
+		storesManager.getStore(connectorPropertiesStoreKey),
+		storesManager.getStore(devicesStoreKey),
+		storesManager.getStore(deviceControlsStoreKey),
+		storesManager.getStore(devicePropertiesStoreKey),
 	];
 
 	if (
@@ -117,7 +142,6 @@ const onWsMessage = (data: string): void => {
 export * from './configuration';
 export * from './components';
 export * from './composables';
-export * from './models';
 export * from './router';
 
 export * from './types';

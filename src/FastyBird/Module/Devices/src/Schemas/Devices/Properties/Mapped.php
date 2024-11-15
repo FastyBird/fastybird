@@ -230,7 +230,7 @@ final class Mapped extends Property
 	): Documents\States\Devices\Properties\Property|null
 	{
 		$configuration = $this->devicesPropertiesConfigurationRepository->find($property->getId());
-		assert($configuration instanceof Documents\Devices\Properties\Dynamic);
+		assert($configuration instanceof Documents\Devices\Properties\Mapped);
 
 		return $this->devicePropertiesStatesManager->readState($configuration);
 	}

@@ -50,7 +50,7 @@ class JsonApiModelPropertiesMapper extends ModelPropertiesMapper implements IMod
 		Object.keys(camelCasedRelationships).forEach((relationName): void => {
 			const snakeName = relationName.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
-			if (camelCasedRelationships[relationName] !== null) {
+			if (camelCasedRelationships[relationName] !== null && camelCasedRelationships[relationName].length > 0) {
 				snakeRelationships[snakeName] = camelCasedRelationships[relationName];
 			}
 		});

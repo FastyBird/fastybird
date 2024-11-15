@@ -1,21 +1,23 @@
-import { ActionRoutes, ExchangeCommand, DeviceControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
-import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
 import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
+
+import { ActionRoutes, ExchangeCommand, DeviceControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.control.json';
 
+import { devicesStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useDevices } from '../../models';
 import { IDevice } from '../devices/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_CONTROLS } from '../../utilities/database';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_CONTROLS } from '../../utilities';
 
 import {
 	IDeviceControl,
@@ -51,7 +53,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IDeviceControlRecordFactoryPayload): Promise<IDeviceControl> => {
-	const devicesStore = useDevices();
+	const devicesStore = storesManager.getStore(devicesStoreKey);
 
 	let device = 'device' in data ? get(data, 'device', null) : null;
 
@@ -143,12 +145,18 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					deleting: [],
 				},
 
+				firstLoad: [],
+
 				data: undefined,
 				meta: {},
 			};
 		},
 
 		getters: {
+			firstLoadFinished: (state: IDeviceControlsState): ((deviceId: IDevice['id']) => boolean) => {
+				return (deviceId: IDevice['id']): boolean => state.firstLoad.includes(deviceId);
+			},
+
 			getting: (state: IDeviceControlsState): ((id: IDeviceControl['id']) => boolean) => {
 				return (id: IDeviceControl['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
@@ -284,6 +292,14 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 					this.meta[controlResponseModel.id] = controlResponseModel.type;
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						this.unset({
+							id: payload.id,
+						});
+
+						return true;
+					}
+
 					throw new ApiError('devices-module.device-controls.get.failed', e, 'Fetching control failed.');
 				} finally {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
@@ -308,7 +324,12 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					return true;
 				}
 
-				this.semaphore.fetching.items.push(payload.device.id);
+				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+					this.semaphore.fetching.items.push(payload.device.id);
+				}
+
+				this.firstLoad = this.firstLoad.filter((item) => item !== payload.device.id);
+				this.firstLoad = [...new Set(this.firstLoad)];
 
 				try {
 					const controlsResponse = await axios.get<IDeviceControlsResponseJson>(`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/controls`);
@@ -327,6 +348,9 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 						this.meta[control.id] = control.type;
 					}
 
+					this.firstLoad.push(payload.device.id);
+					this.firstLoad = [...new Set(this.firstLoad)];
+
 					// Get all current IDs from IndexedDB
 					const allRecords = await getAllRecords<IDeviceControlDatabaseRecord>(DB_TABLE_DEVICES_CONTROLS);
 					const indexedDbIds: string[] = allRecords.filter((record) => record.device.id === payload.device.id).map((record) => record.id);
@@ -344,6 +368,26 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 						delete this.meta[id];
 					}
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						try {
+							const devicesStore = storesManager.getStore(devicesStoreKey);
+
+							await devicesStore.get({
+								id: payload.device.id,
+							});
+						} catch (e: any) {
+							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+								const devicesStore = storesManager.getStore(devicesStoreKey);
+
+								devicesStore.unset({
+									id: payload.device.id,
+								});
+
+								return true;
+							}
+						}
+					}
+
 					throw new ApiError('devices-module.device-controls.fetch.failed', e, 'Fetching controls failed.');
 				} finally {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.device.id);
@@ -378,7 +422,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 					return newControl;
 				} else {
-					const devicesStore = useDevices();
+					const devicesStore = storesManager.getStore(devicesStoreKey);
 
 					const device = devicesStore.findById(payload.device.id);
 
@@ -437,7 +481,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 				const recordToSave = this.data[payload.id];
 
-				const devicesStore = useDevices();
+				const devicesStore = storesManager.getStore(devicesStoreKey);
 
 				const device = devicesStore.findById(recordToSave.device.id);
 
@@ -492,7 +536,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 				const recordToDelete = this.data[payload.id];
 
-				const devicesStore = useDevices();
+				const devicesStore = storesManager.getStore(devicesStoreKey);
 
 				const device = devicesStore.findById(recordToDelete.device.id);
 
@@ -514,7 +558,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					try {
 						await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/controls/${recordToDelete.id}`);
 					} catch (e: any) {
-						const devicesStore = useDevices();
+						const devicesStore = storesManager.getStore(devicesStoreKey);
 
 						const device = devicesStore.findById(recordToDelete.device.id);
 
@@ -544,7 +588,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 
 				const control = this.data[payload.id];
 
-				const devicesStore = useDevices();
+				const devicesStore = storesManager.getStore(devicesStoreKey);
 
 				const device = devicesStore.findById(control.device.id);
 
@@ -631,7 +675,7 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 							this.meta[record.id] = record.type;
 						}
 					} else {
-						const devicesStore = useDevices();
+						const devicesStore = storesManager.getStore(devicesStoreKey);
 
 						const device = devicesStore.findById(body.device);
 
@@ -706,6 +750,15 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 					deviceIds.push(doc.device);
 				}
 
+				if (documents.length > 1) {
+					const uniqueDeviceIds = [...new Set(deviceIds)];
+
+					for (const deviceId of uniqueDeviceIds) {
+						this.firstLoad.push(deviceId);
+						this.firstLoad = [...new Set(this.firstLoad)];
+					}
+				}
+
 				return true;
 			},
 
@@ -751,6 +804,6 @@ export const useDeviceControls = defineStore<string, IDeviceControlsState, IDevi
 	}
 );
 
-export const registerDevicesControlsStore = (pinia: Pinia): Store => {
+export const registerDevicesControlsStore = (pinia: Pinia): Store<string, IDeviceControlsState, IDeviceControlsGetters, IDeviceControlsActions> => {
 	return useDeviceControls(pinia);
 };

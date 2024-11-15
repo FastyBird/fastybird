@@ -1,24 +1,20 @@
-import {
-	ConnectorPropertyDocument,
-	DevicesModuleRoutes as RoutingKeys,
-	ModulePrefix,
-	PropertyCategory,
-	PropertyType,
-} from '@fastybird/metadata-library';
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
 import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
+
+import { ConnectorPropertyDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyCategory } from '@fastybird/metadata-library';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.property.json';
 
+import { connectorsStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useConnectors } from '../../models';
 import {
 	IConnector,
 	IConnectorPropertiesInsertDataActionPayload,
@@ -28,7 +24,8 @@ import {
 	IConnectorPropertyDatabaseRecord,
 	IConnectorPropertyMeta,
 } from '../../models/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS_PROPERTIES } from '../../utilities/database';
+import { PropertyType } from '../../types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS_PROPERTIES } from '../../utilities';
 
 import {
 	IConnectorPropertiesActions,
@@ -59,7 +56,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IConnectorPropertyRecordFactoryPayload): Promise<IConnectorProperty> => {
-	const connectorsStore = useConnectors();
+	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 	let connector = 'connector' in data ? get(data, 'connector', null) : null;
 
@@ -77,7 +74,10 @@ const storeRecordFactory = async (data: IConnectorPropertyRecordFactoryPayload):
 			throw new Error("Connector for property couldn't be loaded from store");
 		}
 
-		if (!(await connectorsStore.get({ id: data.connectorId as string, refresh: false }))) {
+		if (
+			connectorsStore.findById(data.connectorId as string) === null &&
+			!(await connectorsStore.get({ id: data.connectorId as string, refresh: false }))
+		) {
 			throw new Error("Connector for property couldn't be loaded from server");
 		}
 
@@ -93,7 +93,7 @@ const storeRecordFactory = async (data: IConnectorPropertyRecordFactoryPayload):
 		};
 	}
 
-	return {
+	const record: IConnectorProperty = {
 		id: get(data, 'id', uuid().toString()),
 		type: data.type,
 
@@ -129,7 +129,13 @@ const storeRecordFactory = async (data: IConnectorPropertyRecordFactoryPayload):
 			id: connector.id,
 			type: connector.type,
 		},
+
+		get title(): string {
+			return this.name ?? this.identifier.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+		},
 	};
+
+	return record;
 };
 
 const databaseRecordFactory = (record: IConnectorProperty): IConnectorPropertyDatabaseRecord => {
@@ -187,12 +193,18 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					deleting: [],
 				},
 
+				firstLoad: [],
+
 				data: undefined,
 				meta: {},
 			};
 		},
 
 		getters: {
+			firstLoadFinished: (state: IConnectorPropertiesState): ((connectorId: IConnector['id']) => boolean) => {
+				return (connectorId: IConnector['id']): boolean => state.firstLoad.includes(connectorId);
+			},
+
 			getting: (state: IConnectorPropertiesState): ((id: IConnectorProperty['id']) => boolean) => {
 				return (id: IConnectorProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
@@ -335,6 +347,14 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						this.unset({
+							id: payload.id,
+						});
+
+						return true;
+					}
+
 					throw new ApiError('devices-module.connector-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
@@ -359,7 +379,12 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					return true;
 				}
 
-				this.semaphore.fetching.items.push(payload.connector.id);
+				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+					this.semaphore.fetching.items.push(payload.connector.id);
+				}
+
+				this.firstLoad = this.firstLoad.filter((item) => item !== payload.connector.id);
+				this.firstLoad = [...new Set(this.firstLoad)];
 
 				try {
 					const propertiesResponse = await axios.get<IConnectorPropertiesResponseJson>(
@@ -380,6 +405,9 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						this.meta[property.id] = property.type;
 					}
 
+					this.firstLoad.push(payload.connector.id);
+					this.firstLoad = [...new Set(this.firstLoad)];
+
 					// Get all current IDs from IndexedDB
 					const allRecords = await getAllRecords<IConnectorPropertyDatabaseRecord>(DB_TABLE_CONNECTORS_PROPERTIES);
 					const indexedDbIds: string[] = allRecords.filter((record) => record.connector.id === payload.connector.id).map((record) => record.id);
@@ -397,6 +425,26 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 						delete this.meta[id];
 					}
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						try {
+							const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+							await connectorsStore.get({
+								id: payload.connector.id,
+							});
+						} catch (e: any) {
+							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+								const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+								connectorsStore.unset({
+									id: payload.connector.id,
+								});
+
+								return true;
+							}
+						}
+					}
+
 					throw new ApiError('devices-module.connector-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.connector.id);
@@ -432,7 +480,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 					return newProperty;
 				} else {
-					const connectorsStore = useConnectors();
+					const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 					const connector = connectorsStore.findById(payload.connector.id);
 
@@ -529,14 +577,16 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					...payload.data,
 				} as IConnectorProperty;
 
-				this.data[payload.id] = updatedRecord;
+				this.data[payload.id] = await storeRecordFactory({
+					...updatedRecord,
+				});
 
 				if (updatedRecord.draft) {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 
 					return this.data[payload.id];
 				} else {
-					const connectorsStore = useConnectors();
+					const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 					const connector = connectorsStore.findById(updatedRecord.connector.id);
 
@@ -599,7 +649,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
-						const connectorsStore = useConnectors();
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 						const connector = connectorsStore.findById(updatedRecord.connector.id);
 
@@ -662,7 +712,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				const recordToSave = this.data[payload.id];
 
-				const connectorsStore = useConnectors();
+				const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 				const connector = connectorsStore.findById(recordToSave.connector.id);
 
@@ -746,7 +796,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 
 				const recordToDelete = this.data[payload.id];
 
-				const connectorsStore = useConnectors();
+				const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 				const connector = connectorsStore.findById(recordToDelete.connector.id);
 
@@ -768,7 +818,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					try {
 						await axios.delete(`/${ModulePrefix.DEVICES}/v1/connectors/${recordToDelete.connector.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
-						const connectorsStore = useConnectors();
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 						const connector = connectorsStore.findById(recordToDelete.connector.id);
 
@@ -861,7 +911,7 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 							this.meta[record.id] = record.type;
 						}
 					} else {
-						const connectorsStore = useConnectors();
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 						const connector = connectorsStore.findById(body.connector);
 
@@ -949,6 +999,15 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 					connectorIds.push(doc.connector);
 				}
 
+				if (documents.length > 1) {
+					const uniqueConnectorIds = [...new Set(connectorIds)];
+
+					for (const connectorId of uniqueConnectorIds) {
+						this.firstLoad.push(connectorId);
+						this.firstLoad = [...new Set(this.firstLoad)];
+					}
+				}
+
 				return true;
 			},
 
@@ -994,6 +1053,8 @@ export const useConnectorProperties = defineStore<string, IConnectorPropertiesSt
 	}
 );
 
-export const registerConnectorsPropertiesStore = (pinia: Pinia): Store => {
+export const registerConnectorsPropertiesStore = (
+	pinia: Pinia
+): Store<string, IConnectorPropertiesState, IConnectorPropertiesGetters, IConnectorPropertiesActions> => {
 	return useConnectorProperties(pinia);
 };

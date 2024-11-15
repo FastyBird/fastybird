@@ -1,27 +1,57 @@
 <template>
-	<fb-list-item :variant="isXSDevice ? ListItemVariantTypes.LIST : ListItemVariantTypes.DEFAULT">
+	<fb-list-item :variant="ListItemVariantTypes.LIST">
 		<template #icon>
 			<devices-device-icon :device="props.deviceData.device" />
 		</template>
 
 		<template #title>
-			{{ useEntityTitle(props.deviceData.device).value }}
+			<el-text :line-clamp="2">
+				{{ props.deviceData.device.title }}
+			</el-text>
+		</template>
+
+		<template #detail>
+			<el-button-group>
+				<el-button
+					:icon="FasCircleInfo"
+					size="small"
+					plain
+					@click="emit('detail', $event)"
+				/>
+
+				<el-button
+					:icon="FasPencil"
+					size="small"
+					plain
+					@click="emit('edit', $event)"
+				/>
+
+				<el-button
+					:icon="FasTrash"
+					type="warning"
+					size="small"
+					plain
+					@click="emit('remove', $event)"
+				/>
+			</el-button-group>
 		</template>
 	</fb-list-item>
 </template>
 
 <script setup lang="ts">
+import { ElButton, ElButtonGroup, ElText } from 'element-plus';
+
+import { FasCircleInfo, FasPencil, FasTrash } from '@fastybird/web-ui-icons';
 import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle } from '../../composables';
 import { DevicesDeviceIcon } from '../../components';
-import { IDeviceDefaultChannelPropertyProps } from './connector-default-connector-device.types';
+import { IConnectorDeviceProps, IConnectorDeviceEmits } from '../../types';
 
 defineOptions({
 	name: 'ConnectorDefaultConnectorDevice',
 });
 
-const props = defineProps<IDeviceDefaultChannelPropertyProps>();
+const props = defineProps<IConnectorDeviceProps>();
 
-const { isXSDevice } = useBreakpoints();
+const emit = defineEmits<IConnectorDeviceEmits>();
 </script>

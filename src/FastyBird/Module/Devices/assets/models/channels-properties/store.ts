@@ -1,24 +1,20 @@
-import {
-	ChannelPropertyDocument,
-	DevicesModuleRoutes as RoutingKeys,
-	ModulePrefix,
-	PropertyCategory,
-	PropertyType,
-} from '@fastybird/metadata-library';
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
 import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
+
+import { ChannelPropertyDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyCategory } from '@fastybird/metadata-library';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.channel.property.json';
 
+import { channelsStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useChannels } from '../../models';
 import {
 	IChannel,
 	IChannelPropertiesInsertDataActionPayload,
@@ -29,7 +25,8 @@ import {
 	IChannelPropertyMeta,
 	IPlainRelation,
 } from '../../models/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CHANNELS_PROPERTIES } from '../../utilities/database';
+import { PropertyType } from '../../types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CHANNELS_PROPERTIES } from '../../utilities';
 
 import {
 	IChannelPropertiesActions,
@@ -60,7 +57,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IChannelPropertyRecordFactoryPayload): Promise<IChannelProperty> => {
-	const channelsStore = useChannels();
+	const channelsStore = storesManager.getStore(channelsStoreKey);
 
 	let channel = 'channel' in data ? get(data, 'channel', null) : null;
 
@@ -78,7 +75,7 @@ const storeRecordFactory = async (data: IChannelPropertyRecordFactoryPayload): P
 			throw new Error("Channel for property couldn't be loaded from store");
 		}
 
-		if (!(await channelsStore.get({ id: data.channelId as string, refresh: false }))) {
+		if (channelsStore.findById(data.channelId as string) === null && !(await channelsStore.get({ id: data.channelId as string, refresh: false }))) {
 			throw new Error("Channel for property couldn't be loaded from server");
 		}
 
@@ -133,6 +130,10 @@ const storeRecordFactory = async (data: IChannelPropertyRecordFactoryPayload): P
 
 		parent: null,
 		children: [],
+
+		get title(): string {
+			return this.name ?? this.identifier.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+		},
 	};
 
 	record.relationshipNames.forEach((relationName) => {
@@ -232,12 +233,18 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					deleting: [],
 				},
 
+				firstLoad: [],
+
 				data: undefined,
 				meta: {},
 			};
 		},
 
 		getters: {
+			firstLoadFinished: (state: IChannelPropertiesState): ((channelId: IChannel['id']) => boolean) => {
+				return (channelId: IChannel['id']): boolean => state.firstLoad.includes(channelId);
+			},
+
 			getting: (state: IChannelPropertiesState): ((id: IChannelProperty['id']) => boolean) => {
 				return (id: IChannelProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
@@ -377,6 +384,14 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						this.unset({
+							id: payload.id,
+						});
+
+						return true;
+					}
+
 					throw new ApiError('devices-module.channel-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
@@ -401,7 +416,12 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					return true;
 				}
 
-				this.semaphore.fetching.items.push(payload.channel.id);
+				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+					this.semaphore.fetching.items.push(payload.channel.id);
+				}
+
+				this.firstLoad = this.firstLoad.filter((item) => item !== payload.channel.id);
+				this.firstLoad = [...new Set(this.firstLoad)];
 
 				try {
 					const propertiesResponse = await axios.get<IChannelPropertiesResponseJson>(
@@ -422,6 +442,9 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						this.meta[property.id] = property.type;
 					}
 
+					this.firstLoad.push(payload.channel.id);
+					this.firstLoad = [...new Set(this.firstLoad)];
+
 					// Get all current IDs from IndexedDB
 					const allRecords = await getAllRecords<IChannelPropertyDatabaseRecord>(DB_TABLE_CHANNELS_PROPERTIES);
 					const indexedDbIds: string[] = allRecords.filter((record) => record.channel.id === payload.channel.id).map((record) => record.id);
@@ -439,6 +462,26 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 						delete this.meta[id];
 					}
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						try {
+							const channelsStore = storesManager.getStore(channelsStoreKey);
+
+							await channelsStore.get({
+								id: payload.channel.id,
+							});
+						} catch (e: any) {
+							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+								const channelsStore = storesManager.getStore(channelsStoreKey);
+
+								channelsStore.unset({
+									id: payload.channel.id,
+								});
+
+								return true;
+							}
+						}
+					}
+
 					throw new ApiError('devices-module.channel-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.channel.id);
@@ -474,7 +517,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 					return newProperty;
 				} else {
-					const channelsStore = useChannels();
+					const channelsStore = storesManager.getStore(channelsStoreKey);
 
 					const channel = channelsStore.findById(payload.channel.id);
 
@@ -581,14 +624,16 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
 				} as IChannelProperty;
 
-				this.data[payload.id] = updatedRecord;
+				this.data[payload.id] = await storeRecordFactory({
+					...updatedRecord,
+				});
 
 				if (updatedRecord.draft) {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 
 					return this.data[payload.id];
 				} else {
-					const channelsStore = useChannels();
+					const channelsStore = storesManager.getStore(channelsStoreKey);
 
 					const channel = channelsStore.findById(updatedRecord.channel.id);
 
@@ -660,7 +705,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
-						const channelsStore = useChannels();
+						const channelsStore = storesManager.getStore(channelsStoreKey);
 
 						const channel = channelsStore.findById(updatedRecord.channel.id);
 
@@ -724,7 +769,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				const recordToSave = this.data[payload.id];
 
-				const channelsStore = useChannels();
+				const channelsStore = storesManager.getStore(channelsStoreKey);
 
 				const channel = channelsStore.findById(recordToSave.channel.id);
 
@@ -820,7 +865,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 
 				const recordToDelete = this.data[payload.id];
 
-				const channelsStore = useChannels();
+				const channelsStore = storesManager.getStore(channelsStoreKey);
 
 				const channel = channelsStore.findById(recordToDelete.channel.id);
 
@@ -842,7 +887,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					try {
 						await axios.delete(`/${ModulePrefix.DEVICES}/v1/channels/${recordToDelete.channel.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
-						const channelsStore = useChannels();
+						const channelsStore = storesManager.getStore(channelsStoreKey);
 
 						const channel = channelsStore.findById(recordToDelete.channel.id);
 
@@ -935,7 +980,7 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 							this.meta[record.id] = record.type;
 						}
 					} else {
-						const channelsStore = useChannels();
+						const channelsStore = storesManager.getStore(channelsStoreKey);
 
 						const channel = channelsStore.findById(body.channel);
 
@@ -1024,6 +1069,15 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 					channelIds.push(doc.channel);
 				}
 
+				if (documents.length > 1) {
+					const uniqueChannelIds = [...new Set(channelIds)];
+
+					for (const channelId of uniqueChannelIds) {
+						this.firstLoad.push(channelId);
+						this.firstLoad = [...new Set(this.firstLoad)];
+					}
+				}
+
 				return true;
 			},
 
@@ -1069,6 +1123,8 @@ export const useChannelProperties = defineStore<string, IChannelPropertiesState,
 	}
 );
 
-export const registerChannelsPropertiesStore = (pinia: Pinia): Store => {
+export const registerChannelsPropertiesStore = (
+	pinia: Pinia
+): Store<string, IChannelPropertiesState, IChannelPropertiesGetters, IChannelPropertiesActions> => {
 	return useChannelProperties(pinia);
 };

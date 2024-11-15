@@ -1,24 +1,20 @@
-import {
-	DevicePropertyDocument,
-	DevicesModuleRoutes as RoutingKeys,
-	ModulePrefix,
-	PropertyCategory,
-	PropertyType,
-} from '@fastybird/metadata-library';
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
 import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
+
+import { DevicePropertyDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyCategory } from '@fastybird/metadata-library';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
 
+import { devicesStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useDevices } from '../../models';
 import {
 	IDevice,
 	IDevicePropertiesInsertDataActionPayload,
@@ -29,7 +25,8 @@ import {
 	IDevicePropertyMeta,
 	IPlainRelation,
 } from '../../models/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_PROPERTIES } from '../../utilities/database';
+import { PropertyType } from '../../types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_PROPERTIES } from '../../utilities';
 
 import {
 	IDevicePropertiesActions,
@@ -60,7 +57,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise<IDeviceProperty> => {
-	const devicesStore = useDevices();
+	const devicesStore = storesManager.getStore(devicesStoreKey);
 
 	let device = 'device' in data ? get(data, 'device', null) : null;
 
@@ -78,7 +75,7 @@ const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Pr
 			throw new Error("Device for property couldn't be loaded from store");
 		}
 
-		if (!(await devicesStore.get({ id: data.deviceId as string, refresh: false }))) {
+		if (devicesStore.findById(data.deviceId as string) === null && !(await devicesStore.get({ id: data.deviceId as string, refresh: false }))) {
 			throw new Error("Device for property couldn't be loaded from server");
 		}
 
@@ -133,6 +130,10 @@ const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Pr
 
 		parent: null,
 		children: [],
+
+		get title(): string {
+			return this.name ?? this.identifier.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+		},
 	};
 
 	record.relationshipNames.forEach((relationName) => {
@@ -232,12 +233,18 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					deleting: [],
 				},
 
+				firstLoad: [],
+
 				data: undefined,
 				meta: {},
 			};
 		},
 
 		getters: {
+			firstLoadFinished: (state: IDevicePropertiesState): ((deviceId: IDevice['id']) => boolean) => {
+				return (deviceId: IDevice['id']): boolean => state.firstLoad.includes(deviceId);
+			},
+
 			getting: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => boolean) => {
 				return (id: IDeviceProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
 			},
@@ -375,6 +382,14 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						this.unset({
+							id: payload.id,
+						});
+
+						return true;
+					}
+
 					throw new ApiError('devices-module.device-properties.get.failed', e, 'Fetching property failed.');
 				} finally {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
@@ -399,7 +414,12 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					return true;
 				}
 
-				this.semaphore.fetching.items.push(payload.device.id);
+				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+					this.semaphore.fetching.items.push(payload.device.id);
+				}
+
+				this.firstLoad = this.firstLoad.filter((item) => item !== payload.device.id);
+				this.firstLoad = [...new Set(this.firstLoad)];
 
 				try {
 					const propertiesResponse = await axios.get<IDevicePropertiesResponseJson>(
@@ -420,6 +440,9 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						this.meta[property.id] = property.type;
 					}
 
+					this.firstLoad.push(payload.device.id);
+					this.firstLoad = [...new Set(this.firstLoad)];
+
 					// Get all current IDs from IndexedDB
 					const allRecords = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
 					const indexedDbIds: string[] = allRecords.filter((record) => record.device.id === payload.device.id).map((record) => record.id);
@@ -437,6 +460,26 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						delete this.meta[id];
 					}
 				} catch (e: any) {
+					if (e instanceof AxiosError && e.status === 404) {
+						try {
+							const devicesStore = storesManager.getStore(devicesStoreKey);
+
+							await devicesStore.get({
+								id: payload.device.id,
+							});
+						} catch (e: any) {
+							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+								const devicesStore = storesManager.getStore(devicesStoreKey);
+
+								devicesStore.unset({
+									id: payload.device.id,
+								});
+
+								return true;
+							}
+						}
+					}
+
 					throw new ApiError('devices-module.device-properties.fetch.failed', e, 'Fetching properties failed.');
 				} finally {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.device.id);
@@ -472,7 +515,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 					return newProperty;
 				} else {
-					const devicesStore = useDevices();
+					const devicesStore = storesManager.getStore(devicesStoreKey);
 
 					const device = devicesStore.findById(payload.device.id);
 
@@ -579,14 +622,16 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
 				} as IDeviceProperty;
 
-				this.data[payload.id] = updatedRecord;
+				this.data[payload.id] = await storeRecordFactory({
+					...updatedRecord,
+				});
 
 				if (updatedRecord.draft) {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 
 					return this.data[payload.id];
 				} else {
-					const devicesStore = useDevices();
+					const devicesStore = storesManager.getStore(devicesStoreKey);
 
 					const device = devicesStore.findById(updatedRecord.device.id);
 
@@ -658,7 +703,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 						return this.data[updatedPropertyModel.id];
 					} catch (e: any) {
-						const devicesStore = useDevices();
+						const devicesStore = storesManager.getStore(devicesStoreKey);
 
 						const device = devicesStore.findById(updatedRecord.device.id);
 
@@ -722,7 +767,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				const recordToSave = this.data[payload.id];
 
-				const devicesStore = useDevices();
+				const devicesStore = storesManager.getStore(devicesStoreKey);
 
 				const device = devicesStore.findById(recordToSave.device.id);
 
@@ -818,7 +863,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 
 				const recordToDelete = this.data[payload.id];
 
-				const devicesStore = useDevices();
+				const devicesStore = storesManager.getStore(devicesStoreKey);
 
 				const device = devicesStore.findById(recordToDelete.device.id);
 
@@ -840,7 +885,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					try {
 						await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/properties/${recordToDelete.id}`);
 					} catch (e: any) {
-						const devicesStore = useDevices();
+						const devicesStore = storesManager.getStore(devicesStoreKey);
 
 						const device = devicesStore.findById(recordToDelete.device.id);
 
@@ -933,7 +978,7 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 							this.meta[record.id] = record.type;
 						}
 					} else {
-						const devicesStore = useDevices();
+						const devicesStore = storesManager.getStore(devicesStoreKey);
 
 						const device = devicesStore.findById(body.device);
 
@@ -1022,6 +1067,15 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 					deviceIds.push(doc.device);
 				}
 
+				if (documents.length > 1) {
+					const uniqueDeviceIds = [...new Set(deviceIds)];
+
+					for (const deviceId of uniqueDeviceIds) {
+						this.firstLoad.push(deviceId);
+						this.firstLoad = [...new Set(this.firstLoad)];
+					}
+				}
+
 				return true;
 			},
 
@@ -1067,6 +1121,8 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 	}
 );
 
-export const registerDevicesPropertiesStore = (pinia: Pinia): Store => {
+export const registerDevicesPropertiesStore = (
+	pinia: Pinia
+): Store<string, IDevicePropertiesState, IDevicePropertiesGetters, IDevicePropertiesActions> => {
 	return useDeviceProperties(pinia);
 };

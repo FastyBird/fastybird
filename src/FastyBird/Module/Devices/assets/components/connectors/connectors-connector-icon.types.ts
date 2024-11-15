@@ -1,6 +1,6 @@
 import { IConnector } from '../../models/types';
 
-export interface IConnectorsIconProps {
+export interface IConnectorsConnectorIconProps {
 	connector: IConnector;
 	withState?: boolean;
 	size?: number | string;

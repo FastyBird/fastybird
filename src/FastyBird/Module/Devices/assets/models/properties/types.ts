@@ -1,6 +1,7 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import { ButtonPayload, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+
 import { IEntityMeta } from '../types';
 
 export interface IPropertyMeta extends IEntityMeta {
@@ -60,6 +61,8 @@ export interface IProperty {
 
 	// Relations
 	relationshipNames: string[];
+
+	title: string;
 }
 
 // STORE DATA FACTORIES

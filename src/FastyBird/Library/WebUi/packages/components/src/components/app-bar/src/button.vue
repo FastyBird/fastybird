@@ -7,8 +7,9 @@
 			<el-button
 				v-bind="props"
 				:size="props.small ? 'small' : 'large'"
+				:disabled="props.disabled"
 				:circle="'icon' in $slots"
-				:class="[ns.b(), ns.m(`align-${props.align}`)]"
+				:class="[ns.b(), ns.m(`align-${props.align}`), ...props.classes]"
 				type="primary"
 				@click="emit('click', $event)"
 			>
@@ -24,8 +25,9 @@
 		<el-button
 			v-bind="props"
 			:size="props.small ? 'small' : 'large'"
+			:disabled="props.disabled"
 			:circle="'icon' in $slots"
-			:class="[ns.b(), ns.m(`align-${props.align}`)]"
+			:class="[ns.b(), ns.m(`align-${props.align}`), ...props.classes]"
 			type="primary"
 			@click="emit('click', $event)"
 		>

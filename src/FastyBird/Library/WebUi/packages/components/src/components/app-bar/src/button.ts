@@ -7,12 +7,22 @@ import type { ExtractPropTypes } from 'vue';
 export enum AppBarButtonAlignTypes {
 	LEFT = 'left',
 	RIGHT = 'right',
+	BACK = 'back',
 	NONE = 'none',
 }
 
-export const appBarButtonAlignTypes = [AppBarButtonAlignTypes.LEFT, AppBarButtonAlignTypes.RIGHT, AppBarButtonAlignTypes.NONE] as const;
+export const appBarButtonAlignTypes = [
+	AppBarButtonAlignTypes.LEFT,
+	AppBarButtonAlignTypes.RIGHT,
+	AppBarButtonAlignTypes.BACK,
+	AppBarButtonAlignTypes.NONE,
+] as const;
 
-export type AppBarButtonAlign = AppBarButtonAlignTypes.LEFT | AppBarButtonAlignTypes.RIGHT | AppBarButtonAlignTypes.NONE;
+export type AppBarButtonAlign =
+	| AppBarButtonAlignTypes.LEFT
+	| AppBarButtonAlignTypes.RIGHT
+	| AppBarButtonAlignTypes.BACK
+	| AppBarButtonAlignTypes.NONE;
 
 export const appBarButtonProps = buildProps({
 	...buttonProps,
@@ -37,6 +47,20 @@ export const appBarButtonProps = buildProps({
 	teleport: {
 		type: definePropType<boolean>(Boolean),
 		default: false,
+	},
+	/**
+	 * @description
+	 */
+	disabled: {
+		type: definePropType<boolean>(Boolean),
+		default: false,
+	},
+	/**
+	 * @description
+	 */
+	classes: {
+		type: definePropType<string[]>(Array),
+		default: [],
 	},
 });
 

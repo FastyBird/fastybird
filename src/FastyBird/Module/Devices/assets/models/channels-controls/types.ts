@@ -1,6 +1,7 @@
-import { ChannelControlDocument } from '@fastybird/metadata-library';
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
+
+import { ChannelControlDocument } from '@fastybird/metadata-library';
 
 import {
 	IChannel,
@@ -24,11 +25,13 @@ export interface IChannelControlMeta extends IControlMeta {
 
 export interface IChannelControlsState {
 	semaphore: IChannelControlsStateSemaphore;
+	firstLoad: IChannel['id'][];
 	data: { [key: IChannelControl['id']]: IChannelControl } | undefined;
 	meta: { [key: IChannelControl['id']]: IChannelControlMeta };
 }
 
 export interface IChannelControlsGetters extends _GettersTree<IChannelControlsState> {
+	firstLoadFinished: (state: IChannelControlsState) => (channelId: IChannel['id']) => boolean;
 	getting: (state: IChannelControlsState) => (id: IChannelControl['id']) => boolean;
 	fetching: (state: IChannelControlsState) => (channelId: IChannel['id'] | null) => boolean;
 	findById: (state: IChannelControlsState) => (id: IChannelControl['id']) => IChannelControl | null;
@@ -39,7 +42,7 @@ export interface IChannelControlsGetters extends _GettersTree<IChannelControlsSt
 
 export interface IChannelControlsActions {
 	set: (payload: IChannelControlsSetActionPayload) => Promise<IChannelControl>;
-	unset: (payload: IChannelControlsUnsetActionPayload) => void;
+	unset: (payload: IChannelControlsUnsetActionPayload) => Promise<void>;
 	get: (payload: IChannelControlsGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IChannelControlsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IChannelControlsAddActionPayload) => Promise<IChannelControl>;

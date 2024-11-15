@@ -42,7 +42,7 @@ export interface IChannelsGetters extends _GettersTree<IChannelsState> {
 
 export interface IChannelsActions {
 	set: (payload: IChannelsSetActionPayload) => Promise<IChannel>;
-	unset: (payload: IChannelsUnsetActionPayload) => void;
+	unset: (payload: IChannelsUnsetActionPayload) => Promise<void>;
 	get: (payload: IChannelsGetActionPayload) => Promise<boolean>;
 	fetch: (payload?: IChannelsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IChannelsAddActionPayload) => Promise<IChannel>;
@@ -89,8 +89,8 @@ export interface IChannel {
 
 	device: IPlainRelation;
 
-	// Transformer transformers
 	hasComment: boolean;
+	title: string;
 }
 
 // STORE DATA FACTORIES

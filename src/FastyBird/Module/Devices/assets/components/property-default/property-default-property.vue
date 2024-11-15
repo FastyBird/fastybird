@@ -5,7 +5,7 @@
 		</template>
 
 		<template #title>
-			{{ useEntityTitle(props.property).value }}
+			{{ props.property.title }}
 		</template>
 
 		<template #detail>
@@ -20,13 +20,13 @@
 			<template v-else-if="props.property.dataType === DataType.BOOLEAN && !props.property.settable">
 				<span class="font-size-[80%]">
 					<template v-if="!isReady || !wsStatus">
-						{{ t('states.notAvailable') }}
+						{{ t('devicesModule.states.notAvailable') }}
 					</template>
 					<template v-else-if="value">
-						{{ t('states.on') }}
+						{{ t('devicesModule.states.on') }}
 					</template>
 					<template v-else>
-						{{ t('states.off') }}
+						{{ t('devicesModule.states.off') }}
 					</template>
 				</span>
 			</template>
@@ -34,7 +34,7 @@
 			<template v-else>
 				<span class="font-size-[80%] mr-1">
 					<template v-if="!isReady || !wsStatus">
-						{{ t('states.notAvailable') }}
+						{{ t('devicesModule.states.notAvailable') }}
 					</template>
 					<template v-else>
 						{{ value }}
@@ -56,11 +56,13 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
-import { DataType, PropertyType } from '@fastybird/metadata-library';
+import { DataType } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
-import { useBreakpoints, useConnectorState, useEntityTitle, useDeviceState } from '../../composables';
+import { useBreakpoints, useConnectorState, useDeviceState } from '../../composables';
 import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '../../components';
+import { PropertyType } from '../../types';
+
 import { IPropertyDefaultPropertyProps } from './property-default-property.types';
 
 defineOptions({

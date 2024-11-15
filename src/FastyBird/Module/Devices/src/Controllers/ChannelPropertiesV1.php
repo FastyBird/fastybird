@@ -78,7 +78,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
@@ -101,7 +105,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 		// & property
@@ -124,7 +132,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 
@@ -251,7 +263,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 		// & property
@@ -333,7 +349,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 		// & property
@@ -385,7 +405,11 @@ final class ChannelPropertiesV1 extends BaseV1
 	): Message\ResponseInterface
 	{
 		// At first, try to load device
-		$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		if ($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID) !== null) {
+			$device = $this->findDevice(strval($request->getAttribute(Router\ApiRoutes::URL_DEVICE_ID)));
+		} else {
+			$device = null;
+		}
 		// & channel
 		$channel = $this->findChannel(strval($request->getAttribute(Router\ApiRoutes::URL_CHANNEL_ID)), $device);
 

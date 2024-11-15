@@ -1,6 +1,7 @@
-import { DeviceControlDocument } from '@fastybird/metadata-library';
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
+
+import { DeviceControlDocument } from '@fastybird/metadata-library';
 
 import {
 	IControlsAddActionPayload,
@@ -24,11 +25,13 @@ export interface IDeviceControlMeta extends IControlMeta {
 
 export interface IDeviceControlsState {
 	semaphore: IDeviceControlsStateSemaphore;
+	firstLoad: IDevice['id'][];
 	data: { [key: IDeviceControl['id']]: IDeviceControl } | undefined;
 	meta: { [key: IDeviceControl['id']]: IDeviceControlMeta };
 }
 
 export interface IDeviceControlsGetters extends _GettersTree<IDeviceControlsState> {
+	firstLoadFinished: (state: IDeviceControlsState) => (deviceId: IDevice['id']) => boolean;
 	getting: (state: IDeviceControlsState) => (id: IDeviceControl['id']) => boolean;
 	fetching: (state: IDeviceControlsState) => (deviceId: IDevice['id'] | null) => boolean;
 	findById: (state: IDeviceControlsState) => (id: IDeviceControl['id']) => IDeviceControl | null;
@@ -39,7 +42,7 @@ export interface IDeviceControlsGetters extends _GettersTree<IDeviceControlsStat
 
 export interface IDeviceControlsActions {
 	set: (payload: IDeviceControlsSetActionPayload) => Promise<IDeviceControl>;
-	unset: (payload: IDeviceControlsUnsetActionPayload) => void;
+	unset: (payload: IDeviceControlsUnsetActionPayload) => Promise<void>;
 	get: (payload: IDeviceControlsGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IDeviceControlsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IDeviceControlsAddActionPayload) => Promise<IDeviceControl>;

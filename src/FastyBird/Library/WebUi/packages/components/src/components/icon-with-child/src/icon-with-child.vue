@@ -35,7 +35,7 @@ const ns = useNamespace('icon-with-child');
 
 const childSize = computed<number>((): number => {
 	if (Number.isInteger(props.size)) {
-		const size = (props.size as number) * 0.4;
+		const size = (props.size as number) * 0.3;
 
 		return size > 20 ? 20 : size;
 	}

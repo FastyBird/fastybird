@@ -1,8 +1,6 @@
 @use 'element-plus/theme-chalk/src/mixins/mixins' as *;
 @use 'element-plus/theme-chalk/src/common/var' as *;
 
-$header-background-color: #d9230f;
-
 @include b(app-bar) {
 	@include css-var-from-global(('app-bar', 'heading', 'bg-color'), ('color', 'primary'));
 	@include css-var-from-global(('app-bar', 'heading', 'color'), ('color', 'white'));
@@ -16,8 +14,8 @@ $header-background-color: #d9230f;
 }
 
 @include b(app-bar) {
-	background-color: $header-background-color;
-	color: $color-white;
+	background-color: getCssVar('app-bar', 'heading', 'bg-color');
+	color: getCssVar('app-bar', 'heading', 'color');
 	box-shadow: 0 3px 9px rgb(0 0 0 / 50%);
 	z-index: 1030;
 	position: relative;
@@ -49,20 +47,35 @@ $header-background-color: #d9230f;
 
 	@include e(heading) {
 		flex-grow: 2;
+		order: 2;
 		display: flex;
 		flex-flow: row nowrap;
 		align-items: center;
+		overflow: hidden;
+	}
+
+	@include e(button-back) {
+		flex-grow: 0;
+		flex-shrink: 0;
+		order: 1;
+		max-width: 3rem;
+		display: flex;
+		justify-content: center;
 	}
 
 	@include e(button-left) {
-		flex: 0 0 3rem;
+		flex-grow: 0;
+		flex-shrink: 0;
+		order: 3;
 		max-width: 3rem;
 		display: flex;
 		justify-content: center;
 	}
 
 	@include e(button-right) {
-		flex: 0 0 3rem;
+		flex-grow: 0;
+		flex-shrink: 0;
+		order: 4;
 		max-width: 3rem;
 		display: flex;
 		justify-content: center;
@@ -87,23 +100,28 @@ $header-background-color: #d9230f;
 @include b(app-bar-heading) {
 	@include e(title) {
 		overflow: hidden;
-		line-height: 2rem;
-		font-size: 1.3rem;
-		color: $color-white;
 		margin: 0;
 		flex-grow: 1;
 
 		> span {
+			color: var(--el-color-white);
+			display: block !important;
+		}
+
+		> span:first-child {
 			line-height: 1.2rem;
 			font-size: 1.2rem;
 			font-weight: bold;
-			display: block;
 		}
 
-		> small {
+		> span:last-child {
 			line-height: 1.1rem;
 			font-size: 0.9rem;
-			display: block;
+		}
+
+		> span:only-child {
+			line-height: 2rem;
+			font-size: 1.3rem;
 		}
 
 		@include m(align-center) {

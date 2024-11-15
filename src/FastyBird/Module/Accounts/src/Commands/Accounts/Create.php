@@ -30,6 +30,7 @@ use FastyBird\SimpleAuth\Security as SimpleAuthSecurity;
 use IPub\DoctrineOrmQuery\Exceptions as DoctrineOrmQueryExceptions;
 use Nette\Localization;
 use Nette\Utils;
+use Ramsey\Uuid;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output;
@@ -242,7 +243,10 @@ class Create extends Console\Command\Command
 			// Start transaction connection to the database
 			$this->getOrmConnection()->beginTransaction();
 
+			$id = Uuid\Uuid::uuid4();
+
 			$create = new Utils\ArrayHash();
+			$create->offsetSet('id', $id);
 			$create->offsetSet('entity', Entities\Accounts\Account::class);
 			$create->offsetSet('state', Types\AccountState::ACTIVE);
 
@@ -252,6 +256,8 @@ class Create extends Console\Command\Command
 			$details->offsetSet('lastName', $lastName);
 
 			$create->offsetSet('details', $details);
+
+			$this->enforcerFactory->getEnforcer()->addRoleForUser($id->toString(), $role->getName());
 
 			$account = $this->accountsManager->create($create);
 

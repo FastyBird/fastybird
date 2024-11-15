@@ -98,7 +98,7 @@ const { t } = useI18n();
 const ns = useNamespace('app-navigation');
 
 const { routeNames: accountsModuleRouteNames } = useAccountsModuleRoutesNames();
-const { routeNames: devicesModuleRouteNames } = useDevicesModuleRoutesNames();
+const devicesModuleRouteNames = useDevicesModuleRoutesNames();
 
 const breakpoints = useBreakpoints(breakpointsBootstrapV5);
 
@@ -128,9 +128,9 @@ const mainItems = computed(() => {
 	items.push({
 		title: t('application.menu.connectors'),
 		icon: FasEthernet,
-		route: { name: devicesModuleRouteNames.connectors },
+		route: { name: devicesModuleRouteNames.plugins },
 		index: '1-3',
-		active: route.name === devicesModuleRouteNames.connectors,
+		active: route.name === devicesModuleRouteNames.plugins,
 	});
 
 	items.push({

@@ -34,13 +34,16 @@ import {
 	FarCircleUser,
 	FarCirclePlay,
 	FarCircle,
+	FarCircleCheck,
 } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
 import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState } from '../../composables';
-import { IDevicesIconProps } from './devices-device-icon.types';
+import { StateColor } from '../../types';
+
+import { IDevicesDeviceIconProps } from './devices-device-icon.types';
 
 import type { Component } from 'vue';
 
@@ -48,7 +51,7 @@ defineOptions({
 	name: 'DevicesDeviceIcon',
 });
 
-const props = withDefaults(defineProps<IDevicesIconProps>(), {
+const props = withDefaults(defineProps<IDevicesDeviceIconProps>(), {
 	withState: false,
 });
 
@@ -67,8 +70,10 @@ const stateIcon = computed<Component>((): Component => {
 		return FarCircleQuestion;
 	} else if (deviceState.value === ConnectionState.INIT) {
 		return FarCircleUser;
-	} else if ([ConnectionState.RUNNING, ConnectionState.READY, ConnectionState.CONNECTED].includes(deviceState.value)) {
+	} else if ([ConnectionState.RUNNING, ConnectionState.READY].includes(deviceState.value)) {
 		return FarCirclePlay;
+	} else if (deviceState.value === ConnectionState.CONNECTED) {
+		return FarCircleCheck;
 	}
 
 	return FarCircle;
@@ -94,17 +99,19 @@ const stateName = computed<string>((): string => {
 	return 'unknown';
 });
 
-const stateColor = computed<string>((): string => {
-	if (!wsStatus || deviceState.value === ConnectionState.SLEEPING) {
-		return 'warning';
-	} else if (deviceState.value === ConnectionState.ALERT) {
-		return 'danger';
-	} else if (deviceState.value === ConnectionState.INIT) {
-		return 'info';
-	} else if ([ConnectionState.RUNNING, ConnectionState.READY, ConnectionState.CONNECTED].includes(deviceState.value)) {
-		return 'success';
+const stateColor = computed<StateColor>((): StateColor => {
+	if (!wsStatus || [ConnectionState.UNKNOWN].includes(deviceState.value)) {
+		return undefined;
 	}
 
-	return 'primary';
+	if ([ConnectionState.CONNECTED, ConnectionState.READY, ConnectionState.RUNNING].includes(deviceState.value)) {
+		return 'success';
+	} else if ([ConnectionState.INIT].includes(deviceState.value)) {
+		return 'info';
+	} else if ([ConnectionState.DISCONNECTED, ConnectionState.STOPPED, ConnectionState.SLEEPING].includes(deviceState.value)) {
+		return 'warning';
+	}
+
+	return 'danger';
 });
 </script>
