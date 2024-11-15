@@ -2,7 +2,7 @@ import { Router, RouteRecordRaw } from 'vue-router';
 
 import { useRoutesNames } from '../composables';
 
-const { routeNames } = useRoutesNames();
+const routeNames = useRoutesNames();
 
 const moduleRoutes: RouteRecordRaw[] = [
 	{
@@ -19,9 +19,9 @@ const moduleRoutes: RouteRecordRaw[] = [
 				},
 				children: [
 					{
-						path: 'connect',
-						name: routeNames.deviceConnect,
-						component: () => import('../views/view-device-connect.vue'),
+						path: 'add',
+						name: routeNames.deviceCreate,
+						component: () => import('../views/view-device-settings.vue'),
 						props: true,
 						meta: {
 							guards: ['authenticated'],
@@ -46,8 +46,8 @@ const moduleRoutes: RouteRecordRaw[] = [
 								},
 							},
 							{
-								path: 'settings/channel/add',
-								name: routeNames.deviceSettingsAddChannel,
+								path: 'channels/add',
+								name: routeNames.channelCreate,
 								component: () => import('../views/view-channel-settings.vue'),
 								props: (route) => ({ id: null, deviceId: route.params.id }),
 								meta: {
@@ -55,13 +55,24 @@ const moduleRoutes: RouteRecordRaw[] = [
 								},
 							},
 							{
-								path: 'settings/channel/:channelId',
-								name: routeNames.deviceSettingsEditChannel,
-								component: () => import('../views/view-channel-settings.vue'),
+								path: 'channels/:channelId',
+								name: routeNames.channelDetail,
+								component: () => import('../views/view-channel-detail.vue'),
 								props: (route) => ({ id: route.params.channelId, deviceId: route.params.id }),
 								meta: {
 									guards: ['authenticated'],
 								},
+								children: [
+									{
+										path: 'settings',
+										name: routeNames.channelSettings,
+										component: () => import('../views/view-channel-settings.vue'),
+										props: (route) => ({ id: route.params.channelId, deviceId: route.params.id }),
+										meta: {
+											guards: ['authenticated'],
+										},
+									},
+								],
 							},
 						],
 					},
@@ -69,33 +80,34 @@ const moduleRoutes: RouteRecordRaw[] = [
 			},
 			{
 				path: 'connectors',
-				name: routeNames.connectors,
-				component: () => import('../views/view-connectors.vue'),
+				name: routeNames.plugins,
+				component: () => import('../views/view-plugins.vue'),
+				props: true,
 				meta: {
 					guards: ['authenticated'],
 				},
 				children: [
 					{
-						path: 'register',
-						name: routeNames.connectorRegister,
-						component: () => import('../views/view-connector-register.vue'),
+						path: 'install',
+						name: routeNames.pluginInstall,
+						component: () => import('../views/view-plugin-install.vue'),
 						props: true,
 						meta: {
 							guards: ['authenticated'],
 						},
 					},
 					{
-						path: ':id',
-						name: routeNames.connectorDetail,
-						component: () => import('../views/view-connector-detail.vue'),
+						path: ':plugin',
+						name: routeNames.pluginDetail,
+						component: () => import('../views/view-plugin-detail.vue'),
 						props: true,
 						meta: {
 							guards: ['authenticated'],
 						},
 						children: [
 							{
-								path: 'settings',
-								name: routeNames.connectorSettings,
+								path: 'add',
+								name: routeNames.connectorCreate,
 								component: () => import('../views/view-connector-settings.vue'),
 								props: true,
 								meta: {
@@ -103,40 +115,82 @@ const moduleRoutes: RouteRecordRaw[] = [
 								},
 							},
 							{
-								path: 'settings/device/add',
-								name: routeNames.connectorSettingsAddDevice,
-								component: () => import('../views/view-device-settings.vue'),
-								props: (route) => ({ id: null, connectorId: route.params.id }),
+								path: ':id',
+								name: routeNames.connectorDetail,
+								component: () => import('../views/view-connector-detail.vue'),
+								props: true,
 								meta: {
 									guards: ['authenticated'],
 								},
-							},
-							{
-								path: 'settings/device/:deviceId',
-								name: routeNames.connectorSettingsEditDevice,
-								component: () => import('../views/view-device-settings.vue'),
-								props: (route) => ({ id: route.params.deviceId, connectorId: route.params.id }),
-								meta: {
-									guards: ['authenticated'],
-								},
-							},
-							{
-								path: 'settings/device/:deviceId/channel/add',
-								name: routeNames.connectorSettingsEditDeviceAddChannel,
-								component: () => import('../views/view-channel-settings.vue'),
-								props: (route) => ({ id: null, deviceId: route.params.deviceId, connectorId: route.params.id }),
-								meta: {
-									guards: ['authenticated'],
-								},
-							},
-							{
-								path: 'settings/device/:deviceId/channel/:channelId',
-								name: routeNames.connectorSettingsEditDeviceEditChannel,
-								component: () => import('../views/view-channel-settings.vue'),
-								props: (route) => ({ id: route.params.channelId, deviceId: route.params.deviceId, connectorId: route.params.id }),
-								meta: {
-									guards: ['authenticated'],
-								},
+								children: [
+									{
+										path: 'devices/add',
+										name: routeNames.connectorDetailDeviceCreate,
+										component: () => import('../views/view-device-settings.vue'),
+										props: (route) => ({ id: null, connectorId: route.params.id }),
+										meta: {
+											guards: ['authenticated'],
+										},
+									},
+									{
+										path: 'devices/:deviceId',
+										name: routeNames.connectorDetailDeviceDetail,
+										component: () => import('../views/view-device-detail.vue'),
+										props: (route) => ({ id: route.params.deviceId, connectorId: route.params.id }),
+										meta: {
+											guards: ['authenticated'],
+										},
+										children: [
+											{
+												path: 'settings',
+												name: routeNames.connectorDetailDeviceSettings,
+												component: () => import('../views/view-device-settings.vue'),
+												props: (route) => ({ id: route.params.deviceId, connectorId: route.params.id }),
+												meta: {
+													guards: ['authenticated'],
+												},
+											},
+											{
+												path: 'channels/add',
+												name: routeNames.connectorDetailDeviceDetailChannelCreate,
+												component: () => import('../views/view-channel-settings.vue'),
+												props: (route) => ({ id: null, deviceId: route.params.deviceId, connectorId: route.params.id }),
+												meta: {
+													guards: ['authenticated'],
+												},
+											},
+											{
+												path: 'channels/:channelId',
+												name: routeNames.connectorDetailDeviceDetailChannelDetail,
+												component: () => import('../views/view-channel-detail.vue'),
+												props: (route) => ({ id: route.params.channelId, deviceId: route.params.deviceId, connectorId: route.params.id }),
+												meta: {
+													guards: ['authenticated'],
+												},
+												children: [
+													{
+														path: 'settings',
+														name: routeNames.connectorDetailDeviceDetailChannelSettings,
+														component: () => import('../views/view-channel-settings.vue'),
+														props: (route) => ({ id: route.params.channelId, deviceId: route.params.deviceId, connectorId: route.params.id }),
+														meta: {
+															guards: ['authenticated'],
+														},
+													},
+												],
+											},
+										],
+									},
+									{
+										path: 'settings',
+										name: routeNames.connectorSettings,
+										component: () => import('../views/view-connector-settings.vue'),
+										props: true,
+										meta: {
+											guards: ['authenticated'],
+										},
+									},
+								],
 							},
 						],
 					},

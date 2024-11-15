@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import get from 'lodash.get';
 import { ElIcon, ElSwitch } from 'element-plus';
@@ -43,7 +43,7 @@ import { ActionRoutes, DataType, ModulePrefix, ExchangeCommand, SwitchPayload } 
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '../../composables';
-import { useChannelProperties, useDeviceProperties } from '../../models';
+import { channelPropertiesStoreKey, devicePropertiesStoreKey } from '../../configuration';
 import { IPropertyActorProps } from './actors-property-actor-switch.types';
 import { PropertyCommandResult, PropertyCommandState } from '../../models/properties/types';
 
@@ -56,8 +56,8 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
 
-const devicePropertiesStore = useDeviceProperties();
-const channelPropertiesStore = useChannelProperties();
+const devicePropertiesStore = inject(devicePropertiesStoreKey);
+const channelPropertiesStore = inject(channelPropertiesStoreKey);
 
 const wampV1Client = useWampV1Client();
 
@@ -81,7 +81,7 @@ let timer: number;
 
 const resetCommand = async (): Promise<void> => {
 	if (props.channel !== undefined) {
-		await channelPropertiesStore.setState({
+		await channelPropertiesStore?.setState({
 			id: props.property.id,
 			data: {
 				command: null,
@@ -89,7 +89,7 @@ const resetCommand = async (): Promise<void> => {
 			},
 		});
 	} else {
-		await devicePropertiesStore.setState({
+		await devicePropertiesStore?.setState({
 			id: props.property.id,
 			data: {
 				command: null,
@@ -108,7 +108,7 @@ const onToggleState = async (): Promise<void> => {
 
 	if (!isDeviceReady.value) {
 		flashMessage.error(
-			t('messages.devices.notOnline', {
+			t('devicesModule.messages.devices.notOnline', {
 				device: useEntityTitle(props.device).value,
 			})
 		);
@@ -127,7 +127,7 @@ const onToggleState = async (): Promise<void> => {
 	emit('value', useNormalizeValue(props.property.dataType, `${expectedValue}`, props.property.format, props.property.scale));
 
 	if (props.channel !== undefined) {
-		await channelPropertiesStore.setState({
+		await channelPropertiesStore?.setState({
 			id: props.property.id,
 			data: {
 				expectedValue,
@@ -136,7 +136,7 @@ const onToggleState = async (): Promise<void> => {
 			},
 		});
 	} else {
-		await devicePropertiesStore.setState({
+		await devicePropertiesStore?.setState({
 			id: props.property.id,
 			data: {
 				expectedValue,
@@ -163,7 +163,7 @@ const onToggleState = async (): Promise<void> => {
 			emit('value', props.property.backupValue);
 
 			if (props.channel !== undefined) {
-				await channelPropertiesStore.setState({
+				await channelPropertiesStore?.setState({
 					id: props.property.id,
 					data: {
 						expectedValue: props.property.backupValue,
@@ -172,7 +172,7 @@ const onToggleState = async (): Promise<void> => {
 					},
 				});
 			} else {
-				await devicePropertiesStore.setState({
+				await devicePropertiesStore?.setState({
 					id: props.property.id,
 					data: {
 						expectedValue: props.property.backupValue,
@@ -183,7 +183,7 @@ const onToggleState = async (): Promise<void> => {
 			}
 		} else {
 			if (props.channel !== undefined) {
-				await channelPropertiesStore.setState({
+				await channelPropertiesStore?.setState({
 					id: props.property.id,
 					data: {
 						command: PropertyCommandState.COMPLETED,
@@ -191,7 +191,7 @@ const onToggleState = async (): Promise<void> => {
 					},
 				});
 			} else {
-				await devicePropertiesStore.setState({
+				await devicePropertiesStore?.setState({
 					id: props.property.id,
 					data: {
 						command: PropertyCommandState.COMPLETED,
@@ -206,7 +206,7 @@ const onToggleState = async (): Promise<void> => {
 		emit('value', props.property.backupValue);
 
 		if (props.channel !== undefined) {
-			await channelPropertiesStore.setState({
+			await channelPropertiesStore?.setState({
 				id: props.property.id,
 				data: {
 					expectedValue: props.property.backupValue,
@@ -215,7 +215,7 @@ const onToggleState = async (): Promise<void> => {
 				},
 			});
 		} else {
-			await devicePropertiesStore.setState({
+			await devicePropertiesStore?.setState({
 				id: props.property.id,
 				data: {
 					expectedValue: props.property.backupValue,
@@ -226,7 +226,7 @@ const onToggleState = async (): Promise<void> => {
 		}
 
 		flashMessage.error(
-			t('messages.properties.commandNotAccepted', {
+			t('devicesModule.messages.properties.commandNotAccepted', {
 				device: useEntityTitle(props.device).value,
 			})
 		);

@@ -20,6 +20,7 @@ import {
 
 export interface IDevicePropertyMeta extends IPropertyMeta {
 	parent: 'device';
+	type: 'dynamic' | 'variable' | 'mapped';
 }
 
 // STORE
@@ -27,11 +28,13 @@ export interface IDevicePropertyMeta extends IPropertyMeta {
 
 export interface IDevicePropertiesState {
 	semaphore: IDevicePropertiesStateSemaphore;
+	firstLoad: IDevice['id'][];
 	data: { [key: IDeviceProperty['id']]: IDeviceProperty } | undefined;
 	meta: { [key: IDeviceProperty['id']]: IDevicePropertyMeta };
 }
 
 export interface IDevicePropertiesGetters extends _GettersTree<IDevicePropertiesState> {
+	firstLoadFinished: (state: IDevicePropertiesState) => (deviceId: IDevice['id']) => boolean;
 	getting: (state: IDevicePropertiesState) => (id: IDeviceProperty['id']) => boolean;
 	fetching: (state: IDevicePropertiesState) => (deviceId: IDevice['id'] | null) => boolean;
 	findById: (state: IDevicePropertiesState) => (id: IDeviceProperty['id']) => IDeviceProperty | null;
@@ -42,7 +45,7 @@ export interface IDevicePropertiesGetters extends _GettersTree<IDeviceProperties
 
 export interface IDevicePropertiesActions {
 	set: (payload: IDevicePropertiesSetActionPayload) => Promise<IDeviceProperty>;
-	unset: (payload: IDevicePropertiesUnsetActionPayload) => void;
+	unset: (payload: IDevicePropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IDevicePropertiesGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IDevicePropertiesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IDevicePropertiesAddActionPayload) => Promise<IDeviceProperty>;

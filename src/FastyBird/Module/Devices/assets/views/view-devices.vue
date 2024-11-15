@@ -1,6 +1,6 @@
 <template>
 	<fb-app-bar-heading
-		v-if="isXSDevice && !isPartialDetailRoute"
+		v-if="!isMDDevice && isDevicesListRoute"
 		teleport
 	>
 		<template #icon>
@@ -8,122 +8,155 @@
 		</template>
 
 		<template #title>
-			{{ t('headings.devices.allDevices') }}
+			{{ t('devicesModule.headings.devices.allDevices') }}
 		</template>
 
 		<template #subtitle>
-			{{ t('subHeadings.devices.allDevices', { count: items.length }, items.length) }}
+			{{ t('devicesModule.subHeadings.devices.allDevices', devicesData.length) }}
 		</template>
 	</fb-app-bar-heading>
 
 	<fb-app-bar-button
-		v-if="isXSDevice && !isPartialDetailRoute"
+		v-if="!isMDDevice && isDevicesListRoute"
 		teleport
 		:align="AppBarButtonAlignTypes.LEFT"
 		small
-		@click="onOpenRegister"
+		@click="onDeviceCreate"
 	>
-		<span class="uppercase">{{ t('buttons.new.title') }}</span>
+		<span class="uppercase">{{ t('devicesModule.buttons.new.title') }}</span>
 	</fb-app-bar-button>
 
-	<div class="sm:flex sm:flex-row h-full w-full">
-		<view-error
-			v-if="isXSDevice && isPartialDetailRoute"
-			:type="'connector'"
-		>
-			<router-view />
-		</view-error>
+	<div class="flex flex-row h-full w-full">
+		<devices-list-devices
+			v-if="isDevicesListRoute || isLGDevice"
+			v-model:filters="filters"
+			v-model:paginate-size="paginateSize"
+			v-model:paginate-page="paginatePage"
+			v-model:sort-dir="sortDir"
+			v-loading="areLoading || !loaded"
+			:element-loading-text="t('devicesModule.texts.misc.loadingDevices')"
+			:all-items="devicesData"
+			:items="devicesDataPaginated"
+			:total-rows="totalRows"
+			:loading="areLoading || !loaded"
+			@detail="onDeviceOpen"
+			@edit="onDeviceEdit"
+			@remove="onDeviceRemove"
+			@reset-filters="onResetFilters"
+			@adjust="onAdjustList"
+		/>
 
-		<div
-			v-if="!isPartialDetailRoute || !isXSDevice"
-			class="sm:w-[20rem] sm:border-r sm:border-r-solid"
-		>
-			<devices-list-devices
-				v-loading="isLoading"
-				:element-loading-text="t('texts.misc.loadingDevices')"
-				:items="items"
-				@open="onOpenDetail"
-				@remove="onRemove"
-			/>
-		</div>
-
-		<template v-if="!isXSDevice">
-			<view-error
-				v-if="isPartialDetailRoute"
-				:type="'connector'"
-			>
-				<router-view class="flex-grow h-full" />
-			</view-error>
-
-			<devices-preview-info
-				v-else
-				:total="itemsCount"
-				class="h-full"
-				@register="onOpenRegister"
-				@synchronise="onSynchronise"
-			/>
-		</template>
+		<router-view v-else />
 	</div>
+
+	<el-drawer
+		v-if="isLGDevice"
+		v-model="showDrawer"
+		:show-close="false"
+		:size="adjustList ? '300px' : '40%'"
+		:with-header="false"
+		@closed="onCloseDrawer"
+	>
+		<div class="flex flex-col h-full">
+			<fb-app-bar menu-button-hidden>
+				<template #button-right>
+					<fb-app-bar-button
+						:align="AppBarButtonAlignTypes.RIGHT"
+						@click="onCloseDrawer"
+					>
+						<template #icon>
+							<el-icon>
+								<fas-xmark />
+							</el-icon>
+						</template>
+					</fb-app-bar-button>
+				</template>
+			</fb-app-bar>
+
+			<template v-if="showDrawer">
+				<devices-list-adjust
+					v-if="adjustList"
+					:plugins="connectorPlugins"
+					:connectors="connectors"
+					:filters="filters"
+				/>
+
+				<view-error
+					v-else
+					type="device"
+				>
+					<suspense>
+						<router-view
+							:key="props.id"
+							v-slot="{ Component }"
+						>
+							<component :is="Component" />
+						</router-view>
+					</suspense>
+				</view-error>
+			</template>
+		</div>
+	</el-drawer>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
 import get from 'lodash.get';
-import { orderBy } from 'natural-orderby';
-import { ElMessageBox, vLoading } from 'element-plus';
+import { ElDrawer, ElIcon, vLoading } from 'element-plus';
 
-import { FasPlug } from '@fastybird/web-ui-icons';
-import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
+import { FasPlug, FasXmark } from '@fastybird/web-ui-icons';
+import { AppBarButtonAlignTypes, FbAppBar, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useEntityTitle, useFlashMessage, useRoutesNames } from '../composables';
-import { useDeviceControls, useDeviceProperties, useDevices } from '../models';
-import { IDevice } from '../models/types';
-import { DevicesPreviewInfo, DevicesListDevices, ViewError } from '../components';
+import { useBreakpoints, useConnectors, useDeviceActions, useDevices, useRoutesNames } from '../composables';
+import { connectorPlugins } from '../configuration';
+import { DevicesListDevices, ViewError, DevicesListAdjust } from '../components';
 import { ApplicationError } from '../errors';
+
+import { IViewDevicesProps } from './view-devices.types';
 
 defineOptions({
 	name: 'ViewDevices',
 });
 
+const props = defineProps<IViewDevicesProps>();
+
 const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
-
-const { isXSDevice } = useBreakpoints();
-const { routeNames } = useRoutesNames();
-const flashMessage = useFlashMessage();
-
-const devicesStore = useDevices();
-const deviceControlsStore = useDeviceControls();
-const devicePropertiesStore = useDeviceProperties();
-
-const itemsSearch = ref<string>('');
-
-const itemsCount = computed<number>((): number => devicesStore.findAll().length);
-
-const isLoading = computed<boolean>((): boolean => devicesStore.fetching());
-
-const isPartialDetailRoute = computed<boolean>((): boolean => {
-	return route.matched.find((matched) => matched.name === routeNames.deviceDetail) !== undefined;
+useMeta({
+	title: t('devicesModule.meta.devices.list.title'),
 });
 
-const items = computed<IDevice[]>((): IDevice[] => {
-	return orderBy<IDevice>(
-		devicesStore
-			.findAll()
-			.filter((device) => !device.draft)
-			.filter((device) => {
-				return itemsSearch.value === '' || useEntityTitle(device).value.toLowerCase().includes(itemsSearch.value.toLowerCase());
-			}),
-		[(v): string => v.name ?? v.identifier, (v): string => v.identifier],
-		['asc']
-	);
+const { isMDDevice, isLGDevice } = useBreakpoints();
+const routeNames = useRoutesNames();
+
+const { connectors, fetchConnectors } = useConnectors();
+const { areLoading, loaded, fetchDevices, devicesData, devicesDataPaginated, totalRows, filters, paginateSize, paginatePage, sortDir, resetFilter } =
+	useDevices();
+const deviceActions = useDeviceActions();
+
+const isDevicesListRoute = computed<boolean>((): boolean => {
+	return route.name === routeNames.devices;
 });
 
-const onOpenDetail = (id: string): void => {
+const showDrawer = ref<boolean>(false);
+const adjustList = ref<boolean>(false);
+
+const onCloseDrawer = (): void => {
+	if (adjustList.value) {
+		showDrawer.value = false;
+		adjustList.value = false;
+	} else {
+		router.push({
+			name: routeNames.devices,
+		});
+	}
+};
+
+const onDeviceOpen = (id: string): void => {
 	router.push({
 		name: routeNames.deviceDetail,
 		params: {
@@ -132,74 +165,56 @@ const onOpenDetail = (id: string): void => {
 	});
 };
 
-const onOpenRegister = (): void => {
+const onDeviceEdit = (id: string): void => {
 	router.push({
-		name: routeNames.deviceConnect,
+		name: routeNames.deviceSettings,
+		params: {
+			id,
+		},
 	});
 };
 
-const onSynchronise = (): void => {
-	// TODO: Handle refresh
+const onDeviceCreate = (): void => {
+	router.push({
+		name: routeNames.deviceCreate,
+	});
 };
 
-const onRemove = async (id: string): Promise<void> => {
-	const device = await devicesStore.findById(id);
-
-	if (device === null) {
-		return;
-	}
-
-	ElMessageBox.confirm(t('messages.devices.confirmRemove', { device: useEntityTitle(device).value }), t('headings.devices.remove'), {
-		confirmButtonText: t('buttons.yes.title'),
-		cancelButtonText: t('buttons.no.title'),
-		type: 'warning',
-	})
-		.then(async (): Promise<void> => {
-			if (route.name === routeNames.deviceDetail && route.params.id === id) {
-				await router.push({ name: routeNames.devices });
-			}
-
-			try {
-				await devicesStore.remove({ id });
-			} catch (e: any) {
-				const device = await devicesStore.findById(id);
-
-				const errorMessage = t('messages.devices.notRemoved', {
-					device: useEntityTitle(device).value,
-				});
-
-				if (get(e, 'exception', null) !== null) {
-					flashMessage.exception(get(e, 'exception', null), errorMessage);
-				} else {
-					flashMessage.error(errorMessage);
-				}
-			}
-		})
-		.catch(() => {
-			flashMessage.info(
-				t('messages.devices.removeCanceled', {
-					property: useEntityTitle(device).value,
-				})
-			);
-		});
+const onDeviceRemove = (id: string): void => {
+	deviceActions.remove(id);
 };
 
-onBeforeMount(async (): Promise<void> => {
-	try {
-		await devicesStore.fetch({ refresh: !devicesStore.firstLoadFinished() });
+const onResetFilters = (): void => {
+	resetFilter();
+};
 
-		const devices = devicesStore.findAll();
+const onAdjustList = (): void => {
+	showDrawer.value = true;
+	adjustList.value = true;
+};
 
-		for (const device of devices) {
-			await devicePropertiesStore.fetch({ device, refresh: false });
-			await deviceControlsStore.fetch({ device, refresh: false });
-		}
-	} catch (e: any) {
+onBeforeMount((): void => {
+	fetchConnectors().catch((e: any): void => {
 		throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
-	}
+	});
+
+	fetchDevices().catch((e: any): void => {
+		if (get(e, 'exception.response.status', 0) === 404) {
+			throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
+		} else {
+			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
+		}
+	});
+
+	showDrawer.value =
+		route.matched.find((matched) => matched.name === routeNames.deviceCreate || matched.name === routeNames.deviceDetail) !== undefined;
 });
 
-useMeta({
-	title: t('meta.connectors.list.title'),
-});
+watch(
+	(): string => route.path,
+	(): void => {
+		showDrawer.value =
+			route.matched.find((matched) => matched.name === routeNames.deviceCreate || matched.name === routeNames.deviceDetail) !== undefined;
+	}
+);
 </script>

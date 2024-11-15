@@ -462,7 +462,13 @@ class ApiRoutes
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'read']);
 				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
 
+				$route = $group->post('', [$this->connectorsV1Controller, 'create']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
+
 				$route = $group->patch('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'update']);
+				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
+
+				$route = $group->delete('/{' . self::URL_ITEM_ID . '}', [$this->connectorsV1Controller, 'delete']);
 				$route->setName(Devices\Constants::ROUTE_NAME_CONNECTOR);
 
 				$route = $group->get('/{' . self::URL_ITEM_ID . '}/relationships/{' . self::RELATION_ENTITY . '}', [

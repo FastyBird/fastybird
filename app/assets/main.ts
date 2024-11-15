@@ -1,3 +1,4 @@
+import defaultsDeep from 'lodash.defaultsdeep';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createMetaManager, plugin as metaPlugin } from 'vue-meta';
@@ -13,12 +14,14 @@ import router from './router';
 import { backendPlugin, eventBusPlugin, eventBusInjectionKey } from './plugins';
 
 import { createAccountsModule, IAccountsModuleOptions } from '@fastybird/accounts-module';
-import { createDevicesModule, IDevicesModuleOptions } from '@fastybird/devices-module';
+import createDevicesModule, { IDevicesModuleOptions } from '@fastybird/devices-module';
 
 import 'nprogress/nprogress.css';
 import '@fastybird/web-ui-theme-chalk/src/index.scss';
 import 'virtual:uno.css';
 import './styles/base.scss';
+
+import homeKitLocales from '../../src/FastyBird/Connector/HomeKit/assets/locales';
 
 const pinia = createPinia();
 const app = createApp(App);
@@ -70,6 +73,13 @@ app.use(createDevicesModule(), {
 	store: pinia,
 	i18n,
 } as IDevicesModuleOptions);
+
+for (const [locale, translations] of Object.entries(homeKitLocales)) {
+	const currentMessages = i18n.global.getLocaleMessage(locale);
+	const mergedMessages = defaultsDeep(currentMessages, { homeKitConnector: translations });
+
+	i18n.global.setLocaleMessage(locale, mergedMessages);
+}
 
 app.use(router);
 

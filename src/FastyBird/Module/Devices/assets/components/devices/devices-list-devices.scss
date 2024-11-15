@@ -1,11 +1,18 @@
 @use 'element-plus/theme-chalk/src/mixins/mixins' as *;
 
 @include b(devices-list-devices) {
-	@include e(button) {
-		border-radius: 5px;
-		margin: 2px 5px;
-		background-color: var(--el-color-warning);
-		color: var(--el-color-white);
-		font-size: 1rem;
+	@include e(header) {
+		:deep(.el-radio-button__inner) {
+			padding-left: 1rem;
+			padding-right: 1rem;
+		}
+	}
+
+	@include e(table) {
+		:deep(.el-table__inner-wrapper) {
+			&:before {
+				display: none;
+			}
+		}
 	}
 }

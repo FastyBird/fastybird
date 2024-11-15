@@ -108,7 +108,7 @@
 
 <script setup lang="ts">
 import { inject } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useI18n, I18nT } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { ElCard, ElDivider, ElLink, ElIcon } from 'element-plus';
 

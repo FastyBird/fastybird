@@ -43,6 +43,7 @@ export interface IDevicesGetters extends _GettersTree<IDevicesState> {
 
 export interface IDevicesActions {
 	set: (payload: IDevicesSetActionPayload) => Promise<IDevice>;
+	unset: (payload: IDevicesUnsetActionPayload) => Promise<void>;
 	get: (payload: IDevicesGetActionPayload) => Promise<boolean>;
 	fetch: (payload?: IDevicesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IDevicesAddActionPayload) => Promise<IDevice>;
@@ -95,9 +96,9 @@ export interface IDevice {
 
 	owner: string | null;
 
-	// Transformer transformers
 	stateProperty: IDeviceProperty | null;
 	hasComment: boolean;
+	title: string;
 }
 
 // STORE DATA FACTORIES
@@ -133,6 +134,11 @@ export interface IDeviceRecordFactoryPayload {
 
 export interface IDevicesSetActionPayload {
 	data: IDeviceRecordFactoryPayload;
+}
+
+export interface IDevicesUnsetActionPayload {
+	connector?: IConnector;
+	id?: IDevice['id'];
 }
 
 export interface IDevicesGetActionPayload {

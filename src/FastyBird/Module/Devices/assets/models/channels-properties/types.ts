@@ -20,6 +20,7 @@ import {
 
 export interface IChannelPropertyMeta extends IPropertyMeta {
 	parent: 'channel';
+	type: 'dynamic' | 'variable' | 'mapped';
 }
 
 // STORE
@@ -27,11 +28,13 @@ export interface IChannelPropertyMeta extends IPropertyMeta {
 
 export interface IChannelPropertiesState {
 	semaphore: IChannelPropertiesStateSemaphore;
+	firstLoad: IChannel['id'][];
 	data: { [key: IChannelProperty['id']]: IChannelProperty } | undefined;
 	meta: { [key: IChannelProperty['id']]: IChannelPropertyMeta };
 }
 
 export interface IChannelPropertiesGetters extends _GettersTree<IChannelPropertiesState> {
+	firstLoadFinished: (state: IChannelPropertiesState) => (channelId: IChannel['id']) => boolean;
 	getting: (state: IChannelPropertiesState) => (id: IChannelProperty['id']) => boolean;
 	fetching: (state: IChannelPropertiesState) => (channelId: IChannel['id'] | null) => boolean;
 	findById: (state: IChannelPropertiesState) => (id: IChannelProperty['id']) => IChannelProperty | null;
@@ -42,7 +45,7 @@ export interface IChannelPropertiesGetters extends _GettersTree<IChannelProperti
 
 export interface IChannelPropertiesActions {
 	set: (payload: IChannelPropertiesSetActionPayload) => Promise<IChannelProperty>;
-	unset: (payload: IChannelPropertiesUnsetActionPayload) => void;
+	unset: (payload: IChannelPropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IChannelPropertiesGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IChannelPropertiesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IChannelPropertiesAddActionPayload) => Promise<IChannelProperty>;

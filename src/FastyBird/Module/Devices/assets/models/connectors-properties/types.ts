@@ -20,6 +20,7 @@ import {
 
 export interface IConnectorPropertyMeta extends IPropertyMeta {
 	parent: 'connector';
+	type: 'dynamic' | 'variable';
 }
 
 // STORE
@@ -27,11 +28,13 @@ export interface IConnectorPropertyMeta extends IPropertyMeta {
 
 export interface IConnectorPropertiesState {
 	semaphore: IConnectorPropertiesStateSemaphore;
+	firstLoad: IConnector['id'][];
 	data: { [key: IConnectorProperty['id']]: IConnectorProperty } | undefined;
 	meta: { [key: IConnectorProperty['id']]: IConnectorPropertyMeta };
 }
 
 export interface IConnectorPropertiesGetters extends _GettersTree<IConnectorPropertiesState> {
+	firstLoadFinished: (state: IConnectorPropertiesState) => (connectorId: IConnector['id']) => boolean;
 	getting: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => boolean;
 	fetching: (state: IConnectorPropertiesState) => (connectorId: IConnector['id'] | null) => boolean;
 	findById: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => IConnectorProperty | null;
@@ -44,7 +47,7 @@ export interface IConnectorPropertiesGetters extends _GettersTree<IConnectorProp
 
 export interface IConnectorPropertiesActions {
 	set: (payload: IConnectorPropertiesSetActionPayload) => Promise<IConnectorProperty>;
-	unset: (payload: IConnectorPropertiesUnsetActionPayload) => void;
+	unset: (payload: IConnectorPropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorPropertiesGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IConnectorPropertiesFetchActionPayload) => Promise<boolean>;
 	add: (payload: IConnectorPropertiesAddActionPayload) => Promise<IConnectorProperty>;

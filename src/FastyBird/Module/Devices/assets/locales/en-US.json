@@ -1,51 +1,65 @@
 {
 	"meta": {
-		"connectors": {
+		"plugins": {
 			"list": {
-				"title": "Registered connectors"
+				"title": "Connectors plugins"
 			},
 			"detail": {
-				"title": "Connector: {connector}"
+				"title": "Connectors plugin: {plugin}"
+			}
+		},
+		"connectors": {
+			"list": {
+				"title": "Configured connectors"
+			},
+			"detail": {
+				"title": "Configured connector: {connector}"
 			},
 			"settings": {
-				"title": "Connector settings: {connector}"
+				"title": "Configured connector settings: {connector}"
 			}
 		},
 		"devices": {
 			"list": {
-				"title": "Registered devices"
+				"title": "Configured devices"
 			},
 			"detail": {
-				"title": "Device: {device}"
+				"title": "Configured device: {device}"
 			},
 			"settings": {
-				"title": "Device settings: {device}"
+				"title": "Configured device settings: {device}"
 			}
 		},
 		"channels": {
 			"list": {
-				"title": "Registered channels"
+				"title": "Configured channels"
 			},
 			"detail": {
-				"title": "Channel: {channel}"
+				"title": "Configured channel: {channel}"
 			},
 			"settings": {
-				"title": "Channel settings: {channel}"
+				"title": "Configured channel settings: {channel}"
 			}
 		}
 	},
 	"headings": {
+		"plugins": {
+			"allPlugins": "All connectors plugins",
+			"plugin": "Connectors plugin: {plugin}",
+			"remove": "Remove connectors plugin",
+			"connectors": "Connectors",
+			"new": "New connectors plugin"
+		},
 		"connectors": {
-			"allConnectors": "All connectors",
-			"connector": "Connector: {connector}",
+			"allConnectors": "All connectors instances",
+			"connector": "Connector instance: {connector}",
 			"configuration": "Connector configuration",
 			"aboutConnector": "About connector",
 			"variableProperties": "Configuration parameters",
 			"dynamicProperties": "Data parameters",
-			"remove": "Remove connector",
+			"remove": "Remove connector instance",
 			"devices": "Devices",
-			"new": "New connector",
-			"sync": "Sync connectors"
+			"new": "New connector instance"
 		},
 		"devices": {
 			"allDevices": "All devices",
@@ -56,98 +70,167 @@
 			"dynamicProperties": "Data parameters",
 			"remove": "Remove device",
 			"channels": "Device channels",
-			"new": "Connect new device",
-			"sync": "Sync devices"
+			"new": "New device configuration",
+			"adjustFilters": "Filter devices"
 		},
 		"channels": {
+			"channel": "Channel: {channel}",
 			"configuration": "Channel configuration",
 			"aboutChannel": "About channel",
 			"variableProperties": "Configuration parameters",
-			"dynamicProperties": "Data parameters"
+			"dynamicProperties": "Data parameters",
+			"remove": "Remove channel",
+			"new": "New channel configuration"
 		},
 		"properties": {
 			"add": "Add parameter",
 			"connectorSelect": "Select connector",
 			"deviceSelect": "Select device",
-			"channelSelect": "Select device channel",
+			"channelSelect": "Select channel",
 			"parentSelect": "Select parameter",
 			"edit": "Edit parameter",
 			"remove": "Remove parameter"
 		},
 		"misc": {
-			"loadingFailed": "An error occurred"
+			"loadingFailed": "An error occurred",
+			"bridges": "Bridges"
 		}
 	},
 	"subHeadings": {
+		"plugins": {
+			"allPlugins": "No connectors plugins registered | One connectors plugin registered | {count} connectors plugins registered",
+			"new": "Add new connectors plugin to the system"
+		},
 		"connectors": {
-			"allConnectors": "No connectors registered | One connector registered | {count} connectors registered",
-			"new": "Register new connector to the system",
-			"sync": "Sync all connectors with server"
+			"allConnectors": "No connectors instances configured | One connector instance configured | {count} connectors instances configured",
+			"new": "Configure new connector to the system"
 		},
 		"devices": {
 			"allDevices": "No devices registered | One device registered | {count} devices registered",
-			"new": "Register new device to the system",
-			"sync": "Sync all devices with server"
+			"new": "Configure new device to the system",
+			"adjustFilters": "Adjust display filters"
+		},
+		"channels": {
+			"new": "Configure new channel to the system"
 		}
 	},
 	"messages": {
+		"plugins": {
+			"confirmRemove": "Are you sure to remove connectors plugin \"{plugin}\"? This action will remove connector plugin and it's all connectors instances, devices, etc. from system. This action is permanent.",
+			"removed": "Connectors plugin {plugin} was successfully removed.",
+			"notRemoved": "Connectors plugin {plugin} couldn't be removed.",
+			"removeCanceled": "Action to remove connectors plugin \"{plugin}\" was canceled"
+		},
 		"connectors": {
-			"confirmRemove": "Are you sure to remove connector {connector} ?",
-			"notRemoved": "Connector {connector} couldn't be removed.",
-			"removeCanceled": "Action to remove connector {connector} was canceled",
-			"notEdited": "Connector {connector} couldn't be edited.",
-			"loadAllFailed": "Connectors could not be loaded",
-			"loadFailed": "Connector could not be loaded"
+			"created": "New connector instance \"{connector}\" was successfully created.",
+			"notCreated": "New connector instance \"{connector}\" couldn't be created",
+			"edited": "Connector instance \"{connector}\" was successfully updated.",
+			"notEdited": "Connector instance \"{connector}\" couldn't be edited.",
+			"confirmRemove": "Are you sure to remove connector instance \"{connector}\"? This action will remove connector and it's all devices, etc. from system. This action is permanent.",
+			"removed": "Connector instance \"{connector}\" was successfully removed.",
+			"notRemoved": "Connector instance \"{connector}\" couldn't be removed.",
+			"removeCanceled": "Action to remove connector instance \"{connector}\" was canceled",
+			"loadAllFailed": "Connectors instance could not be loaded",
+			"loadFailed": "Connector instance could not be loaded"
 		},
 		"devices": {
-			"confirmRemove": "Are you sure to remove device {device} ?",
-			"notRemoved": "Device {device} couldn't be removed.",
-			"removeCanceled": "Action to remove device {device} was canceled",
-			"notEdited": "Device {device} couldn't be edited.",
-			"notOnline": "Device {device} is not connected to server.",
-			"loadAllFailed": "Devices could not be loaded",
-			"loadFailed": "Device could not be loaded"
+			"created": "New device configuration \"{device}\" was successfully created.",
+			"notCreated": "New device configuration \"{device}\" couldn't be created",
+			"edited": "Device configuration \"{device}\" was successfully updated.",
+			"notEdited": "Device configuration \"{device}\" couldn't be edited.",
+			"confirmRemove": "Are you sure to remove device configuration \"{device}\"? This action will remove device and it's all channels, etc. from system. This action is permanent.",
+			"removed": "Device configuration \"{device}\" was successfully removed.",
+			"notRemoved": "Device configuration \"{device}\" couldn't be removed.",
+			"removeCanceled": "Action to remove device configuration \"{device}\" was canceled",
+			"loadAllFailed": "Devices configurations could not be loaded",
+			"loadFailed": "Device configuration could not be loaded",
+			"notOnline": "Device {device} is not connected to server."
 		},
 		"channels": {
-			"confirmRemove": "Are you sure to remove channel {channel} ?",
-			"notRemoved": "Channel {channel} couldn't be removed.",
-			"removeCanceled": "Action to remove channel {channel} was canceled",
-			"notEdited": "Channel {channel} couldn't be edited.",
-			"loadAllFailed": "Channels could not be loaded",
-			"loadFailed": "Channel could not be loaded"
+			"created": "New channel configuration \"{channel}\" was successfully created.",
+			"notCreated": "New channel configuration \"{channel}\" couldn't be created",
+			"edited": "Channel configuration \"{channel}\" was successfully updated.",
+			"notEdited": "Channel configuration \"{channel}\" couldn't be edited.",
+			"confirmRemove": "Are you sure to remove channel configuration \"{channel}\"? This action will remove channel and it's all channels, etc. from system. This action is permanent.",
+			"removed": "Channel configuration \"{channel}\" was successfully removed.",
+			"notRemoved": "Channel configuration \"{channel}\" couldn't be removed.",
+			"removeCanceled": "Action to remove channel configuration \"{channel}\" was canceled",
+			"loadAllFailed": "Channels configurations could not be loaded",
+			"loadFailed": "Channel configuration could not be loaded"
 		},
 		"properties": {
-			"confirmRemoveConnectorProperty": "Are you sure to remove connector parameter {property} ?",
-			"confirmRemoveDeviceProperty": "Are you sure to remove device parameter {property} ?",
-			"confirmRemoveChannelProperty": "Are you sure to remove channel parameter {property} ?",
-			"notRemoved": "Parameter {property} couldn't be removed.",
-			"removeCanceled": "Action to remove parameter {property} was canceled",
-			"commandNotAccepted": "Last command was not accepted by device {device}.",
-			"propertyNotCreated": "Property {property} couldn't be created",
-			"propertyNotEdited": "Property {property} couldn't be updated"
+			"added": "Parameter \"{property}\" was successfully added.",
+			"created": "New parameter \"{property}\" was successfully created.",
+			"notCreated": "Parameter \"{property}\" couldn't be created",
+			"edited": "Parameter \"{property}\" was successfully updated.",
+			"notEdited": "Parameter \"{property}\" couldn't be updated",
+			"confirmRemove": "Are you sure to remove parameter \"{property}\"?",
+			"removed": "Parameter \"{property}\" was successfully removed.",
+			"notRemoved": "Parameter \"{property}\" couldn't be removed.",
+			"removeCanceled": "Action to remove parameter \"{property}\" was canceled",
+			"commandNotAccepted": "Last command was not accepted by device \"{device}\"."
 		}
 	},
 	"texts": {
+		"plugins": {
+			"noConnectors": "This connectors plugin is without connectors",
+			"bridgesInfo": "Bridges are special plugins designed to build bridge between connectors, modules, etc.",
+			"instancesCount": "No connectors instances created | One connector instance | {count} connectors instances",
+			"instancesCountAlt": "Instances count",
+			"devicesCount": "No devices configured | One device configured | {count} devices configured",
+			"devicesCountAlt": "Devices count",
+			"bridgesCount": "No bridges configured | One bridge configured | {count} bridges configured",
+			"bridgesCountAlt": "Bridges count",
+			"documentation": "Documentation",
+			"documentationAlt": "Documentation",
+			"developersGuides": "Developers guides",
+			"developersGuidesAlt": "Developers guides",
+			"knownIssues": "Known issues",
+			"knownIssuesAlt": "Known issues"
+		},
 		"connectors": {
-			"noDevices": "This connector is without devices"
+			"noDevices": "This connector is without devices",
+			"devicesCount": "No devices configured | One device configured | {count} devices configured",
+			"bridgesCount": "No bridges configured | One bridge configured | {count} bridges configured",
+			"alertsCount": "No alerts detected | One alert detected | {count} alerts detected",
+			"devices": "Devices",
+			"bridges": "Bridges",
+			"alerts": "Alerts",
+			"status": "Status",
+			"service": "Service",
+			"server": "Server",
+			"securedServer": "Secured server"
 		},
 		"devices": {
 			"noChannels": "This device is without channels",
-			"noProperties": "This device is without parameters"
+			"channelsCount": "No channels configured | One channel configured | {count} channels configured",
+			"bridgesCount": "No bridges configured | One bridge configured | {count} bridges configured",
+			"alertsCount": "No alerts detected | One alert detected | {count} alerts detected",
+			"noProperties": "This device is without parameters",
+			"channels": "Channels",
+			"bridges": "Bridges",
+			"alerts": "Alerts",
+			"status": "Status"
 		},
 		"channels": {
-			"noProperties": "This channel is without properties"
+			"alertsCount": "No alerts detected | One alert detected | {count} alerts detected",
+			"noProperties": "This channel is without properties",
+			"alerts": "Alerts",
+			"status": "Status"
 		},
 		"misc": {
+			"noPlugins": "You don't have installed any connectors plugin",
+			"loadingPlugin": "Loading plugin...",
 			"loadingConnectors": "Loading connectors...",
 			"loadingConnector": "Loading connector...",
-			"noConnectors": "You don't have assigned any connector",
+			"noConnectors": "You don't have configured any connector",
 			"loadingDevices": "Loading devices...",
 			"loadingDevice": "Loading device...",
-			"noDevices": "You don't have assigned any device",
+			"noDevices": "You don't have configured any device",
+			"noFilteredDevices": "No devices found matching the active filter criteria",
 			"loadingChannels": "Loading channels...",
 			"loadingChannel": "Loading channel...",
-			"noChannels": "You don't have assigned any channel"
+			"noChannels": "You don't have configured any channel"
 		}
 	},
 	"fields": {
@@ -184,6 +267,10 @@
 			"comment": {
 				"title": "Device description",
 				"placeholder": "Enter device description"
+			},
+			"search": {
+				"title": "Search for devices",
+				"placeholder": "Search for devices"
 			}
 		},
 		"channels": {
@@ -208,7 +295,10 @@
 		"properties": {
 			"identifier": {
 				"title": "Parameter identifier",
-				"placeholder": "Enter parameter identifier"
+				"placeholder": "Enter parameter identifier",
+				"validation": {
+					"required": "Please fill in property identifier"
+				}
 			},
 			"name": {
 				"title": "Parameter name",
@@ -234,6 +324,9 @@
 					"color": "Color",
 					"button": "Button",
 					"switch": "Switch"
+				},
+				"validation": {
+					"required": "Please select property value data type"
 				}
 			},
 			"unit": {
@@ -257,6 +350,16 @@
 			"format": {
 				"title": "Value format",
 				"placeholder": "Enter parameter value format for value transformation"
+			},
+			"value": {
+				"title": "{property}",
+				"validation": {
+					"required": "Please fill in property value",
+					"number": "Please provide a valid property numeric value",
+					"enum": "Please pick a valid property value from selection",
+					"date": "Please pick a valid date",
+					"datetime": "Please pick a valid date and time"
+				}
 			}
 		}
 	},
@@ -272,6 +375,9 @@
 		},
 		"cancel": {
 			"title": "Cancel"
+		},
+		"discard": {
+			"title": "Discard"
 		},
 		"new": {
 			"title": "New"
@@ -294,14 +400,38 @@
 		"remove": {
 			"title": "Remove"
 		},
+		"reset": {
+			"title": "Reset"
+		},
 		"configure": {
 			"title": "Configure"
+		},
+		"detail": {
+			"title": "Detail"
 		},
 		"back": {
 			"title": "Back"
 		},
+		"show": {
+			"title": "Show"
+		},
 		"sync": {
 			"title": "Synchronise"
+		},
+		"start": {
+			"title": "Start"
+		},
+		"stop": {
+			"title": "Stop"
+		},
+		"restart": {
+			"title": "Restart"
+		},
+		"addPlugin": {
+			"title": "Add plugin"
+		},
+		"addInstance": {
+			"title": "Add instance"
 		},
 		"addConnector": {
 			"title": "Add connector"
@@ -317,16 +447,104 @@
 		},
 		"mapExisting": {
 			"title": "Map existing"
+		},
+		"showDetails": {
+			"title": "Show details"
+		},
+		"showDevices": {
+			"title": "Show devices"
+		},
+		"showBridges": {
+			"title": "Show bridges"
+		},
+		"details": {
+			"title": "Details"
+		},
+		"devices": {
+			"title": "Devices"
+		},
+		"more": {
+			"title": "More"
+		},
+		"resetFilters": {
+			"title": "Reset filters"
+		}
+	},
+	"filters": {
+		"plugins": {
+			"title": "Plugins"
+		},
+		"connectors": {
+			"title": "Connectors"
+		},
+		"states": {
+			"title": "States"
 		}
 	},
 	"states": {
 		"actual": "Actual",
 		"on": "On",
 		"off": "Off",
-		"notAvailable": "N/A"
+		"notAvailable": "N/A",
+		"online": "Online",
+		"offline": "Offline",
+		"all": "All"
 	},
 	"misc": {
 		"or": "or",
-		"paging": "{page} of {total}"
+		"paging": "{page} of {total}",
+		"missing": "Missing",
+		"state": {
+			"connected": "Connected",
+			"disconnected": "Disconnected",
+			"init": "Initialized",
+			"ready": "Ready",
+			"running": "Running",
+			"sleeping": "Sleeping",
+			"stopped": "Stopped",
+			"lost": "Lost",
+			"alert": "Alert",
+			"unknown": "Unknown"
+		},
+		"property": {
+			"connector": {
+				"state": "State",
+				"server": "Server",
+				"port": "Port",
+				"secured_port": "Secured port",
+				"baud_rate": "Baud rate",
+				"interface": "Interface",
+				"address": "Address"
+			},
+			"device": {
+				"state": "State",
+				"battery": "Battery",
+				"wifi": "Wifi",
+				"signal": "Signal",
+				"rssi": "RSSI",
+				"ssid": "SSID",
+				"vcc": "VCC",
+				"cpu_load": "CPU load",
+				"uptime": "Uptime",
+				"address": "Address",
+				"ip_address": "IP address",
+				"domain": "Domain",
+				"status_led": "Status led",
+				"free_heap": "Free heap",
+				"hardware_manufacturer": "Hardware manufacturer",
+				"hardware_model": "Hardware model",
+				"hardware_version": "Hardware version",
+				"hardware_mac_address": "MAC address",
+				"firmware_manufacturer": "Firmware manufacturer",
+				"firmware_name": "Firmware name",
+				"firmware_version": "Firmware version",
+				"serial_number": "Serial number",
+				"state_reading_delay": "State reading delay",
+				"state_processing_delay": "State processing delay"
+			},
+			"channel": {
+				"address": "Address"
+			}
+		}
 	}
 }

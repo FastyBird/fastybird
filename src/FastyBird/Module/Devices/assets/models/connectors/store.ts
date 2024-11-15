@@ -1,24 +1,20 @@
-import {
-	ConnectorCategory,
-	ConnectorDocument,
-	DevicePropertyIdentifier,
-	DevicesModuleRoutes as RoutingKeys,
-	ModulePrefix,
-} from '@fastybird/metadata-library';
+import { defineStore, Pinia, Store } from 'pinia';
+import axios, { AxiosError } from 'axios';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import axios from 'axios';
 import { Jsona } from 'jsona';
+import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
-import { defineStore, Pinia, Store } from 'pinia';
-import { v4 as uuid } from 'uuid';
+
+import { ConnectorCategory, ConnectorDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.connector.json';
 
+import { connectorControlsStoreKey, connectorPropertiesStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useConnectorControls, useConnectorProperties } from '../../models';
 import {
 	IConnectorControlResponseModel,
 	IConnectorDatabaseRecord,
@@ -27,9 +23,11 @@ import {
 	IConnectorPropertyResponseModel,
 	IConnectorsInsertDataActionPayload,
 	IConnectorsLoadRecordActionPayload,
+	IConnectorsUnsetActionPayload,
 	IPlainRelation,
 } from '../../models/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS } from '../../utilities/database';
+import { ConnectorPropertyIdentifier } from '../../types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CONNECTORS } from '../../utilities';
 
 import {
 	IConnector,
@@ -84,17 +82,21 @@ const storeRecordFactory = (data: IConnectorRecordFactoryPayload): IConnector =>
 		},
 
 		get stateProperty(): IConnectorProperty | null {
-			const connectorPropertiesStore = useConnectorProperties();
+			const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
 
 			const stateProperty = connectorPropertiesStore
 				.findForConnector(this.id)
-				.find((property) => property.identifier === DevicePropertyIdentifier.STATE);
+				.find((property) => property.identifier === ConnectorPropertyIdentifier.STATE);
 
 			return stateProperty ?? null;
 		},
 
 		get hasComment(): boolean {
 			return this.comment !== null && this.comment !== '';
+		},
+
+		get title(): string {
+			return this.name ?? this.identifier.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 		},
 	};
 
@@ -152,7 +154,7 @@ const databaseRecordFactory = (record: IConnector): IConnectorDatabaseRecord => 
 };
 
 const addPropertiesRelations = async (connector: IConnector, properties: (IConnectorPropertyResponseModel | IPlainRelation)[]): Promise<void> => {
-	const propertiesStore = useConnectorProperties();
+	const propertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
 
 	for (const property of properties) {
 		if ('identifier' in property) {
@@ -169,7 +171,7 @@ const addPropertiesRelations = async (connector: IConnector, properties: (IConne
 };
 
 const addControlsRelations = async (connector: IConnector, controls: (IConnectorControlResponseModel | IPlainRelation)[]): Promise<void> => {
-	const controlsStore = useConnectorControls();
+	const controlsStore = storesManager.getStore(connectorControlsStoreKey);
 
 	for (const control of controls) {
 		if ('identifier' in control) {
@@ -263,6 +265,29 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 		},
 
 		/**
+		 * Remove records for given relation or record by given identifier
+		 *
+		 * @param {IConnectorsUnsetActionPayload} payload
+		 */
+		async unset(payload: IConnectorsUnsetActionPayload): Promise<void> {
+			if (!this.data) {
+				return;
+			}
+
+			if (payload.id !== undefined) {
+				await removeRecord(payload.id, DB_TABLE_CONNECTORS);
+
+				delete this.meta[payload.id];
+
+				delete this.data[payload.id];
+
+				return;
+			}
+
+			throw new Error('You have to provide at least connector or device id');
+		},
+
+		/**
 		 * Get one record from server
 		 *
 		 * @param {IConnectorsGetActionPayload} payload
@@ -294,24 +319,20 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 
 				this.meta[connectorResponseModel.id] = connectorResponseModel.type;
 			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
+					this.unset({
+						id: payload.id,
+					});
+
+					return true;
+				}
+
 				throw new ApiError('devices-module.connectors.get.failed', e, 'Fetching connector failed.');
 			} finally {
 				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 				}
 			}
-
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useConnectorProperties();
-			promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
-
-			const controlsStore = useConnectorControls();
-			promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.connectors.get.failed', e, 'Fetching connector failed.');
-			});
 
 			return true;
 		},
@@ -378,20 +399,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				}
 			}
 
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useConnectorProperties();
-			const controlsStore = useConnectorControls();
-
-			for (const connector of Object.values(this.data ?? {})) {
-				promises.push(propertiesStore.fetch({ connector }));
-				promises.push(controlsStore.fetch({ connector }));
-			}
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.connectors.fetch.failed', e, 'Fetching connectors failed.');
-			});
-
 			return true;
 		},
 
@@ -414,13 +421,28 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			if (newConnector.draft) {
 				this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newConnector.id);
 
+				this.meta[newConnector.id] = newConnector.type;
+
 				return newConnector;
 			} else {
 				try {
+					const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
+
+					const properties = connectorPropertiesStore.findForDevice(newConnector.id);
+
+					const connectorControlsStore = storesManager.getStore(connectorControlsStoreKey);
+
+					const controls = connectorControlsStore.findForDevice(newConnector.id);
+
 					const createdConnector = await axios.post<IConnectorResponseJson>(
 						`/${ModulePrefix.DEVICES}/v1/connectors`,
 						jsonApiFormatter.serialize({
-							stuff: newConnector,
+							stuff: {
+								...newConnector,
+								properties,
+								controls,
+							},
+							includeNames: ['properties', 'controls'],
 						})
 					);
 
@@ -439,18 +461,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newConnector.id);
 				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const propertiesStore = useConnectorProperties();
-				promises.push(propertiesStore.fetch({ connector: this.data[newConnector.id] }));
-
-				const controlsStore = useConnectorControls();
-				promises.push(controlsStore.fetch({ connector: this.data[newConnector.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('devices-module.connectors.create.failed', e, 'Create new connector failed.');
-				});
 
 				return this.data[newConnector.id];
 			}
@@ -477,7 +487,9 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			// Update with new values
 			const updatedRecord = { ...existingRecord, ...payload.data } as IConnector;
 
-			this.data[payload.id] = updatedRecord;
+			this.data[payload.id] = await storeRecordFactory({
+				...updatedRecord,
+			});
 
 			if (updatedRecord.draft) {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
@@ -485,10 +497,23 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				return this.data[payload.id];
 			} else {
 				try {
+					const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
+
+					const properties = connectorPropertiesStore.findForDevice(updatedRecord.id);
+
+					const connectorControlsStore = storesManager.getStore(connectorControlsStoreKey);
+
+					const controls = connectorControlsStore.findForDevice(updatedRecord.id);
+
 					const updatedConnector = await axios.patch<IConnectorResponseJson>(
 						`/${ModulePrefix.DEVICES}/v1/connectors/${payload.id}`,
 						jsonApiFormatter.serialize({
-							stuff: updatedRecord,
+							stuff: {
+								...updatedRecord,
+								properties,
+								controls,
+							},
+							includeNames: ['properties', 'controls'],
 						})
 					);
 
@@ -507,18 +532,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const propertiesStore = useConnectorProperties();
-				promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
-
-				const controlsStore = useConnectorControls();
-				promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('devices-module.connectors.update.failed', e, 'Edit connector failed.');
-				});
 
 				return this.data[payload.id];
 			}
@@ -543,10 +556,23 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			const recordToSave = this.data[payload.id];
 
 			try {
+				const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
+
+				const properties = connectorPropertiesStore.findForDevice(recordToSave.id);
+
+				const connectorControlsStore = storesManager.getStore(connectorControlsStoreKey);
+
+				const controls = connectorControlsStore.findForDevice(recordToSave.id);
+
 				const savedConnector = await axios.post<IConnectorResponseJson>(
 					`/${ModulePrefix.DEVICES}/v1/connectors`,
 					jsonApiFormatter.serialize({
-						stuff: recordToSave,
+						stuff: {
+							...recordToSave,
+							properties,
+							controls,
+						},
+						includeNames: ['properties', 'controls'],
 					})
 				);
 
@@ -562,18 +588,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 			} finally {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
-
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useConnectorProperties();
-			promises.push(propertiesStore.fetch({ connector: this.data[payload.id] }));
-
-			const controlsStore = useConnectorControls();
-			promises.push(controlsStore.fetch({ connector: this.data[payload.id] }));
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.connectors.save.failed', e, 'Save draft channel failed.');
-			});
 
 			return this.data[payload.id];
 		},
@@ -592,8 +606,8 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 				return true;
 			}
 
-			const propertiesStore = useConnectorProperties();
-			const controlsStore = useConnectorControls();
+			const propertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
+			const controlsStore = storesManager.getStore(connectorControlsStoreKey);
 
 			this.semaphore.deleting.push(payload.id);
 
@@ -668,8 +682,8 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 
 					delete this.data[body.id];
 
-					const propertiesStore = useConnectorProperties();
-					const controlsStore = useConnectorControls();
+					const propertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
+					const controlsStore = storesManager.getStore(connectorControlsStoreKey);
 
 					propertiesStore.unset({ connector: recordToDelete });
 					controlsStore.unset({ connector: recordToDelete });
@@ -802,6 +816,6 @@ export const useConnectors = defineStore<string, IConnectorsState, IConnectorsGe
 	},
 });
 
-export const registerConnectorsStore = (pinia: Pinia): Store => {
+export const registerConnectorsStore = (pinia: Pinia): Store<string, IConnectorsState, IConnectorsGetters, IConnectorsActions> => {
 	return useConnectors(pinia);
 };

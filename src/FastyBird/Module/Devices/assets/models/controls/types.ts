@@ -1,4 +1,5 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
+
 import { IEntityMeta } from '../types';
 
 export interface IControlMeta extends IEntityMeta {

@@ -27,27 +27,27 @@
 			</template>
 
 			<template #title>
-				<h1>{{ t('headings.misc.loadingFailed') }}</h1>
+				<h1>{{ t('devicesModule.headings.misc.loadingFailed') }}</h1>
 			</template>
 
 			<template #sub-title>
 				<template v-if="props.type === 'connectors'">
-					{{ t('messages.connectors.loadAllFailed') }}
+					{{ t('devicesModule.messages.connectors.loadAllFailed') }}
 				</template>
 				<template v-if="props.type === 'connector'">
-					{{ t('messages.connectors.loadFailed') }}
+					{{ t('devicesModule.messages.connectors.loadFailed') }}
 				</template>
 				<template v-if="props.type === 'devices'">
-					{{ t('messages.devices.loadAllFailed') }}
+					{{ t('devicesModule.messages.devices.loadAllFailed') }}
 				</template>
 				<template v-if="props.type === 'device'">
-					{{ t('messages.devices.loadFailed') }}
+					{{ t('devicesModule.messages.devices.loadFailed') }}
 				</template>
 				<template v-if="props.type === 'channels'">
-					{{ t('messages.channels.loadAllFailed') }}
+					{{ t('devicesModule.messages.channels.loadAllFailed') }}
 				</template>
 				<template v-if="props.type === 'channel'">
-					{{ t('messages.channels.loadFailed') }}
+					{{ t('devicesModule.messages.channels.loadFailed') }}
 				</template>
 			</template>
 		</el-result>

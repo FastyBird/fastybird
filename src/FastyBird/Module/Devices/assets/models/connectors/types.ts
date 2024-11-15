@@ -40,6 +40,7 @@ export interface IConnectorsGetters extends _GettersTree<IConnectorsState> {
 
 export interface IConnectorsActions {
 	set: (payload: IConnectorsSetActionPayload) => Promise<IConnector>;
+	unset: (payload: IConnectorsUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorsGetActionPayload) => Promise<boolean>;
 	fetch: (payload?: IConnectorsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IConnectorsAddActionPayload) => Promise<IConnector>;
@@ -88,10 +89,10 @@ export interface IConnector {
 
 	owner: string | null;
 
-	// Transformer transformers
 	isEnabled: boolean;
 	stateProperty: IConnectorProperty | null;
 	hasComment: boolean;
+	title: string;
 }
 
 // STORE DATA FACTORIES
@@ -122,6 +123,10 @@ export interface IConnectorRecordFactoryPayload {
 
 export interface IConnectorsSetActionPayload {
 	data: IConnectorRecordFactoryPayload;
+}
+
+export interface IConnectorsUnsetActionPayload {
+	id?: IConnector['id'];
 }
 
 export interface IConnectorsGetActionPayload {

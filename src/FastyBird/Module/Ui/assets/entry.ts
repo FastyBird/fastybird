@@ -20,7 +20,7 @@ import locales from './locales';
 
 import 'virtual:uno.css';
 
-export function createDevicesModule(): InstallFunction {
+export default function createDevicesModule(): InstallFunction {
 	return {
 		install(app: App, options: IUiModuleOptions): void {
 			if (this.installed) {

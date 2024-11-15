@@ -1,5 +1,12 @@
-import { IDevice } from '../../models/types';
+import { DevicesFilter, IDeviceData } from '../../types';
 
 export interface IDevicesListDevicesProps {
-	items: IDevice[];
+	items: IDeviceData[];
+	allItems: IDeviceData[];
+	totalRows: number;
+	filters: DevicesFilter;
+	paginateSize: number;
+	paginatePage: number;
+	sortDir: 'asc' | 'desc';
+	loading: boolean;
 }

@@ -1,6 +1,7 @@
-import { ConnectorControlDocument } from '@fastybird/metadata-library';
 import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
+
+import { ConnectorControlDocument } from '@fastybird/metadata-library';
 
 import {
 	IConnector,
@@ -24,11 +25,13 @@ export interface IConnectorControlMeta extends IControlMeta {
 
 export interface IConnectorControlsState {
 	semaphore: IConnectorControlsStateSemaphore;
+	firstLoad: IConnector['id'][];
 	data: { [key: IConnectorControl['id']]: IConnectorControl } | undefined;
 	meta: { [key: IConnectorControl['id']]: IConnectorControlMeta };
 }
 
 export interface IConnectorControlsGetters extends _GettersTree<IConnectorControlsState> {
+	firstLoadFinished: (state: IConnectorControlsState) => (connectorId: IConnector['id']) => boolean;
 	getting: (state: IConnectorControlsState) => (id: IConnectorControl['id']) => boolean;
 	fetching: (state: IConnectorControlsState) => (connectorId: IConnector['id'] | null) => boolean;
 	findById: (state: IConnectorControlsState) => (id: IConnectorControl['id']) => IConnectorControl | null;
@@ -39,7 +42,7 @@ export interface IConnectorControlsGetters extends _GettersTree<IConnectorContro
 
 export interface IConnectorControlsActions {
 	set: (payload: IConnectorControlsSetActionPayload) => Promise<IConnectorControl>;
-	unset: (payload: IConnectorControlsUnsetActionPayload) => void;
+	unset: (payload: IConnectorControlsUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorControlsGetActionPayload) => Promise<boolean>;
 	fetch: (payload: IConnectorControlsFetchActionPayload) => Promise<boolean>;
 	add: (payload: IConnectorControlsAddActionPayload) => Promise<IConnectorControl>;

@@ -1,109 +1,164 @@
 <template>
-	<div
-		v-if="props.channelsLoading"
-		class="p-2"
-	>
-		<el-skeleton
-			animated
-			style="--el-skeleton-circle-size: 32px"
+	<dl class="grid m-0">
+		<dt
+			class="b-b b-b-solid b-r b-r-solid py-1 px-2 flex items-center justify-end"
+			style="background: var(--el-fill-color-light)"
 		>
-			<template #template>
-				<div class="p-2">
-					<div class="flex items-center h-[2rem] w-full overflow-hidden">
-						<div class="flex-basis-[3rem]">
-							<el-skeleton-item variant="circle" />
-						</div>
-						<div class="flex-basis-[30%]">
-							<el-skeleton-item variant="text" />
-							<el-skeleton-item
-								variant="text"
-								style="width: 30%"
-							/>
-						</div>
-					</div>
-				</div>
-			</template>
-		</el-skeleton>
-	</div>
-
-	<div
-		v-if="noResults"
-		class="flex flex-col justify-center h-full w-full"
-	>
-		<el-result>
-			<template #icon>
-				<fb-icon-with-child
-					:size="50"
-					type="primary"
+			{{ t('devicesModule.texts.devices.channels') }}
+		</dt>
+		<dd class="col-start-2 b-b b-b-solid m-0 p-2 flex items-center min-w-[8rem]">
+			<el-text>
+				<i18n-t
+					keypath="devicesModule.texts.devices.channelsCount"
+					:plural="props.deviceData.channels.length"
 				>
-					<template #primary>
-						<fas-cube />
+					<template #count>
+						<strong>{{ props.deviceData.channels.length }}</strong>
 					</template>
-					<template #secondary>
-						<fas-info />
+				</i18n-t>
+			</el-text>
+		</dd>
+		<dt
+			class="b-b b-b-solid b-r b-r-solid py-1 px-2 flex items-center justify-end"
+			style="background: var(--el-fill-color-light)"
+		>
+			{{ t('devicesModule.texts.devices.status') }}
+		</dt>
+		<dd class="col-start-2 b-b b-b-solid m-0 p-2 flex items-center min-w-[8rem]">
+			<el-text>
+				<el-tag
+					:type="stateColor"
+					size="small"
+				>
+					{{ t(`devicesModule.misc.state.${deviceState.toLowerCase()}`) }}
+				</el-tag>
+			</el-text>
+		</dd>
+		<template
+			v-for="property in infoProperties"
+			:key="property.id"
+		>
+			<dt
+				class="b-b b-b-solid b-r b-r-solid py-1 px-2 flex items-center justify-end"
+				style="background: var(--el-fill-color-light)"
+			>
+				{{ t(`devicesModule.misc.property.device.${property.identifier}`) }}
+			</dt>
+			<dd class="col-start-2 b-b b-b-solid m-0 p-2 flex items-center min-w-[8rem]">
+				<el-text>
+					{{ property.value }}
+				</el-text>
+			</dd>
+		</template>
+		<dt
+			class="b-b b-b-solid b-r b-r-solid py-1 px-2 flex items-center justify-end"
+			style="background: var(--el-fill-color-light)"
+		>
+			{{ t('devicesModule.texts.devices.bridges') }}
+		</dt>
+		<dd class="col-start-2 b-b b-b-solid m-0 p-2 flex items-center min-w-[8rem]">
+			<el-text>
+				<i18n-t
+					keypath="devicesModule.texts.devices.bridgesCount"
+					:plural="props.bridges.length"
+				>
+					<template #count>
+						<strong>{{ props.bridges.length }}</strong>
 					</template>
-				</fb-icon-with-child>
-			</template>
-
-			<template #title>
-				{{ t('texts.devices.noChannels') }}
-			</template>
-		</el-result>
-	</div>
-
-	<el-scrollbar
-		v-else
-		class="h-full"
-	>
-		<div class="sm:px-2 sm:pb-3">
-			<device-default-device-channel
-				v-for="channelData in channelsData"
-				:key="channelData.channel.id"
-				:device="props.deviceData.device"
-				:device-properties="props.deviceData.properties"
-				:device-controls="props.deviceData.controls"
-				:channel-data="channelData"
-				:edit-mode="props.editMode"
-				@add-parameter="emit('addChannelParameter', channelData.channel.id, $event)"
-			/>
-		</div>
-	</el-scrollbar>
+				</i18n-t>
+			</el-text>
+		</dd>
+		<dt
+			class="b-b b-b-solid b-r b-r-solid py-1 px-2 flex items-center justify-end"
+			style="background: var(--el-fill-color-light)"
+		>
+			{{ t('devicesModule.texts.devices.alerts') }}
+		</dt>
+		<dd class="col-start-2 b-b b-b-solid m-0 p-2 flex items-center min-w-[8rem]">
+			<el-text>
+				<el-tag
+					size="small"
+					:type="props.alerts.length === 0 ? 'success' : 'danger'"
+				>
+					<i18n-t
+						keypath="devicesModule.texts.devices.alertsCount"
+						:plural="props.alerts.length"
+					>
+						<template #count>
+							<strong>{{ props.alerts.length }}</strong>
+						</template>
+					</i18n-t>
+				</el-tag>
+			</el-text>
+		</dd>
+	</dl>
 </template>
 
 <script setup lang="ts">
-import { ElResult, ElScrollbar, ElSkeleton, ElSkeletonItem } from 'element-plus';
 import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { orderBy } from 'natural-orderby';
+import { I18nT, useI18n } from 'vue-i18n';
+import { ElTag, ElText } from 'element-plus';
 
-import { FbIconWithChild } from '@fastybird/web-ui-library';
-import { FasInfo, FasCube } from '@fastybird/web-ui-icons';
+import { ConnectionState } from '@fastybird/metadata-library';
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
-import { DeviceDefaultDeviceChannel } from '../../components';
-import { IChannelData } from '../../types';
-import { IDevicesDeviceDetailDefaultProps } from './device-default-device-detail.types';
+import { useDeviceState } from '../../composables';
+import { DevicePropertyIdentifier, IDeviceDetailProps, IDeviceProperty, PropertyType, StateColor } from '../../types';
 
 defineOptions({
 	name: 'DeviceDefaultDeviceDetail',
 });
 
-const props = withDefaults(defineProps<IDevicesDeviceDetailDefaultProps>(), {
-	editMode: false,
-});
-
-const emit = defineEmits<{
-	(e: 'addChannelParameter', id: string, event: Event): void;
-}>();
+const props = defineProps<IDeviceDetailProps>();
 
 const { t } = useI18n();
 
-const noResults = computed<boolean>((): boolean => props.deviceData.channels.length === 0);
+const { status: wsStatus } = useWampV1Client();
 
-const channelsData = computed<IChannelData[]>((): IChannelData[] => {
-	return orderBy<IChannelData>(
-		props.deviceData.channels,
-		[(v): string => v.channel.name ?? v.channel.identifier, (v): string => v.channel.identifier],
-		['asc']
+const { state: deviceState } = useDeviceState(props.deviceData.device);
+
+const dynamicProperties = computed<IDeviceProperty[]>((): IDeviceProperty[] => {
+	return props.deviceData.properties.filter((property: IDeviceProperty): boolean => property.type.type === PropertyType.DYNAMIC);
+});
+
+const infoProperties = computed<IDeviceProperty[]>((): IDeviceProperty[] => {
+	return dynamicProperties.value.filter((property: IDeviceProperty): boolean =>
+		[
+			DevicePropertyIdentifier.BATTERY,
+			DevicePropertyIdentifier.WIFI,
+			DevicePropertyIdentifier.SIGNAL,
+			DevicePropertyIdentifier.RSSI,
+			DevicePropertyIdentifier.SSID,
+			DevicePropertyIdentifier.VCC,
+			DevicePropertyIdentifier.UPTIME,
+			DevicePropertyIdentifier.ADDRESS,
+			DevicePropertyIdentifier.IP_ADDRESS,
+			DevicePropertyIdentifier.DOMAIN,
+			DevicePropertyIdentifier.HARDWARE_MANUFACTURER,
+			DevicePropertyIdentifier.HARDWARE_MODEL,
+			DevicePropertyIdentifier.HARDWARE_VERSION,
+			DevicePropertyIdentifier.HARDWARE_MAC_ADDRESS,
+			DevicePropertyIdentifier.FIRMWARE_MANUFACTURER,
+			DevicePropertyIdentifier.FIRMWARE_NAME,
+			DevicePropertyIdentifier.FIRMWARE_VERSION,
+			DevicePropertyIdentifier.SERIAL_NUMBER,
+		].includes(property.identifier as DevicePropertyIdentifier)
 	);
+});
+
+const stateColor = computed<StateColor>((): StateColor => {
+	if (!wsStatus || [ConnectionState.UNKNOWN].includes(deviceState.value)) {
+		return undefined;
+	}
+
+	if ([ConnectionState.CONNECTED, ConnectionState.READY, ConnectionState.RUNNING].includes(deviceState.value)) {
+		return 'success';
+	} else if ([ConnectionState.INIT].includes(deviceState.value)) {
+		return 'info';
+	} else if ([ConnectionState.DISCONNECTED, ConnectionState.STOPPED, ConnectionState.SLEEPING].includes(deviceState.value)) {
+		return 'warning';
+	}
+
+	return 'danger';
 });
 </script>

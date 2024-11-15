@@ -1,6 +1,6 @@
 import { IDevice } from '../../models/types';
 
-export interface IDevicesIconProps {
+export interface IDevicesDeviceIconProps {
 	device: IDevice;
 	withState?: boolean;
 	size?: number | string;

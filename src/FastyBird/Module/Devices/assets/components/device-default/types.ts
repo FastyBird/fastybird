@@ -1,2 +1,1 @@
-export * from './device-default-device-channel.types';
-export * from './device-default-device-detail.types';
+export * from './device-default-device-settings-rename.types';

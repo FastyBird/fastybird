@@ -2,7 +2,7 @@ import { IJsonPropertiesMapper, TAnyKeyValueObject, TJsonaModel, TJsonaRelations
 import { JsonPropertiesMapper, RELATIONSHIP_NAMES_PROP } from 'jsona/lib/simplePropertyMappers';
 import get from 'lodash.get';
 
-import { DataType, PropertyType } from '@fastybird/metadata-library';
+import { DataType } from '@fastybird/metadata-library';
 
 import {
 	ANY_CONTROL_DOCUMENT_REG_EXP,
@@ -12,6 +12,7 @@ import {
 	DEVICE_DOCUMENT_REG_EXP,
 } from './utilities';
 import { useNormalizeValue } from '../composables';
+import { PropertyType } from '../types';
 
 const CASE_REG_EXP = '_([a-z0-9])';
 

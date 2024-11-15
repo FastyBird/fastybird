@@ -24,13 +24,15 @@
 			</div>
 
 			<h1 :class="[ns.e('title'), ns.em('title', `align-${props.align}`)]">
-				<template v-if="'subtitle' in $slots">
-					<span><slot name="title" /></span>
-					<small><slot name="subtitle" /></small>
-				</template>
-				<template v-else>
+				<el-text truncated>
 					<slot name="title" />
-				</template>
+				</el-text>
+				<el-text
+					v-if="'subtitle' in $slots"
+					truncated
+				>
+					<slot name="subtitle" />
+				</el-text>
 			</h1>
 
 			<div
@@ -82,7 +84,7 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { ElIcon, useNamespace } from 'element-plus';
+import { ElIcon, ElText, useNamespace } from 'element-plus';
 
 import { appBarHeadingProps } from './heading';
 

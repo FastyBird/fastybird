@@ -1,0 +1,148 @@
+<template>
+	<el-dialog
+		v-model="open"
+		:show-close="false"
+		align-center
+		@closed="onClosed"
+	>
+		<template #header>
+			<fb-dialog-header
+				:layout="isMDDevice ? 'default' : isSMDevice ? 'tablet' : 'phone'"
+				:left-btn-label="t('devicesModule.buttons.close.title')"
+				:right-btn-label="isDraft ? t('devicesModule.buttons.update.title') : t('devicesModule.buttons.save.title')"
+				:icon="FasPencil"
+				@left-click="onClose"
+				@right-click="onSubmit"
+				@close="onClose"
+			>
+				<template #title>
+					{{ t('devicesModule.headings.properties.edit') }}
+				</template>
+			</fb-dialog-header>
+		</template>
+
+		<property-default-property-settings-form
+			v-model:remote-form-submit="remoteFormSubmit"
+			v-model:remote-form-result="remoteFormResult"
+			:connector="props.connector"
+			:device="props.device"
+			:channel="props.channel"
+			:property="props.property"
+			@created="onCreated"
+		/>
+
+		<template #footer>
+			<fb-dialog-footer
+				:left-btn-label="t('devicesModule.buttons.close.title')"
+				:right-btn-label="isDraft ? t('devicesModule.buttons.update.title') : t('devicesModule.buttons.save.title')"
+				@left-click="onClose"
+				@right-click="onSubmit"
+			>
+				<template #left-button>
+					<el-button
+						size="large"
+						link
+						name="close"
+						class="uppercase"
+						@click="onClose"
+					>
+						{{ t('devicesModule.buttons.close.title') }}
+					</el-button>
+				</template>
+
+				<template #right-button>
+					<el-button
+						:loading="remoteFormResult === FormResultTypes.WORKING"
+						:disabled="remoteFormResult !== FormResultTypes.NONE"
+						:icon="remoteFormResult === FormResultTypes.OK ? FarCircleCheck : remoteFormResult === FormResultTypes.ERROR ? FarCircleXmark : undefined"
+						type="primary"
+						size="large"
+						name="submit"
+						class="uppercase"
+						@click="onSubmit"
+					>
+						{{ t('devicesModule.buttons.save.title') }}
+					</el-button>
+				</template>
+			</fb-dialog-footer>
+		</template>
+	</el-dialog>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { ElButton, ElDialog } from 'element-plus';
+
+import { FarCircleCheck, FarCircleXmark, FasPencil } from '@fastybird/web-ui-icons';
+import { FbDialogFooter, FbDialogHeader } from '@fastybird/web-ui-library';
+
+import { useBreakpoints } from '../../composables';
+import { PropertyDefaultPropertySettingsForm } from '../../components';
+import { FormResultTypes } from '../../types';
+
+import { IPropertyDefaultPropertySettingsEditProps } from './property-default-property-settings-edit.types';
+
+defineOptions({
+	name: 'PropertyDefaultPropertySettingsEdit',
+});
+
+const props = defineProps<IPropertyDefaultPropertySettingsEditProps>();
+
+const emit = defineEmits<{
+	(e: 'close'): void;
+}>();
+
+const { t } = useI18n();
+const { isSMDevice, isMDDevice } = useBreakpoints();
+
+const open = ref<boolean>(true);
+
+const remoteFormSubmit = ref<boolean>(false);
+const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+
+const isDraft = computed<boolean>((): boolean => {
+	if (isChannelProperty.value) {
+		return props.channel ? props.channel.draft : false;
+	}
+
+	if (isDeviceProperty.value) {
+		return props.device ? props.device.draft : false;
+	}
+
+	if (isConnectorProperty.value) {
+		return props.connector ? props.connector.draft : false;
+	}
+
+	return false;
+});
+
+const isConnectorProperty = computed<boolean>((): boolean => props.connector !== undefined);
+const isDeviceProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel === undefined);
+const isChannelProperty = computed<boolean>((): boolean => props.device !== undefined && props.channel !== undefined);
+
+const onSubmit = (): void => {
+	remoteFormSubmit.value = true;
+};
+
+const onClose = (): void => {
+	open.value = false;
+};
+
+const onClosed = (): void => {
+	emit('close');
+};
+
+const onCreated = (): void => {
+	onClose();
+};
+
+watch(
+	(): FormResultTypes => remoteFormResult.value,
+	(actual, previous): void => {
+		if (actual === FormResultTypes.NONE && previous === FormResultTypes.OK) {
+			onClose();
+		}
+	}
+);
+</script>

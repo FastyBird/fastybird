@@ -39,6 +39,7 @@
   "dependencies": {
     "@fastybird/accounts-module": "1.0.0-dev.23",
     "@fastybird/devices-module": "1.0.0-dev.23",
+    "@fastybird/homekit-connector": "1.0.0-dev.23",
     "@fastybird/metadata-library": "1.0.0-dev.23",
     "@fastybird/vue-wamp-v1": "^1.2",
     "@fastybird/web-ui-library": "1.0.0-dev.23",

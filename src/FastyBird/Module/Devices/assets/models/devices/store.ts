@@ -1,5 +1,5 @@
 import { defineStore, Pinia, Store } from 'pinia';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Jsona } from 'jsona';
 import Ajv from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
@@ -7,18 +7,14 @@ import { v4 as uuid } from 'uuid';
 import get from 'lodash.get';
 import isEqual from 'lodash.isequal';
 
-import exchangeDocumentSchema from '../../../resources/schemas/document.device.json';
-import {
-	DeviceCategory,
-	DeviceDocument,
-	DevicePropertyIdentifier,
-	DevicesModuleRoutes as RoutingKeys,
-	ModulePrefix,
-} from '@fastybird/metadata-library';
+import { DeviceCategory, DeviceDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
 
+import exchangeDocumentSchema from '../../../resources/schemas/document.device.json';
+
+import { channelsStoreKey, connectorsStoreKey, deviceControlsStoreKey, devicePropertiesStoreKey } from '../../configuration';
+import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useConnectors, useChannels, useDeviceControls, useDeviceProperties } from '../../models';
 import {
 	IChannelResponseModel,
 	IConnector,
@@ -30,9 +26,11 @@ import {
 	IDevicesInsertDataActionPayload,
 	IDevicesLoadAllRecordsActionPayload,
 	IDevicesLoadRecordActionPayload,
+	IDevicesUnsetActionPayload,
 	IPlainRelation,
 } from '../../models/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES } from '../../utilities/database';
+import { DevicePropertyIdentifier } from '../../types';
+import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES } from '../../utilities';
 
 import {
 	IDevicesState,
@@ -62,7 +60,7 @@ const jsonApiFormatter = new Jsona({
 });
 
 const storeRecordFactory = async (data: IDeviceRecordFactoryPayload): Promise<IDevice> => {
-	const connectorsStore = useConnectors();
+	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 
 	let connector = 'connector' in data ? get(data, 'connector', null) : null;
 
@@ -124,7 +122,7 @@ const storeRecordFactory = async (data: IDeviceRecordFactoryPayload): Promise<ID
 		owner: get(data, 'owner', null),
 
 		get stateProperty(): IDeviceProperty | null {
-			const devicePropertiesStore = useDeviceProperties();
+			const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
 
 			const stateRegex = new RegExp(`^${DevicePropertyIdentifier.STATE}_([0-9]+)$`);
 
@@ -137,6 +135,10 @@ const storeRecordFactory = async (data: IDeviceRecordFactoryPayload): Promise<ID
 
 		get hasComment(): boolean {
 			return this.comment !== null && this.comment !== '';
+		},
+
+		get title(): string {
+			return this.name ?? this.identifier.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 		},
 	};
 
@@ -215,7 +217,7 @@ const databaseRecordFactory = (record: IDevice): IDeviceDatabaseRecord => {
 };
 
 const addChannelsRelations = async (device: IDevice, channels: (IChannelResponseModel | IPlainRelation)[]): Promise<void> => {
-	const channelsStore = useChannels();
+	const channelsStore = storesManager.getStore(channelsStoreKey);
 
 	for (const channel of channels) {
 		if ('identifier' in channel) {
@@ -232,7 +234,7 @@ const addChannelsRelations = async (device: IDevice, channels: (IChannelResponse
 };
 
 const addPropertiesRelations = async (device: IDevice, properties: (IDevicePropertyResponseModel | IPlainRelation)[]): Promise<void> => {
-	const devicePropertiesStore = useDeviceProperties();
+	const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
 
 	for (const property of properties) {
 		if ('identifier' in property) {
@@ -249,7 +251,7 @@ const addPropertiesRelations = async (device: IDevice, properties: (IDevicePrope
 };
 
 const addControlsRelations = async (device: IDevice, controls: (IDeviceControlResponseModel | IPlainRelation)[]): Promise<void> => {
-	const deviceControlsStore = useDeviceControls();
+	const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
 
 	for (const control of controls) {
 		if ('identifier' in control) {
@@ -355,6 +357,43 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 		},
 
 		/**
+		 * Remove records for given relation or record by given identifier
+		 *
+		 * @param {IDevicesUnsetActionPayload} payload
+		 */
+		async unset(payload: IDevicesUnsetActionPayload): Promise<void> {
+			if (!this.data) {
+				return;
+			}
+
+			if (payload.connector !== undefined) {
+				const items = this.findForConnector(payload.connector.id);
+
+				for (const item of items) {
+					if (item.id in (this.data ?? {})) {
+						await removeRecord(item.id, DB_TABLE_DEVICES);
+
+						delete this.meta[item.id];
+
+						delete (this.data ?? {})[item.id];
+					}
+				}
+
+				return;
+			} else if (payload.id !== undefined) {
+				await removeRecord(payload.id, DB_TABLE_DEVICES);
+
+				delete this.meta[payload.id];
+
+				delete this.data[payload.id];
+
+				return;
+			}
+
+			throw new Error('You have to provide at least connector or device id');
+		},
+
+		/**
 		 * Get one record from server
 		 *
 		 * @param {IDevicesGetActionPayload} payload
@@ -397,24 +436,20 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 				this.meta[deviceResponseModel.id] = deviceResponseModel.type;
 			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
+					this.unset({
+						id: payload.id,
+					});
+
+					return true;
+				}
+
 				throw new ApiError('devices-module.devices.get.failed', e, 'Fetching device failed.');
 			} finally {
 				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
 					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
 				}
 			}
-
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useDeviceProperties();
-			promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
-
-			const controlsStore = useDeviceControls();
-			promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.devices.get.failed', e, 'Fetching device failed.');
-			});
 
 			return true;
 		},
@@ -518,37 +553,32 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 					}
 				}
 			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404 && typeof payload?.connectorId !== 'undefined') {
+					try {
+						const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+						await connectorsStore.get({
+							id: payload?.connectorId,
+						});
+					} catch (e: any) {
+						if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+							const connectorsStore = storesManager.getStore(connectorsStoreKey);
+
+							connectorsStore.unset({
+								id: payload?.connectorId,
+							});
+
+							return true;
+						}
+					}
+				}
+
 				throw new ApiError('devices-module.devices.fetch.failed', e, 'Fetching devices failed.');
 			} finally {
 				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
 					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== (payload?.connectorId ?? 'all'));
 				}
 			}
-
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useDeviceProperties();
-			const controlsStore = useDeviceControls();
-
-			if (payload && payload.connectorId) {
-				for (const device of Object.values(this.data ?? {})) {
-					if (device.connector.id !== payload.connectorId) {
-						continue;
-					}
-
-					promises.push(propertiesStore.fetch({ device }));
-					promises.push(controlsStore.fetch({ device }));
-				}
-			} else {
-				for (const device of Object.values(this.data ?? {})) {
-					promises.push(propertiesStore.fetch({ device }));
-					promises.push(controlsStore.fetch({ device }));
-				}
-			}
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.devices.fetch.failed', e, 'Fetching devices failed.');
-			});
 
 			return true;
 		},
@@ -582,10 +612,23 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				return newDevice;
 			} else {
 				try {
+					const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
+
+					const properties = devicePropertiesStore.findForDevice(newDevice.id);
+
+					const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
+
+					const controls = deviceControlsStore.findForDevice(newDevice.id);
+
 					const createdDevice = await axios.post<IDeviceResponseJson>(
 						`/${ModulePrefix.DEVICES}/v1/devices`,
 						jsonApiFormatter.serialize({
-							stuff: newDevice,
+							stuff: {
+								...newDevice,
+								properties,
+								controls,
+							},
+							includeNames: ['properties', 'controls'],
 						})
 					);
 
@@ -607,18 +650,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				} finally {
 					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newDevice.id);
 				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const propertiesStore = useDeviceProperties();
-				promises.push(propertiesStore.fetch({ device: this.data[newDevice.id] }));
-
-				const controlsStore = useDeviceControls();
-				promises.push(controlsStore.fetch({ device: this.data[newDevice.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('devices-module.devices.create.failed', e, 'Create new device failed.');
-				});
 
 				return this.data[newDevice.id];
 			}
@@ -645,7 +676,9 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			// Update with new values
 			const updatedRecord = { ...existingRecord, ...payload.data } as IDevice;
 
-			this.data[payload.id] = updatedRecord;
+			this.data[payload.id] = await storeRecordFactory({
+				...updatedRecord,
+			});
 
 			if (updatedRecord.draft) {
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
@@ -653,10 +686,23 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				return this.data[payload.id];
 			} else {
 				try {
+					const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
+
+					const properties = devicePropertiesStore.findForDevice(updatedRecord.id);
+
+					const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
+
+					const controls = deviceControlsStore.findForDevice(updatedRecord.id);
+
 					const updatedDevice = await axios.patch<IDeviceResponseJson>(
 						`/${ModulePrefix.DEVICES}/v1/devices/${payload.id}`,
 						jsonApiFormatter.serialize({
-							stuff: updatedRecord,
+							stuff: {
+								...updatedRecord,
+								properties,
+								controls,
+							},
+							includeNames: ['properties', 'controls'],
 						})
 					);
 
@@ -678,18 +724,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				} finally {
 					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const propertiesStore = useDeviceProperties();
-				promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
-
-				const controlsStore = useDeviceControls();
-				promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('devices-module.devices.update.failed', e, 'Edit device failed.');
-				});
 
 				return this.data[payload.id];
 			}
@@ -714,10 +748,23 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 			const recordToSave = this.data[payload.id];
 
 			try {
+				const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
+
+				const properties = devicePropertiesStore.findForDevice(recordToSave.id);
+
+				const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
+
+				const controls = deviceControlsStore.findForDevice(recordToSave.id);
+
 				const savedDevice = await axios.post<IDeviceResponseJson>(
 					`/${ModulePrefix.DEVICES}/v1/devices`,
 					jsonApiFormatter.serialize({
-						stuff: recordToSave,
+						stuff: {
+							...recordToSave,
+							properties,
+							controls,
+						},
+						includeNames: ['properties', 'controls'],
 					})
 				);
 
@@ -737,18 +784,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 			}
 
-			const promises: Promise<boolean>[] = [];
-
-			const propertiesStore = useDeviceProperties();
-			promises.push(propertiesStore.fetch({ device: this.data[payload.id] }));
-
-			const controlsStore = useDeviceControls();
-			promises.push(controlsStore.fetch({ device: this.data[payload.id] }));
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('devices-module.devices.save.failed', e, 'Save draft device failed.');
-			});
-
 			return this.data[payload.id];
 		},
 
@@ -766,9 +801,9 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 				return true;
 			}
 
-			const channelsStore = useChannels();
-			const deviceControlsStore = useDeviceControls();
-			const devicePropertiesStore = useDeviceProperties();
+			const channelsStore = storesManager.getStore(channelsStoreKey);
+			const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
+			const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
 
 			this.semaphore.deleting.push(payload.id);
 
@@ -845,9 +880,9 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 
 					delete this.data[body.id];
 
-					const channelsStore = useChannels();
-					const devicePropertiesStore = useDeviceProperties();
-					const deviceControlsStore = useDeviceControls();
+					const channelsStore = storesManager.getStore(channelsStoreKey);
+					const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
+					const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
 
 					channelsStore.unset({ device: recordToDelete });
 					devicePropertiesStore.unset({ device: recordToDelete });
@@ -1005,6 +1040,6 @@ export const useDevices = defineStore<string, IDevicesState, IDevicesGetters, ID
 	},
 });
 
-export const registerDevicesStore = (pinia: Pinia): Store => {
+export const registerDevicesStore = (pinia: Pinia): Store<string, IDevicesState, IDevicesGetters, IDevicesActions> => {
 	return useDevices(pinia);
 };

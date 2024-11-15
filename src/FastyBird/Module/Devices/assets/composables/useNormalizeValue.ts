@@ -1,5 +1,6 @@
-import { ButtonPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 import { parse } from 'date-fns';
+
+import { ButtonPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 
 export function useNormalizeValue(
 	dataType: DataType,
