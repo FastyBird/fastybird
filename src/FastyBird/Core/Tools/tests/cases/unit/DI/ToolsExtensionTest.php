@@ -3,7 +3,6 @@
 namespace FastyBird\Core\Tools\Tests\Cases\Unit\DI;
 
 use Error;
-use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Core\Tools\Helpers;
 use FastyBird\Core\Tools\Schemas;
 use FastyBird\Core\Tools\Tests;
@@ -13,8 +12,6 @@ final class ToolsExtensionTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @throws ApplicationExceptions\InvalidArgument
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Error
 	 * @throws Nette\DI\MissingServiceException
 	 */

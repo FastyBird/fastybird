@@ -15,7 +15,6 @@
 
 namespace FastyBird\Core\Tools\DI;
 
-use FastyBird\Core\Application\Boot as ApplicationBoot;
 use FastyBird\Core\Tools\Helpers;
 use FastyBird\Core\Tools\Schemas;
 use FastyBird\Core\Tools\Utilities;
@@ -46,7 +45,7 @@ class ToolsExtension extends DI\CompilerExtension
 	public const NAME = 'fbTools';
 
 	public static function register(
-		ApplicationBoot\Configurator $config,
+		Bootstrap\Configurator $config,
 		string $extensionName = self::NAME,
 	): void
 	{
