@@ -13,6 +13,5 @@
 php:
     date.timezone: Europe/Prague
 
-fbApplication:
-    documents:
-        mapping: []
+extensions:
+    fbDateTimeFactory   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
