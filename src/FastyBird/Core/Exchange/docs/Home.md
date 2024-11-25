@@ -28,13 +28,13 @@ namespace Your\CoolApp\Publishers;
 
 use FastyBird\Core\Exchange\Publisher\Publisher;
 use FastyBird\Core\Application\Documents;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types;
 
 class ModuleDataPublisher implements Publisher
 {
 
     public function publish(
-        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
+        Types\Sources\Module|Types\Sources\Plugin|Types\Sources\Connector $source,
         string $routingKey,
         Documents\Document|null $entity,
     ) : void {
@@ -57,7 +57,7 @@ namespace Your\CoolApp\Publishers;
 
 use FastyBird\Core\Exchange\Publisher\Async\Publisher;
 use FastyBird\Core\Application\Documents;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types;
 use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 
@@ -68,7 +68,7 @@ class ModuleDataPublisher implements Publisher
     * @return PromiseInterface<bool>
      */
     public function publish(
-        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
+        Types\Sources\Module|Types\Sources\Plugin|Types\Sources\Connector $source,
         string $routingKey,
         Documents\Document|null $entity,
     ) : PromiseInterface {
@@ -130,13 +130,13 @@ namespace Your\CoolApp\Publishers;
 
 use FastyBird\Core\Exchange\Consumers\Consumer;
 use FastyBird\Core\Application\Documents;
-use FastyBird\Library\Metadata\Types as MetadataTypes;
+use FastyBird\Library\Metadata\Types;
 
 class DataConsumer implements Consumer
 {
 
     public function consume(
-        MetadataTypes\Sources\Module|MetadataTypes\Sources\Plugin|MetadataTypes\Sources\Connector $source,
+        Types\Sources\Module|Types\Sources\Plugin|Types\Sources\Connector $source,
         string $routingKey,
         Documents\Document|null $entity,
     ) : void {

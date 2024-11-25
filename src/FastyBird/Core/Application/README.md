@@ -25,7 +25,7 @@ and is designed to create main application skeleton.
 
 - Integrates [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem modules
 - Integrates tools for creating bridge between backend and the frontend
-- Regular updates with new features and bug fixes, ensuring that the FastyBird Virtual Connector is always up-to-date and reliable.
+- Regular updates with new features and bug fixes, ensuring that the FastyBird application is always up-to-date and reliable.
 
 FastyBird application is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
 and is licensed under [Apache2](http://www.apache.org/licenses/LICENSE-2.0).

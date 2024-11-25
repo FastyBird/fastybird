@@ -16,9 +16,9 @@
 
 ***
 
-## What is FastyBird tools library?
+## What is FastyBird tools?
 
-The library comprises versatile and valuable tools designed for utilization within the [FastyBird](https://www.fastybird.com) application. These tools
+The extension comprises versatile and valuable tools designed for utilization within the [FastyBird](https://www.fastybird.com) application. These tools
 serve various universal functions, enhancing the overall capabilities and functionality of the application.
 
 Tools library is a distributed extension that is developed in [PHP](https://www.php.net), built on the [Nette](https://nette.org) and [Symfony](https://symfony.com) frameworks,
@@ -35,6 +35,18 @@ In case you want to create you own distribution of [FastyBird](https://www.fasty
 
 ```sh
 composer require fastybird/tools
+```
+
+And for user interface is the best way to install **@fastybird/tools** with [Yarn](https://yarnpkg.com/):
+
+```sh
+yarn add @fastybird/tools
+```
+
+or if you prefer npm:
+
+```sh
+npm install @fastybird/tools
 ```
 
 ## Documentation
