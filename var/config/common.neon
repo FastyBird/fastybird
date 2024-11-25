@@ -165,7 +165,7 @@ contributteVite:
     server: http://localhost:3000
     cookie: fb-app-vite
 
-fbAppication:
+fbApplication:
     documents:
         mapping: []
 
