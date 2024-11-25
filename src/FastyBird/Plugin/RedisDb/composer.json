@@ -41,6 +41,7 @@
     "fastybird/application": "dev-main",
     "fastybird/exchange": "dev-main",
     "fastybird/metadata-library": "dev-main",
+    "fastybird/tools": "dev-main",
     "nette/di": "^3.2",
     "nette/utils": "^4.0",
     "orisai/object-mapper": "^0.2",

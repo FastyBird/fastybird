@@ -35,6 +35,7 @@
     "cweagans/composer-patches": "^1.7",
     "fastybird/application": "dev-main",
     "fastybird/json-api": "^0.19",
+    "fastybird/tools": "dev-main",
     "fig/http-message-util": "^1.1",
     "ipub/doctrine-crud": "^5.0",
     "nette/di": "^3.2",
