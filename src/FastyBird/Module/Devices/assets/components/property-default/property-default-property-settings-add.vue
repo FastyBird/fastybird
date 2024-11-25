@@ -414,24 +414,25 @@
 <script setup lang="ts">
 import { computed, inject, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { orderBy } from 'natural-orderby';
-import { ElAlert, ElButton, ElDialog, ElIcon, ElResult } from 'element-plus';
 
+import { ElAlert, ElButton, ElDialog, ElIcon, ElResult } from 'element-plus';
+import { orderBy } from 'natural-orderby';
+
+import { useBreakpoints } from '@fastybird/tools';
 import {
-	FasPlus,
-	FasFile,
-	FasClone,
-	FasChevronRight,
-	FasEthernet,
-	FasExclamation,
-	FasPlug,
-	FasCube,
 	FarCircleCheck,
 	FarCircleXmark,
+	FasChevronRight,
+	FasClone,
+	FasCube,
+	FasEthernet,
+	FasExclamation,
+	FasFile,
+	FasPlug,
+	FasPlus,
 } from '@fastybird/web-ui-icons';
-import { FbDialogHeader, FbDialogFooter, FbList, FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
+import { FbDialogFooter, FbDialogHeader, FbList, FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '../../composables';
 import {
 	channelPropertiesStoreKey,
 	channelsStoreKey,
@@ -440,9 +441,22 @@ import {
 	devicePropertiesStoreKey,
 	devicesStoreKey,
 } from '../../configuration';
-import { ConnectorsConnectorIcon, DevicesDeviceIcon, PropertiesPropertyIcon, PropertyDefaultPropertySettingsForm } from '../../components';
 import { ApplicationError } from '../../errors';
-import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty, FormResultTypes, PropertyType } from '../../types';
+import {
+	FormResultType,
+	FormResultTypes,
+	IChannel,
+	IChannelProperty,
+	IConnector,
+	IConnectorProperty,
+	IDevice,
+	IDeviceProperty,
+	PropertyType,
+} from '../../types';
+import ConnectorsConnectorIcon from '../connectors/connectors-connector-icon.vue';
+import DevicesDeviceIcon from '../devices/devices-device-icon.vue';
+import PropertiesPropertyIcon from '../properties/properties-property-icon.vue';
+import PropertyDefaultPropertySettingsForm from '../property-default/property-default-property-settings-form.vue';
 
 import {
 	IChannelListItem,
@@ -488,7 +502,7 @@ const open = ref<boolean>(true);
 let closedCallback: () => void = (): void => {};
 
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const activeView = ref<PropertyDefaultPropertySettingsAddViewTypes>(PropertyDefaultPropertySettingsAddViewTypes.SELECT_TYPE);
 

@@ -26,11 +26,11 @@ use FastyBird\Connector\Virtual\Exceptions as VirtualExceptions;
 use FastyBird\Connector\Virtual\Helpers as VirtualHelpers;
 use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -124,15 +124,16 @@ class Thermostat implements VirtualDrivers\Driver
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 * @throws VirtualExceptions\Runtime
@@ -268,7 +269,7 @@ class Thermostat implements VirtualDrivers\Driver
 					$this->targetTemperature[$mode->value] = floatval($state->getGet()->getActualValue());
 				} else {
 					$this->targetTemperature[$mode->value] = floatval(
-						MetadataUtilities\Value::flattenValue(
+						ToolsUtilities\Value::flattenValue(
 							$property->getDefault() ?? VirtualThermostat\Entities\Devices\Device::TARGET_TEMPERATURE,
 						),
 					);
@@ -282,7 +283,7 @@ class Thermostat implements VirtualDrivers\Driver
 								'channel' => $property->getChannel(),
 								'property' => $property->getId(),
 								'value' => floatval(
-									MetadataUtilities\Value::flattenValue(
+									ToolsUtilities\Value::flattenValue(
 										$property->getDefault() ?? VirtualThermostat\Entities\Devices\Device::TARGET_TEMPERATURE,
 									),
 								),
@@ -311,15 +312,15 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\Preset::tryFrom(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
+					ToolsUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
 				) !== null
 			) {
 				$this->presetMode = Types\Preset::from(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
+					ToolsUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
 			} else {
 				$this->presetMode = Types\Preset::from(
-					MetadataUtilities\Value::toString($property->getDefault() ?? Types\Preset::MANUAL->value, true),
+					ToolsUtilities\Value::toString($property->getDefault() ?? Types\Preset::MANUAL->value, true),
 				);
 
 				$this->queue->append(
@@ -330,7 +331,7 @@ class Thermostat implements VirtualDrivers\Driver
 							'device' => $this->device->getId(),
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
-							'value' => MetadataUtilities\Value::toString(
+							'value' => ToolsUtilities\Value::toString(
 								$property->getDefault() ?? Types\Preset::MANUAL->value,
 								true,
 							),
@@ -358,15 +359,15 @@ class Thermostat implements VirtualDrivers\Driver
 			if (
 				$state instanceof DevicesDocuments\States\Channels\Properties\Property
 				&& Types\HvacMode::tryFrom(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
+					ToolsUtilities\Value::toString($state->getGet()->getActualValue()) ?? '',
 				) !== null
 			) {
 				$this->hvacMode = Types\HvacMode::from(
-					MetadataUtilities\Value::toString($state->getGet()->getActualValue(), true),
+					ToolsUtilities\Value::toString($state->getGet()->getActualValue(), true),
 				);
 			} else {
 				$this->hvacMode = Types\HvacMode::from(
-					MetadataUtilities\Value::toString($property->getDefault() ?? Types\HvacMode::OFF->value, true),
+					ToolsUtilities\Value::toString($property->getDefault() ?? Types\HvacMode::OFF->value, true),
 				);
 
 				$this->queue->append(
@@ -377,7 +378,7 @@ class Thermostat implements VirtualDrivers\Driver
 							'device' => $this->device->getId(),
 							'channel' => $property->getChannel(),
 							'property' => $property->getId(),
-							'value' => MetadataUtilities\Value::toString(
+							'value' => ToolsUtilities\Value::toString(
 								$property->getDefault() ?? Types\HvacMode::OFF->value,
 								true,
 							),
@@ -403,12 +404,14 @@ class Thermostat implements VirtualDrivers\Driver
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -443,12 +446,14 @@ class Thermostat implements VirtualDrivers\Driver
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -685,12 +690,14 @@ class Thermostat implements VirtualDrivers\Driver
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -844,12 +851,14 @@ class Thermostat implements VirtualDrivers\Driver
 	/**
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1074,12 +1083,14 @@ class Thermostat implements VirtualDrivers\Driver
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1120,12 +1131,14 @@ class Thermostat implements VirtualDrivers\Driver
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1236,8 +1249,8 @@ class Thermostat implements VirtualDrivers\Driver
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1287,12 +1300,14 @@ class Thermostat implements VirtualDrivers\Driver
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws VirtualExceptions\Runtime
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */

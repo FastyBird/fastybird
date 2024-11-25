@@ -1,9 +1,8 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { GroupDocument } from '@fastybird/metadata-library';
-
 import { IWidgetResponseData, IWidgetResponseModel, IEntityMeta, IPlainRelation } from '../../models/types';
+import { GroupDocument } from '../../types';
 
 export interface IGroupMeta extends IEntityMeta {
 	entity: 'group';

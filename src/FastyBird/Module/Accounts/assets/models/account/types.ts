@@ -1,4 +1,4 @@
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
 import { IAccount } from '../accounts/types';
 import { IEmail, IEmailMeta } from '../emails/types';
@@ -8,15 +8,14 @@ import { IIdentity } from '../identities/types';
 // =====
 
 export interface IAccountState {
-	semaphore: IAccountStateSemaphore;
-	loaded: boolean;
-}
-
-export interface IAccountGetters extends _GettersTree<IAccountState> {
-	emails: () => () => IEmail[];
+	semaphore: Ref<IAccountStateSemaphore>;
+	loaded: Ref<boolean>;
 }
 
 export interface IAccountActions {
+	// Getters
+	emails: () => IEmail[];
+	// Actions
 	edit: (payload: IAccountEditActionPayload) => Promise<boolean>;
 	addEmail: (payload: IAccountAddEmailActionPayload) => Promise<IEmail>;
 	editEmail: (payload: IAccountEditEmailActionPayload) => Promise<IEmail>;
@@ -25,10 +24,12 @@ export interface IAccountActions {
 	register: (payload: IAccountRegisterActionPayload) => Promise<boolean>;
 }
 
+export type AccountStoreSetup = IAccountState & IAccountActions;
+
 // STORE STATE
 // ===========
 
-interface IAccountStateSemaphore {
+export interface IAccountStateSemaphore {
 	updating: boolean;
 	creating: boolean;
 }

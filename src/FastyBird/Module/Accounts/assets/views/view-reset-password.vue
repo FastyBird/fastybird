@@ -2,11 +2,11 @@
 	<layout-sign-box>
 		<layout-sign-header
 			v-if="isSubmitted"
-			:heading="t('headings.instructionEmailed')"
+			:heading="t('accountsModule.headings.instructionEmailed')"
 		/>
 		<layout-sign-header
 			v-else
-			:heading="t('headings.passwordReset')"
+			:heading="t('accountsModule.headings.passwordReset')"
 		/>
 
 		<div ref="signBoxEl">
@@ -16,7 +16,7 @@
 				tag="p"
 				class="text-center"
 			>
-				{{ t('texts.resetPasswordInstructionsEmailed') }}
+				{{ t('accountsModule.texts.resetPasswordInstructionsEmailed') }}
 			</el-text>
 
 			<reset-password-form
@@ -31,10 +31,11 @@
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
+
 import { ElLoading, ElText } from 'element-plus';
 
-import { LayoutSignHeader, LayoutSignBox, ResetPasswordForm } from '../components';
-import { FormResultTypes } from '../types';
+import { LayoutSignBox, LayoutSignHeader, ResetPasswordForm } from '../components';
+import { FormResultType, FormResultTypes } from '../types';
 
 defineOptions({
 	name: 'ViewResetPassword',
@@ -44,20 +45,20 @@ const { t } = useI18n();
 
 const signBoxEl = ref<HTMLElement>();
 
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const isSubmitted = ref<boolean>(false);
 
 const loader = ref<{ close: () => void } | null>(null);
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	(state: FormResultTypes): void => {
+	(): FormResultType => remoteFormResult.value,
+	(state: FormResultType): void => {
 		if (state === FormResultTypes.WORKING) {
 			loader.value = ElLoading.service({
 				target: signBoxEl.value,
 				lock: true,
-				text: t('texts.processing'),
+				text: t('accountsModule.texts.processing'),
 			});
 		} else if (state === FormResultTypes.OK) {
 			loader.value?.close();
@@ -70,6 +71,6 @@ watch(
 );
 
 useMeta({
-	title: t('meta.sign.passwordReset.title'),
+	title: t('accountsModule.meta.sign.passwordReset.title'),
 });
 </script>

@@ -3,8 +3,7 @@
 namespace FastyBird\Module\Ui\Tests\Cases\Unit\Models\Configuration\Repositories;
 
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
@@ -24,7 +23,6 @@ final class WidgetDataSourcesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -60,7 +58,6 @@ final class WidgetDataSourcesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -79,7 +76,6 @@ final class WidgetDataSourcesRepositoryTest extends Tests\Cases\Unit\DbTestCase
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error

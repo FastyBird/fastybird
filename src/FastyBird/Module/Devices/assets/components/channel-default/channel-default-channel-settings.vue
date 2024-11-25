@@ -120,16 +120,19 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElButton, ElForm, FormInstance } from 'element-plus';
 
+import { ElButton, ElForm, FormInstance } from 'element-plus';
+import get from 'lodash.get';
+
+import { flattenValue } from '@fastybird/tools';
 import { FasPlus } from '@fastybird/web-ui-icons';
 import { FbList } from '@fastybird/web-ui-library';
-import { flattenValue } from '@fastybird/metadata-library';
 
-import { ChannelDefaultChannelSettingsRename, PropertyDefaultPropertySettings, PropertyDefaultVariablePropertiesEdit } from '../../components';
 import { useChannelForm } from '../../composables';
-import { IChannelProperty, FormResultTypes, IChannelForm, IEditChannelProps, PropertyType, IEditChannelEmits } from '../../types';
+import { FormResultType, FormResultTypes, IChannelForm, IChannelProperty, IEditChannelEmits, IEditChannelProps, PropertyType } from '../../types';
+import ChannelDefaultChannelSettingsRename from '../channel-default/channel-default-channel-settings-rename.vue';
+import PropertyDefaultPropertySettings from '../property-default/property-default-property-settings.vue';
+import PropertyDefaultVariablePropertiesEdit from '../property-default/property-default-variable-properties-edit.vue';
 
 defineOptions({
 	name: 'ChannelDefaultChannelSettings',
@@ -246,8 +249,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => formResult.value,
-	(val: FormResultTypes): void => {
+	(): FormResultType => formResult.value,
+	(val: FormResultType): void => {
 		emit('update:remoteFormResult', val);
 	}
 );

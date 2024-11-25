@@ -1,23 +1,23 @@
 [
   {
     "organization": "FastyBird",
-    "name": "application-library",
-    "local-path": "src/FastyBird/Library/Application"
+    "name": "application",
+    "local-path": "src/FastyBird/Core/Application"
   },
   {
     "organization": "FastyBird",
-    "name": "exchange-library",
-    "local-path": "src/FastyBird/Library/Exchange"
+    "name": "exchange",
+    "local-path": "src/FastyBird/Core/Exchange"
+  },
+  {
+    "organization": "FastyBird",
+    "name": "tools",
+    "local-path": "src/FastyBird/Core/Tools"
   },
   {
     "organization": "FastyBird",
     "name": "metadata-library",
     "local-path": "src/FastyBird/Library/Metadata"
-  },
-  {
-    "organization": "FastyBird",
-    "name": "tools-library",
-    "local-path": "src/FastyBird/Library/Tools"
   },
   {
     "organization": "FastyBird",

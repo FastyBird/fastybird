@@ -1,20 +1,19 @@
 import { Reactive } from 'vue';
 
-import { ConnectionState } from '@fastybird/metadata-library';
-
 import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../models/types';
 
 import {
-	FormResultTypes,
+	ConnectionState,
+	FormResultType,
 	IBridge,
-	IDebugLog,
-	IService,
-	IConnectorData,
-	IDeviceData,
-	IConnectorPlugin,
 	IChannelData,
-	SimpleStateFilter,
+	IConnectorData,
+	IConnectorPlugin,
+	IDebugLog,
+	IDeviceData,
+	IService,
 	PropertyType,
+	SimpleStateFilter,
 } from './index';
 
 export interface IDevicesFilter {
@@ -77,13 +76,13 @@ export interface IEditConnectorProps {
 	loading: boolean;
 	devicesLoading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }
 
 export interface IEditConnectorEmits {
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 	(e: 'addProperty', type: PropertyType, event: Event): void;
 	(e: 'editProperty', id: IConnectorProperty['id'], event: Event): void;
@@ -92,7 +91,7 @@ export interface IEditConnectorEmits {
 
 export const editConnectorEmits = {
 	'update:remoteFormSubmit': (remoteFormSubmit: boolean): boolean => typeof remoteFormSubmit === 'boolean',
-	'update:remoteFormResult': (remoteFormResult: FormResultTypes): boolean => typeof remoteFormResult === 'string',
+	'update:remoteFormResult': (remoteFormResult: FormResultType): boolean => typeof remoteFormResult === 'string',
 	'update:remoteFormReset': (remoteFormReset: boolean): boolean => typeof remoteFormReset === 'boolean',
 	addProperty: (type: PropertyType, event: Event): boolean => typeof type === 'string' && event instanceof Event,
 	editProperty: (id: IConnectorProperty['id'], event: Event): boolean => typeof id === 'string' && event instanceof Event,
@@ -148,13 +147,13 @@ export interface IEditDeviceProps {
 	loading: boolean;
 	channelsLoading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }
 
 export interface IEditDeviceEmits {
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 	(e: 'addProperty', type: PropertyType, event: Event): void;
 	(e: 'editProperty', id: IDeviceProperty['id'], event: Event): void;
@@ -163,7 +162,7 @@ export interface IEditDeviceEmits {
 
 export const editDeviceEmits = {
 	'update:remoteFormSubmit': (remoteFormSubmit: boolean): boolean => typeof remoteFormSubmit === 'boolean',
-	'update:remoteFormResult': (remoteFormResult: FormResultTypes): boolean => typeof remoteFormResult === 'string',
+	'update:remoteFormResult': (remoteFormResult: FormResultType): boolean => typeof remoteFormResult === 'string',
 	'update:remoteFormReset': (remoteFormReset: boolean): boolean => typeof remoteFormReset === 'boolean',
 	addProperty: (type: PropertyType, event: Event): boolean => typeof type === 'string' && event instanceof Event,
 	editProperty: (id: IDeviceProperty['id'], event: Event): boolean => typeof id === 'string' && event instanceof Event,
@@ -176,25 +175,17 @@ export interface IChannelDetailProps {
 	alerts: IDebugLog[];
 }
 
-export interface IChannelDetailEmits {
-	(e: 'add', event: Event): void;
-}
-
-export const channelDetailEmits = {
-	add: (event: Event): boolean => event instanceof Event,
-};
-
 export interface IEditChannelProps {
 	channelData: IChannelData;
 	loading: boolean;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }
 
 export interface IEditChannelEmits {
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 	(e: 'addProperty', type: PropertyType, event: Event): void;
 	(e: 'editProperty', id: IChannelProperty['id'], event: Event): void;
@@ -203,7 +194,7 @@ export interface IEditChannelEmits {
 
 export const editChannelEmits = {
 	'update:remoteFormSubmit': (remoteFormSubmit: boolean): boolean => typeof remoteFormSubmit === 'boolean',
-	'update:remoteFormResult': (remoteFormResult: FormResultTypes): boolean => typeof remoteFormResult === 'string',
+	'update:remoteFormResult': (remoteFormResult: FormResultType): boolean => typeof remoteFormResult === 'string',
 	'update:remoteFormReset': (remoteFormReset: boolean): boolean => typeof remoteFormReset === 'boolean',
 	addProperty: (type: PropertyType, event: Event): boolean => typeof type === 'string' && event instanceof Event,
 	editProperty: (id: IChannelProperty['id'], event: Event): boolean => typeof id === 'string' && event instanceof Event,

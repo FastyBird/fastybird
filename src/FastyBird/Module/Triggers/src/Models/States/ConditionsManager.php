@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Triggers\Models\States;
 
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Entities;
@@ -42,7 +42,7 @@ final class ConditionsManager
 	use Nette\SmartObject;
 
 	public function __construct(
-		protected readonly MetadataDocuments\DocumentFactory $documentFactory,
+		protected readonly ApplicationDocuments\DocumentFactory $documentFactory,
 		protected readonly IConditionsManager|null $manager = null,
 		protected readonly ExchangePublisher\Publisher|null $publisher = null,
 	)
@@ -51,10 +51,10 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 */
 	public function create(
 		Entities\Conditions\Condition $condition,
@@ -74,10 +74,10 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 */
 	public function update(
 		Entities\Conditions\Condition $condition,
@@ -102,10 +102,10 @@ final class ConditionsManager
 
 	/**
 	 * @throws Exceptions\NotImplemented
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 */
 	public function delete(
 		Entities\Conditions\Condition $condition,
@@ -126,10 +126,10 @@ final class ConditionsManager
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 */
 	private function publishEntity(
 		Entities\Conditions\Condition $condition,

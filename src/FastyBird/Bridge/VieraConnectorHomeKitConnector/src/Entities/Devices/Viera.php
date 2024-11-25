@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Exceptions;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\Viera\Entities as VieraEntities;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Nette\Utils;

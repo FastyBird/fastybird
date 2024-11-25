@@ -1,29 +1,17 @@
 import { App } from 'vue';
-import get from 'lodash.get';
+
 import defaultsDeep from 'lodash.defaultsdeep';
+import get from 'lodash.get';
+import 'virtual:uno.css';
 
-import { wampClient } from '@fastybird/vue-wamp-v1';
 import { ModulePrefix } from '@fastybird/metadata-library';
+import { IExtensionOptions, injectStoresManager, useFlashMessage } from '@fastybird/tools';
+import { wampClient } from '@fastybird/vue-wamp-v1';
 
-import {
-	registerChannelsStore,
-	registerChannelsControlsStore,
-	registerChannelsPropertiesStore,
-	registerConnectorsStore,
-	registerConnectorsControlsStore,
-	registerConnectorsPropertiesStore,
-	registerDevicesStore,
-	registerDevicesControlsStore,
-	registerDevicesPropertiesStore,
-	StoresManager,
-} from './models';
-import moduleRouter from './router';
-import { IDevicesModuleOptions, InstallFunction } from './types';
 import {
 	channelControlsStoreKey,
 	channelPropertiesStoreKey,
 	channelsStoreKey,
-	configurationKey,
 	connectorControlsStoreKey,
 	connectorPropertiesStoreKey,
 	connectorsStoreKey,
@@ -32,75 +20,76 @@ import {
 	devicesStoreKey,
 	metaKey,
 } from './configuration';
-import { useFlashMessage } from './composables';
-import locales from './locales';
+import locales, { MessageSchema } from './locales';
+import {
+	registerChannelsControlsStore,
+	registerChannelsPropertiesStore,
+	registerChannelsStore,
+	registerConnectorsControlsStore,
+	registerConnectorsPropertiesStore,
+	registerConnectorsStore,
+	registerDevicesControlsStore,
+	registerDevicesPropertiesStore,
+	registerDevicesStore,
+} from './models';
+import moduleRouter from './router';
 
-import 'virtual:uno.css';
+export default {
+	install: async (app: App, options: IExtensionOptions<{ 'en-US': MessageSchema }>): Promise<void> => {
+		moduleRouter(options.router);
 
-export const storesManager = new StoresManager();
+		app.provide(metaKey, options.meta);
 
-export default function createDevicesModule(): InstallFunction {
-	return {
-		async install(app: App, options: IDevicesModuleOptions): Promise<void> {
-			if (this.installed) {
-				return;
-			}
-			this.installed = true;
+		wampClient.subscribe(`/${ModulePrefix.DEVICES}/v1/exchange`, (data: string): void => {
+			onWsMessage(app, data);
+		});
 
-			if (typeof options.router === 'undefined') {
-				throw new Error('Router instance is missing in module configuration');
-			}
+		for (const [locale, translations] of Object.entries(locales)) {
+			const currentMessages = options.i18n.global.getLocaleMessage(locale);
+			const mergedMessages = defaultsDeep(currentMessages, { devicesModule: translations });
 
-			moduleRouter(options.router);
+			options.i18n.global.setLocaleMessage(locale, mergedMessages);
+		}
 
-			app.provide(metaKey, options.meta);
-			app.provide(configurationKey, options.configuration);
+		const storesManager = injectStoresManager(app);
 
-			wampClient.subscribe(`/${ModulePrefix.DEVICES}/v1/exchange`, onWsMessage);
+		const channelsStore = registerChannelsStore(options.store);
+		const channelControlsStore = registerChannelsControlsStore(options.store);
+		const channelPropertiesStore = registerChannelsPropertiesStore(options.store);
+		const connectorsStore = registerConnectorsStore(options.store);
+		const connectorControlsStore = registerConnectorsControlsStore(options.store);
+		const connectorPropertiesStore = registerConnectorsPropertiesStore(options.store);
+		const devicesStore = registerDevicesStore(options.store);
+		const deviceControlsStore = registerDevicesControlsStore(options.store);
+		const devicePropertiesStore = registerDevicesPropertiesStore(options.store);
 
-			for (const [locale, translations] of Object.entries(locales)) {
-				const currentMessages = options.i18n?.global.getLocaleMessage(locale);
-				const mergedMessages = defaultsDeep(currentMessages, { devicesModule: translations });
+		app.provide(channelsStoreKey, channelsStore);
+		storesManager.addStore(channelsStoreKey, channelsStore);
+		app.provide(channelControlsStoreKey, channelControlsStore);
+		storesManager.addStore(channelControlsStoreKey, channelControlsStore);
+		app.provide(channelPropertiesStoreKey, channelPropertiesStore);
+		storesManager.addStore(channelPropertiesStoreKey, channelPropertiesStore);
+		app.provide(connectorsStoreKey, connectorsStore);
+		storesManager.addStore(connectorsStoreKey, connectorsStore);
+		app.provide(connectorControlsStoreKey, connectorControlsStore);
+		storesManager.addStore(connectorControlsStoreKey, connectorControlsStore);
+		app.provide(connectorPropertiesStoreKey, connectorPropertiesStore);
+		storesManager.addStore(connectorPropertiesStoreKey, connectorPropertiesStore);
+		app.provide(devicesStoreKey, devicesStore);
+		storesManager.addStore(devicesStoreKey, devicesStore);
+		app.provide(deviceControlsStoreKey, deviceControlsStore);
+		storesManager.addStore(deviceControlsStoreKey, deviceControlsStore);
+		app.provide(devicePropertiesStoreKey, devicePropertiesStore);
+		storesManager.addStore(devicePropertiesStoreKey, devicePropertiesStore);
+	},
+};
 
-				options.i18n?.global.setLocaleMessage(locale, mergedMessages);
-			}
-
-			const channelsStore = registerChannelsStore(options.store);
-			const channelControlsStore = registerChannelsControlsStore(options.store);
-			const channelPropertiesStore = registerChannelsPropertiesStore(options.store);
-			const connectorsStore = registerConnectorsStore(options.store);
-			const connectorControlsStore = registerConnectorsControlsStore(options.store);
-			const connectorPropertiesStore = registerConnectorsPropertiesStore(options.store);
-			const devicesStore = registerDevicesStore(options.store);
-			const deviceControlsStore = registerDevicesControlsStore(options.store);
-			const devicePropertiesStore = registerDevicesPropertiesStore(options.store);
-
-			app.provide(channelsStoreKey, channelsStore);
-			storesManager.addStore(channelsStoreKey, channelsStore);
-			app.provide(channelControlsStoreKey, channelControlsStore);
-			storesManager.addStore(channelControlsStoreKey, channelControlsStore);
-			app.provide(channelPropertiesStoreKey, channelPropertiesStore);
-			storesManager.addStore(channelPropertiesStoreKey, channelPropertiesStore);
-			app.provide(connectorsStoreKey, connectorsStore);
-			storesManager.addStore(connectorsStoreKey, connectorsStore);
-			app.provide(connectorControlsStoreKey, connectorControlsStore);
-			storesManager.addStore(connectorControlsStoreKey, connectorControlsStore);
-			app.provide(connectorPropertiesStoreKey, connectorPropertiesStore);
-			storesManager.addStore(connectorPropertiesStoreKey, connectorPropertiesStore);
-			app.provide(devicesStoreKey, devicesStore);
-			storesManager.addStore(devicesStoreKey, devicesStore);
-			app.provide(deviceControlsStoreKey, deviceControlsStore);
-			storesManager.addStore(deviceControlsStoreKey, deviceControlsStore);
-			app.provide(devicePropertiesStoreKey, devicePropertiesStore);
-			storesManager.addStore(devicePropertiesStoreKey, devicePropertiesStore);
-		},
-	};
-}
-
-const onWsMessage = (data: string): void => {
+const onWsMessage = (app: App, data: string): void => {
 	const flashMessage = useFlashMessage();
 
 	const body = JSON.parse(data);
+
+	const storesManager = injectStoresManager(app);
 
 	const stores = [
 		storesManager.getStore(channelsStoreKey),
@@ -127,7 +116,7 @@ const onWsMessage = (data: string): void => {
 						routingKey: get(body, 'routing_key'),
 						data: JSON.stringify(get(body, 'data')),
 					})
-					.catch((e): void => {
+					.catch((e: any): void => {
 						if (get(e, 'exception', null) !== null) {
 							flashMessage.exception(get(e, 'exception', null), 'Error parsing exchange data');
 						} else {
@@ -142,6 +131,5 @@ const onWsMessage = (data: string): void => {
 export * from './configuration';
 export * from './components';
 export * from './composables';
-export * from './router';
 
 export * from './types';

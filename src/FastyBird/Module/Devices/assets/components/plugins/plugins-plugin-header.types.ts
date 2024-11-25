@@ -1,4 +1,4 @@
-import { IDebugLog, IBridge, IConnectorData, IConnectorPlugin } from '../../types';
+import { IBridge, IConnectorData, IConnectorPlugin, IDebugLog } from '../../types';
 
 export interface IPluginsPluginHeaderProps {
 	plugin: IConnectorPlugin;

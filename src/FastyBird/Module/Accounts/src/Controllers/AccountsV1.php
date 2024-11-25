@@ -18,9 +18,10 @@ namespace FastyBird\Module\Accounts\Controllers;
 use Casbin\Exceptions as CasbinExceptions;
 use Doctrine;
 use Exception;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
@@ -83,8 +84,8 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function index(
 		Message\ServerRequestInterface $request,
@@ -219,7 +220,7 @@ final class AccountsV1 extends BaseV1
 				[
 					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -304,7 +305,7 @@ final class AccountsV1 extends BaseV1
 				[
 					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -333,6 +334,7 @@ final class AccountsV1 extends BaseV1
 	 * @throws Exceptions\Runtime
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function delete(
 		Message\ServerRequestInterface $request,
@@ -383,7 +385,7 @@ final class AccountsV1 extends BaseV1
 				[
 					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'account-controller',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -451,8 +453,8 @@ final class AccountsV1 extends BaseV1
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function findAccount(
 		Message\ServerRequestInterface $request,

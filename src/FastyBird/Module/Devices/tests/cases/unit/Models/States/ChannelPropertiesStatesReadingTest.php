@@ -4,10 +4,9 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Models\States;
 
 use DateTimeInterface;
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
@@ -23,15 +22,14 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws DI\MissingServiceException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @dataProvider readStates
 	 */
@@ -84,15 +82,14 @@ final class ChannelPropertiesStatesReadingTest extends Tests\Cases\Unit\BaseTest
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws DI\MissingServiceException
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @dataProvider getStates
 	 */

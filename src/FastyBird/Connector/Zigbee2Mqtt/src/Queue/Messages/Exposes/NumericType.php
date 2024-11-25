@@ -16,10 +16,10 @@
 namespace FastyBird\Connector\Zigbee2Mqtt\Queue\Messages\Exposes;
 
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 use TypeError;
 use ValueError;
@@ -81,15 +81,15 @@ final class NumericType extends Type
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function getDataType(): MetadataTypes\DataType
 	{
-		return MetadataUtilities\DataType::inferNumberDataType(
-			new MetadataFormats\NumberRange([
+		return ToolsUtilities\DataType::inferNumberDataType(
+			new ToolsFormats\NumberRange([
 				$this->getValueMin(),
 				$this->getValueMax(),
 			]),

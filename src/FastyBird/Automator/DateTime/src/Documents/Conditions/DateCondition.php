@@ -17,7 +17,7 @@ namespace FastyBird\Automator\DateTime\Documents\Conditions;
 
 use DateTimeInterface;
 use FastyBird\Automator\DateTime\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Triggers\Documents as TriggersDocuments;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -31,8 +31,8 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Conditions\DateCondition::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Conditions\DateCondition::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Conditions\DateCondition::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Conditions\DateCondition::TYPE)]
 final class DateCondition extends TriggersDocuments\Conditions\Condition
 {
 

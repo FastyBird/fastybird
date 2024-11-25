@@ -11,10 +11,10 @@ use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -38,8 +38,8 @@ final class StoreBridgeDevicesTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws DevicesExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws Nette\DI\MissingServiceException
 	 * @throws RuntimeException
 	 * @throws Error
@@ -60,7 +60,7 @@ final class StoreBridgeDevicesTest extends Tests\Cases\Unit\DbTestCase
 					},
 				),
 				self::callback(static fn (string $routingKey): bool => true),
-				self::callback(static function (MetadataDocuments\Document|null $document): bool {
+				self::callback(static function (ApplicationDocuments\Document|null $document): bool {
 					self::assertTrue($document !== null);
 
 					return true;

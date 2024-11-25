@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\DevicesModuleUiModule\Subscribers;
 
 use FastyBird\Bridge\DevicesModuleUiModule\Documents;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Events as MetadataEvents;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Events as ApplicationEvents;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -59,24 +59,25 @@ final class DocumentsMapper implements EventDispatcher\EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			MetadataEvents\PreLoad::class => 'preLoad',
+			ApplicationEvents\PreLoad::class => 'preLoad',
 		];
 	}
 
 	/**
-	 * @param MetadataEvents\PreLoad<MetadataDocuments\Document> $event
+	 * @param ApplicationEvents\PreLoad<ApplicationDocuments\Document> $event
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function preLoad(MetadataEvents\PreLoad $event): void
+	public function preLoad(ApplicationEvents\PreLoad $event): void
 	{
 		if (
 			!in_array(

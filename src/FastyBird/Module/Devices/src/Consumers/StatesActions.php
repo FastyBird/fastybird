@@ -15,14 +15,13 @@
 
 namespace FastyBird\Module\Devices\Consumers;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
@@ -69,16 +68,15 @@ final class StatesActions implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
-		MetadataDocuments\Document|null $document,
+		ApplicationDocuments\Document|null $document,
 	): void
 	{
 		if ($document === null) {
@@ -92,14 +90,13 @@ final class StatesActions implements ExchangeConsumers\Consumer
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	private function handlePropertyStateAction(
-		MetadataDocuments\Document $document,
+		ApplicationDocuments\Document $document,
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
 	): void
@@ -231,7 +228,7 @@ final class StatesActions implements ExchangeConsumers\Consumer
 							[
 								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 							],
 						);
 					});
@@ -363,7 +360,7 @@ final class StatesActions implements ExchangeConsumers\Consumer
 							[
 								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 							],
 						);
 					});
@@ -495,7 +492,7 @@ final class StatesActions implements ExchangeConsumers\Consumer
 							[
 								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'channel-properties-states',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 							],
 						);
 					});

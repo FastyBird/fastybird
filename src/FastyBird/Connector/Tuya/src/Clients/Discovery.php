@@ -24,8 +24,9 @@ use FastyBird\Connector\Tuya\Queue;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -118,12 +119,12 @@ final class Discovery
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Throwable
 	 */
 	public function discover(): void
@@ -141,8 +142,8 @@ final class Discovery
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -254,7 +255,7 @@ final class Discovery
 								[
 									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 								],
 							);
 
@@ -282,7 +283,7 @@ final class Discovery
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'protocol' => $protocolVersion->value,
 						],
 					);
@@ -309,7 +310,7 @@ final class Discovery
 							[
 								'source' => MetadataTypes\Sources\Connector::TUYA->value,
 								'type' => 'discovery-client',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 								'device' => [
 									'identifier' => $localDeviceInfo->getId(),
 									'ip_address' => $localDeviceInfo->getIpAddress(),
@@ -346,11 +347,11 @@ final class Discovery
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Throwable
 	 */
 	private function discoverCloudDevices(): void
@@ -385,7 +386,7 @@ final class Discovery
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -414,7 +415,7 @@ final class Discovery
 						[
 							'source' => MetadataTypes\Sources\Connector::TUYA->value,
 							'type' => 'discovery-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -437,7 +438,7 @@ final class Discovery
 							[
 								'source' => MetadataTypes\Sources\Connector::TUYA->value,
 								'type' => 'discovery-client',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 								'device' => [
 									'identifier' => $device->getId(),
 									'ip_address' => $device->getIp(),
@@ -462,7 +463,7 @@ final class Discovery
 					[
 						'source' => MetadataTypes\Sources\Connector::TUYA->value,
 						'type' => 'discovery-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -484,8 +485,8 @@ final class Discovery
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\OpenApiCall
 	 * @throws Exceptions\OpenApiError
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -615,7 +616,7 @@ final class Discovery
 								[
 									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'device' => [
 										'identifier' => $child->getId(),
 										'ip_address' => $ipAddress,
@@ -680,7 +681,7 @@ final class Discovery
 								[
 									'source' => MetadataTypes\Sources\Connector::TUYA->value,
 									'type' => 'discovery-client',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 								],
 							);
 
@@ -703,9 +704,9 @@ final class Discovery
 	 *
 	 * @return Promise\PromiseInterface<bool>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Throwable
 	 */
 	private function handleFoundCloudDevice(
@@ -904,7 +905,7 @@ final class Discovery
 				[
 					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $id,
 						'ip_address' => $ipAddress,
@@ -975,7 +976,7 @@ final class Discovery
 				[
 					'source' => MetadataTypes\Sources\Connector::TUYA->value,
 					'type' => 'discovery-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'device' => [
 						'identifier' => $id,
 						'ip_address' => $ipAddress,
@@ -992,8 +993,8 @@ final class Discovery
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */

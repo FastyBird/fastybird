@@ -1,13 +1,17 @@
-import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElMessageBox } from 'element-plus';
+import { useRoute, useRouter } from 'vue-router';
 
-import { useFlashMessage, useRoutesNames } from '../composables';
+import { ElMessageBox } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { connectorsStoreKey } from '../configuration';
-import { storesManager } from '../entry';
 import { ApplicationError } from '../errors';
 import { IConnector, UseConnectorActions } from '../types';
+
+import { useRoutesNames } from './useRoutesNames';
 
 export const useConnectorActions = (): UseConnectorActions => {
 	const router = useRouter();
@@ -17,6 +21,8 @@ export const useConnectorActions = (): UseConnectorActions => {
 
 	const routeNames = useRoutesNames();
 	const flashMessage = useFlashMessage();
+
+	const storesManager = injectStoresManager();
 
 	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 

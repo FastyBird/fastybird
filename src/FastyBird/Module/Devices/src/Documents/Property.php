@@ -16,14 +16,13 @@
 namespace FastyBird\Module\Devices\Documents;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Constants as MetadataConstants;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
@@ -46,13 +45,13 @@ use function strval;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\MappedSuperclass]
-abstract class Property implements Documents\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
+#[ApplicationDocuments\Mapping\MappedSuperclass]
+abstract class Property implements Documents\Document, ApplicationDocuments\Owner, ApplicationDocuments\CreatedAt, ApplicationDocuments\UpdatedAt
 {
 
-	use MetadataDocuments\TOwner;
-	use MetadataDocuments\TCreatedAt;
-	use MetadataDocuments\TUpdatedAt;
+	use ApplicationDocuments\TOwner;
+	use ApplicationDocuments\TCreatedAt;
+	use ApplicationDocuments\TUpdatedAt;
 
 	/**
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
@@ -231,11 +230,11 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function getFormat(): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
+	public function getFormat(): ToolsFormats\StringEnum|ToolsFormats\NumberRange|ToolsFormats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -256,20 +255,20 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		try {
-				return MetadataUtilities\Value::normalizeValue(
+				return ToolsUtilities\Value::normalizeValue(
 					$this->default,
 					$this->getDataType(),
 					$this->getFormat(),
 				);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
@@ -314,8 +313,8 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -334,7 +333,7 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
-			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+			'default' => ToolsUtilities\Value::flattenValue($this->getDefault()),
 			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 
 			'owner' => $this->getOwner()?->toString(),
@@ -351,13 +350,13 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 	/**
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|null>|array<int, array<int, string|array<int, string|int|float|bool>|null>>|null $format
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	private function buildFormat(
 		array|string|null $format,
-	): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
+	): ToolsFormats\StringEnum|ToolsFormats\NumberRange|ToolsFormats\CombinedEnum|null
 	{
 		if ($format === null) {
 			return null;
@@ -397,7 +396,7 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 			}
 
 			if (preg_match(MetadataConstants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
-				return new MetadataFormats\NumberRange($format);
+				return new ToolsFormats\NumberRange($format);
 			}
 		} elseif (
 			in_array(
@@ -428,9 +427,9 @@ abstract class Property implements Documents\Document, MetadataDocuments\Owner, 
 			}
 
 			if (preg_match(MetadataConstants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
-				return new MetadataFormats\CombinedEnum($format);
+				return new ToolsFormats\CombinedEnum($format);
 			} elseif (preg_match(MetadataConstants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new MetadataFormats\StringEnum($format);
+				return new ToolsFormats\StringEnum($format);
 			}
 		}
 

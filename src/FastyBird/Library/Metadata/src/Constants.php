@@ -26,8 +26,6 @@ namespace FastyBird\Library\Metadata;
 final class Constants
 {
 
-	public const RESOURCES_FOLDER = __DIR__ . '/../resources';
-
 	public const EXCHANGE_CHANNEL_NAME = 'fb_exchange';
 
 	public const VALUE_NOT_SET = 'N/A';

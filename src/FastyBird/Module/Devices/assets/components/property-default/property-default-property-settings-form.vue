@@ -116,12 +116,13 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElForm, ElFormItem, ElInput, ElOption, ElSelect, ElSwitch, FormInstance, FormRules } from 'element-plus';
 
 import { DataType } from '@fastybird/metadata-library';
 
 import { usePropertyForm } from '../../composables';
-import { FormResultTypes, IPropertyForm, PropertyType } from '../../types';
+import { FormResultType, FormResultTypes, IPropertyForm, PropertyType } from '../../types';
 
 import { IPropertyDefaultPropertySettingsFormProps } from './property-default-property-settings-form.types';
 
@@ -140,7 +141,7 @@ const props = withDefaults(defineProps<IPropertyDefaultPropertySettingsFormProps
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 	(e: 'added'): void;
 	(e: 'saved'): void;
@@ -313,8 +314,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => formResult.value,
-	(val: FormResultTypes): void => {
+	(): FormResultType => formResult.value,
+	(val: FormResultType): void => {
 		emit('update:remoteFormResult', val);
 	}
 );

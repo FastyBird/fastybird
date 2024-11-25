@@ -236,15 +236,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { I18nT, useI18n } from 'vue-i18n';
+
 import { ElButton, ElCard, ElDivider, ElDropdown, ElDropdownItem, ElDropdownMenu, ElIcon, ElTag, ElText, useNamespace } from 'element-plus';
 
-import { FasArrowsRotate, FasCircleInfo, FasEllipsisVertical, FasGears, FasPlay, FasPlug, FasStop, FasTrash } from '@fastybird/web-ui-icons';
-import { ConnectionState } from '@fastybird/metadata-library';
+import { useBreakpoints } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { FasArrowsRotate, FasCircleInfo, FasEllipsisVertical, FasGears, FasPlay, FasPlug, FasStop, FasTrash } from '@fastybird/web-ui-icons';
 
-import { ConnectorsConnectorIcon } from '../../components';
-import { useBreakpoints, useConnectorState } from '../../composables';
-import { IConnector, StateColor } from '../../types';
+import { useConnectorState } from '../../composables';
+import { ConnectionState, IConnector, StateColor } from '../../types';
+import ConnectorsConnectorIcon from '../connectors/connectors-connector-icon.vue';
 
 import { IConnectorsConnectorBoxProps } from './connectors-connector-box.types';
 

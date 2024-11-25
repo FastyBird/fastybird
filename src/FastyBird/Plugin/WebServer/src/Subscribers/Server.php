@@ -16,8 +16,8 @@
 namespace FastyBird\Plugin\WebServer\Subscribers;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Plugin\WebServer\Events;
 use FastyBird\Plugin\WebServer\Exceptions;
 use Symfony\Component\EventDispatcher;
@@ -33,7 +33,7 @@ use Symfony\Component\EventDispatcher;
 readonly class Server implements EventDispatcher\EventSubscriberInterface
 {
 
-	public function __construct(private ApplicationHelpers\Database $database)
+	public function __construct(private ToolsHelpers\Database $database)
 	{
 	}
 
@@ -47,9 +47,9 @@ readonly class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function check(): void
 	{
@@ -66,8 +66,8 @@ readonly class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function request(): void
 	{
@@ -78,7 +78,7 @@ readonly class Server implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function response(): void
 	{

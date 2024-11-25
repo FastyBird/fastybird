@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+import { ComponentOptionsMixin, DefineComponent } from 'vue';
+import { I18n } from 'vue-i18n';
+import { Router } from 'vue-router';
 
 import { Pinia } from 'pinia';
-import { ComponentOptionsMixin, DefineComponent } from 'vue';
-import { Router } from 'vue-router';
-import { I18n } from 'vue-i18n';
 
 import { Client } from '@fastybird/vue-wamp-v1';
 
 import {
-	connectorDevicesEmits,
-	deviceChannelsEmits,
-	editChannelEmits,
-	editConnectorEmits,
-	editDeviceEmits,
 	IChannelDetailProps,
 	IConnectorDetailProps,
 	IConnectorDevicesProps,
@@ -21,6 +16,11 @@ import {
 	IEditChannelProps,
 	IEditConnectorProps,
 	IEditDeviceProps,
+	connectorDevicesEmits,
+	deviceChannelsEmits,
+	editChannelEmits,
+	editConnectorEmits,
+	editDeviceEmits,
 } from './components';
 
 export interface IConnectorOptions {

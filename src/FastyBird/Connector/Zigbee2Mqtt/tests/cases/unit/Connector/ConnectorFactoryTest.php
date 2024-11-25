@@ -7,7 +7,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Connector;
 use FastyBird\Connector\Zigbee2Mqtt\Documents;
 use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Ramsey\Uuid;

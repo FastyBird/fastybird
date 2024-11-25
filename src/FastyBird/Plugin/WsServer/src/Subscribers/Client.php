@@ -16,8 +16,8 @@
 namespace FastyBird\Plugin\WsServer\Subscribers;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WsServer;
 use FastyBird\Plugin\WsServer\Events;
@@ -45,7 +45,7 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	private array $allowedOrigins;
 
 	public function __construct(
-		private readonly ApplicationHelpers\Database $database,
+		private readonly ToolsHelpers\Database $database,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 		string|null $wsKeys = null,
 		string|null $allowedOrigins = null,
@@ -72,8 +72,8 @@ class Client implements EventDispatcher\EventSubscriberInterface
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DBAL\Exception
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws WebSockets\Exceptions\InvalidArgumentException
 	 * @throws WebSockets\Exceptions\TerminateException
 	 */

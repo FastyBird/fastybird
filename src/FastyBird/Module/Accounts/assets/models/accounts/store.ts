@@ -1,43 +1,51 @@
-import { defineStore, Pinia, Store } from 'pinia';
-import axios from 'axios';
-import { Jsona } from 'jsona';
+import { ref } from 'vue';
+
+import { Pinia, Store, defineStore } from 'pinia';
+
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
-import { v4 as uuid } from 'uuid';
+import axios from 'axios';
 import { format } from 'date-fns';
-import get from 'lodash.get';
+import { Jsona } from 'jsona';
+import lodashGet from 'lodash.get';
+import { v4 as uuid } from 'uuid';
 
-import { AccountDocument, AccountsModuleRoutes as RoutingKeys, AccountState, ModulePrefix } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
+import { injectStoresManager } from '@fastybird/tools';
+import { IStoresManager } from '@fastybird/tools/assets/stores';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.account.json';
-
+import { emailsStoreKey, identitiesStoreKey } from '../../configuration';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useEmails, useIdentities } from '../../models';
 import {
+	AccountDocument,
+	AccountState,
+	AccountsStoreSetup,
 	IAccountsActions,
-	IAccountsGetters,
 	IAccountsInsertDataActionPayload,
+	IAccountsStateSemaphore,
 	IEmail,
 	IEmailResponseModel,
 	IIdentityResponseModel,
 	IPlainRelation,
-} from '../../models/types';
+	RoutingKeys,
+} from '../../types';
 
 import {
 	IAccount,
-	IAccountsAddActionPayload,
-	IAccountsGetActionPayload,
 	IAccountRecordFactoryPayload,
-	IAccountsRemoveActionPayload,
-	IAccountsSetActionPayload,
 	IAccountResponseJson,
 	IAccountResponseModel,
-	IAccountsSaveActionPayload,
-	IAccountsSocketDataActionPayload,
-	IAccountsResponseJson,
-	IAccountsState,
+	IAccountsAddActionPayload,
 	IAccountsEditActionPayload,
+	IAccountsGetActionPayload,
+	IAccountsRemoveActionPayload,
+	IAccountsResponseJson,
+	IAccountsSaveActionPayload,
+	IAccountsSetActionPayload,
+	IAccountsSocketDataActionPayload,
+	IAccountsState,
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
@@ -48,30 +56,30 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const storeRecordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
+const storeRecordFactory = (storesManager: IStoresManager, rawData: IAccountRecordFactoryPayload): IAccount => {
 	const record: IAccount = {
-		id: get(data, 'id', uuid().toString()),
-		type: data.type,
+		id: lodashGet(rawData, 'id', uuid().toString()),
+		type: rawData.type,
 
-		draft: get(data, 'draft', false),
+		draft: lodashGet(rawData, 'draft', false),
 
 		details: {
-			firstName: data.details.firstName,
-			lastName: data.details.lastName,
-			middleName: get(data, 'details.middleName', null),
+			firstName: rawData.details.firstName,
+			lastName: rawData.details.lastName,
+			middleName: lodashGet(rawData, 'details.middleName', null),
 		},
 
-		language: get(data, 'language', 'en'),
+		language: lodashGet(rawData, 'language', 'en'),
 
-		weekStart: get(data, 'weekStart', 1),
+		weekStart: lodashGet(rawData, 'weekStart', 1),
 
 		dateTime: {
-			timezone: get(data, 'dateTime.timezone', 'Europe/Prague'),
-			dateFormat: get(data, 'dateTime.dateFormat', 'dd.MM.yyyy'),
-			timeFormat: get(data, 'dateTime.timeFormat', 'HH:mm'),
+			timezone: lodashGet(rawData, 'dateTime.timezone', 'Europe/Prague'),
+			dateFormat: lodashGet(rawData, 'dateTime.dateFormat', 'dd.MM.yyyy'),
+			timeFormat: lodashGet(rawData, 'dateTime.timeFormat', 'HH:mm'),
 		},
 
-		state: get(data, 'state', AccountState.NOT_ACTIVATED),
+		state: lodashGet(rawData, 'state', AccountState.NOT_ACTIVATED),
 
 		lastVisit: null,
 		registered: format(new Date(), "yyyy-MM-dd'T'HH:mm:ssXXXXX"),
@@ -87,7 +95,7 @@ const storeRecordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
 		},
 
 		get email(): IEmail | null {
-			const emailsStore = useEmails();
+			const emailsStore = storesManager.getStore(emailsStoreKey);
 
 			const defaultEmail = emailsStore.findForAccount(this.id).find((email) => email.isDefault);
 
@@ -97,11 +105,11 @@ const storeRecordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
 
 	record.relationshipNames.forEach((relationName) => {
 		if (relationName === 'emails' || relationName === 'identities' || relationName === 'roles') {
-			get(data, relationName, []).forEach((relation: any): void => {
-				if (get(relation, 'id', null) !== null && get(relation, 'type', null) !== null) {
+			lodashGet(rawData, relationName, []).forEach((relation: any): void => {
+				if (lodashGet(relation, 'id', null) !== null && lodashGet(relation, 'type', null) !== null) {
 					(record[relationName] as IPlainRelation[]).push({
-						id: get(relation, 'id', null),
-						type: get(relation, 'type', null),
+						id: lodashGet(relation, 'id', null),
+						type: lodashGet(relation, 'type', null),
 					});
 				}
 			});
@@ -111,8 +119,12 @@ const storeRecordFactory = (data: IAccountRecordFactoryPayload): IAccount => {
 	return record;
 };
 
-const addEmailsRelations = async (account: IAccount, emails: (IEmailResponseModel | IPlainRelation)[]): Promise<void> => {
-	const emailsStore = useEmails();
+const addEmailsRelations = async (
+	storesManager: IStoresManager,
+	account: IAccount,
+	emails: (IEmailResponseModel | IPlainRelation)[]
+): Promise<void> => {
+	const emailsStore = storesManager.getStore(emailsStoreKey);
 
 	for (const email of emails) {
 		if ('address' in email) {
@@ -128,8 +140,12 @@ const addEmailsRelations = async (account: IAccount, emails: (IEmailResponseMode
 	}
 };
 
-const addIdentitiesRelations = async (account: IAccount, identities: (IIdentityResponseModel | IPlainRelation)[]): Promise<void> => {
-	const identitiesStore = useIdentities();
+const addIdentitiesRelations = async (
+	storesManager: IStoresManager,
+	account: IAccount,
+	identities: (IIdentityResponseModel | IPlainRelation)[]
+): Promise<void> => {
+	const identitiesStore = storesManager.getStore(identitiesStoreKey);
 
 	for (const identity of identities) {
 		if ('uid' in identity) {
@@ -145,489 +161,438 @@ const addIdentitiesRelations = async (account: IAccount, identities: (IIdentityR
 	}
 };
 
-export const useAccounts = defineStore<string, IAccountsState, IAccountsGetters, IAccountsActions>('accounts_module_accounts', {
-	state: (): IAccountsState => {
-		return {
-			semaphore: {
-				fetching: {
-					items: false,
-					item: [],
-				},
-				creating: [],
-				updating: [],
-				deleting: [],
-			},
+export const useAccounts = defineStore<'accounts_module_accounts', AccountsStoreSetup>('accounts_module_accounts', (): AccountsStoreSetup => {
+	const storesManager = injectStoresManager();
 
-			firstLoad: false,
-
-			data: {},
-		};
-	},
-
-	getters: {
-		findById: (state: IAccountsState): ((id: IAccount['id']) => IAccount | null) => {
-			return (id: IAccount['id']): IAccount | null => {
-				return id in state.data ? state.data[id] : null;
-			};
+	const semaphore = ref<IAccountsStateSemaphore>({
+		fetching: {
+			items: false,
+			item: [],
 		},
-	},
+		creating: [],
+		updating: [],
+		deleting: [],
+	});
 
-	actions: {
-		/**
-		 * Set record from via other store
-		 *
-		 * @param {IAccountsSetActionPayload} payload
-		 */
-		async set(payload: IAccountsSetActionPayload): Promise<IAccount> {
-			const record = storeRecordFactory(payload.data);
+	const firstLoad = ref<boolean>(false);
 
-			if ('emails' in payload.data && Array.isArray(payload.data.emails)) {
-				await addEmailsRelations(record, payload.data.emails);
-			}
+	const data = ref<{ [key: IAccount['id']]: IAccount }>({});
 
-			if ('identities' in payload.data && Array.isArray(payload.data.identities)) {
-				await addIdentitiesRelations(record, payload.data.identities);
-			}
+	const findById = (id: IAccount['id']): IAccount | null => (id in data.value ? data.value[id] : null);
 
-			return (this.data[record.id] = record);
-		},
+	const set = async (payload: IAccountsSetActionPayload): Promise<IAccount> => {
+		const record = storeRecordFactory(storesManager, payload.data);
 
-		/**
-		 * Get one record from server
-		 *
-		 * @param {IAccountsGetActionPayload} payload
-		 */
-		async get(payload: IAccountsGetActionPayload): Promise<boolean> {
-			if (this.semaphore.fetching.item.includes(payload.id)) {
-				return false;
-			}
+		if ('emails' in payload.data && Array.isArray(payload.data.emails)) {
+			await addEmailsRelations(storesManager, record, payload.data.emails);
+		}
 
-			this.semaphore.fetching.item.push(payload.id);
+		if ('identities' in payload.data && Array.isArray(payload.data.identities)) {
+			await addIdentitiesRelations(storesManager, record, payload.data.identities);
+		}
 
-			try {
-				const accountResponse = await axios.get<IAccountResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`);
+		return (data.value[record.id] = record);
+	};
 
-				const accountResponseModel = jsonApiFormatter.deserialize(accountResponse.data) as IAccountResponseModel;
+	const get = async (payload: IAccountsGetActionPayload): Promise<boolean> => {
+		if (semaphore.value.fetching.item.includes(payload.id)) {
+			return false;
+		}
 
-				this.data[accountResponseModel.id] = storeRecordFactory(accountResponseModel);
+		semaphore.value.fetching.item.push(payload.id);
 
-				await addEmailsRelations(this.data[accountResponseModel.id], accountResponseModel.emails);
-				await addIdentitiesRelations(this.data[accountResponseModel.id], accountResponseModel.identities);
-			} catch (e: any) {
-				throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
-			} finally {
-				this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
-			}
+		try {
+			const accountResponse = await axios.get<IAccountResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`);
 
-			const promises: Promise<boolean>[] = [];
+			const accountResponseModel = jsonApiFormatter.deserialize(accountResponse.data) as IAccountResponseModel;
 
-			const emailsStore = useEmails();
-			promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
+			data.value[accountResponseModel.id] = storeRecordFactory(storesManager, accountResponseModel);
 
-			const identitiesStore = useIdentities();
-			promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
+			await addEmailsRelations(storesManager, data.value[accountResponseModel.id], accountResponseModel.emails);
+			await addIdentitiesRelations(storesManager, data.value[accountResponseModel.id], accountResponseModel.identities);
+		} catch (e: any) {
+			throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
+		} finally {
+			semaphore.value.fetching.item = semaphore.value.fetching.item.filter((item) => item !== payload.id);
+		}
 
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
+		const promises: Promise<boolean>[] = [];
+
+		const emailsStore = storesManager.getStore(emailsStoreKey);
+		promises.push(emailsStore.fetch({ account: data.value[payload.id] }));
+
+		const identitiesStore = storesManager.getStore(identitiesStoreKey);
+		promises.push(identitiesStore.fetch({ account: data.value[payload.id] }));
+
+		Promise.all(promises).catch((e: any): void => {
+			throw new ApiError('accounts-module.accounts.get.failed', e, 'Fetching account failed.');
+		});
+
+		return true;
+	};
+
+	const fetch = async (): Promise<boolean> => {
+		if (semaphore.value.fetching.items) {
+			return false;
+		}
+
+		semaphore.value.fetching.items = true;
+
+		try {
+			const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts`);
+
+			const accountsResponseModel = jsonApiFormatter.deserialize(accountsResponse.data) as IAccountResponseModel[];
+
+			accountsResponseModel.forEach((account) => {
+				data.value[account.id] = storeRecordFactory(storesManager, account);
+
+				addEmailsRelations(storesManager, data.value[account.id], account.emails);
+				addIdentitiesRelations(storesManager, data.value[account.id], account.identities);
 			});
 
-			return true;
-		},
+			firstLoad.value = true;
+		} catch (e: any) {
+			throw new ApiError('accounts-module.accounts.fetch.failed', e, 'Fetching accounts failed.');
+		} finally {
+			semaphore.value.fetching.items = false;
+		}
 
-		/**
-		 * Fetch all records from server
-		 */
-		async fetch(): Promise<boolean> {
-			if (this.semaphore.fetching.items) {
-				return false;
-			}
+		const promises: Promise<boolean>[] = [];
 
-			this.semaphore.fetching.items = true;
+		const emailsStore = storesManager.getStore(emailsStoreKey);
+		const identitiesStore = storesManager.getStore(identitiesStoreKey);
 
+		for (const account of Object.values(data.value ?? {})) {
+			promises.push(emailsStore.fetch({ account }));
+			promises.push(identitiesStore.fetch({ account }));
+		}
+
+		Promise.all(promises).catch((e: any): void => {
+			throw new ApiError('accounts-module.accounts.fetch.failed', e, 'Fetching accounts failed.');
+		});
+
+		return true;
+	};
+
+	const add = async (payload: IAccountsAddActionPayload): Promise<IAccount> => {
+		const newAccount = storeRecordFactory(storesManager, {
+			...{ id: payload?.id, type: payload?.type, draft: payload?.draft },
+			...payload.data,
+		});
+
+		semaphore.value.creating.push(newAccount.id);
+
+		data.value[newAccount.id] = newAccount;
+
+		if (newAccount.draft) {
+			semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newAccount.id);
+
+			return newAccount;
+		} else {
 			try {
-				const accountsResponse = await axios.get<IAccountsResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts`);
-
-				const accountsResponseModel = jsonApiFormatter.deserialize(accountsResponse.data) as IAccountResponseModel[];
-
-				accountsResponseModel.forEach((account) => {
-					this.data[account.id] = storeRecordFactory(account);
-
-					addEmailsRelations(this.data[account.id], account.emails);
-					addIdentitiesRelations(this.data[account.id], account.identities);
-				});
-
-				this.firstLoad = true;
-			} catch (e: any) {
-				throw new ApiError('accounts-module.accounts.fetch.failed', e, 'Fetching accounts failed.');
-			} finally {
-				this.semaphore.fetching.items = false;
-			}
-
-			const promises: Promise<boolean>[] = [];
-
-			const emailsStore = useEmails();
-			const identitiesStore = useIdentities();
-
-			for (const account of Object.values(this.data ?? {})) {
-				promises.push(emailsStore.fetch({ account }));
-				promises.push(identitiesStore.fetch({ account }));
-			}
-
-			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('accounts-module.accounts.fetch.failed', e, 'Fetching accounts failed.');
-			});
-
-			return true;
-		},
-
-		/**
-		 * Add new record
-		 *
-		 * @param {IAccountsAddActionPayload} payload
-		 */
-		async add(payload: IAccountsAddActionPayload): Promise<IAccount> {
-			const newAccount = storeRecordFactory({
-				...{ id: payload?.id, type: payload?.type, draft: payload?.draft },
-				...payload.data,
-			});
-
-			this.semaphore.creating.push(newAccount.id);
-
-			this.data[newAccount.id] = newAccount;
-
-			if (newAccount.draft) {
-				this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newAccount.id);
-
-				return newAccount;
-			} else {
-				try {
-					const createdAccount = await axios.post<IAccountResponseJson>(
-						`/${ModulePrefix.ACCOUNTS}/v1/accounts`,
-						jsonApiFormatter.serialize({
-							stuff: newAccount,
-						})
-					);
-
-					const createdAccountModel = jsonApiFormatter.deserialize(createdAccount.data) as IAccountResponseModel;
-
-					this.data[createdAccountModel.id] = storeRecordFactory(createdAccountModel);
-				} catch (e: any) {
-					// Record could not be created on api, we have to remove it from database
-					delete this.data[newAccount.id];
-
-					throw new ApiError('accounts-module.accounts.create.failed', e, 'Create new account failed.');
-				} finally {
-					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newAccount.id);
-				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const emailsStore = useEmails();
-				promises.push(emailsStore.fetch({ account: this.data[newAccount.id] }));
-
-				const identitiesStore = useIdentities();
-				promises.push(identitiesStore.fetch({ account: this.data[newAccount.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('accounts-module.accounts.create.failed', e, 'Create new account failed.');
-				});
-
-				return this.data[newAccount.id];
-			}
-		},
-
-		/**
-		 * Edit existing record
-		 *
-		 * @param {IAccountsEditActionPayload} payload
-		 */
-		async edit(payload: IAccountsEditActionPayload): Promise<IAccount> {
-			if (this.semaphore.updating.includes(payload.id)) {
-				throw new Error('accounts-module.accounts.update.inProgress');
-			}
-
-			if (!Object.keys(this.data).includes(payload.id)) {
-				throw new Error('accounts-module.accounts.update.failed');
-			}
-
-			this.semaphore.updating.push(payload.id);
-
-			// Get record stored in database
-			const existingRecord = this.data[payload.id];
-			// Update with new values
-			const updatedRecord = { ...existingRecord, ...payload.data } as IAccount;
-
-			this.data[payload.id] = updatedRecord;
-
-			if (updatedRecord.draft) {
-				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
-
-				return this.data[payload.id];
-			} else {
-				try {
-					const updatedAccount = await axios.patch<IAccountResponseJson>(
-						`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`,
-						jsonApiFormatter.serialize({
-							stuff: updatedRecord,
-						})
-					);
-
-					const updatedAccountModel = jsonApiFormatter.deserialize(updatedAccount.data) as IAccountResponseModel;
-
-					this.data[updatedAccountModel.id] = storeRecordFactory(updatedAccountModel);
-				} catch (e: any) {
-					// Updating record on api failed, we need to refresh record
-					await this.get({ id: payload.id });
-
-					throw new ApiError('accounts-module.accounts.update.failed', e, 'Edit account failed.');
-				} finally {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
-				}
-
-				const promises: Promise<boolean>[] = [];
-
-				const emailsStore = useEmails();
-				promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
-
-				const identitiesStore = useIdentities();
-				promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
-
-				Promise.all(promises).catch((e: any): void => {
-					throw new ApiError('accounts-module.accounts.update.failed', e, 'Edit account failed.');
-				});
-
-				return this.data[payload.id];
-			}
-		},
-
-		/**
-		 * Save draft record on server
-		 *
-		 * @param {IAccountsSaveActionPayload} payload
-		 */
-		async save(payload: IAccountsSaveActionPayload): Promise<IAccount> {
-			if (this.semaphore.updating.includes(payload.id)) {
-				throw new Error('accounts-module.accounts.save.inProgress');
-			}
-
-			if (!Object.keys(this.data).includes(payload.id)) {
-				throw new Error('accounts-module.accounts.save.failed');
-			}
-
-			this.semaphore.updating.push(payload.id);
-
-			const recordToSave = this.data[payload.id];
-
-			try {
-				const savedAccount = await axios.post<IAccountResponseJson>(
+				const createdAccount = await axios.post<IAccountResponseJson>(
 					`/${ModulePrefix.ACCOUNTS}/v1/accounts`,
 					jsonApiFormatter.serialize({
-						stuff: recordToSave,
+						stuff: newAccount,
 					})
 				);
 
-				const savedAccountModel = jsonApiFormatter.deserialize(savedAccount.data) as IAccountResponseModel;
+				const createdAccountModel = jsonApiFormatter.deserialize(createdAccount.data) as IAccountResponseModel;
 
-				this.data[savedAccountModel.id] = storeRecordFactory(savedAccountModel);
+				data.value[createdAccountModel.id] = storeRecordFactory(storesManager, createdAccountModel);
 			} catch (e: any) {
-				throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
+				// Record could not be created on api, we have to remove it from database
+				delete data.value[newAccount.id];
+
+				throw new ApiError('accounts-module.accounts.create.failed', e, 'Create new account failed.');
 			} finally {
-				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+				semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newAccount.id);
 			}
 
 			const promises: Promise<boolean>[] = [];
 
-			const emailsStore = useEmails();
-			promises.push(emailsStore.fetch({ account: this.data[payload.id] }));
+			const emailsStore = storesManager.getStore(emailsStoreKey);
+			promises.push(emailsStore.fetch({ account: data.value[newAccount.id] }));
 
-			const identitiesStore = useIdentities();
-			promises.push(identitiesStore.fetch({ account: this.data[payload.id] }));
+			const identitiesStore = storesManager.getStore(identitiesStoreKey);
+			promises.push(identitiesStore.fetch({ account: data.value[newAccount.id] }));
 
 			Promise.all(promises).catch((e: any): void => {
-				throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
+				throw new ApiError('accounts-module.accounts.create.failed', e, 'Create new account failed.');
 			});
 
-			return this.data[payload.id];
-		},
+			return data.value[newAccount.id];
+		}
+	};
 
-		/**
-		 * Remove existing record from store and server
-		 *
-		 * @param {IAccountsRemoveActionPayload} payload
-		 */
-		async remove(payload: IAccountsRemoveActionPayload): Promise<boolean> {
-			if (this.semaphore.deleting.includes(payload.id)) {
-				throw new Error('accounts-module.accounts.delete.inProgress');
+	const edit = async (payload: IAccountsEditActionPayload): Promise<IAccount> => {
+		if (semaphore.value.updating.includes(payload.id)) {
+			throw new Error('accounts-module.accounts.update.inProgress');
+		}
+
+		if (!Object.keys(data.value).includes(payload.id)) {
+			throw new Error('accounts-module.accounts.update.failed');
+		}
+
+		semaphore.value.updating.push(payload.id);
+
+		// Get record stored in database
+		const existingRecord = data.value[payload.id];
+		// Update with new values
+		const updatedRecord = { ...existingRecord, ...payload.data } as IAccount;
+
+		data.value[payload.id] = updatedRecord;
+
+		if (updatedRecord.draft) {
+			semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+
+			return data.value[payload.id];
+		} else {
+			try {
+				const updatedAccount = await axios.patch<IAccountResponseJson>(
+					`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.id}`,
+					jsonApiFormatter.serialize({
+						stuff: updatedRecord,
+					})
+				);
+
+				const updatedAccountModel = jsonApiFormatter.deserialize(updatedAccount.data) as IAccountResponseModel;
+
+				data.value[updatedAccountModel.id] = storeRecordFactory(storesManager, updatedAccountModel);
+			} catch (e: any) {
+				// Updating record on api failed, we need to refresh record
+				await get({ id: payload.id });
+
+				throw new ApiError('accounts-module.accounts.update.failed', e, 'Edit account failed.');
+			} finally {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 			}
 
-			if (!Object.keys(this.data).includes(payload.id)) {
-				return true;
-			}
+			const promises: Promise<boolean>[] = [];
 
-			const emailsStore = useEmails();
-			const identitiesStore = useIdentities();
+			const emailsStore = storesManager.getStore(emailsStoreKey);
+			promises.push(emailsStore.fetch({ account: data.value[payload.id] }));
 
-			this.semaphore.deleting.push(payload.id);
+			const identitiesStore = storesManager.getStore(identitiesStoreKey);
+			promises.push(identitiesStore.fetch({ account: data.value[payload.id] }));
 
-			const recordToDelete = this.data[payload.id];
+			Promise.all(promises).catch((e: any): void => {
+				throw new ApiError('accounts-module.accounts.update.failed', e, 'Edit account failed.');
+			});
 
-			delete this.data[payload.id];
+			return data.value[payload.id];
+		}
+	};
 
-			if (recordToDelete.draft) {
-				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+	const save = async (payload: IAccountsSaveActionPayload): Promise<IAccount> => {
+		if (semaphore.value.updating.includes(payload.id)) {
+			throw new Error('accounts-module.accounts.save.inProgress');
+		}
+
+		if (!Object.keys(data.value).includes(payload.id)) {
+			throw new Error('accounts-module.accounts.save.failed');
+		}
+
+		semaphore.value.updating.push(payload.id);
+
+		const recordToSave = data.value[payload.id];
+
+		try {
+			const savedAccount = await axios.post<IAccountResponseJson>(
+				`/${ModulePrefix.ACCOUNTS}/v1/accounts`,
+				jsonApiFormatter.serialize({
+					stuff: recordToSave,
+				})
+			);
+
+			const savedAccountModel = jsonApiFormatter.deserialize(savedAccount.data) as IAccountResponseModel;
+
+			data.value[savedAccountModel.id] = storeRecordFactory(storesManager, savedAccountModel);
+		} catch (e: any) {
+			throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
+		} finally {
+			semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+		}
+
+		const promises: Promise<boolean>[] = [];
+
+		const emailsStore = storesManager.getStore(emailsStoreKey);
+		promises.push(emailsStore.fetch({ account: data.value[payload.id] }));
+
+		const identitiesStore = storesManager.getStore(identitiesStoreKey);
+		promises.push(identitiesStore.fetch({ account: data.value[payload.id] }));
+
+		Promise.all(promises).catch((e: any): void => {
+			throw new ApiError('accounts-module.accounts.save.failed', e, 'Save draft account failed.');
+		});
+
+		return data.value[payload.id];
+	};
+
+	const remove = async (payload: IAccountsRemoveActionPayload): Promise<boolean> => {
+		if (semaphore.value.deleting.includes(payload.id)) {
+			throw new Error('accounts-module.accounts.delete.inProgress');
+		}
+
+		if (!Object.keys(data.value).includes(payload.id)) {
+			return true;
+		}
+
+		const emailsStore = storesManager.getStore(emailsStoreKey);
+		const identitiesStore = storesManager.getStore(identitiesStoreKey);
+
+		semaphore.value.deleting.push(payload.id);
+
+		const recordToDelete = data.value[payload.id];
+
+		delete data.value[payload.id];
+
+		if (recordToDelete.draft) {
+			semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+
+			emailsStore.unset({ account: recordToDelete });
+			identitiesStore.unset({ account: recordToDelete });
+		} else {
+			try {
+				await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts${payload.id}`);
 
 				emailsStore.unset({ account: recordToDelete });
 				identitiesStore.unset({ account: recordToDelete });
-			} else {
-				try {
-					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts${payload.id}`);
+			} catch (e: any) {
+				// Deleting record on api failed, we need to refresh record
+				await get({ id: payload.id });
 
-					emailsStore.unset({ account: recordToDelete });
-					identitiesStore.unset({ account: recordToDelete });
-				} catch (e: any) {
-					// Deleting record on api failed, we need to refresh record
-					await this.get({ id: payload.id });
-
-					throw new ApiError('accounts-module.accounts.delete.failed', e, 'Delete account failed.');
-				} finally {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
-				}
+				throw new ApiError('accounts-module.accounts.delete.failed', e, 'Delete account failed.');
+			} finally {
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
 			}
+		}
 
-			return true;
-		},
+		return true;
+	};
 
-		/**
-		 * Receive data from sockets
-		 *
-		 * @param {IAccountsSocketDataActionPayload} payload
-		 */
-		async socketData(payload: IAccountsSocketDataActionPayload): Promise<boolean> {
-			if (
-				![
-					RoutingKeys.ACCOUNT_DOCUMENT_REPORTED,
-					RoutingKeys.ACCOUNT_DOCUMENT_CREATED,
-					RoutingKeys.ACCOUNT_DOCUMENT_UPDATED,
-					RoutingKeys.ACCOUNT_DOCUMENT_DELETED,
-				].includes(payload.routingKey as RoutingKeys)
-			) {
+	const socketData = async (payload: IAccountsSocketDataActionPayload): Promise<boolean> => {
+		if (
+			![
+				RoutingKeys.ACCOUNT_DOCUMENT_REPORTED,
+				RoutingKeys.ACCOUNT_DOCUMENT_CREATED,
+				RoutingKeys.ACCOUNT_DOCUMENT_UPDATED,
+				RoutingKeys.ACCOUNT_DOCUMENT_DELETED,
+			].includes(payload.routingKey as RoutingKeys)
+		) {
+			return false;
+		}
+
+		const body: AccountDocument = JSON.parse(payload.data);
+
+		const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
+
+		try {
+			if (!isValid(body)) {
 				return false;
 			}
+		} catch {
+			return false;
+		}
 
-			const body: AccountDocument = JSON.parse(payload.data);
+		if (
+			!Object.keys(data.value).includes(body.id) &&
+			(payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED)
+		) {
+			throw new Error('accounts-module.accounts.update.failed');
+		}
 
+		if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED) {
+			const recordToDelete = data.value[body.id];
+
+			delete data.value[body.id];
+
+			const emailsStore = storesManager.getStore(emailsStoreKey);
+			const identitiesStore = storesManager.getStore(identitiesStoreKey);
+
+			emailsStore.unset({ account: recordToDelete });
+			identitiesStore.unset({ account: recordToDelete });
+		} else {
+			if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED && semaphore.value.updating.includes(body.id)) {
+				return true;
+			}
+
+			const recordData = storeRecordFactory(storesManager, {
+				id: body.id,
+				type: {
+					source: body.source,
+					entity: 'account',
+				},
+				details: {
+					firstName: body.first_name,
+					lastName: body.last_name,
+					middleName: body.middle_name,
+				},
+				language: body.language,
+				registered: body.registered,
+				lastVisit: body.last_visit,
+				state: body.state,
+			});
+
+			if (body.id in data.value) {
+				data.value[body.id] = { ...data.value[body.id], ...recordData };
+			} else {
+				data.value[body.id] = recordData;
+			}
+		}
+
+		return true;
+	};
+
+	const insertData = async (payload: IAccountsInsertDataActionPayload): Promise<boolean> => {
+		data.value = data.value ?? {};
+
+		let documents: AccountDocument[];
+
+		if (Array.isArray(payload.data)) {
+			documents = payload.data;
+		} else {
+			documents = [payload.data];
+		}
+
+		for (const doc of documents) {
 			const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
 
 			try {
-				if (!isValid(body)) {
+				if (!isValid(doc)) {
 					return false;
 				}
 			} catch {
 				return false;
 			}
 
-			if (
-				!Object.keys(this.data).includes(body.id) &&
-				(payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED)
-			) {
-				throw new Error('accounts-module.accounts.update.failed');
-			}
-
-			if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_DELETED) {
-				const recordToDelete = this.data[body.id];
-
-				delete this.data[body.id];
-
-				const emailsStore = useEmails();
-				const identitiesStore = useIdentities();
-
-				emailsStore.unset({ account: recordToDelete });
-				identitiesStore.unset({ account: recordToDelete });
-			} else {
-				if (payload.routingKey === RoutingKeys.ACCOUNT_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
-					return true;
-				}
-
-				const recordData = storeRecordFactory({
-					id: body.id,
-					type: {
-						source: body.source,
-						entity: 'account',
-					},
+			const record = storeRecordFactory(storesManager, {
+				...data.value[doc.id],
+				...{
+					id: doc.id,
 					details: {
-						firstName: body.first_name,
-						lastName: body.last_name,
-						middleName: body.middle_name,
+						firstName: doc.first_name,
+						lastName: doc.last_name,
+						middleName: doc.middle_name,
 					},
-					language: body.language,
-					registered: body.registered,
-					lastVisit: body.last_visit,
-					state: body.state,
-				});
+					language: doc.language,
+					state: doc.state,
+					registered: doc.registered,
+					lastVisit: doc.last_visit,
+				},
+			});
 
-				if (body.id in this.data) {
-					this.data[body.id] = { ...this.data[body.id], ...recordData };
-				} else {
-					this.data[body.id] = recordData;
-				}
+			if (documents.length === 1) {
+				data.value[doc.id] = record;
 			}
+		}
 
-			return true;
-		},
+		return true;
+	};
 
-		/**
-		 * Insert data from SSR
-		 *
-		 * @param {IAccountsInsertDataActionPayload} payload
-		 */
-		async insertData(payload: IAccountsInsertDataActionPayload): Promise<boolean> {
-			this.data = this.data ?? {};
-
-			let documents: AccountDocument[] = [];
-
-			if (Array.isArray(payload.data)) {
-				documents = payload.data;
-			} else {
-				documents = [payload.data];
-			}
-
-			for (const doc of documents) {
-				const isValid = jsonSchemaValidator.compile<AccountDocument>(exchangeDocumentSchema);
-
-				try {
-					if (!isValid(doc)) {
-						return false;
-					}
-				} catch {
-					return false;
-				}
-
-				const record = storeRecordFactory({
-					...this.data[doc.id],
-					...{
-						id: doc.id,
-						details: {
-							firstName: doc.first_name,
-							lastName: doc.last_name,
-							middleName: doc.middle_name,
-						},
-						language: doc.language,
-						state: doc.state,
-						registered: doc.registered,
-						lastVisit: doc.last_visit,
-					},
-				});
-
-				if (documents.length === 1) {
-					this.data[doc.id] = record;
-				}
-			}
-
-			return true;
-		},
-	},
+	return { semaphore, firstLoad, data, findById, set, get, fetch, add, edit, save, remove, socketData, insertData };
 });
 
-export const registerAccountsStore = (pinia: Pinia): Store => {
+export const registerAccountsStore = (pinia: Pinia): Store<string, IAccountsState, object, IAccountsActions> => {
 	return useAccounts(pinia);
 };

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Connector\Virtual\Queue\Messages;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;

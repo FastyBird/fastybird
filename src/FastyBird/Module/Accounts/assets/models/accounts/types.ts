@@ -1,9 +1,10 @@
-import { _GettersTree } from 'pinia';
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+import { Ref } from 'vue';
 
-import { AccountDocument, AccountState } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import {
+	AccountDocument,
+	AccountState,
 	IEmail,
 	IEmailResponseData,
 	IEmailResponseModel,
@@ -12,7 +13,7 @@ import {
 	IIdentityResponseModel,
 	IPlainRelation,
 	IRoleResponseModel,
-} from '../../models/types';
+} from '../../types';
 
 export interface IAccountMeta extends IEntityMeta {
 	entity: 'account';
@@ -22,16 +23,15 @@ export interface IAccountMeta extends IEntityMeta {
 // =====
 
 export interface IAccountsState {
-	semaphore: IAccountsStateSemaphore;
-	firstLoad: boolean;
-	data: { [key: IAccount['id']]: IAccount };
-}
-
-export interface IAccountsGetters extends _GettersTree<IAccountsState> {
-	findById: (state: IAccountsState) => (id: IAccount['id']) => IAccount | null;
+	semaphore: Ref<IAccountsStateSemaphore>;
+	firstLoad: Ref<boolean>;
+	data: Ref<{ [key: IAccount['id']]: IAccount }>;
 }
 
 export interface IAccountsActions {
+	// Getters
+	findById: (id: IAccount['id']) => IAccount | null;
+	// Actions
 	set: (payload: IAccountsSetActionPayload) => Promise<IAccount>;
 	get: (payload: IAccountsGetActionPayload) => Promise<boolean>;
 	fetch: () => Promise<boolean>;
@@ -43,17 +43,19 @@ export interface IAccountsActions {
 	insertData: (payload: IAccountsInsertDataActionPayload) => Promise<boolean>;
 }
 
+export type AccountsStoreSetup = IAccountsState & IAccountsActions;
+
 // STORE STATE
 // ===========
 
-interface IAccountsStateSemaphore {
+export interface IAccountsStateSemaphore {
 	fetching: IAccountsStateSemaphoreFetching;
 	creating: IAccount['id'][];
 	updating: IAccount['id'][];
 	deleting: IAccount['id'][];
 }
 
-interface IAccountsStateSemaphoreFetching {
+export interface IAccountsStateSemaphoreFetching {
 	items: boolean;
 	item: IAccount['id'][];
 }

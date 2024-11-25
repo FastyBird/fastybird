@@ -17,10 +17,10 @@ namespace FastyBird\Module\Devices\Subscribers;
 
 use DateTimeInterface;
 use Exception;
-use FastyBird\Library\Application\Utilities as ApplicationUtilities;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\EventLoop\Status;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Caching;
@@ -53,9 +53,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	private const ACTION_DELETED = 'deleted';
 
 	public function __construct(
-		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly ApplicationDocuments\DocumentFactory $documentFactory,
 		private readonly Caching\Container $moduleCaching,
-		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
+		private readonly Status $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)
@@ -77,11 +77,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidData
+	 * @throws ToolsExceptions\Logic
+	 * @throws ToolsExceptions\MalformedInput
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -103,11 +101,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exception
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidData
+	 * @throws ToolsExceptions\Logic
+	 * @throws ToolsExceptions\MalformedInput
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
@@ -140,11 +136,9 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws Exception
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Logic
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ToolsExceptions\InvalidData
+	 * @throws ToolsExceptions\Logic
+	 * @throws ToolsExceptions\MalformedInput
 	 * @throws PhoneExceptions\NoValidCountryException
 	 * @throws PhoneExceptions\NoValidPhoneException
 	 */

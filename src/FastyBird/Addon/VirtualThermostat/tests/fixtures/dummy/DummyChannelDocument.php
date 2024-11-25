@@ -2,11 +2,11 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Devices\Documents;
 
-#[DOC\Document(entity: DummyChannelEntity::class)]
-#[DOC\DiscriminatorEntry(name: DummyChannelEntity::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: DummyChannelEntity::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: DummyChannelEntity::TYPE)]
 class DummyChannelDocument extends Documents\Channels\Channel
 {
 

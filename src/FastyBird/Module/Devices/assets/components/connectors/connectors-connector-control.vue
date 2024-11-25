@@ -66,13 +66,15 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
+
 import { ElButton, ElDivider } from 'element-plus';
 
-import { FasArrowsRotate, FasCircleInfo, FasGears, FasPlay, FasStop, FasTrash } from '@fastybird/web-ui-icons';
-import { ConnectionState } from '@fastybird/metadata-library';
+import { useBreakpoints } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { FasArrowsRotate, FasCircleInfo, FasGears, FasPlay, FasStop, FasTrash } from '@fastybird/web-ui-icons';
 
-import { useBreakpoints, useConnectorState, useRoutesNames } from '../../composables';
+import { useConnectorState, useRoutesNames } from '../../composables';
+import { ConnectionState } from '../../types';
 
 import { IConnectorsConnectorControlProps } from './connectors-connector-control.types';
 

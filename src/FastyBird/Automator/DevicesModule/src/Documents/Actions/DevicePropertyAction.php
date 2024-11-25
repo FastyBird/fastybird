@@ -16,8 +16,8 @@
 namespace FastyBird\Automator\DevicesModule\Documents\Actions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Module\Triggers\Documents as TriggersDocuments;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -31,8 +31,8 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Actions\DevicePropertyAction::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Actions\DevicePropertyAction::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Actions\DevicePropertyAction::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Actions\DevicePropertyAction::TYPE)]
 final class DevicePropertyAction extends TriggersDocuments\Actions\Action
 {
 

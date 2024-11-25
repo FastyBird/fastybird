@@ -21,10 +21,10 @@ use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Schemas;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\HomeKit\Hydrators as HomeKitHydrators;
 use FastyBird\Connector\Shelly\Entities as ShellyEntities;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Helpers;
 use FastyBird\JsonApi\JsonApi as JsonApiJsonApi;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Hydrators as DevicesHydrators;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -102,8 +102,8 @@ class Shelly extends HomeKitHydrators\Devices\Device
 	/**
 	 * @param Entities\Devices\Shelly|null $entity
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateConnectorRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
@@ -143,8 +143,8 @@ class Shelly extends HomeKitHydrators\Devices\Device
 	/**
 	 * @return array<DevicesEntities\Devices\Device>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateParentsRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationships,

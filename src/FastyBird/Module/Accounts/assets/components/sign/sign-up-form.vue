@@ -12,7 +12,7 @@
 			<div class="mb-5">
 				<el-form-item
 					ref="firstNameEl"
-					:label="t('fields.firstName.title')"
+					:label="t('accountsModule.fields.firstName.title')"
 					prop="firstName"
 					class="mb-2"
 				>
@@ -26,14 +26,14 @@
 					:class="[{ 'opacity-0': firstNameEl?.validateState === 'error' }]"
 					class="text-3 pl-1"
 				>
-					{{ t('fields.firstName.help') }}
+					{{ t('accountsModule.fields.firstName.help') }}
 				</div>
 			</div>
 
 			<div class="mb-5">
 				<el-form-item
 					ref="lastNameEl"
-					:label="t('fields.lastName.title')"
+					:label="t('accountsModule.fields.lastName.title')"
 					prop="lastName"
 					class="mb-2"
 				>
@@ -47,7 +47,7 @@
 					:class="[{ 'opacity-0': lastNameEl?.validateState === 'error' }]"
 					class="text-3 pl-1"
 				>
-					{{ t('fields.lastName.help') }}
+					{{ t('accountsModule.fields.lastName.help') }}
 				</div>
 			</div>
 		</div>
@@ -55,7 +55,7 @@
 		<div class="mb-5">
 			<el-form-item
 				ref="emailAddressEl"
-				:label="t('fields.emailAddress.title')"
+				:label="t('accountsModule.fields.emailAddress.title')"
 				prop="emailAddress"
 				class="mb-2"
 			>
@@ -69,14 +69,14 @@
 				:class="[{ 'opacity-0': emailAddressEl?.validateState === 'error' }]"
 				class="text-3 pl-1"
 			>
-				{{ t('fields.emailAddress.help') }}
+				{{ t('accountsModule.fields.emailAddress.help') }}
 			</div>
 		</div>
 
 		<div class="mb-10">
 			<el-form-item
 				ref="passwordEl"
-				:label="t('fields.password.register.title')"
+				:label="t('accountsModule.fields.password.register.title')"
 				prop="password"
 				class="mb-2"
 			>
@@ -95,7 +95,7 @@
 			class="block w-full"
 			@click="onSubmit(signFormEl)"
 		>
-			{{ t('buttons.signUp.title') }}
+			{{ t('accountsModule.buttons.signUp.title') }}
 		</el-button>
 	</el-form>
 
@@ -104,20 +104,24 @@
 			class="block w-full"
 			@click="onBackToSignIn()"
 		>
-			{{ t('buttons.backToSignIn.title') }}
+			{{ t('accountsModule.buttons.backToSignIn.title') }}
 		</el-button>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElInput, ElForm, ElFormItem, ElButton, FormInstance, FormItemInstance, FormRules } from 'element-plus';
+import { useRouter } from 'vue-router';
 
-import { useFlashMessage, useRoutesNames } from '../../composables';
-import { FormResultTypes } from '../../types';
+import { ElButton, ElForm, ElFormItem, ElInput, FormInstance, FormItemInstance, FormRules } from 'element-plus';
+import get from 'lodash.get';
+
+import { useFlashMessage } from '@fastybird/tools';
+
+import { useRoutesNames } from '../../composables';
+import { FormResultType, FormResultTypes } from '../../types';
+
 import { ISignUpForm, ISignUpProps } from './sign-up-form.types';
 
 defineOptions({
@@ -131,7 +135,7 @@ const props = withDefaults(defineProps<ISignUpProps>(), {
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
@@ -149,12 +153,12 @@ const passwordEl = ref<FormItemInstance | undefined>(undefined);
 
 const rules = reactive<FormRules<ISignUpForm>>({
 	emailAddress: [
-		{ required: true, message: t('fields.emailAddress.validation.required'), trigger: 'change' },
-		{ type: 'email', message: t('fields.emailAddress.validation.email'), trigger: 'change' },
+		{ required: true, message: t('accountsModule.fields.emailAddress.validation.required'), trigger: 'change' },
+		{ type: 'email', message: t('accountsModule.fields.emailAddress.validation.email'), trigger: 'change' },
 	],
-	firstName: [{ required: true, message: t('fields.firstName.validation.required'), trigger: 'change' }],
-	lastName: [{ required: true, message: t('fields.lastName.validation.required'), trigger: 'change' }],
-	password: [{ required: true, message: t('fields.password.register.validation.required'), trigger: 'change' }],
+	firstName: [{ required: true, message: t('accountsModule.fields.firstName.validation.required'), trigger: 'change' }],
+	lastName: [{ required: true, message: t('accountsModule.fields.lastName.validation.required'), trigger: 'change' }],
+	password: [{ required: true, message: t('accountsModule.fields.password.register.validation.required'), trigger: 'change' }],
 });
 
 const signForm = reactive<ISignUpForm>({
@@ -178,7 +182,7 @@ const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
 			} catch (e: any) {
 				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-				const errorMessage = t('messages.requestError');
+				const errorMessage = t('accountsModule.messages.requestError');
 
 				if (get(e, 'exception', null) !== null) {
 					flashMessage.exception(e.exception, errorMessage);

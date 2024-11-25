@@ -3,9 +3,9 @@
 namespace FastyBird\Bridge\DevicesModuleUiModule\Tests\Fixtures\Dummy;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\States as DevicesStates;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -123,8 +123,8 @@ class ChannelPropertyState implements DevicesStates\ChannelProperty
 	{
 		return [
 			'id' => $this->getId()->toString(),
-			'actual_value' => MetadataUtilities\Value::flattenValue($this->getActualValue()),
-			'expected_value' => MetadataUtilities\Value::flattenValue($this->getExpectedValue()),
+			'actual_value' => ToolsUtilities\Value::flattenValue($this->getActualValue()),
+			'expected_value' => ToolsUtilities\Value::flattenValue($this->getExpectedValue()),
 			'pending' => $this->getPending() instanceof DateTimeInterface
 				? $this->getPending()->format(DateTimeInterface::ATOM)
 				: $this->getPending(),

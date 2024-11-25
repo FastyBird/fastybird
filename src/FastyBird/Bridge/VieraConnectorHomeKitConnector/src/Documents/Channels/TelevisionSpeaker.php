@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Documents\Channels;
 
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\TelevisionSpeaker::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\TelevisionSpeaker::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\TelevisionSpeaker::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\TelevisionSpeaker::TYPE)]
 class TelevisionSpeaker extends Viera
 {
 

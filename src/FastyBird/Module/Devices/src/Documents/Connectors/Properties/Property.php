@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Devices\Documents\Connectors\Properties;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
@@ -39,15 +39,15 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Connectors\Properties\Property::class)]
-#[DOC\InheritanceType('SINGLE_TABLE')]
-#[DOC\DiscriminatorColumn(name: 'type', type: 'string')]
-#[DOC\DiscriminatorMap([
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Connectors\Properties\Property::class)]
+#[ApplicationDocuments\Mapping\InheritanceType('SINGLE_TABLE')]
+#[ApplicationDocuments\Mapping\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ApplicationDocuments\Mapping\DiscriminatorMap([
 	Entities\Connectors\Properties\Dynamic::TYPE => Dynamic::class,
 	Entities\Connectors\Properties\Variable::TYPE => Variable::class,
 ])]
-#[DOC\MappedSuperclass]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\MappedSuperclass]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_REPORTED_ROUTING_KEY,
 	Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_CREATED_ROUTING_KEY,
 	Devices\Constants::MESSAGE_BUS_CONNECTOR_PROPERTY_DOCUMENT_UPDATED_ROUTING_KEY,
@@ -105,8 +105,8 @@ abstract class Property extends Documents\Property
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */

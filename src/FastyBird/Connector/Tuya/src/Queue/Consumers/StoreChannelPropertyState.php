@@ -20,12 +20,11 @@ use FastyBird\Connector\Tuya;
 use FastyBird\Connector\Tuya\Documents;
 use FastyBird\Connector\Tuya\Queries;
 use FastyBird\Connector\Tuya\Queue;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -66,19 +65,18 @@ final class StoreChannelPropertyState implements Queue\Consumer
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\States\Async\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws Throwable
 	 */
@@ -132,13 +130,13 @@ final class StoreChannelPropertyState implements Queue\Consumer
 						]),
 						MetadataTypes\Sources\Connector::TUYA,
 					));
-				} catch (MetadataExceptions\InvalidArgument $ex) {
+				} catch (ApplicationExceptions\InvalidArgument $ex) {
 					$format = $property->getFormat();
 
 					if (
 						$property->getDataType() === MetadataTypes\DataType::ENUM
 						&& $dataPoint->getValue() !== null
-						&& $format instanceof MetadataFormats\StringEnum
+						&& $format instanceof ToolsFormats\StringEnum
 					) {
 						$property = $this->databaseHelper->transaction(
 							function () use ($dataPoint, $property, $format): DevicesEntities\Channels\Properties\Dynamic {

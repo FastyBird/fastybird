@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Ui\Controllers\Finders;
 
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Models;
 use FastyBird\Module\Ui\Queries;
@@ -33,8 +33,8 @@ trait TWidget
 {
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function findWidget(string $id): Entities\Widgets\Widget
 	{

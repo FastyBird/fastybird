@@ -26,9 +26,9 @@ use FastyBird\Bridge\VieraConnectorHomeKitConnector\Mapping;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Protocol;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Router;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Schemas;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\DI as ApplicationDI;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Bootstrap;
 use Nette\DI;
@@ -229,7 +229,7 @@ class VieraConnectorHomeKitConnectorExtension extends DI\CompilerExtension imple
 		 * APPLICATION DOCUMENTS
 		 */
 
-		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+		$services = $builder->findByTag(ApplicationDI\ApplicationExtension::DRIVER_TAG);
 
 		if ($services !== []) {
 			$services = array_keys($services);
@@ -244,7 +244,7 @@ class VieraConnectorHomeKitConnectorExtension extends DI\CompilerExtension imple
 				);
 
 				$documentAttributeDriverChainService = $builder->getDefinitionByType(
-					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+					ApplicationDocuments\Mapping\Driver\MappingDriverChain::class,
 				);
 
 				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {

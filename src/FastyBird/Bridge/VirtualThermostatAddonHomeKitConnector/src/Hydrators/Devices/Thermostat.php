@@ -21,9 +21,9 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Schemas;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\HomeKit\Hydrators as HomeKitHydrators;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Helpers;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Fig\Http\Message\StatusCodeInterface;
@@ -64,8 +64,8 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 	/**
 	 * @param Entities\Devices\Thermostat|null $entity
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateConnectorRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
@@ -105,8 +105,8 @@ class Thermostat extends HomeKitHydrators\Devices\Device
 	/**
 	 * @return array<DevicesEntities\Devices\Device>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateParentsRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationships,

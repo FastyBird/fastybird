@@ -20,7 +20,7 @@ use Closure;
 use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Clients\Flow;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use InvalidArgumentException;
 use Nette;
@@ -154,8 +154,8 @@ final class Client
 	 *
 	 * @return Promise\PromiseInterface<mixed>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws InvalidArgumentException
-	 * @throws MetadataExceptions\InvalidArgument
 	 */
 	public function connect(int $timeout = 5): Promise\PromiseInterface
 	{

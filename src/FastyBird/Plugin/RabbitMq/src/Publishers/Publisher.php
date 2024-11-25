@@ -17,10 +17,10 @@ namespace FastyBird\Plugin\RabbitMq\Publishers;
 
 use Bunny;
 use DateTimeInterface;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Channels;
 use FastyBird\Plugin\RabbitMq\Utilities;
@@ -64,7 +64,7 @@ final class Publisher implements ExchangePublisher\Publisher
 	public function publish(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
-		MetadataDocuments\Document|null $entity,
+		ApplicationDocuments\Document|null $entity,
 	): bool
 	{
 		try {
@@ -82,7 +82,7 @@ final class Publisher implements ExchangePublisher\Publisher
 						'source' => $source->value,
 						'data' => $entity?->toArray(),
 					],
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

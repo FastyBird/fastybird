@@ -17,12 +17,12 @@ extensions:
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
     ipubPhone               : IPub\Phone\DI\PhoneExtension
-    fbMetadataLibrary       : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchangeLibrary       : FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbTools                 : FastyBird\Core\Tools\DI\ToolsExtension
+    fbExchange              : FastyBird\Core\Exchange\DI\ExchangeExtension
 
 services:
     - {factory: Symfony\Component\EventDispatcher\EventDispatcher}
 
-fbMetadataLibrary:
+fbApplication:
     documents:
         mapping: []

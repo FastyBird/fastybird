@@ -1,32 +1,39 @@
-import { defineStore, Pinia, Store } from 'pinia';
-import axios, { AxiosError } from 'axios';
+import { ref } from 'vue';
+
+import { Pinia, Store, defineStore } from 'pinia';
+
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
+import axios, { AxiosError } from 'axios';
 import { Jsona } from 'jsona';
-import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
+import lodashGet from 'lodash.get';
 import isEqual from 'lodash.isequal';
+import { v4 as uuid } from 'uuid';
 
-import { DevicePropertyDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix, PropertyCategory } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
+import { IStoresManager, injectStoresManager } from '@fastybird/tools';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.device.property.json';
-
 import { devicesStoreKey } from '../../configuration';
-import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import {
+	DevicePropertiesStoreSetup,
+	DevicePropertyDocument,
 	IDevice,
 	IDevicePropertiesInsertDataActionPayload,
 	IDevicePropertiesLoadAllRecordsActionPayload,
 	IDevicePropertiesLoadRecordActionPayload,
 	IDevicePropertiesSetStateActionPayload,
+	IDevicePropertiesStateSemaphore,
 	IDevicePropertyDatabaseRecord,
 	IDevicePropertyMeta,
 	IPlainRelation,
-} from '../../models/types';
+	PropertyCategory,
+	RoutingKeys,
+} from '../../types';
 import { PropertyType } from '../../types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DEVICES_PROPERTIES } from '../../utilities';
+import { DB_TABLE_DEVICES_PROPERTIES, addRecord, getAllRecords, getRecord, removeRecord } from '../../utilities';
 
 import {
 	IDevicePropertiesActions,
@@ -34,7 +41,6 @@ import {
 	IDevicePropertiesEditActionPayload,
 	IDevicePropertiesFetchActionPayload,
 	IDevicePropertiesGetActionPayload,
-	IDevicePropertiesGetters,
 	IDevicePropertiesRemoveActionPayload,
 	IDevicePropertiesResponseJson,
 	IDevicePropertiesSaveActionPayload,
@@ -56,10 +62,10 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Promise<IDeviceProperty> => {
+const storeRecordFactory = async (storesManager: IStoresManager, data: IDevicePropertyRecordFactoryPayload): Promise<IDeviceProperty> => {
 	const devicesStore = storesManager.getStore(devicesStoreKey);
 
-	let device = 'device' in data ? get(data, 'device', null) : null;
+	let device = 'device' in data ? lodashGet(data, 'device', null) : null;
 
 	let deviceMeta = data.deviceId ? devicesStore.findMeta(data.deviceId) : null;
 
@@ -92,33 +98,33 @@ const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Pr
 	}
 
 	const record: IDeviceProperty = {
-		id: get(data, 'id', uuid().toString()),
+		id: lodashGet(data, 'id', uuid().toString()),
 		type: data.type,
 
-		draft: get(data, 'draft', false),
+		draft: lodashGet(data, 'draft', false),
 
 		category: data.category,
 		identifier: data.identifier,
-		name: get(data, 'name', null),
-		settable: get(data, 'settable', false),
-		queryable: get(data, 'queryable', false),
+		name: lodashGet(data, 'name', null),
+		settable: lodashGet(data, 'settable', false),
+		queryable: lodashGet(data, 'queryable', false),
 		dataType: data.dataType,
-		unit: get(data, 'unit', null),
-		format: get(data, 'format', null),
-		invalid: get(data, 'invalid', null),
-		scale: get(data, 'scale', null),
-		step: get(data, 'step', null),
-		default: get(data, 'default', null),
-		valueTransformer: get(data, 'valueTransformer', null),
+		unit: lodashGet(data, 'unit', null),
+		format: lodashGet(data, 'format', null),
+		invalid: lodashGet(data, 'invalid', null),
+		scale: lodashGet(data, 'scale', null),
+		step: lodashGet(data, 'step', null),
+		default: lodashGet(data, 'default', null),
+		valueTransformer: lodashGet(data, 'valueTransformer', null),
 
-		value: get(data, 'value', null),
-		actualValue: get(data, 'actualValue', null),
-		expectedValue: get(data, 'expectedValue', null),
-		pending: get(data, 'pending', false),
-		isValid: get(data, 'isValid', false),
-		command: get(data, 'command', null),
-		lastResult: get(data, 'lastResult', null),
-		backupValue: get(data, 'backup', null),
+		value: lodashGet(data, 'value', null),
+		actualValue: lodashGet(data, 'actualValue', null),
+		expectedValue: lodashGet(data, 'expectedValue', null),
+		pending: lodashGet(data, 'pending', false),
+		isValid: lodashGet(data, 'isValid', false),
+		command: lodashGet(data, 'command', null),
+		lastResult: lodashGet(data, 'lastResult', null),
+		backupValue: lodashGet(data, 'backup', null),
 
 		// Relations
 		relationshipNames: ['device', 'parent', 'children'],
@@ -138,17 +144,17 @@ const storeRecordFactory = async (data: IDevicePropertyRecordFactoryPayload): Pr
 
 	record.relationshipNames.forEach((relationName) => {
 		if (relationName === 'children') {
-			get(data, relationName, []).forEach((relation: any): void => {
-				if (get(relation, 'id', null) !== null && get(relation, 'type', null) !== null) {
+			lodashGet(data, relationName, []).forEach((relation: any): void => {
+				if (lodashGet(relation, 'id', null) !== null && lodashGet(relation, 'type', null) !== null) {
 					(record[relationName] as IPlainRelation[]).push({
-						id: get(relation, 'id', null),
-						type: get(relation, 'type', null),
+						id: lodashGet(relation, 'id', null),
+						type: lodashGet(relation, 'type', null),
 					});
 				}
 			});
 		} else if (relationName === 'parent') {
-			const parentId = get(data, `${relationName}.id`, null);
-			const parentType = get(data, `${relationName}.type`, null);
+			const parentId = lodashGet(data, `${relationName}.id`, null);
+			const parentType = lodashGet(data, `${relationName}.type`, null);
 
 			if (parentId !== null && parentType !== null) {
 				(record[relationName] as IPlainRelation) = {
@@ -218,595 +224,295 @@ const databaseRecordFactory = (record: IDeviceProperty): IDevicePropertyDatabase
 	};
 };
 
-export const useDeviceProperties = defineStore<string, IDevicePropertiesState, IDevicePropertiesGetters, IDevicePropertiesActions>(
+export const useDeviceProperties = defineStore<'devices_module_devices_properties', DevicePropertiesStoreSetup>(
 	'devices_module_devices_properties',
-	{
-		state: (): IDevicePropertiesState => {
-			return {
-				semaphore: {
-					fetching: {
-						items: [],
-						item: [],
-					},
-					creating: [],
-					updating: [],
-					deleting: [],
-				},
+	(): DevicePropertiesStoreSetup => {
+		const storesManager = injectStoresManager();
 
-				firstLoad: [],
-
-				data: undefined,
-				meta: {},
-			};
-		},
-
-		getters: {
-			firstLoadFinished: (state: IDevicePropertiesState): ((deviceId: IDevice['id']) => boolean) => {
-				return (deviceId: IDevice['id']): boolean => state.firstLoad.includes(deviceId);
+		const semaphore = ref<IDevicePropertiesStateSemaphore>({
+			fetching: {
+				items: [],
+				item: [],
 			},
+			creating: [],
+			updating: [],
+			deleting: [],
+		});
 
-			getting: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => boolean) => {
-				return (id: IDeviceProperty['id']): boolean => state.semaphore.fetching.item.includes(id);
-			},
+		const firstLoad = ref<IDevice['id'][]>([]);
 
-			fetching: (state: IDevicePropertiesState): ((deviceId: IDevice['id'] | null) => boolean) => {
-				return (deviceId: IDevice['id'] | null): boolean =>
-					deviceId !== null ? state.semaphore.fetching.items.includes(deviceId) : state.semaphore.fetching.items.length > 0;
-			},
+		const data = ref<{ [key: IDeviceProperty['id']]: IDeviceProperty } | undefined>(undefined);
 
-			findById: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => IDeviceProperty | null) => {
-				return (id: IDeviceProperty['id']): IDeviceProperty | null => {
-					const property: IDeviceProperty | undefined = Object.values(state.data ?? {}).find(
-						(property: IDeviceProperty): boolean => property.id === id
-					);
+		const meta = ref<{ [key: IDeviceProperty['id']]: IDevicePropertyMeta }>({});
 
-					return property ?? null;
-				};
-			},
+		const firstLoadFinished = (deviceId: IDevice['id']): boolean => firstLoad.value.includes(deviceId);
 
-			findByIdentifier: (state: IDevicePropertiesState): ((device: IDevice, identifier: IDeviceProperty['identifier']) => IDeviceProperty | null) => {
-				return (device: IDevice, identifier: IDeviceProperty['identifier']): IDeviceProperty | null => {
-					const property: IDeviceProperty | undefined = Object.values(state.data ?? {}).find((property: IDeviceProperty): boolean => {
-						return property.device.id === device.id && property.identifier.toLowerCase() === identifier.toLowerCase();
+		const getting = (id: IDeviceProperty['id']): boolean => semaphore.value.fetching.item.includes(id);
+
+		const fetching = (deviceId: IDevice['id'] | null): boolean =>
+			deviceId !== null ? semaphore.value.fetching.items.includes(deviceId) : semaphore.value.fetching.items.length > 0;
+
+		const findById = (id: IDeviceProperty['id']): IDeviceProperty | null => {
+			const property: IDeviceProperty | undefined = Object.values(data.value ?? {}).find((property: IDeviceProperty): boolean => property.id === id);
+
+			return property ?? null;
+		};
+
+		const findByIdentifier = (device: IDevice, identifier: IDeviceProperty['identifier']): IDeviceProperty | null => {
+			const property: IDeviceProperty | undefined = Object.values(data.value ?? {}).find((property: IDeviceProperty): boolean => {
+				return property.device.id === device.id && property.identifier.toLowerCase() === identifier.toLowerCase();
+			});
+
+			return property ?? null;
+		};
+
+		const findForDevice = (deviceId: IDevice['id']): IDeviceProperty[] =>
+			Object.values(data.value ?? {}).filter((property: IDeviceProperty): boolean => property.device.id === deviceId);
+
+		const findMeta = (id: IDeviceProperty['id']): IDevicePropertyMeta | null => (id in meta.value ? meta.value[id] : null);
+
+		const set = async (payload: IDevicePropertiesSetActionPayload): Promise<IDeviceProperty> => {
+			if (data.value && payload.data.id && payload.data.id in data.value) {
+				const record = await storeRecordFactory(storesManager, { ...data.value[payload.data.id], ...payload.data });
+
+				return (data.value[record.id] = record);
+			}
+
+			const record = await storeRecordFactory(storesManager, payload.data);
+
+			await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
+
+			meta.value[record.id] = record.type;
+
+			data.value = data.value ?? {};
+			return (data.value[record.id] = record);
+		};
+
+		const unset = async (payload: IDevicePropertiesUnsetActionPayload): Promise<void> => {
+			if (!data.value) {
+				return;
+			}
+
+			if (payload.device !== undefined) {
+				const items = findForDevice(payload.device.id);
+
+				for (const item of items) {
+					if (item.id in (data.value ?? {})) {
+						await removeRecord(item.id, DB_TABLE_DEVICES_PROPERTIES);
+
+						delete meta.value[item.id];
+
+						delete (data.value ?? {})[item.id];
+					}
+				}
+
+				return;
+			} else if (payload.id !== undefined) {
+				await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+				delete meta.value[payload.id];
+
+				delete data.value[payload.id];
+
+				return;
+			}
+
+			throw new Error('You have to provide at least device or property id');
+		};
+
+		const get = async (payload: IDevicePropertiesGetActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.item.includes(payload.id)) {
+				return false;
+			}
+
+			const fromDatabase = await loadRecord({ id: payload.id });
+
+			if (fromDatabase && payload.refresh === false) {
+				return true;
+			}
+
+			semaphore.value.fetching.item.push(payload.id);
+
+			try {
+				const propertyResponse = await axios.get<IDevicePropertyResponseJson>(
+					`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties/${payload.id}`
+				);
+
+				const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IDevicePropertyResponseModel;
+
+				data.value = data.value ?? {};
+				data.value[propertyResponseModel.id] = await storeRecordFactory(storesManager, {
+					...propertyResponseModel,
+					...{ deviceId: propertyResponseModel.device.id, parentId: propertyResponseModel.parent?.id },
+				});
+
+				await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(data.value[propertyResponseModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+				meta.value[propertyResponseModel.id] = propertyResponseModel.type;
+			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
+					await unset({
+						id: payload.id,
 					});
 
-					return property ?? null;
-				};
-			},
-
-			findForDevice: (state: IDevicePropertiesState): ((deviceId: IDevice['id']) => IDeviceProperty[]) => {
-				return (deviceId: IDevice['id']): IDeviceProperty[] => {
-					return Object.values(state.data ?? {}).filter((property: IDeviceProperty): boolean => property.device.id === deviceId);
-				};
-			},
-
-			findMeta: (state: IDevicePropertiesState): ((id: IDeviceProperty['id']) => IDevicePropertyMeta | null) => {
-				return (id: IDeviceProperty['id']): IDevicePropertyMeta | null => {
-					return id in state.meta ? state.meta[id] : null;
-				};
-			},
-		},
-
-		actions: {
-			/**
-			 * Set record from via other store
-			 *
-			 * @param {IDevicePropertiesSetActionPayload} payload
-			 */
-			async set(payload: IDevicePropertiesSetActionPayload): Promise<IDeviceProperty> {
-				if (this.data && payload.data.id && payload.data.id in this.data) {
-					const record = await storeRecordFactory({ ...this.data[payload.data.id], ...payload.data });
-
-					return (this.data[record.id] = record);
-				}
-
-				const record = await storeRecordFactory(payload.data);
-
-				await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
-
-				this.meta[record.id] = record.type;
-
-				this.data = this.data ?? {};
-				return (this.data[record.id] = record);
-			},
-
-			/**
-			 * Remove records for given relation or record by given identifier
-			 *
-			 * @param {IDevicePropertiesUnsetActionPayload} payload
-			 */
-			async unset(payload: IDevicePropertiesUnsetActionPayload): Promise<void> {
-				if (!this.data) {
-					return;
-				}
-
-				if (payload.device !== undefined) {
-					const items = this.findForDevice(payload.device.id);
-
-					for (const item of items) {
-						if (item.id in (this.data ?? {})) {
-							await removeRecord(item.id, DB_TABLE_DEVICES_PROPERTIES);
-
-							delete this.meta[item.id];
-
-							delete (this.data ?? {})[item.id];
-						}
-					}
-
-					return;
-				} else if (payload.id !== undefined) {
-					await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
-
-					delete this.meta[payload.id];
-
-					delete this.data[payload.id];
-
-					return;
-				}
-
-				throw new Error('You have to provide at least device or property id');
-			},
-
-			/**
-			 * Get one record from server
-			 *
-			 * @param {IDevicePropertiesGetActionPayload} payload
-			 */
-			async get(payload: IDevicePropertiesGetActionPayload): Promise<boolean> {
-				if (this.semaphore.fetching.item.includes(payload.id)) {
-					return false;
-				}
-
-				const fromDatabase = await this.loadRecord({ id: payload.id });
-
-				if (fromDatabase && payload.refresh === false) {
 					return true;
 				}
 
-				this.semaphore.fetching.item.push(payload.id);
+				throw new ApiError('devices-module.device-properties.get.failed', e, 'Fetching property failed.');
+			} finally {
+				semaphore.value.fetching.item = semaphore.value.fetching.item.filter((item) => item !== payload.id);
+			}
 
-				try {
-					const propertyResponse = await axios.get<IDevicePropertyResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties/${payload.id}`
-					);
+			return true;
+		};
 
-					const propertyResponseModel = jsonApiFormatter.deserialize(propertyResponse.data) as IDevicePropertyResponseModel;
+		const fetch = async (payload: IDevicePropertiesFetchActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.items.includes(payload.device.id)) {
+				return false;
+			}
 
-					this.data = this.data ?? {};
-					this.data[propertyResponseModel.id] = await storeRecordFactory({
-						...propertyResponseModel,
-						...{ deviceId: propertyResponseModel.device.id, parentId: propertyResponseModel.parent?.id },
+			const fromDatabase = await loadAllRecords({ device: payload.device });
+
+			if (fromDatabase && payload?.refresh === false) {
+				return true;
+			}
+
+			if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+				semaphore.value.fetching.items.push(payload.device.id);
+			}
+
+			firstLoad.value = firstLoad.value.filter((item) => item !== payload.device.id);
+			firstLoad.value = [...new Set(firstLoad.value)];
+
+			try {
+				const propertiesResponse = await axios.get<IDevicePropertiesResponseJson>(
+					`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`
+				);
+
+				const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IDevicePropertyResponseModel[];
+
+				for (const property of propertiesResponseModel) {
+					data.value = data.value ?? {};
+					data.value[property.id] = await storeRecordFactory(storesManager, {
+						...property,
+						...{ deviceId: property.device.id, parentId: property.parent?.id },
 					});
 
-					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[propertyResponseModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(data.value[property.id]), DB_TABLE_DEVICES_PROPERTIES);
 
-					this.meta[propertyResponseModel.id] = propertyResponseModel.type;
-				} catch (e: any) {
-					if (e instanceof AxiosError && e.status === 404) {
-						this.unset({
-							id: payload.id,
-						});
-
-						return true;
-					}
-
-					throw new ApiError('devices-module.device-properties.get.failed', e, 'Fetching property failed.');
-				} finally {
-					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
+					meta.value[property.id] = property.type;
 				}
 
-				return true;
-			},
+				firstLoad.value.push(payload.device.id);
+				firstLoad.value = [...new Set(firstLoad.value)];
 
-			/**
-			 * Fetch all records from server
-			 *
-			 * @param {IDevicePropertiesFetchActionPayload} payload
-			 */
-			async fetch(payload: IDevicePropertiesFetchActionPayload): Promise<boolean> {
-				if (this.semaphore.fetching.items.includes(payload.device.id)) {
-					return false;
+				// Get all current IDs from IndexedDB
+				const allRecords = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
+				const indexedDbIds: string[] = allRecords.filter((record) => record.device.id === payload.device.id).map((record) => record.id);
+
+				// Get the IDs from the latest changes
+				const serverIds: string[] = Object.keys(data.value ?? {});
+
+				// Find IDs that are in IndexedDB but not in the server response
+				const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
+
+				// Remove records that are no longer present on the server
+				for (const id of idsToRemove) {
+					await removeRecord(id, DB_TABLE_DEVICES_PROPERTIES);
+
+					delete meta.value[id];
 				}
-
-				const fromDatabase = await this.loadAllRecords({ device: payload.device });
-
-				if (fromDatabase && payload?.refresh === false) {
-					return true;
-				}
-
-				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
-					this.semaphore.fetching.items.push(payload.device.id);
-				}
-
-				this.firstLoad = this.firstLoad.filter((item) => item !== payload.device.id);
-				this.firstLoad = [...new Set(this.firstLoad)];
-
-				try {
-					const propertiesResponse = await axios.get<IDevicePropertiesResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`
-					);
-
-					const propertiesResponseModel = jsonApiFormatter.deserialize(propertiesResponse.data) as IDevicePropertyResponseModel[];
-
-					for (const property of propertiesResponseModel) {
-						this.data = this.data ?? {};
-						this.data[property.id] = await storeRecordFactory({
-							...property,
-							...{ deviceId: property.device.id, parentId: property.parent?.id },
-						});
-
-						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[property.id]), DB_TABLE_DEVICES_PROPERTIES);
-
-						this.meta[property.id] = property.type;
-					}
-
-					this.firstLoad.push(payload.device.id);
-					this.firstLoad = [...new Set(this.firstLoad)];
-
-					// Get all current IDs from IndexedDB
-					const allRecords = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
-					const indexedDbIds: string[] = allRecords.filter((record) => record.device.id === payload.device.id).map((record) => record.id);
-
-					// Get the IDs from the latest changes
-					const serverIds: string[] = Object.keys(this.data ?? {});
-
-					// Find IDs that are in IndexedDB but not in the server response
-					const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
-
-					// Remove records that are no longer present on the server
-					for (const id of idsToRemove) {
-						await removeRecord(id, DB_TABLE_DEVICES_PROPERTIES);
-
-						delete this.meta[id];
-					}
-				} catch (e: any) {
-					if (e instanceof AxiosError && e.status === 404) {
-						try {
-							const devicesStore = storesManager.getStore(devicesStoreKey);
-
-							await devicesStore.get({
-								id: payload.device.id,
-							});
-						} catch (e: any) {
-							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
-								const devicesStore = storesManager.getStore(devicesStoreKey);
-
-								devicesStore.unset({
-									id: payload.device.id,
-								});
-
-								return true;
-							}
-						}
-					}
-
-					throw new ApiError('devices-module.device-properties.fetch.failed', e, 'Fetching properties failed.');
-				} finally {
-					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.device.id);
-				}
-
-				return true;
-			},
-
-			/**
-			 * Add new record
-			 *
-			 * @param {IDevicePropertiesAddActionPayload} payload
-			 */
-			async add(payload: IDevicePropertiesAddActionPayload): Promise<IDeviceProperty> {
-				const newProperty = await storeRecordFactory({
-					...{
-						id: payload?.id,
-						type: payload?.type,
-						category: PropertyCategory.GENERIC,
-						draft: payload?.draft,
-						deviceId: payload.device.id,
-					},
-					...payload.data,
-				});
-
-				this.semaphore.creating.push(newProperty.id);
-
-				this.data = this.data ?? {};
-				this.data[newProperty.id] = newProperty;
-
-				if (newProperty.draft) {
-					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newProperty.id);
-
-					return newProperty;
-				} else {
-					const devicesStore = storesManager.getStore(devicesStoreKey);
-
-					const device = devicesStore.findById(payload.device.id);
-
-					if (device === null) {
-						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newProperty.id);
-
-						throw new Error('devices-module.device-properties.create.failed');
-					}
-
+			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
 					try {
-						const apiData: Partial<IDeviceProperty> =
-							newProperty.parent !== null
-								? {
-										id: newProperty.id,
-										type: newProperty.type,
-										identifier: newProperty.identifier,
-										name: newProperty.name,
-										value: newProperty.value,
-										device: newProperty.device,
-										parent: newProperty.parent,
-										relationshipNames: ['device', 'parent'],
-									}
-								: {
-										id: newProperty.id,
-										type: newProperty.type,
-										identifier: newProperty.identifier,
-										name: newProperty.name,
-										value: newProperty.value,
-										settable: newProperty.settable,
-										queryable: newProperty.queryable,
-										dataType: newProperty.dataType,
-										unit: newProperty.unit,
-										invalid: newProperty.invalid,
-										scale: newProperty.scale,
-										step: newProperty.step,
-										format: newProperty.format,
-										default: newProperty.default,
-										valueTransformer: newProperty.valueTransformer,
-										device: newProperty.device,
-										relationshipNames: ['device'],
-									};
-
-						if (apiData?.type?.type === PropertyType.DYNAMIC) {
-							delete apiData.value;
-						}
-
-						if (apiData?.type?.type === PropertyType.VARIABLE) {
-							delete apiData.settable;
-							delete apiData.queryable;
-						}
-
-						const createdProperty = await axios.post<IDevicePropertyResponseJson>(
-							`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`,
-							jsonApiFormatter.serialize({
-								stuff: apiData,
-							})
-						);
-
-						const createdPropertyModel = jsonApiFormatter.deserialize(createdProperty.data) as IDevicePropertyResponseModel;
-
-						this.data[createdPropertyModel.id] = await storeRecordFactory({
-							...createdPropertyModel,
-							...{ deviceId: createdPropertyModel.device.id, parentId: createdPropertyModel.parent?.id },
-						});
-
-						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[createdPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
-
-						this.meta[createdPropertyModel.id] = createdPropertyModel.type;
-
-						return this.data[createdPropertyModel.id];
-					} catch (e: any) {
-						// Transformer could not be created on api, we have to remove it from database
-						delete this.data[newProperty.id];
-
-						throw new ApiError('devices-module.device-properties.create.failed', e, 'Create new property failed.');
-					} finally {
-						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newProperty.id);
-					}
-				}
-			},
-
-			/**
-			 * Edit existing record
-			 *
-			 * @param {IDevicePropertiesEditActionPayload} payload
-			 */
-			async edit(payload: IDevicePropertiesEditActionPayload): Promise<IDeviceProperty> {
-				if (this.semaphore.updating.includes(payload.id)) {
-					throw new Error('devices-module.device-properties.update.inProgress');
-				}
-
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.device-properties.update.failed');
-				}
-
-				this.semaphore.updating.push(payload.id);
-
-				// Get record stored in database
-				const existingRecord = this.data[payload.id];
-				// Update with new values
-				const updatedRecord = {
-					...existingRecord,
-					...payload.data,
-					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
-				} as IDeviceProperty;
-
-				this.data[payload.id] = await storeRecordFactory({
-					...updatedRecord,
-				});
-
-				if (updatedRecord.draft) {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
-
-					return this.data[payload.id];
-				} else {
-					const devicesStore = storesManager.getStore(devicesStoreKey);
-
-					const device = devicesStore.findById(updatedRecord.device.id);
-
-					if (device === null) {
-						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
-
-						throw new Error('devices-module.device-properties.update.failed');
-					}
-
-					try {
-						const apiData: Partial<IDeviceProperty> =
-							updatedRecord.parent !== null
-								? {
-										id: updatedRecord.id,
-										type: updatedRecord.type,
-										identifier: updatedRecord.identifier,
-										name: updatedRecord.name,
-										value: updatedRecord.value,
-										device: updatedRecord.device,
-										parent: updatedRecord.parent,
-										relationshipNames: ['device', 'parent'],
-									}
-								: {
-										id: updatedRecord.id,
-										type: updatedRecord.type,
-										identifier: updatedRecord.identifier,
-										name: updatedRecord.name,
-										value: updatedRecord.value,
-										settable: updatedRecord.settable,
-										queryable: updatedRecord.queryable,
-										dataType: updatedRecord.dataType,
-										unit: updatedRecord.unit,
-										invalid: updatedRecord.invalid,
-										scale: updatedRecord.scale,
-										step: updatedRecord.step,
-										format: updatedRecord.format,
-										default: updatedRecord.default,
-										valueTransformer: updatedRecord.valueTransformer,
-										device: updatedRecord.device,
-										relationshipNames: ['device'],
-									};
-
-						if (apiData?.type?.type === PropertyType.DYNAMIC) {
-							delete apiData.value;
-						}
-
-						if (apiData?.type?.type === PropertyType.VARIABLE) {
-							delete apiData.settable;
-							delete apiData.queryable;
-						}
-
-						const updatedProperty = await axios.patch<IDevicePropertyResponseJson>(
-							`/${ModulePrefix.DEVICES}/v1/devices/${updatedRecord.device.id}/properties/${updatedRecord.id}`,
-							jsonApiFormatter.serialize({
-								stuff: apiData,
-							})
-						);
-
-						const updatedPropertyModel = jsonApiFormatter.deserialize(updatedProperty.data) as IDevicePropertyResponseModel;
-
-						this.data[updatedPropertyModel.id] = await storeRecordFactory({
-							...updatedPropertyModel,
-							...{ deviceId: updatedPropertyModel.device.id, parentId: updatedPropertyModel.parent?.id },
-						});
-
-						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[updatedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
-
-						this.meta[updatedPropertyModel.id] = updatedPropertyModel.type;
-
-						return this.data[updatedPropertyModel.id];
-					} catch (e: any) {
 						const devicesStore = storesManager.getStore(devicesStoreKey);
 
-						const device = devicesStore.findById(updatedRecord.device.id);
+						await devicesStore.get({
+							id: payload.device.id,
+						});
+					} catch (e: any) {
+						if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+							const devicesStore = storesManager.getStore(devicesStoreKey);
 
-						if (device !== null) {
-							// Updating entity on api failed, we need to refresh entity
-							await this.get({ device, id: payload.id });
+							devicesStore.unset({
+								id: payload.device.id,
+							});
+
+							return true;
 						}
-
-						throw new ApiError('devices-module.device-properties.update.failed', e, 'Edit property failed.');
-					} finally {
-						this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
 					}
 				}
-			},
 
-			/**
-			 * Save property state record
-			 *
-			 * @param {IDevicePropertiesSetStateActionPayload} payload
-			 */
-			async setState(payload: IDevicePropertiesSetStateActionPayload): Promise<IDeviceProperty> {
-				if (this.semaphore.updating.includes(payload.id)) {
-					throw new Error('devices-module.device-properties.update.inProgress');
-				}
+				throw new ApiError('devices-module.device-properties.fetch.failed', e, 'Fetching properties failed.');
+			} finally {
+				semaphore.value.fetching.items = semaphore.value.fetching.items.filter((item) => item !== payload.device.id);
+			}
 
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.device-properties.update.failed');
-				}
+			return true;
+		};
 
-				this.semaphore.updating.push(payload.id);
+		const add = async (payload: IDevicePropertiesAddActionPayload): Promise<IDeviceProperty> => {
+			const newProperty = await storeRecordFactory(storesManager, {
+				...{
+					id: payload?.id,
+					type: payload?.type,
+					category: PropertyCategory.GENERIC,
+					draft: payload?.draft,
+					deviceId: payload.device.id,
+				},
+				...payload.data,
+			});
 
-				// Get record stored in database
-				const existingRecord = this.data[payload.id];
-				// Update with new values
-				this.data[payload.id] = {
-					...existingRecord,
-					...payload.data,
-					...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
-				} as IDeviceProperty;
+			semaphore.value.creating.push(newProperty.id);
 
-				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+			data.value = data.value ?? {};
+			data.value[newProperty.id] = newProperty;
 
-				return this.data[payload.id];
-			},
+			if (newProperty.draft) {
+				semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newProperty.id);
 
-			/**
-			 * Save draft record on server
-			 *
-			 * @param {IDevicePropertiesSaveActionPayload} payload
-			 */
-			async save(payload: IDevicePropertiesSaveActionPayload): Promise<IDeviceProperty> {
-				if (this.semaphore.updating.includes(payload.id)) {
-					throw new Error('devices-module.device-properties.save.inProgress');
-				}
-
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.device-properties.save.failed');
-				}
-
-				this.semaphore.updating.push(payload.id);
-
-				const recordToSave = this.data[payload.id];
-
+				return newProperty;
+			} else {
 				const devicesStore = storesManager.getStore(devicesStoreKey);
 
-				const device = devicesStore.findById(recordToSave.device.id);
+				const device = devicesStore.findById(payload.device.id);
 
 				if (device === null) {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+					semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newProperty.id);
 
-					throw new Error('devices-module.device-properties.save.failed');
+					throw new Error('devices-module.device-properties.create.failed');
 				}
 
 				try {
 					const apiData: Partial<IDeviceProperty> =
-						recordToSave.parent !== null
+						newProperty.parent !== null
 							? {
-									id: recordToSave.id,
-									type: recordToSave.type,
-									identifier: recordToSave.identifier,
-									name: recordToSave.name,
-									value: recordToSave.value,
-									device: recordToSave.device,
-									parent: recordToSave.parent,
+									id: newProperty.id,
+									type: newProperty.type,
+									identifier: newProperty.identifier,
+									name: newProperty.name,
+									value: newProperty.value,
+									device: newProperty.device,
+									parent: newProperty.parent,
 									relationshipNames: ['device', 'parent'],
 								}
 							: {
-									id: recordToSave.id,
-									type: recordToSave.type,
-									identifier: recordToSave.identifier,
-									name: recordToSave.name,
-									value: recordToSave.value,
-									settable: recordToSave.settable,
-									queryable: recordToSave.queryable,
-									dataType: recordToSave.dataType,
-									unit: recordToSave.unit,
-									invalid: recordToSave.invalid,
-									scale: recordToSave.scale,
-									step: recordToSave.step,
-									format: recordToSave.format,
-									default: recordToSave.default,
-									valueTransformer: recordToSave.valueTransformer,
-									device: recordToSave.device,
+									id: newProperty.id,
+									type: newProperty.type,
+									identifier: newProperty.identifier,
+									name: newProperty.name,
+									value: newProperty.value,
+									settable: newProperty.settable,
+									queryable: newProperty.queryable,
+									dataType: newProperty.dataType,
+									unit: newProperty.unit,
+									invalid: newProperty.invalid,
+									scale: newProperty.scale,
+									step: newProperty.step,
+									format: newProperty.format,
+									default: newProperty.default,
+									valueTransformer: newProperty.valueTransformer,
+									device: newProperty.device,
 									relationshipNames: ['device'],
 								};
 
@@ -819,310 +525,546 @@ export const useDeviceProperties = defineStore<string, IDevicePropertiesState, I
 						delete apiData.queryable;
 					}
 
-					const savedProperty = await axios.post<IDevicePropertyResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/devices/${recordToSave.device.id}/properties`,
+					const createdProperty = await axios.post<IDevicePropertyResponseJson>(
+						`/${ModulePrefix.DEVICES}/v1/devices/${payload.device.id}/properties`,
 						jsonApiFormatter.serialize({
 							stuff: apiData,
 						})
 					);
 
-					const savedPropertyModel = jsonApiFormatter.deserialize(savedProperty.data) as IDevicePropertyResponseModel;
+					const createdPropertyModel = jsonApiFormatter.deserialize(createdProperty.data) as IDevicePropertyResponseModel;
 
-					this.data[savedPropertyModel.id] = await storeRecordFactory({
-						...savedPropertyModel,
-						...{ deviceId: savedPropertyModel.device.id, parentId: savedPropertyModel.parent?.id },
+					data.value[createdPropertyModel.id] = await storeRecordFactory(storesManager, {
+						...createdPropertyModel,
+						...{ deviceId: createdPropertyModel.device.id, parentId: createdPropertyModel.parent?.id },
 					});
 
-					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(this.data[savedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(data.value[createdPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
 
-					this.meta[savedPropertyModel.id] = savedPropertyModel.type;
+					meta.value[createdPropertyModel.id] = createdPropertyModel.type;
 
-					return this.data[savedPropertyModel.id];
+					return data.value[createdPropertyModel.id];
 				} catch (e: any) {
-					throw new ApiError('devices-module.device-properties.save.failed', e, 'Save draft property failed.');
+					// Transformer could not be created on api, we have to remove it from database
+					delete data.value[newProperty.id];
+
+					throw new ApiError('devices-module.device-properties.create.failed', e, 'Create new property failed.');
 				} finally {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+					semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newProperty.id);
 				}
-			},
+			}
+		};
 
-			/**
-			 * Remove existing record from store and server
-			 *
-			 * @param {IDevicePropertiesRemoveActionPayload} payload
-			 */
-			async remove(payload: IDevicePropertiesRemoveActionPayload): Promise<boolean> {
-				if (this.semaphore.deleting.includes(payload.id)) {
-					throw new Error('devices-module.device-properties.delete.inProgress');
-				}
+		const edit = async (payload: IDevicePropertiesEditActionPayload): Promise<IDeviceProperty> => {
+			if (semaphore.value.updating.includes(payload.id)) {
+				throw new Error('devices-module.device-properties.update.inProgress');
+			}
 
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.device-properties.delete.failed');
-				}
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.device-properties.update.failed');
+			}
 
-				this.semaphore.deleting.push(payload.id);
+			semaphore.value.updating.push(payload.id);
 
-				const recordToDelete = this.data[payload.id];
+			// Get record stored in database
+			const existingRecord = data.value[payload.id];
+			// Update with new values
+			const updatedRecord = {
+				...existingRecord,
+				...payload.data,
+				...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
+			} as IDeviceProperty;
 
+			data.value[payload.id] = await storeRecordFactory(storesManager, {
+				...updatedRecord,
+			});
+
+			if (updatedRecord.draft) {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+
+				return data.value[payload.id];
+			} else {
 				const devicesStore = storesManager.getStore(devicesStoreKey);
 
-				const device = devicesStore.findById(recordToDelete.device.id);
+				const device = devicesStore.findById(updatedRecord.device.id);
 
 				if (device === null) {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+					semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 
-					throw new Error('devices-module.device-properties.delete.failed');
+					throw new Error('devices-module.device-properties.update.failed');
 				}
 
-				delete this.data[payload.id];
+				try {
+					const apiData: Partial<IDeviceProperty> =
+						updatedRecord.parent !== null
+							? {
+									id: updatedRecord.id,
+									type: updatedRecord.type,
+									identifier: updatedRecord.identifier,
+									name: updatedRecord.name,
+									value: updatedRecord.value,
+									device: updatedRecord.device,
+									parent: updatedRecord.parent,
+									relationshipNames: ['device', 'parent'],
+								}
+							: {
+									id: updatedRecord.id,
+									type: updatedRecord.type,
+									identifier: updatedRecord.identifier,
+									name: updatedRecord.name,
+									value: updatedRecord.value,
+									settable: updatedRecord.settable,
+									queryable: updatedRecord.queryable,
+									dataType: updatedRecord.dataType,
+									unit: updatedRecord.unit,
+									invalid: updatedRecord.invalid,
+									scale: updatedRecord.scale,
+									step: updatedRecord.step,
+									format: updatedRecord.format,
+									default: updatedRecord.default,
+									valueTransformer: updatedRecord.valueTransformer,
+									device: updatedRecord.device,
+									relationshipNames: ['device'],
+								};
 
-				await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
-
-				delete this.meta[payload.id];
-
-				if (recordToDelete.draft) {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
-				} else {
-					try {
-						await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/properties/${recordToDelete.id}`);
-					} catch (e: any) {
-						const devicesStore = storesManager.getStore(devicesStoreKey);
-
-						const device = devicesStore.findById(recordToDelete.device.id);
-
-						if (device !== null) {
-							// Deleting entity on api failed, we need to refresh entity
-							await this.get({ device, id: payload.id });
-						}
-
-						throw new ApiError('devices-module.device-properties.delete.failed', e, 'Delete property failed.');
-					} finally {
-						this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+					if (apiData?.type?.type === PropertyType.DYNAMIC) {
+						delete apiData.value;
 					}
+
+					if (apiData?.type?.type === PropertyType.VARIABLE) {
+						delete apiData.settable;
+						delete apiData.queryable;
+					}
+
+					const updatedProperty = await axios.patch<IDevicePropertyResponseJson>(
+						`/${ModulePrefix.DEVICES}/v1/devices/${updatedRecord.device.id}/properties/${updatedRecord.id}`,
+						jsonApiFormatter.serialize({
+							stuff: apiData,
+						})
+					);
+
+					const updatedPropertyModel = jsonApiFormatter.deserialize(updatedProperty.data) as IDevicePropertyResponseModel;
+
+					data.value[updatedPropertyModel.id] = await storeRecordFactory(storesManager, {
+						...updatedPropertyModel,
+						...{ deviceId: updatedPropertyModel.device.id, parentId: updatedPropertyModel.parent?.id },
+					});
+
+					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(data.value[updatedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+					meta.value[updatedPropertyModel.id] = updatedPropertyModel.type;
+
+					return data.value[updatedPropertyModel.id];
+				} catch (e: any) {
+					const devicesStore = storesManager.getStore(devicesStoreKey);
+
+					const device = devicesStore.findById(updatedRecord.device.id);
+
+					if (device !== null) {
+						// Updating entity on api failed, we need to refresh entity
+						await get({ device, id: payload.id });
+					}
+
+					throw new ApiError('devices-module.device-properties.update.failed', e, 'Edit property failed.');
+				} finally {
+					semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+				}
+			}
+		};
+
+		const save = async (payload: IDevicePropertiesSaveActionPayload): Promise<IDeviceProperty> => {
+			if (semaphore.value.updating.includes(payload.id)) {
+				throw new Error('devices-module.device-properties.save.inProgress');
+			}
+
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.device-properties.save.failed');
+			}
+
+			semaphore.value.updating.push(payload.id);
+
+			const recordToSave = data.value[payload.id];
+
+			const devicesStore = storesManager.getStore(devicesStoreKey);
+
+			const device = devicesStore.findById(recordToSave.device.id);
+
+			if (device === null) {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+
+				throw new Error('devices-module.device-properties.save.failed');
+			}
+
+			try {
+				const apiData: Partial<IDeviceProperty> =
+					recordToSave.parent !== null
+						? {
+								id: recordToSave.id,
+								type: recordToSave.type,
+								identifier: recordToSave.identifier,
+								name: recordToSave.name,
+								value: recordToSave.value,
+								device: recordToSave.device,
+								parent: recordToSave.parent,
+								relationshipNames: ['device', 'parent'],
+							}
+						: {
+								id: recordToSave.id,
+								type: recordToSave.type,
+								identifier: recordToSave.identifier,
+								name: recordToSave.name,
+								value: recordToSave.value,
+								settable: recordToSave.settable,
+								queryable: recordToSave.queryable,
+								dataType: recordToSave.dataType,
+								unit: recordToSave.unit,
+								invalid: recordToSave.invalid,
+								scale: recordToSave.scale,
+								step: recordToSave.step,
+								format: recordToSave.format,
+								default: recordToSave.default,
+								valueTransformer: recordToSave.valueTransformer,
+								device: recordToSave.device,
+								relationshipNames: ['device'],
+							};
+
+				if (apiData?.type?.type === PropertyType.DYNAMIC) {
+					delete apiData.value;
 				}
 
-				return true;
-			},
+				if (apiData?.type?.type === PropertyType.VARIABLE) {
+					delete apiData.settable;
+					delete apiData.queryable;
+				}
 
-			/**
-			 * Receive data from sockets
-			 *
-			 * @param {IDevicePropertiesSocketDataActionPayload} payload
-			 */
-			async socketData(payload: IDevicePropertiesSocketDataActionPayload): Promise<boolean> {
-				if (
-					![
-						RoutingKeys.DEVICE_PROPERTY_DOCUMENT_REPORTED,
-						RoutingKeys.DEVICE_PROPERTY_DOCUMENT_CREATED,
-						RoutingKeys.DEVICE_PROPERTY_DOCUMENT_UPDATED,
-						RoutingKeys.DEVICE_PROPERTY_DOCUMENT_DELETED,
-					].includes(payload.routingKey as RoutingKeys)
-				) {
+				const savedProperty = await axios.post<IDevicePropertyResponseJson>(
+					`/${ModulePrefix.DEVICES}/v1/devices/${recordToSave.device.id}/properties`,
+					jsonApiFormatter.serialize({
+						stuff: apiData,
+					})
+				);
+
+				const savedPropertyModel = jsonApiFormatter.deserialize(savedProperty.data) as IDevicePropertyResponseModel;
+
+				data.value[savedPropertyModel.id] = await storeRecordFactory(storesManager, {
+					...savedPropertyModel,
+					...{ deviceId: savedPropertyModel.device.id, parentId: savedPropertyModel.parent?.id },
+				});
+
+				await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(data.value[savedPropertyModel.id]), DB_TABLE_DEVICES_PROPERTIES);
+
+				meta.value[savedPropertyModel.id] = savedPropertyModel.type;
+
+				return data.value[savedPropertyModel.id];
+			} catch (e: any) {
+				throw new ApiError('devices-module.device-properties.save.failed', e, 'Save draft property failed.');
+			} finally {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+			}
+		};
+
+		const setState = async (payload: IDevicePropertiesSetStateActionPayload): Promise<IDeviceProperty> => {
+			if (semaphore.value.updating.includes(payload.id)) {
+				throw new Error('devices-module.device-properties.update.inProgress');
+			}
+
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.device-properties.update.failed');
+			}
+
+			semaphore.value.updating.push(payload.id);
+
+			// Get record stored in database
+			const existingRecord = data.value[payload.id];
+			// Update with new values
+			data.value[payload.id] = {
+				...existingRecord,
+				...payload.data,
+				...{ parent: payload.parent ? { id: payload.parent.id, type: payload.parent.type } : existingRecord.parent },
+			} as IDeviceProperty;
+
+			semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+
+			return data.value[payload.id];
+		};
+
+		const remove = async (payload: IDevicePropertiesRemoveActionPayload): Promise<boolean> => {
+			if (semaphore.value.deleting.includes(payload.id)) {
+				throw new Error('devices-module.device-properties.delete.inProgress');
+			}
+
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.device-properties.delete.failed');
+			}
+
+			semaphore.value.deleting.push(payload.id);
+
+			const recordToDelete = data.value[payload.id];
+
+			const devicesStore = storesManager.getStore(devicesStoreKey);
+
+			const device = devicesStore.findById(recordToDelete.device.id);
+
+			if (device === null) {
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+
+				throw new Error('devices-module.device-properties.delete.failed');
+			}
+
+			delete data.value[payload.id];
+
+			await removeRecord(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+			delete meta.value[payload.id];
+
+			if (recordToDelete.draft) {
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+			} else {
+				try {
+					await axios.delete(`/${ModulePrefix.DEVICES}/v1/devices/${recordToDelete.device.id}/properties/${recordToDelete.id}`);
+				} catch (e: any) {
+					const devicesStore = storesManager.getStore(devicesStoreKey);
+
+					const device = devicesStore.findById(recordToDelete.device.id);
+
+					if (device !== null) {
+						// Deleting entity on api failed, we need to refresh entity
+						await get({ device, id: payload.id });
+					}
+
+					throw new ApiError('devices-module.device-properties.delete.failed', e, 'Delete property failed.');
+				} finally {
+					semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+				}
+			}
+
+			return true;
+		};
+
+		const socketData = async (payload: IDevicePropertiesSocketDataActionPayload): Promise<boolean> => {
+			if (
+				![
+					RoutingKeys.DEVICE_PROPERTY_DOCUMENT_REPORTED,
+					RoutingKeys.DEVICE_PROPERTY_DOCUMENT_CREATED,
+					RoutingKeys.DEVICE_PROPERTY_DOCUMENT_UPDATED,
+					RoutingKeys.DEVICE_PROPERTY_DOCUMENT_DELETED,
+				].includes(payload.routingKey as RoutingKeys)
+			) {
+				return false;
+			}
+
+			const body: DevicePropertyDocument = JSON.parse(payload.data);
+
+			const isValid = jsonSchemaValidator.compile<DevicePropertyDocument>(exchangeDocumentSchema);
+
+			try {
+				if (!isValid(body)) {
 					return false;
 				}
+			} catch {
+				return false;
+			}
 
-				const body: DevicePropertyDocument = JSON.parse(payload.data);
+			if (payload.routingKey === RoutingKeys.DEVICE_PROPERTY_DOCUMENT_DELETED) {
+				await removeRecord(body.id, DB_TABLE_DEVICES_PROPERTIES);
 
+				delete meta.value[body.id];
+
+				if (data.value && body.id in data.value) {
+					delete data.value[body.id];
+				}
+			} else {
+				if (payload.routingKey === RoutingKeys.DEVICE_PROPERTY_DOCUMENT_UPDATED && semaphore.value.updating.includes(body.id)) {
+					return true;
+				}
+
+				if (data.value && body.id in data.value) {
+					const record = await storeRecordFactory(storesManager, {
+						...JSON.parse(JSON.stringify(data.value[body.id])),
+						...{
+							category: body.category,
+							name: body.name,
+							settable: body.settable,
+							queryable: body.queryable,
+							dataType: body.data_type,
+							unit: body.unit,
+							format: body.format,
+							invalid: body.invalid,
+							scale: body.scale,
+							step: body.step,
+							default: body.default,
+							valueTransformer: body.value_transformer,
+							actualValue: body.actual_value,
+							expectedValue: body.expected_value,
+							value: body.value,
+							pending: body.pending,
+							isValid: body.is_valid,
+							deviceId: body.device,
+						},
+					});
+
+					if (!isEqual(JSON.parse(JSON.stringify(data.value[body.id])), JSON.parse(JSON.stringify(record)))) {
+						data.value[body.id] = record;
+
+						await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
+
+						meta.value[record.id] = record.type;
+					}
+				} else {
+					const devicesStore = storesManager.getStore(devicesStoreKey);
+
+					const device = devicesStore.findById(body.device);
+
+					if (device !== null) {
+						try {
+							await get({
+								device,
+								id: body.id,
+							});
+						} catch {
+							return false;
+						}
+					}
+				}
+			}
+
+			return true;
+		};
+
+		const insertData = async (payload: IDevicePropertiesInsertDataActionPayload): Promise<boolean> => {
+			data.value = data.value ?? {};
+
+			let documents: DevicePropertyDocument[];
+
+			if (Array.isArray(payload.data)) {
+				documents = payload.data;
+			} else {
+				documents = [payload.data];
+			}
+
+			const deviceIds = [];
+
+			for (const doc of documents) {
 				const isValid = jsonSchemaValidator.compile<DevicePropertyDocument>(exchangeDocumentSchema);
 
 				try {
-					if (!isValid(body)) {
+					if (!isValid(doc)) {
 						return false;
 					}
 				} catch {
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.DEVICE_PROPERTY_DOCUMENT_DELETED) {
-					await removeRecord(body.id, DB_TABLE_DEVICES_PROPERTIES);
-
-					delete this.meta[body.id];
-
-					if (this.data && body.id in this.data) {
-						delete this.data[body.id];
-					}
-				} else {
-					if (payload.routingKey === RoutingKeys.DEVICE_PROPERTY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
-						return true;
-					}
-
-					if (this.data && body.id in this.data) {
-						const record = await storeRecordFactory({
-							...JSON.parse(JSON.stringify(this.data[body.id])),
-							...{
-								category: body.category,
-								name: body.name,
-								settable: body.settable,
-								queryable: body.queryable,
-								dataType: body.data_type,
-								unit: body.unit,
-								format: body.format,
-								invalid: body.invalid,
-								scale: body.scale,
-								step: body.step,
-								default: body.default,
-								valueTransformer: body.value_transformer,
-								actualValue: body.actual_value,
-								expectedValue: body.expected_value,
-								value: body.value,
-								pending: body.pending,
-								isValid: body.is_valid,
-								deviceId: body.device,
-							},
-						});
-
-						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
-							this.data[body.id] = record;
-
-							await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
-
-							this.meta[record.id] = record.type;
-						}
-					} else {
-						const devicesStore = storesManager.getStore(devicesStoreKey);
-
-						const device = devicesStore.findById(body.device);
-
-						if (device !== null) {
-							try {
-								await this.get({
-									device,
-									id: body.id,
-								});
-							} catch {
-								return false;
-							}
-						}
-					}
-				}
-
-				return true;
-			},
-
-			/**
-			 * Insert data from SSR
-			 *
-			 * @param {IDevicePropertiesInsertDataActionPayload} payload
-			 */
-			async insertData(payload: IDevicePropertiesInsertDataActionPayload) {
-				this.data = this.data ?? {};
-
-				let documents: DevicePropertyDocument[] = [];
-
-				if (Array.isArray(payload.data)) {
-					documents = payload.data;
-				} else {
-					documents = [payload.data];
-				}
-
-				const deviceIds = [];
-
-				for (const doc of documents) {
-					const isValid = jsonSchemaValidator.compile<DevicePropertyDocument>(exchangeDocumentSchema);
-
-					try {
-						if (!isValid(doc)) {
-							return false;
-						}
-					} catch {
-						return false;
-					}
-
-					const record = await storeRecordFactory({
-						...this.data[doc.id],
-						...{
-							id: doc.id,
-							type: {
-								type: doc.type,
-								source: doc.source,
-								parent: 'device',
-								entity: 'property',
-							},
-							category: doc.category,
-							identifier: doc.identifier,
-							name: doc.name,
-							settable: doc.settable,
-							queryable: doc.queryable,
-							dataType: doc.data_type,
-							unit: doc.unit,
-							format: doc.format,
-							invalid: doc.invalid,
-							scale: doc.scale,
-							step: doc.step,
-							valueTransformer: doc.value_transformer,
-							default: doc.default,
-							value: doc.value,
-							deviceId: doc.device,
-							parentId: doc.parent,
+				const record = await storeRecordFactory(storesManager, {
+					...data.value[doc.id],
+					...{
+						id: doc.id,
+						type: {
+							type: doc.type,
+							source: doc.source,
+							parent: 'device',
+							entity: 'property',
 						},
-					});
+						category: doc.category,
+						identifier: doc.identifier,
+						name: doc.name,
+						settable: doc.settable,
+						queryable: doc.queryable,
+						dataType: doc.data_type,
+						unit: doc.unit,
+						format: doc.format,
+						invalid: doc.invalid,
+						scale: doc.scale,
+						step: doc.step,
+						valueTransformer: doc.value_transformer,
+						default: doc.default,
+						value: doc.value,
+						deviceId: doc.device,
+						parentId: doc.parent,
+					},
+				});
 
-					if (documents.length === 1) {
-						this.data[doc.id] = record;
-					}
-
-					await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
-
-					this.meta[record.id] = record.type;
-
-					deviceIds.push(doc.device);
+				if (documents.length === 1) {
+					data.value[doc.id] = record;
 				}
 
-				if (documents.length > 1) {
-					const uniqueDeviceIds = [...new Set(deviceIds)];
+				await addRecord<IDevicePropertyDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_DEVICES_PROPERTIES);
 
-					for (const deviceId of uniqueDeviceIds) {
-						this.firstLoad.push(deviceId);
-						this.firstLoad = [...new Set(this.firstLoad)];
-					}
+				meta.value[record.id] = record.type;
+
+				deviceIds.push(doc.device);
+			}
+
+			if (documents.length > 1) {
+				const uniqueDeviceIds = [...new Set(deviceIds)];
+
+				for (const deviceId of uniqueDeviceIds) {
+					firstLoad.value.push(deviceId);
+					firstLoad.value = [...new Set(firstLoad.value)];
 				}
+			}
+
+			return true;
+		};
+
+		const loadRecord = async (payload: IDevicePropertiesLoadRecordActionPayload): Promise<boolean> => {
+			const record = await getRecord<IDevicePropertyDatabaseRecord>(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+
+			if (record) {
+				data.value = data.value ?? {};
+				data.value[payload.id] = await storeRecordFactory(storesManager, record);
 
 				return true;
-			},
+			}
 
-			/**
-			 * Load record from database
-			 *
-			 * @param {IDevicePropertiesLoadRecordActionPayload} payload
-			 */
-			async loadRecord(payload: IDevicePropertiesLoadRecordActionPayload): Promise<boolean> {
-				const record = await getRecord<IDevicePropertyDatabaseRecord>(payload.id, DB_TABLE_DEVICES_PROPERTIES);
+			return false;
+		};
 
-				if (record) {
-					this.data = this.data ?? {};
-					this.data[payload.id] = await storeRecordFactory(record);
+		const loadAllRecords = async (payload?: IDevicePropertiesLoadAllRecordsActionPayload): Promise<boolean> => {
+			const records = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
 
-					return true;
+			data.value = data.value ?? {};
+
+			for (const record of records) {
+				if (payload?.device && payload?.device.id !== record?.device.id) {
+					continue;
 				}
 
-				return false;
-			},
+				data.value[record.id] = await storeRecordFactory(storesManager, record);
+			}
 
-			/**
-			 * Load records from database
-			 *
-			 * @param {IDevicePropertiesLoadAllRecordsActionPayload} payload
-			 */
-			async loadAllRecords(payload?: IDevicePropertiesLoadAllRecordsActionPayload): Promise<boolean> {
-				const records = await getAllRecords<IDevicePropertyDatabaseRecord>(DB_TABLE_DEVICES_PROPERTIES);
+			return true;
+		};
 
-				this.data = this.data ?? {};
-
-				for (const record of records) {
-					if (payload?.device && payload?.device.id !== record?.device.id) {
-						continue;
-					}
-
-					this.data[record.id] = await storeRecordFactory(record);
-				}
-
-				return true;
-			},
-		},
+		return {
+			semaphore,
+			firstLoad,
+			data,
+			meta,
+			firstLoadFinished,
+			getting,
+			fetching,
+			findById,
+			findByIdentifier,
+			findForDevice,
+			findMeta,
+			set,
+			unset,
+			get,
+			fetch,
+			add,
+			edit,
+			save,
+			setState,
+			remove,
+			socketData,
+			insertData,
+			loadRecord,
+			loadAllRecords,
+		};
 	}
 );
 
-export const registerDevicesPropertiesStore = (
-	pinia: Pinia
-): Store<string, IDevicePropertiesState, IDevicePropertiesGetters, IDevicePropertiesActions> => {
+export const registerDevicesPropertiesStore = (pinia: Pinia): Store<string, IDevicePropertiesState, object, IDevicePropertiesActions> => {
 	return useDeviceProperties(pinia);
 };

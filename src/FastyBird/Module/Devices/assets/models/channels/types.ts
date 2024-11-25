@@ -1,9 +1,10 @@
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ChannelCategory, ChannelDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import {
+	ChannelCategory,
+	ChannelDocument,
 	IChannelControlResponseData,
 	IChannelControlResponseModel,
 	IChannelPropertyResponseData,
@@ -14,7 +15,7 @@ import {
 	IDeviceResponseModel,
 	IEntityMeta,
 	IPlainRelation,
-} from '../../models/types';
+} from '../../types';
 
 export interface IChannelMeta extends IEntityMeta {
 	entity: 'channel';
@@ -24,23 +25,22 @@ export interface IChannelMeta extends IEntityMeta {
 // =====
 
 export interface IChannelsState {
-	semaphore: IChannelsStateSemaphore;
-	firstLoad: IDevice['id'][];
-	data: { [key: IChannel['id']]: IChannel } | undefined;
-	meta: { [key: IChannel['id']]: IChannelMeta };
-}
-
-export interface IChannelsGetters extends _GettersTree<IChannelsState> {
-	firstLoadFinished: (state: IChannelsState) => (deviceId?: IDevice['id'] | null) => boolean;
-	getting: (state: IChannelsState) => (id: IChannel['id']) => boolean;
-	fetching: (state: IChannelsState) => (deviceId?: IDevice['id'] | null) => boolean;
-	findById: (state: IChannelsState) => (id: IChannel['id']) => IChannel | null;
-	findForDevice: (state: IChannelsState) => (deviceId: string) => IChannel[];
-	findAll: (state: IChannelsState) => () => IChannel[];
-	findMeta: (state: IChannelsState) => (id: IChannel['id']) => IChannelMeta | null;
+	semaphore: Ref<IChannelsStateSemaphore>;
+	firstLoad: Ref<IDevice['id'][]>;
+	data: Ref<{ [key: IChannel['id']]: IChannel } | undefined>;
+	meta: Ref<{ [key: IChannel['id']]: IChannelMeta }>;
 }
 
 export interface IChannelsActions {
+	// Getters
+	firstLoadFinished: (deviceId?: IDevice['id'] | null) => boolean;
+	getting: (id: IChannel['id']) => boolean;
+	fetching: (deviceId?: IDevice['id'] | null) => boolean;
+	findById: (id: IChannel['id']) => IChannel | null;
+	findForDevice: (deviceId: string) => IChannel[];
+	findAll: () => IChannel[];
+	findMeta: (id: IChannel['id']) => IChannelMeta | null;
+	// Actions
 	set: (payload: IChannelsSetActionPayload) => Promise<IChannel>;
 	unset: (payload: IChannelsUnsetActionPayload) => Promise<void>;
 	get: (payload: IChannelsGetActionPayload) => Promise<boolean>;
@@ -55,17 +55,19 @@ export interface IChannelsActions {
 	loadAllRecords: (payload?: IChannelsLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type ChannelsStoreSetup = IChannelsState & IChannelsActions;
+
 // STORE STATE
 // ===========
 
-interface IChannelsStateSemaphore {
+export interface IChannelsStateSemaphore {
 	fetching: IChannelsStateSemaphoreFetching;
 	creating: string[];
 	updating: string[];
 	deleting: string[];
 }
 
-interface IChannelsStateSemaphoreFetching {
+export interface IChannelsStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

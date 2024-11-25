@@ -17,9 +17,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+
 import get from 'lodash.get';
 
-import { PropertyDefaultVariablePropertyEdit } from '../../components';
+import PropertyDefaultVariablePropertyEdit from '../property-default/property-default-variable-property-edit.vue';
 
 import {
 	IPropertyDefaultVariablePropertiesEditModel,

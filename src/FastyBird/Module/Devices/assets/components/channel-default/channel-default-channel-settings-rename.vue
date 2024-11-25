@@ -40,6 +40,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElFormItem, ElInput, FormItemRule } from 'element-plus';
 
 import { IChannelForm } from '../../types';

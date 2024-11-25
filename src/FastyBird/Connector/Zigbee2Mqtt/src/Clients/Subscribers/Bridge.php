@@ -24,7 +24,7 @@ use FastyBird\Connector\Zigbee2Mqtt\Exceptions;
 use FastyBird\Connector\Zigbee2Mqtt\Helpers;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Utils;
 use TypeError;
@@ -342,7 +342,7 @@ readonly class Bridge
 					[
 						'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 						'type' => 'bridge-messages-subscriber',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -372,7 +372,7 @@ readonly class Bridge
 				[
 					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'bridge-messages-subscriber',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],

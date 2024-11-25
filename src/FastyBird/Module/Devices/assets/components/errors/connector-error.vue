@@ -18,8 +18,12 @@
 				</fb-icon-with-child>
 			</template>
 
-			<template #title> <h1>An error occurred</h1> </template>
-			<template #sub-title> Connector could not be loaded </template>
+			<template #title>
+				<h1>An error occurred</h1>
+			</template>
+			<template #sub-title>
+				<el-text>Connector could not be loaded</el-text>
+			</template>
 		</el-result>
 	</div>
 
@@ -30,14 +34,14 @@
 
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue';
-import { ElResult } from 'element-plus';
+import type { ComponentPublicInstance } from 'vue';
 
-import { FasExclamation, FasEthernet } from '@fastybird/web-ui-icons';
+import { ElResult, ElText } from 'element-plus';
+
+import { FasEthernet, FasExclamation } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
 
 import { ApplicationError } from '../../errors';
-
-import type { ComponentPublicInstance } from 'vue';
 
 defineOptions({
 	name: 'ConnectorError',

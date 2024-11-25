@@ -53,11 +53,11 @@
 <script setup lang="ts">
 import { ElButton, ElButtonGroup, ElText } from 'element-plus';
 
-import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 import { FasCircleInfo, FasPencil, FasTrash } from '@fastybird/web-ui-icons';
+import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { ChannelsChannelIcon } from '../../components';
 import { IDeviceChannelEmits, IDeviceChannelProps } from '../../types';
+import ChannelsChannelIcon from '../channels/channels-channel-icon.vue';
 
 defineOptions({
 	name: 'DeviceDefaultDeviceChannel',

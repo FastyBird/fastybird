@@ -7,7 +7,7 @@ use FastyBird\Connector\FbMqtt\Connector;
 use FastyBird\Connector\FbMqtt\Documents;
 use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Ramsey\Uuid;

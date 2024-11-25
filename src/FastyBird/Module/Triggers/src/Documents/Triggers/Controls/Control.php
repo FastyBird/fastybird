@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Triggers\Documents\Triggers\Controls;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
 use Orisai\ObjectMapper;
@@ -32,17 +31,17 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Triggers\Controls\Control::class)]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Triggers\Controls\Control::class)]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_REPORTED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_CREATED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_UPDATED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_CONTROL_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final class Control implements MetadataDocuments\Document, MetadataDocuments\Owner
+final class Control implements ApplicationDocuments\Document, ApplicationDocuments\Owner
 {
 
-	use MetadataDocuments\TOwner;
+	use ApplicationDocuments\TOwner;
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]

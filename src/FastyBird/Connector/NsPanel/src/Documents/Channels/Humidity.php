@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Humidity::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Humidity::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Humidity::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\Humidity::TYPE)]
 class Humidity extends Channel
 {
 

@@ -1,6 +1,6 @@
-export { default as useAccount } from './account';
-export { default as useAccounts } from './accounts';
-export { default as useEmails } from './emails';
-export { default as useIdentities } from './identities';
-export { default as useRoles } from './roles';
-export { default as useSession } from './session';
+export { registerAccountStore } from './account';
+export { registerAccountsStore } from './accounts';
+export { registerEmailsStore } from './emails';
+export { registerIdentitiesStore } from './identities';
+export { registerRolesStore } from './roles';
+export { registerSessionStore } from './session';

@@ -1,11 +1,15 @@
 import { computed } from 'vue';
+
 import { orderBy } from 'natural-orderby';
 
+import { injectStoresManager } from '@fastybird/tools';
+
 import { channelControlsStoreKey, channelPropertiesStoreKey, channelsStoreKey, devicesStoreKey } from '../configuration';
-import { storesManager } from '../entry';
 import { IChannel, IChannelControl, IChannelData, IChannelProperty, IDevice, UseChannels } from '../types';
 
 export const useChannels = (deviceId?: IDevice['id'] | undefined): UseChannels => {
+	const storesManager = injectStoresManager();
+
 	const devicesStore = storesManager.getStore(devicesStoreKey);
 	const channelsStore = storesManager.getStore(channelsStoreKey);
 	const channelControlsStore = storesManager.getStore(channelControlsStoreKey);
@@ -52,10 +56,12 @@ export const useChannels = (deviceId?: IDevice['id'] | undefined): UseChannels =
 		}));
 	});
 
-	const fetchChannels = async (): Promise<void> => {
-		await channelsStore.fetch({ deviceId, refresh: !channelsStore.firstLoadFinished(deviceId) });
+	const fetchChannels = async (overrideChannelId?: IDevice['id']): Promise<void> => {
+		const useDeviceId = overrideChannelId ?? deviceId;
 
-		const channels = (typeof deviceId !== 'undefined' ? channelsStore.findForDevice(deviceId) : channelsStore.findAll()).filter(
+		await channelsStore.fetch({ deviceId: useDeviceId, refresh: !channelsStore.firstLoadFinished(useDeviceId) });
+
+		const channels = (typeof useDeviceId !== 'undefined' ? channelsStore.findForDevice(useDeviceId) : channelsStore.findAll()).filter(
 			(channel) => !channel.draft
 		);
 

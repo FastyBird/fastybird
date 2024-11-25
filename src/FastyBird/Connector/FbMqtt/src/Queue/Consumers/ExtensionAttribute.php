@@ -22,8 +22,8 @@ use FastyBird\Connector\FbMqtt\Exceptions;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
 use FastyBird\Connector\FbMqtt\Types;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
@@ -48,16 +48,16 @@ final class ExtensionAttribute implements Queue\Consumer
 		private readonly DevicesModels\Entities\Devices\DevicesRepository $deviceRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $propertiesRepository,
 		private readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $propertiesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{

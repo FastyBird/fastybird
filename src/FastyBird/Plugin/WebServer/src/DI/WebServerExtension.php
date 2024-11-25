@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\DI;
 
-use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
 use FastyBird\Plugin\WebServer\Application;
 use FastyBird\Plugin\WebServer\Commands;
 use FastyBird\Plugin\WebServer\Http;

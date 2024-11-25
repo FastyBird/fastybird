@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Router;
 
-use FastyBird\Library\Application\Router as ApplicationRouter;
+use Nette\Application;
 use Nette\Routing;
 
 /**
@@ -29,7 +29,7 @@ use Nette\Routing;
 final class AppRouter
 {
 
-	public static function createRouter(ApplicationRouter\AppRouter $router): void
+	public static function createRouter(Application\Routers\RouteList $router): void
 	{
 		$list = $router->withModule('Accounts');
 

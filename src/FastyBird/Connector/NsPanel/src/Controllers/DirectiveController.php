@@ -22,11 +22,12 @@ use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Router;
 use FastyBird\Connector\NsPanel\Servers;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use Nette\Utils;
 use Psr\Http\Message;
@@ -55,18 +56,17 @@ final class DirectiveController extends BaseController
 		private readonly Queue\Queue $queue,
 		private readonly Protocol\Driver $devicesDriver,
 		private readonly NsPanel\Helpers\MessageBuilder $messageBuilder,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\ServerRequestError
 	 * @throws ExchangeExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidData
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws RuntimeException
 	 */
 	public function process(
@@ -159,7 +159,7 @@ final class DirectiveController extends BaseController
 				$body,
 				$this->getSchema(self::SET_DEVICE_STATE_MESSAGE_SCHEMA_FILENAME),
 			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData $ex) {
 			throw new Exceptions\ServerRequestError(
 				$request,
 				Types\ServerStatus::INVALID_DIRECTIVE,
@@ -217,7 +217,7 @@ final class DirectiveController extends BaseController
 				$state[] = [
 					'capability' => $item->getType()->value,
 					'attribute' => $attribute,
-					'value' => MetadataUtilities\Value::flattenValue($value),
+					'value' => ToolsUtilities\Value::flattenValue($value),
 					'identifier' => $identifier,
 				];
 			}

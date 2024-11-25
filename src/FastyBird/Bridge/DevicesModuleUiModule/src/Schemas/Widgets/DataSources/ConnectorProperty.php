@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\DevicesModuleUiModule\Schemas\Widgets\DataSources;
 
 use FastyBird\Bridge\DevicesModuleUiModule\Entities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
@@ -80,13 +80,14 @@ final class ConnectorProperty extends Property
 	 *
 	 * @return iterable<string, mixed>
 	 *
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -110,7 +111,7 @@ final class ConnectorProperty extends Property
 			return array_merge(
 				(array) $attributes,
 				[
-					'value' => $state !== null && $state->isValid() ? MetadataUtilities\Value::flattenValue(
+					'value' => $state !== null && $state->isValid() ? ToolsUtilities\Value::flattenValue(
 						$state->getRead()->getExpectedValue() ?? $state->getRead()->getActualValue(),
 					) : null,
 				],
@@ -119,7 +120,7 @@ final class ConnectorProperty extends Property
 			return array_merge(
 				(array) $attributes,
 				[
-					'value' => MetadataUtilities\Value::flattenValue($resource->getProperty()->getValue()),
+					'value' => ToolsUtilities\Value::flattenValue($resource->getProperty()->getValue()),
 				],
 			);
 		}

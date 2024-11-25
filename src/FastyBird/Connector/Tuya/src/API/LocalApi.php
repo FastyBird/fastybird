@@ -24,9 +24,9 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
@@ -177,7 +177,7 @@ final class LocalApi
 		private readonly Services\SocketClientFactory $socketClientFactory,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Tuya\Logger $logger,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -1545,7 +1545,7 @@ final class LocalApi
 				$data,
 				$this->getSchema($schemaFilename),
 			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData $ex) {
 			if ($throw) {
 				throw new Exceptions\LocalApiCall(
 					'Could not validate received response payload',

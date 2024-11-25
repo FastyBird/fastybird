@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\WebServer\Server;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\WebServer\Middleware;
 use Psr\Log;
@@ -63,7 +63,7 @@ final readonly class Factory
 				[
 					'source' => MetadataTypes\Sources\Plugin::WEB_SERVER->value,
 					'type' => 'factory',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

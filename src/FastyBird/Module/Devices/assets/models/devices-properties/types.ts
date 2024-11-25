@@ -1,9 +1,11 @@
-import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ButtonPayload, CoverPayload, DataType, DevicePropertyDocument, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 
 import {
+	DevicePropertyDocument,
 	IDevice,
 	IDeviceResponseData,
 	IDeviceResponseModel,
@@ -16,7 +18,8 @@ import {
 	IPropertyMeta,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
-} from '../../models/types';
+	PropertyCategory,
+} from '../../types';
 
 export interface IDevicePropertyMeta extends IPropertyMeta {
 	parent: 'device';
@@ -27,23 +30,22 @@ export interface IDevicePropertyMeta extends IPropertyMeta {
 // =====
 
 export interface IDevicePropertiesState {
-	semaphore: IDevicePropertiesStateSemaphore;
-	firstLoad: IDevice['id'][];
-	data: { [key: IDeviceProperty['id']]: IDeviceProperty } | undefined;
-	meta: { [key: IDeviceProperty['id']]: IDevicePropertyMeta };
-}
-
-export interface IDevicePropertiesGetters extends _GettersTree<IDevicePropertiesState> {
-	firstLoadFinished: (state: IDevicePropertiesState) => (deviceId: IDevice['id']) => boolean;
-	getting: (state: IDevicePropertiesState) => (id: IDeviceProperty['id']) => boolean;
-	fetching: (state: IDevicePropertiesState) => (deviceId: IDevice['id'] | null) => boolean;
-	findById: (state: IDevicePropertiesState) => (id: IDeviceProperty['id']) => IDeviceProperty | null;
-	findByIdentifier: (state: IDevicePropertiesState) => (device: IDevice, identifier: IDeviceProperty['identifier']) => IDeviceProperty | null;
-	findForDevice: (state: IDevicePropertiesState) => (deviceId: IDevice['id']) => IDeviceProperty[];
-	findMeta: (state: IDevicePropertiesState) => (id: IDeviceProperty['id']) => IDevicePropertyMeta | null;
+	semaphore: Ref<IDevicePropertiesStateSemaphore>;
+	firstLoad: Ref<IDevice['id'][]>;
+	data: Ref<{ [key: IDeviceProperty['id']]: IDeviceProperty } | undefined>;
+	meta: Ref<{ [key: IDeviceProperty['id']]: IDevicePropertyMeta }>;
 }
 
 export interface IDevicePropertiesActions {
+	// Getters
+	firstLoadFinished: (deviceId: IDevice['id']) => boolean;
+	getting: (id: IDeviceProperty['id']) => boolean;
+	fetching: (deviceId: IDevice['id'] | null) => boolean;
+	findById: (id: IDeviceProperty['id']) => IDeviceProperty | null;
+	findByIdentifier: (device: IDevice, identifier: IDeviceProperty['identifier']) => IDeviceProperty | null;
+	findForDevice: (deviceId: IDevice['id']) => IDeviceProperty[];
+	findMeta: (id: IDeviceProperty['id']) => IDevicePropertyMeta | null;
+	// Actions
 	set: (payload: IDevicePropertiesSetActionPayload) => Promise<IDeviceProperty>;
 	unset: (payload: IDevicePropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IDevicePropertiesGetActionPayload) => Promise<boolean>;
@@ -59,6 +61,8 @@ export interface IDevicePropertiesActions {
 	loadAllRecords: (payload?: IDevicePropertiesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type DevicePropertiesStoreSetup = IDevicePropertiesState & IDevicePropertiesActions;
+
 // STORE STATE
 // ===========
 
@@ -69,7 +73,7 @@ export interface IDevicePropertiesStateSemaphore {
 	deleting: string[];
 }
 
-interface IDevicePropertiesStateSemaphoreFetching {
+export interface IDevicePropertiesStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

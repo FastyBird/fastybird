@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Documents;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 
@@ -27,7 +27,7 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-interface Document extends MetadataDocuments\Document
+interface Document extends ApplicationDocuments\Document
 {
 
 	public function getId(): Uuid\UuidInterface;

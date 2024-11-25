@@ -4,8 +4,8 @@ namespace FastyBird\Automator\DevicesModule\Tests\Cases\Unit;
 
 use Error;
 use FastyBird\Automator\DevicesModule\DI;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use PHPUnit\Framework\TestCase;
 use function constant;

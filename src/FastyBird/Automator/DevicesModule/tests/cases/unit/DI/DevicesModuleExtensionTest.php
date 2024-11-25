@@ -7,7 +7,7 @@ use FastyBird\Automator\DevicesModule\Hydrators;
 use FastyBird\Automator\DevicesModule\Schemas;
 use FastyBird\Automator\DevicesModule\Subscribers;
 use FastyBird\Automator\DevicesModule\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 /**

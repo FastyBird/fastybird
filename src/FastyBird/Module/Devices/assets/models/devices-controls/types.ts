@@ -1,20 +1,20 @@
-import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { DeviceControlDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 
 import {
-	IControlsAddActionPayload,
+	DeviceControlDocument,
 	IControl,
-	IControlRecordFactoryPayload,
-	IDevice,
-	IDeviceResponseData,
-	IPlainRelation,
-	IDeviceResponseModel,
-	IControlResponseModel,
 	IControlDatabaseRecord,
 	IControlMeta,
-} from '../../models/types';
+	IControlRecordFactoryPayload,
+	IControlResponseModel,
+	IControlsAddActionPayload,
+	IDevice,
+	IDeviceResponseData,
+	IDeviceResponseModel,
+	IPlainRelation,
+} from '../../types';
 
 export interface IDeviceControlMeta extends IControlMeta {
 	parent: 'device';
@@ -24,23 +24,22 @@ export interface IDeviceControlMeta extends IControlMeta {
 // =====
 
 export interface IDeviceControlsState {
-	semaphore: IDeviceControlsStateSemaphore;
-	firstLoad: IDevice['id'][];
-	data: { [key: IDeviceControl['id']]: IDeviceControl } | undefined;
-	meta: { [key: IDeviceControl['id']]: IDeviceControlMeta };
-}
-
-export interface IDeviceControlsGetters extends _GettersTree<IDeviceControlsState> {
-	firstLoadFinished: (state: IDeviceControlsState) => (deviceId: IDevice['id']) => boolean;
-	getting: (state: IDeviceControlsState) => (id: IDeviceControl['id']) => boolean;
-	fetching: (state: IDeviceControlsState) => (deviceId: IDevice['id'] | null) => boolean;
-	findById: (state: IDeviceControlsState) => (id: IDeviceControl['id']) => IDeviceControl | null;
-	findByName: (state: IDeviceControlsState) => (device: IDevice, name: IDeviceControl['name']) => IDeviceControl | null;
-	findForDevice: (state: IDeviceControlsState) => (deviceId: IDevice['id']) => IDeviceControl[];
-	findMeta: (state: IDeviceControlsState) => (id: IDeviceControl['id']) => IDeviceControlMeta | null;
+	semaphore: Ref<IDeviceControlsStateSemaphore>;
+	firstLoad: Ref<IDevice['id'][]>;
+	data: Ref<{ [key: IDeviceControl['id']]: IDeviceControl } | undefined>;
+	meta: Ref<{ [key: IDeviceControl['id']]: IDeviceControlMeta }>;
 }
 
 export interface IDeviceControlsActions {
+	// Getters
+	firstLoadFinished: (deviceId: IDevice['id']) => boolean;
+	getting: (id: IDeviceControl['id']) => boolean;
+	fetching: (deviceId: IDevice['id'] | null) => boolean;
+	findById: (id: IDeviceControl['id']) => IDeviceControl | null;
+	findByName: (device: IDevice, name: IDeviceControl['name']) => IDeviceControl | null;
+	findForDevice: (deviceId: IDevice['id']) => IDeviceControl[];
+	findMeta: (id: IDeviceControl['id']) => IDeviceControlMeta | null;
+	// Actions
 	set: (payload: IDeviceControlsSetActionPayload) => Promise<IDeviceControl>;
 	unset: (payload: IDeviceControlsUnsetActionPayload) => Promise<void>;
 	get: (payload: IDeviceControlsGetActionPayload) => Promise<boolean>;
@@ -55,6 +54,7 @@ export interface IDeviceControlsActions {
 	loadAllRecords: (payload?: IDeviceControlsLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type DeviceControlsStoreSetup = IDeviceControlsState & IDeviceControlsActions;
 // STORE STATE
 // ===========
 
@@ -65,7 +65,7 @@ export interface IDeviceControlsStateSemaphore {
 	deleting: string[];
 }
 
-interface IDeviceControlsStateSemaphoreFetching {
+export interface IDeviceControlsStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

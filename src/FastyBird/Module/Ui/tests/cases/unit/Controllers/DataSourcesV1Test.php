@@ -3,7 +3,7 @@
 namespace FastyBird\Module\Ui\Tests\Cases\Unit\Controllers;
 
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Ui\Tests;
 use Fig\Http\Message\RequestMethodInterface;

@@ -10,7 +10,7 @@
 	>
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.password.current.title')"
+				:label="t('accountsModule.fields.password.current.title')"
 				prop="currentPassword"
 				class="mb-2"
 			>
@@ -25,7 +25,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.password.new.title')"
+				:label="t('accountsModule.fields.password.new.title')"
 				prop="newPassword"
 				class="mb-2"
 			>
@@ -40,7 +40,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.password.repeat.title')"
+				:label="t('accountsModule.fields.password.repeat.title')"
 				prop="repeatPassword"
 				class="mb-2"
 			>
@@ -58,14 +58,17 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
-import { InternalRuleItem, SyncValidateResult } from 'async-validator';
 
-import { useAccount } from '../../models';
-import { useFlashMessage } from '../../composables';
-import { FormResultTypes, LayoutTypes } from '../../types';
-import { ISettingsPasswordProps, ISettingsPasswordForm } from './settings-password-form.types';
+import { InternalRuleItem, SyncValidateResult } from 'async-validator';
+import { ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager, useFlashMessage } from '@fastybird/tools';
+
+import { accountStoreKey } from '../../configuration';
+import { FormResultType, FormResultTypes, LayoutTypes } from '../../types';
+
+import { ISettingsPasswordForm, ISettingsPasswordProps } from './settings-password-form.types';
 
 defineOptions({
 	name: 'SettingsPasswordForm',
@@ -80,26 +83,29 @@ const props = withDefaults(defineProps<ISettingsPasswordProps>(), {
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
-const accountStore = useAccount();
+
+const storesManager = injectStoresManager();
+
+const accountStore = storesManager.getStore(accountStoreKey);
 
 const passwordFormEl = ref<FormInstance | undefined>(undefined);
 
 const rules = reactive<FormRules<ISettingsPasswordForm>>({
-	currentPassword: [{ required: true, message: t('fields.password.current.validation.required'), trigger: 'change' }],
-	newPassword: [{ required: true, message: t('fields.password.new.validation.required'), trigger: 'change' }],
+	currentPassword: [{ required: true, message: t('accountsModule.fields.password.current.validation.required'), trigger: 'change' }],
+	newPassword: [{ required: true, message: t('accountsModule.fields.password.new.validation.required'), trigger: 'change' }],
 	repeatPassword: [
-		{ required: true, message: t('fields.password.repeat.validation.required'), trigger: 'change' },
+		{ required: true, message: t('accountsModule.fields.password.repeat.validation.required'), trigger: 'change' },
 		{
 			validator: (_rule: InternalRuleItem, value: any): SyncValidateResult | void => {
 				return value === passwordForm.newPassword;
 			},
-			message: t('fields.password.repeat.validation.different'),
+			message: t('accountsModule.fields.password.repeat.validation.different'),
 			trigger: 'change',
 		},
 	],
@@ -134,7 +140,7 @@ watch(
 
 				emit('update:remoteFormResult', FormResultTypes.WORKING);
 
-				const errorMessage = t('messages.passwordNotEdited');
+				const errorMessage = t('accountsModule.messages.passwordNotEdited');
 
 				try {
 					await accountStore.editIdentity({

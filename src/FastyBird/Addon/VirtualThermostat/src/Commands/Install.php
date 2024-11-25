@@ -26,13 +26,12 @@ use FastyBird\Connector\Virtual\Entities as VirtualEntities;
 use FastyBird\Connector\Virtual\Exceptions as VirtualExceptions;
 use FastyBird\Connector\Virtual\Queries as VirtualQueries;
 use FastyBird\Connector\Virtual\Types as VirtualTypes;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -98,7 +97,7 @@ class Install extends Console\Command\Command
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
 		private readonly DevicesModels\Configuration\Channels\Properties\Repository $channelsPropertiesConfigurationRepository,
 		private readonly DevicesModels\States\ChannelPropertiesManager $channelPropertiesStatesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 		string|null $name = null,
 	)
@@ -117,6 +116,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws Console\Exception\InvalidArgumentException
@@ -127,8 +127,6 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -148,12 +146,11 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -974,7 +971,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1038,14 +1035,13 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -1569,7 +1565,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1635,8 +1631,8 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function deleteDevice(Style\SymfonyStyle $io): void
 	{
@@ -1689,7 +1685,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'initialize-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1704,7 +1700,10 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
 	 * @throws DevicesExceptions\InvalidArgument
@@ -1713,10 +1712,6 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -1739,7 +1734,7 @@ class Install extends Console\Command\Command
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1796,12 +1791,12 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1877,7 +1872,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -1894,12 +1889,12 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1970,7 +1965,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2047,8 +2042,8 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function deleteActor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -2101,7 +2096,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2248,7 +2243,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2408,7 +2403,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2507,8 +2502,8 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function deleteSensor(Style\SymfonyStyle $io, Entities\Devices\Device $device): void
 	{
@@ -2561,7 +2556,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2576,16 +2571,16 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -2656,7 +2651,7 @@ class Install extends Console\Command\Command
 		$targetTemp = $this->askTargetTemperature(
 			$io,
 			$preset,
-			Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
+			Types\Unit::from(ToolsUtilities\Value::toString($unitProperty->getValue(), true)),
 			$device,
 		);
 
@@ -2666,14 +2661,14 @@ class Install extends Console\Command\Command
 			$heatingThresholdTemp = $this->askHeatingThresholdTemperature(
 				$io,
 				$preset,
-				Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
+				Types\Unit::from(ToolsUtilities\Value::toString($unitProperty->getValue(), true)),
 				$device,
 			);
 
 			$coolingThresholdTemp = $this->askCoolingThresholdTemperature(
 				$io,
 				$preset,
-				Types\Unit::from(MetadataUtilities\Value::toString($unitProperty->getValue(), true)),
+				Types\Unit::from(ToolsUtilities\Value::toString($unitProperty->getValue(), true)),
 				$device,
 			);
 		}
@@ -2763,7 +2758,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Addon::VIRTUAL_THERMOSTAT->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -2812,7 +2807,7 @@ class Install extends Console\Command\Command
 	 * @return array<Types\HvacMode>
 	 *
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -2825,14 +2820,14 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::HVAC_MODE->value
-				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
+				|| !$property->getFormat() instanceof ToolsFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
 		$format = $property?->getFormat();
-		assert($format === null || $format instanceof MetadataFormats\StringEnum);
+		assert($format === null || $format instanceof ToolsFormats\StringEnum);
 
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {
@@ -2935,8 +2930,8 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -2949,7 +2944,7 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::UNIT->value
-				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
+				|| !$property->getFormat() instanceof ToolsFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
@@ -3029,7 +3024,7 @@ class Install extends Console\Command\Command
 	 * @return array<Types\Preset>
 	 *
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -3042,14 +3037,14 @@ class Install extends Console\Command\Command
 			$property !== null
 			&& (
 				$property->getIdentifier() !== Types\ChannelPropertyIdentifier::PRESET_MODE->value
-				|| !$property->getFormat() instanceof MetadataFormats\StringEnum
+				|| !$property->getFormat() instanceof ToolsFormats\StringEnum
 			)
 		) {
 			throw new Exceptions\InvalidArgument('Provided property is not valid');
 		}
 
 		$format = $property?->getFormat();
-		assert($format === null || $format instanceof MetadataFormats\StringEnum);
+		assert($format === null || $format instanceof ToolsFormats\StringEnum);
 
 		$default = array_filter(
 			array_unique(array_map(static fn ($item): int|null => match ($item) {
@@ -3203,7 +3198,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -3455,13 +3450,14 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -3540,8 +3536,8 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -3592,8 +3588,8 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -3645,8 +3641,8 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -4181,6 +4177,7 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
@@ -4190,8 +4187,6 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -4281,7 +4276,10 @@ class Install extends Console\Command\Command
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Console\Exception\ExceptionInterface
 	 * @throws DBAL\Exception
@@ -4291,10 +4289,6 @@ class Install extends Console\Command\Command
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
@@ -4624,7 +4618,7 @@ class Install extends Console\Command\Command
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -4709,8 +4703,8 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function askWhichActor(
 		Style\SymfonyStyle $io,
@@ -4822,8 +4816,8 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function askWhichSensor(
 		Style\SymfonyStyle $io,
@@ -4968,9 +4962,9 @@ class Install extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function findChannelPropertyIdentifier(
 		DevicesEntities\Channels\Channel $channel,

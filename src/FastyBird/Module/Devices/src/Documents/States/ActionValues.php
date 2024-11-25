@@ -16,11 +16,10 @@
 namespace FastyBird\Module\Devices\Documents\States;
 
 use DateTimeInterface;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Constants as MetadataConstants;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 use function array_merge;
 
@@ -32,8 +31,8 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document]
-final readonly class ActionValues implements MetadataDocuments\Document
+#[ApplicationDocuments\Mapping\Document]
+final readonly class ActionValues implements ApplicationDocuments\Document
 {
 
 	public function __construct(
@@ -83,13 +82,13 @@ final readonly class ActionValues implements MetadataDocuments\Document
 
 		if ($this->getActualValue() !== MetadataConstants::VALUE_NOT_SET) {
 			$data = array_merge($data, [
-				'actual_value' => MetadataUtilities\Value::flattenValue($this->getActualValue()),
+				'actual_value' => ToolsUtilities\Value::flattenValue($this->getActualValue()),
 			]);
 		}
 
 		if ($this->getExpectedValue() !== MetadataConstants::VALUE_NOT_SET) {
 			$data = array_merge($data, [
-				'expected_value' => MetadataUtilities\Value::flattenValue($this->getExpectedValue()),
+				'expected_value' => ToolsUtilities\Value::flattenValue($this->getExpectedValue()),
 			]);
 		}
 

@@ -3,7 +3,7 @@
 namespace FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 
 #[ORM\Entity]

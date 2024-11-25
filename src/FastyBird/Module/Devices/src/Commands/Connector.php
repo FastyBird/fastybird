@@ -18,12 +18,12 @@ namespace FastyBird\Module\Devices\Commands;
 use BadMethodCallException;
 use DateTimeInterface;
 use Doctrine\DBAL;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\Exceptions as ExchangeExceptions;
+use FastyBird\Core\Exchange\Exchange as ExchangeExchange;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\Exceptions as ExchangeExceptions;
-use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Connectors;
@@ -99,7 +99,7 @@ class Connector extends Console\Command\Command
 		private readonly Models\Configuration\Connectors\Repository $connectorsConfigurationRepository,
 		private readonly Models\Configuration\Connectors\Controls\Repository $connectorsControlsConfigurationRepository,
 		private readonly Devices\Logger $logger,
-		private readonly ApplicationHelpers\Database $database,
+		private readonly ToolsHelpers\Database $database,
 		private readonly ExchangeConsumers\Container $consumer,
 		private readonly EventLoop\LoopInterface $eventLoop,
 		private readonly DateTimeFactory\Clock $clock,
@@ -207,7 +207,7 @@ class Connector extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -222,13 +222,13 @@ class Connector extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws BadMethodCallException
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws ExchangeExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function prepare(
 		Style\SymfonyStyle $io,
@@ -289,7 +289,7 @@ class Connector extends Console\Command\Command
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'reason' => [
 							'source' => $source->value,
 							'message' => $reason,
@@ -328,7 +328,7 @@ class Connector extends Console\Command\Command
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'connector-cmd',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'reason' => [
 							'source' => $source->value,
 							'message' => $reason,
@@ -388,7 +388,7 @@ class Connector extends Console\Command\Command
 							[
 								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'connector-cmd',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 							],
 						);
 
@@ -416,7 +416,7 @@ class Connector extends Console\Command\Command
 							[
 								'source' => MetadataTypes\Sources\Module::DEVICES->value,
 								'type' => 'connector-cmd',
-								'exception' => ApplicationHelpers\Logger::buildException($ex),
+								'exception' => ToolsHelpers\Logger::buildException($ex),
 							],
 						);
 
@@ -530,7 +530,7 @@ class Connector extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'connector-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

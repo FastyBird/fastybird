@@ -17,7 +17,7 @@ namespace FastyBird\Module\Devices\Entities\Devices\Properties;
 
 use Doctrine\Common;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
@@ -173,8 +173,8 @@ abstract class Property extends Entities\Property
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError

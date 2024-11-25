@@ -10,7 +10,7 @@
 	>
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.emailAddress.title')"
+				:label="t('accountsModule.fields.emailAddress.title')"
 				prop="emailAddress"
 				class="mb-2"
 			>
@@ -23,7 +23,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.language.title')"
+				:label="t('accountsModule.fields.language.title')"
 				prop="language"
 				class="mb-2"
 			>
@@ -43,7 +43,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.firstName.title')"
+				:label="t('accountsModule.fields.firstName.title')"
 				prop="firstName"
 				class="mb-2"
 			>
@@ -56,7 +56,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.lastName.title')"
+				:label="t('accountsModule.fields.lastName.title')"
 				prop="lastName"
 				class="mb-2"
 			>
@@ -69,7 +69,7 @@
 
 		<div class="mb-5">
 			<el-form-item
-				:label="t('fields.middleName.title')"
+				:label="t('accountsModule.fields.middleName.title')"
 				prop="middleName"
 				class="mb-2"
 			>
@@ -91,7 +91,7 @@
 				:md="12"
 			>
 				<el-form-item
-					:label="t('fields.datetime.timezone.title')"
+					:label="t('accountsModule.fields.datetime.timezone.title')"
 					prop="timezone"
 					class="mb-2"
 				>
@@ -120,7 +120,7 @@
 				:md="12"
 			>
 				<el-form-item
-					:label="t('fields.datetime.weekStartOn.title')"
+					:label="t('accountsModule.fields.datetime.weekStartOn.title')"
 					prop="weekStart"
 					class="mb-2"
 				>
@@ -148,7 +148,7 @@
 				:md="12"
 			>
 				<el-form-item
-					:label="t('fields.datetime.dateFormat.title')"
+					:label="t('accountsModule.fields.datetime.dateFormat.title')"
 					prop="dateFormat"
 					class="mb-2"
 				>
@@ -171,7 +171,7 @@
 				:md="12"
 			>
 				<el-form-item
-					:label="t('fields.datetime.timeFormat.title')"
+					:label="t('accountsModule.fields.datetime.timeFormat.title')"
 					prop="timeFormat"
 					class="mb-2"
 				>
@@ -195,15 +195,18 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import { ElCol, ElDivider, ElForm, ElFormItem, ElInput, ElOption, ElOptionGroup, ElRow, ElSelect, FormInstance, FormRules } from 'element-plus';
 import get from 'lodash.get';
-import { ElForm, ElFormItem, ElInput, ElDivider, ElRow, ElCol, ElSelect, ElOption, ElOptionGroup, FormInstance, FormRules } from 'element-plus';
 
 import { ModuleSource } from '@fastybird/metadata-library';
+import { injectStoresManager, useFlashMessage } from '@fastybird/tools';
 
-import { useAccount } from '../../models';
-import { useFlashMessage, useTimezones } from '../../composables';
-import { FormResultTypes, LayoutTypes } from '../../types';
-import { ISettingsAccountFormProps, ISettingsAccountForm } from './settings-account-form.types';
+import { useTimezones } from '../../composables';
+import { accountStoreKey } from '../../configuration';
+import { FormResultType, FormResultTypes, LayoutTypes } from '../../types';
+
+import { ISettingsAccountForm, ISettingsAccountFormProps } from './settings-account-form.types';
 
 defineOptions({
 	name: 'SettingsAccountForm',
@@ -218,13 +221,17 @@ const props = withDefaults(defineProps<ISettingsAccountFormProps>(), {
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
-const accountStore = useAccount();
+
+const storesManager = injectStoresManager();
+
+const accountStore = storesManager.getStore(accountStoreKey);
+
 const { timezones } = useTimezones();
 
 const countries: string[] = ['Africa', 'America', 'Antarctica', 'Arctic', 'Asia', 'Atlantic', 'Australia', 'Europe', 'Indian', 'Pacific'];
@@ -233,11 +240,11 @@ const accountFormEl = ref<FormInstance | undefined>(undefined);
 
 const rules = reactive<FormRules<ISettingsAccountForm>>({
 	emailAddress: [
-		{ required: true, message: t('fields.emailAddress.validation.required'), trigger: 'change' },
-		{ type: 'email', message: t('fields.emailAddress.validation.email'), trigger: 'change' },
+		{ required: true, message: t('accountsModule.fields.emailAddress.validation.required'), trigger: 'change' },
+		{ type: 'email', message: t('accountsModule.fields.emailAddress.validation.email'), trigger: 'change' },
 	],
-	firstName: [{ required: true, message: t('fields.firstName.validation.required'), trigger: 'change' }],
-	lastName: [{ required: true, message: t('fields.lastName.validation.required'), trigger: 'change' }],
+	firstName: [{ required: true, message: t('accountsModule.fields.firstName.validation.required'), trigger: 'change' }],
+	lastName: [{ required: true, message: t('accountsModule.fields.lastName.validation.required'), trigger: 'change' }],
 	middleName: [{ required: false }],
 	language: [{ required: false }],
 	weekStart: [{ required: false }],
@@ -271,15 +278,15 @@ const languagesOptions: { name: string; value: string }[] = [
 
 const weekStartOptions: { name: string; value: number }[] = [
 	{
-		name: t('fields.datetime.weekStartOn.values.monday'),
+		name: t('accountsModule.fields.datetime.weekStartOn.values.monday'),
 		value: 1,
 	},
 	{
-		name: t('fields.datetime.weekStartOn.values.saturday'),
+		name: t('accountsModule.fields.datetime.weekStartOn.values.saturday'),
 		value: 6,
 	},
 	{
-		name: t('fields.datetime.weekStartOn.values.sunday'),
+		name: t('accountsModule.fields.datetime.weekStartOn.values.sunday'),
 		value: 7,
 	},
 ];
@@ -351,7 +358,7 @@ const clearResult = (): void => {
 };
 
 const updateAccount = async (): Promise<void> => {
-	const errorMessage = t('messages.accountNotEdited');
+	const errorMessage = t('accountsModule.messages.accountNotEdited');
 
 	try {
 		await accountStore.edit({
@@ -406,7 +413,7 @@ watch(
 				if (accountForm.emailAddress !== props.account.email?.address) {
 					const storedEmail = accountStore.emails().find((email) => email.address.toLowerCase() === accountForm.emailAddress.toLowerCase());
 
-					const emailErrorMessage = t('messages.emailNotEdited');
+					const emailErrorMessage = t('accountsModule.messages.emailNotEdited');
 
 					if (typeof storedEmail !== 'undefined') {
 						try {

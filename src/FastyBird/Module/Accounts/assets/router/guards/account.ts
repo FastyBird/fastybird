@@ -1,9 +1,10 @@
+import { IStoresManager } from '@fastybird/tools';
 import * as Sentry from '@sentry/vue';
 
-import { useSession } from '../../models';
+import { sessionStoreKey } from '../../configuration';
 
-const accountGuard = (): boolean | { name: string } | undefined => {
-	const sessionStore = useSession();
+const accountGuard = (storesManager: IStoresManager): boolean | { name: string } | undefined => {
+	const sessionStore = storesManager.getStore(sessionStoreKey);
 
 	const account = sessionStore.account();
 

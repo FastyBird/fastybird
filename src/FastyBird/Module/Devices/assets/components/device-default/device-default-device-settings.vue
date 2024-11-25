@@ -118,18 +118,21 @@
 </template>
 
 <script setup lang="ts">
-import { flattenValue } from '@fastybird/metadata-library';
-
-import { FasPlus } from '@fastybird/web-ui-icons';
-import { FbList } from '@fastybird/web-ui-library';
-import { ElButton, ElForm, FormInstance } from 'element-plus';
-import get from 'lodash.get';
 import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { DeviceDefaultDeviceSettingsRename, PropertyDefaultPropertySettings, PropertyDefaultVariablePropertiesEdit } from '../../components';
+import { ElButton, ElForm, FormInstance } from 'element-plus';
+import get from 'lodash.get';
+
+import { flattenValue } from '@fastybird/tools';
+import { FasPlus } from '@fastybird/web-ui-icons';
+import { FbList } from '@fastybird/web-ui-library';
+
 import { useDeviceForm } from '../../composables';
-import { FormResultTypes, IDeviceForm, IDeviceProperty, IEditDeviceEmits, IEditDeviceProps, PropertyType } from '../../types';
+import { FormResultType, FormResultTypes, IDeviceForm, IDeviceProperty, IEditDeviceEmits, IEditDeviceProps, PropertyType } from '../../types';
+import DeviceDefaultDeviceSettingsRename from '../device-default/device-default-device-settings-rename.vue';
+import PropertyDefaultPropertySettings from '../property-default/property-default-property-settings.vue';
+import PropertyDefaultVariablePropertiesEdit from '../property-default/property-default-variable-properties-edit.vue';
 
 defineOptions({
 	name: 'DeviceDefaultDeviceSettings',
@@ -246,8 +249,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => formResult.value,
-	(val: FormResultTypes): void => {
+	(): FormResultType => formResult.value,
+	(val: FormResultType): void => {
 		emit('update:remoteFormResult', val);
 	}
 );

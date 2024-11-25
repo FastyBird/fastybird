@@ -10,7 +10,7 @@ use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Exceptions;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;

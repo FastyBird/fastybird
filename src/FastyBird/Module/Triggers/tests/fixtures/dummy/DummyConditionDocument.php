@@ -2,16 +2,16 @@
 
 namespace FastyBird\Module\Triggers\Tests\Fixtures\Dummy;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Module\Triggers\Documents;
 use FastyBird\Module\Triggers\Types;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
-#[DOC\Document(entity: DummyConditionEntity::class)]
-#[DOC\DiscriminatorEntry(name: DummyConditionEntity::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: DummyConditionEntity::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: DummyConditionEntity::TYPE)]
 final class DummyConditionDocument extends Documents\Conditions\Condition
 {
 

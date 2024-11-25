@@ -17,10 +17,9 @@ namespace FastyBird\Module\Accounts\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Application\Router as ApplicationRouter;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\DI as ApplicationDI;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Accounts\Commands;
 use FastyBird\Module\Accounts\Controllers;
 use FastyBird\Module\Accounts\Helpers;
@@ -264,7 +263,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 		 * APPLICATION DOCUMENTS
 		 */
 
-		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+		$services = $builder->findByTag(ApplicationDI\ApplicationExtension::DRIVER_TAG);
 
 		if ($services !== []) {
 			$services = array_keys($services);
@@ -279,7 +278,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 				);
 
 				$documentAttributeDriverChainService = $builder->getDefinitionByType(
-					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+					ApplicationDocuments\Mapping\Driver\MappingDriverChain::class,
 				);
 
 				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
@@ -304,7 +303,7 @@ class AccountsExtension extends DI\CompilerExtension implements Translation\DI\T
 			]);
 		}
 
-		$appRouterServiceName = $builder->getByType(ApplicationRouter\AppRouter::class);
+		$appRouterServiceName = $builder->getByType(Application\Routers\RouteList::class);
 		assert(is_string($appRouterServiceName));
 		$appRouterService = $builder->getDefinition($appRouterServiceName);
 		assert($appRouterService instanceof DI\Definitions\ServiceDefinition);

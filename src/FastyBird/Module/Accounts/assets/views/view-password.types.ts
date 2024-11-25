@@ -1,7 +1,7 @@
-import { FormResultTypes } from '../types';
+import { FormResultType } from '../types';
 
 export interface IViewPasswordProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }

@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Devices\Controllers\Finders;
 
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -33,8 +33,8 @@ trait TDevice
 {
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function findDevice(
 		string $id,

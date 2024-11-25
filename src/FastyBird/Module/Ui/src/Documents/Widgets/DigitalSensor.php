@@ -15,12 +15,12 @@
 
 namespace FastyBird\Module\Ui\Documents\Widgets;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Entities;
 
-#[DOC\Document(entity: Entities\Widgets\DigitalSensor::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Widgets\DigitalSensor::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Widgets\DigitalSensor::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Widgets\DigitalSensor::TYPE)]
 class DigitalSensor extends Documents\Widgets\Widget
 {
 

@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\IlluminationLevel::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\IlluminationLevel::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\IlluminationLevel::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\IlluminationLevel::TYPE)]
 class IlluminationLevel extends Channel
 {
 

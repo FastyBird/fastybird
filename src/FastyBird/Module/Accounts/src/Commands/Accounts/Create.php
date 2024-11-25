@@ -18,7 +18,7 @@ namespace FastyBird\Module\Accounts\Commands\Accounts;
 use Doctrine;
 use Doctrine\DBAL\Connection;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
@@ -106,12 +106,12 @@ class Create extends Console\Command\Command
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Doctrine\DBAL\Exception
 	 * @throws DoctrineOrmQueryExceptions\InvalidStateException
 	 * @throws DoctrineOrmQueryExceptions\QueryException
 	 * @throws Exceptions\Runtime
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function execute(Input\InputInterface $input, Output\OutputInterface $output): int
 	{

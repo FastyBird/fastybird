@@ -1,20 +1,20 @@
-import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ConnectorControlDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 
 import {
+	ConnectorControlDocument,
 	IConnector,
 	IConnectorResponseData,
-	IPlainRelation,
-	IControlsAddActionPayload,
-	IControl,
-	IControlRecordFactoryPayload,
 	IConnectorResponseModel,
-	IControlResponseModel,
+	IControl,
 	IControlDatabaseRecord,
 	IControlMeta,
-} from '../../models/types';
+	IControlRecordFactoryPayload,
+	IControlResponseModel,
+	IControlsAddActionPayload,
+	IPlainRelation,
+} from '../../types';
 
 export interface IConnectorControlMeta extends IControlMeta {
 	parent: 'connector';
@@ -24,23 +24,22 @@ export interface IConnectorControlMeta extends IControlMeta {
 // =====
 
 export interface IConnectorControlsState {
-	semaphore: IConnectorControlsStateSemaphore;
-	firstLoad: IConnector['id'][];
-	data: { [key: IConnectorControl['id']]: IConnectorControl } | undefined;
-	meta: { [key: IConnectorControl['id']]: IConnectorControlMeta };
-}
-
-export interface IConnectorControlsGetters extends _GettersTree<IConnectorControlsState> {
-	firstLoadFinished: (state: IConnectorControlsState) => (connectorId: IConnector['id']) => boolean;
-	getting: (state: IConnectorControlsState) => (id: IConnectorControl['id']) => boolean;
-	fetching: (state: IConnectorControlsState) => (connectorId: IConnector['id'] | null) => boolean;
-	findById: (state: IConnectorControlsState) => (id: IConnectorControl['id']) => IConnectorControl | null;
-	findByName: (state: IConnectorControlsState) => (connector: IConnector, name: IConnectorControl['name']) => IConnectorControl | null;
-	findForConnector: (state: IConnectorControlsState) => (connectorId: IConnector['id']) => IConnectorControl[];
-	findMeta: (state: IConnectorControlsState) => (id: IConnectorControl['id']) => IConnectorControlMeta | null;
+	semaphore: Ref<IConnectorControlsStateSemaphore>;
+	firstLoad: Ref<IConnector['id'][]>;
+	data: Ref<{ [key: IConnectorControl['id']]: IConnectorControl } | undefined>;
+	meta: Ref<{ [key: IConnectorControl['id']]: IConnectorControlMeta }>;
 }
 
 export interface IConnectorControlsActions {
+	// Getters
+	firstLoadFinished: (connectorId: IConnector['id']) => boolean;
+	getting: (id: IConnectorControl['id']) => boolean;
+	fetching: (connectorId: IConnector['id'] | null) => boolean;
+	findById: (id: IConnectorControl['id']) => IConnectorControl | null;
+	findByName: (connector: IConnector, name: IConnectorControl['name']) => IConnectorControl | null;
+	findForConnector: (connectorId: IConnector['id']) => IConnectorControl[];
+	findMeta: (id: IConnectorControl['id']) => IConnectorControlMeta | null;
+	// Actions
 	set: (payload: IConnectorControlsSetActionPayload) => Promise<IConnectorControl>;
 	unset: (payload: IConnectorControlsUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorControlsGetActionPayload) => Promise<boolean>;
@@ -55,6 +54,8 @@ export interface IConnectorControlsActions {
 	loadAllRecords: (payload?: IConnectorControlsLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type ConnectorControlsStoreSetup = IConnectorControlsState & IConnectorControlsActions;
+
 // STORE STATE
 // ===========
 
@@ -65,7 +66,7 @@ export interface IConnectorControlsStateSemaphore {
 	deleting: string[];
 }
 
-interface IConnectorControlsStateSemaphoreFetching {
+export interface IConnectorControlsStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

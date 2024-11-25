@@ -1,26 +1,32 @@
-import { defineStore, Pinia, Store } from 'pinia';
-import axios from 'axios';
+import { ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
-import { jwtDecode } from 'jwt-decode';
+
+import { Pinia, Store, defineStore } from 'pinia';
+
+import axios from 'axios';
 import { Jsona } from 'jsona';
-import get from 'lodash.get';
+import { jwtDecode } from 'jwt-decode';
+import lodashGet from 'lodash.get';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
+import { injectStoresManager } from '@fastybird/tools';
 
+import { accountsStoreKey } from '../../configuration';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useAccounts } from '../../models';
+import { CookiesPlugin } from '../../types';
 import { IAccount } from '../accounts/types';
 
 import {
-	ISessionCreateActionPayload,
 	ISession,
-	ISessionResponseJson,
-	ISessionState,
-	ISessionResponseModel,
-	ISessionRecordFactoryPayload,
-	ISessionGetters,
 	ISessionActions,
+	ISessionCreateActionPayload,
+	ISessionRecordFactoryPayload,
+	ISessionResponseJson,
+	ISessionResponseModel,
+	ISessionState,
+	ISessionStateSemaphore,
+	SessionStoreSetup,
 } from './types';
 
 export const ACCESS_TOKEN_COOKIE_NAME = 'token';
@@ -31,41 +37,43 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const readCookie = (name: string): string | null => {
-	const { cookies } = useCookies();
-
-	if (cookies.get(name) !== null && typeof cookies.get(name) !== 'undefined' && cookies.get(name) !== '') {
-		return cookies.get(name);
-	}
-
-	return null;
+const defaultSemaphore = {
+	fetching: false,
+	creating: false,
+	updating: false,
 };
 
-const recordFactory = (data: ISessionRecordFactoryPayload): ISession => {
-	const { cookies } = useCookies();
+const defaultData = {
+	accessToken: null,
+	refreshToken: null,
+	tokenType: 'Bearer',
+	tokenExpiration: null,
+	accountId: null,
+};
 
-	const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(data.accessToken);
-	const decodedRefreshToken = jwtDecode<{ exp: number; user: string }>(data.refreshToken);
+const storeRecordFactory = (cookies: CookiesPlugin, rawData: ISessionRecordFactoryPayload): ISession => {
+	const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(rawData.accessToken);
+	const decodedRefreshToken = jwtDecode<{ exp: number; user: string }>(rawData.refreshToken);
 
 	const state = {
-		accessToken: data.accessToken,
-		refreshToken: data.refreshToken,
+		accessToken: rawData.accessToken,
+		refreshToken: rawData.refreshToken,
 		tokenExpiration: new Date(decodedAccessToken.exp * 1000).toISOString(),
-		tokenType: data.tokenType,
+		tokenType: rawData.tokenType,
 
-		accountId: get(decodedAccessToken, 'user'),
+		accountId: lodashGet(decodedAccessToken, 'user'),
 	};
 
 	cookies.set(
 		ACCESS_TOKEN_COOKIE_NAME,
-		data.accessToken,
+		rawData.accessToken,
 		new Date(decodedAccessToken.exp * 1000).getTime() / 1000 - new Date().getTime() / 1000,
 		'/'
 	);
 
 	cookies.set(
 		REFRESH_TOKEN_COOKIE_NAME,
-		data.refreshToken,
+		rawData.refreshToken,
 		new Date(decodedRefreshToken.exp * 1000).getTime() / 1000 - new Date().getTime() / 1000,
 		'/'
 	);
@@ -73,212 +81,195 @@ const recordFactory = (data: ISessionRecordFactoryPayload): ISession => {
 	return state;
 };
 
-export const useSession = defineStore<string, ISessionState, ISessionGetters, ISessionActions>('accounts_module_session', {
-	state: (): ISessionState => {
-		return {
-			semaphore: {
-				fetching: false,
-				creating: false,
-				updating: false,
-			},
+const readCookie = (cookies: CookiesPlugin, name: string): string | null => {
+	if (cookies.get(name) !== null && typeof cookies.get(name) !== 'undefined' && cookies.get(name) !== '') {
+		return cookies.get(name);
+	}
 
-			data: {
-				accessToken: null,
-				refreshToken: null,
-				tokenType: 'Bearer',
-				tokenExpiration: null,
-				accountId: null,
-			},
-		};
-	},
+	return null;
+};
 
-	getters: {
-		accessToken: (state: ISessionState): (() => string | null) => {
-			return (): string | null => state.data.accessToken;
-		},
+export const useSession = defineStore<'accounts_module_session', SessionStoreSetup>('accounts_module_session', (): SessionStoreSetup => {
+	const storesManager = injectStoresManager();
 
-		refreshToken: (state: ISessionState): (() => string | null) => {
-			return (): string | null => state.data.refreshToken;
-		},
+	const { cookies } = useCookies();
 
-		accountId: (state: ISessionState): (() => IAccount['id'] | null) => {
-			return (): IAccount['id'] | null => state.data.accountId;
-		},
+	const semaphore = ref<ISessionStateSemaphore>(defaultSemaphore);
 
-		account: (state: ISessionState): (() => IAccount | null) => {
-			return (): IAccount | null => {
-				if (state.data.accountId === null) {
-					return null;
-				}
+	const data = ref<ISession>(defaultData);
 
-				const accountsStore = useAccounts();
+	const accessToken = (): string | null => data.value.accessToken;
 
-				return accountsStore.findById(state.data.accountId);
-			};
-		},
+	const refreshToken = (): string | null => data.value.refreshToken;
 
-		isSignedIn: (state: ISessionState): (() => boolean) => {
-			return (): boolean => state.data.accountId !== null;
-		},
-	},
+	const accountId = (): IAccount['id'] | null => data.value.accountId;
 
-	actions: {
-		initialize(): void {
-			if (this.data.accessToken !== null) return;
+	const account = (): IAccount | null => {
+		if (data.value.accountId === null) {
+			return null;
+		}
 
-			const accessTokenCookie = readCookie(ACCESS_TOKEN_COOKIE_NAME);
-			const refreshTokenCookie = readCookie(REFRESH_TOKEN_COOKIE_NAME);
+		const accountsStore = storesManager.getStore(accountsStoreKey);
 
-			this.data.accessToken = null;
-			this.data.refreshToken = null;
-			this.data.tokenExpiration = null;
-			this.data.accountId = null;
+		return accountsStore.findById(data.value.accountId);
+	};
 
-			if (refreshTokenCookie !== null) {
-				this.data.refreshToken = refreshTokenCookie;
-			} else {
-				return;
-			}
+	const isSignedIn = (): boolean => data.value.accountId !== null;
 
-			if (accessTokenCookie !== null) {
-				const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(accessTokenCookie);
+	const initialize = (): void => {
+		if (data.value.accessToken !== null) return;
 
-				this.data.accessToken = accessTokenCookie;
-				this.data.tokenExpiration = new Date(decodedAccessToken.exp * 1000).toISOString();
-				this.data.accountId = decodedAccessToken.user;
-			}
-		},
+		const accessTokenCookie = readCookie(cookies, ACCESS_TOKEN_COOKIE_NAME);
+		const refreshTokenCookie = readCookie(cookies, REFRESH_TOKEN_COOKIE_NAME);
 
-		clear(): void {
-			const { cookies } = useCookies();
+		data.value.accessToken = null;
+		data.value.refreshToken = null;
+		data.value.tokenExpiration = null;
+		data.value.accountId = null;
 
-			this.$reset();
+		if (refreshTokenCookie !== null) {
+			data.value.refreshToken = refreshTokenCookie;
+		} else {
+			return;
+		}
 
-			cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
-			cookies.remove(REFRESH_TOKEN_COOKIE_NAME);
-		},
+		if (accessTokenCookie !== null) {
+			const decodedAccessToken = jwtDecode<{ exp: number; user: string }>(accessTokenCookie);
 
-		async fetch(): Promise<boolean> {
-			if (this.semaphore.fetching) {
-				return false;
-			}
+			data.value.accessToken = accessTokenCookie;
+			data.value.tokenExpiration = new Date(decodedAccessToken.exp * 1000).toISOString();
+			data.value.accountId = decodedAccessToken.user;
+		}
+	};
 
-			const accountsStore = useAccounts();
+	const clear = (): void => {
+		semaphore.value = defaultSemaphore;
+		data.value = defaultData;
 
-			this.semaphore.fetching = true;
+		cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
+		cookies.remove(REFRESH_TOKEN_COOKIE_NAME);
+	};
 
-			try {
-				const response = await axios.get<ISessionResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/session`);
+	const fetch = async (): Promise<boolean> => {
+		if (semaphore.value.fetching) {
+			return false;
+		}
 
-				const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
+		const accountsStore = storesManager.getStore(accountsStoreKey);
 
-				this.data = recordFactory({
-					accessToken: responseModel.token,
-					refreshToken: responseModel.refresh,
-					tokenType: responseModel.tokenType,
-				});
+		semaphore.value.fetching = true;
 
-				await accountsStore.get({ id: responseModel.account.id });
+		try {
+			const response = await axios.get<ISessionResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/session`);
 
-				return true;
-			} catch (e: any) {
-				throw new ApiError('session.fetch.failed', e, 'Fetching session failed.');
-			} finally {
-				this.semaphore.fetching = false;
-			}
-		},
+			const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
 
-		async create(payload: ISessionCreateActionPayload): Promise<boolean> {
-			if (this.semaphore.creating) {
-				return false;
-			}
+			data.value = storeRecordFactory(cookies, {
+				accessToken: responseModel.token,
+				refreshToken: responseModel.refresh,
+				tokenType: responseModel.tokenType,
+			});
 
-			const accountsStore = useAccounts();
+			await accountsStore.get({ id: responseModel.account.id });
 
-			const dataFormatter = new Jsona();
+			return true;
+		} catch (e: any) {
+			throw new ApiError('session.fetch.failed', e, 'Fetching session failed.');
+		} finally {
+			semaphore.value.fetching = false;
+		}
+	};
 
-			this.semaphore.creating = true;
+	const create = async (payload: ISessionCreateActionPayload): Promise<boolean> => {
+		if (semaphore.value.creating) {
+			return false;
+		}
 
-			try {
-				const response = await axios.post<ISessionResponseJson>(
-					`/${ModulePrefix.ACCOUNTS}/v1/session`,
-					dataFormatter.serialize({
-						stuff: {
-							type: 'com.fastybird.accounts-module/session',
+		const accountsStore = storesManager.getStore(accountsStoreKey);
 
-							uid: payload.uid,
-							password: payload.password,
-						},
-					})
-				);
+		const dataFormatter = new Jsona();
 
-				const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
+		semaphore.value.creating = true;
 
-				this.data = recordFactory({
-					accessToken: responseModel.token,
-					refreshToken: responseModel.refresh,
-					tokenType: responseModel.tokenType,
-				});
+		try {
+			const response = await axios.post<ISessionResponseJson>(
+				`/${ModulePrefix.ACCOUNTS}/v1/session`,
+				dataFormatter.serialize({
+					stuff: {
+						type: 'com.fastybird.accounts-module/session',
 
-				await accountsStore.get({ id: responseModel.account.id });
+						uid: payload.uid,
+						password: payload.password,
+					},
+				})
+			);
 
-				return true;
-			} catch (e: any) {
-				throw new ApiError('session.create.failed', e, 'Create session failed.');
-			} finally {
-				this.semaphore.creating = false;
-			}
-		},
+			const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
 
-		async refresh(): Promise<boolean> {
-			if (this.semaphore.updating) {
-				return false;
-			}
+			data.value = storeRecordFactory(cookies, {
+				accessToken: responseModel.token,
+				refreshToken: responseModel.refresh,
+				tokenType: responseModel.tokenType,
+			});
 
-			const { cookies } = useCookies();
+			await accountsStore.get({ id: responseModel.account.id });
 
-			cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
+			return true;
+		} catch (e: any) {
+			throw new ApiError('session.create.failed', e, 'Create session failed.');
+		} finally {
+			semaphore.value.creating = false;
+		}
+	};
 
-			const refreshToken = readCookie(REFRESH_TOKEN_COOKIE_NAME);
+	const refresh = async (): Promise<boolean> => {
+		if (semaphore.value.updating) {
+			return false;
+		}
 
-			if (refreshToken === null) {
-				return false;
-			}
+		cookies.remove(ACCESS_TOKEN_COOKIE_NAME);
 
-			const dataFormatter = new Jsona();
+		const refreshToken = readCookie(cookies, REFRESH_TOKEN_COOKIE_NAME);
 
-			this.semaphore.updating = true;
+		if (refreshToken === null) {
+			return false;
+		}
 
-			try {
-				const response = await axios.patch<ISessionResponseJson>(
-					`/${ModulePrefix.ACCOUNTS}/v1/session`,
-					dataFormatter.serialize({
-						stuff: {
-							type: 'com.fastybird.accounts-module/session',
+		const dataFormatter = new Jsona();
 
-							refresh: refreshToken,
-						},
-					})
-				);
+		semaphore.value.updating = true;
 
-				const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
+		try {
+			const response = await axios.patch<ISessionResponseJson>(
+				`/${ModulePrefix.ACCOUNTS}/v1/session`,
+				dataFormatter.serialize({
+					stuff: {
+						type: 'com.fastybird.accounts-module/session',
 
-				this.data = recordFactory({
-					accessToken: responseModel.token,
-					refreshToken: responseModel.refresh,
-					tokenType: responseModel.tokenType,
-				});
+						refresh: refreshToken,
+					},
+				})
+			);
 
-				return true;
-			} catch (e: any) {
-				throw new ApiError('session.refresh.failed', e, 'Refresh session failed.');
-			} finally {
-				this.semaphore.updating = false;
-			}
-		},
-	},
+			const responseModel = jsonApiFormatter.deserialize(response.data) as ISessionResponseModel;
+
+			data.value = storeRecordFactory(cookies, {
+				accessToken: responseModel.token,
+				refreshToken: responseModel.refresh,
+				tokenType: responseModel.tokenType,
+			});
+
+			return true;
+		} catch (e: any) {
+			throw new ApiError('session.refresh.failed', e, 'Refresh session failed.');
+		} finally {
+			semaphore.value.updating = false;
+		}
+	};
+
+	return { semaphore, data, accessToken, refreshToken, accountId, account, isSignedIn, initialize, clear, fetch, create, refresh };
 });
 
-export const registerSessionStore = (pinia: Pinia): Store => {
+export const registerSessionStore = (pinia: Pinia): Store<string, ISessionState, object, ISessionActions> => {
 	return useSession(pinia);
 };

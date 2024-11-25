@@ -24,11 +24,11 @@ use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Queries;
 use FastyBird\Connector\Shelly\Queue;
 use FastyBird\Connector\Shelly\Types;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Events as DevicesEvents;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -107,13 +107,13 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
@@ -143,7 +143,7 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'local-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -165,7 +165,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -242,7 +242,7 @@ final class Local implements Client
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'local-client',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $this->connector->getId()->toString(),
 									],
@@ -258,7 +258,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -302,13 +302,13 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
@@ -334,13 +334,13 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
@@ -400,7 +400,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -445,7 +445,7 @@ final class Local implements Client
 									[
 										'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 										'type' => 'local-client',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'exception' => ToolsHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $this->connector->getId()->toString(),
 										],
@@ -491,7 +491,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
+							'exception' => ToolsHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -609,7 +609,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
+							'exception' => ToolsHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -654,7 +654,7 @@ final class Local implements Client
 					[
 						'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 						'type' => 'local-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $this->connector->getId()->toString(),
 						],
@@ -672,7 +672,7 @@ final class Local implements Client
 				[
 					'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 					'type' => 'local-client',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $this->connector->getId()->toString(),
 					],
@@ -747,7 +747,7 @@ final class Local implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'local-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex, $renderException),
+							'exception' => ToolsHelpers\Logger::buildException($ex, $renderException),
 							'connector' => [
 								'id' => $this->connector->getId()->toString(),
 							],
@@ -805,8 +805,8 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1086,8 +1086,8 @@ final class Local implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1180,13 +1180,13 @@ final class Local implements Client
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
 	 * @throws RuntimeException
 	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError

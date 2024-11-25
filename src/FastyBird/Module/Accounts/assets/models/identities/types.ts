@@ -1,9 +1,8 @@
-import { _GettersTree } from 'pinia';
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+import { Ref } from 'vue';
 
-import { IdentityState } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
-import { IAccount, IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
+import { IAccount, IAccountResponseData, IEntityMeta, IPlainRelation, IdentityState } from '../../types';
 
 export interface IIdentityMeta extends IEntityMeta {
 	entity: 'identity';
@@ -13,20 +12,19 @@ export interface IIdentityMeta extends IEntityMeta {
 // =====
 
 export interface IIdentitiesState {
-	semaphore: IIdentitiesStateSemaphore;
-	firstLoad: IIdentity['id'][];
-	data: { [key: IIdentity['id']]: IIdentity };
-}
-
-export interface IIdentitiesGetters extends _GettersTree<IIdentitiesState> {
-	firstLoadFinished: (state: IIdentitiesState) => (accountId: IAccount['id']) => boolean;
-	getting: (state: IIdentitiesState) => (id: IIdentity['id']) => boolean;
-	fetching: (state: IIdentitiesState) => (accountId: IAccount['id'] | null) => boolean;
-	findById: (state: IIdentitiesState) => (id: IIdentity['id']) => IIdentity | null;
-	findForAccount: (state: IIdentitiesState) => (accountId: IAccount['id']) => IIdentity[];
+	semaphore: Ref<IIdentitiesStateSemaphore>;
+	firstLoad: Ref<IIdentity['id'][]>;
+	data: Ref<{ [key: IIdentity['id']]: IIdentity }>;
 }
 
 export interface IIdentitiesActions {
+	// Getters
+	firstLoadFinished: (accountId: IAccount['id']) => boolean;
+	getting: (id: IIdentity['id']) => boolean;
+	fetching: (accountId: IAccount['id'] | null) => boolean;
+	findById: (id: IIdentity['id']) => IIdentity | null;
+	findForAccount: (accountId: IAccount['id']) => IIdentity[];
+	// Actions
 	set: (payload: IIdentitiesSetActionPayload) => Promise<IIdentity>;
 	unset: (payload: IIdentitiesUnsetActionPayload) => void;
 	get: (payload: IIdentitiesGetActionPayload) => Promise<boolean>;
@@ -37,6 +35,8 @@ export interface IIdentitiesActions {
 	remove: (payload: IIdentitiesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IIdentitiesSocketDataActionPayload) => Promise<boolean>;
 }
+
+export type IdentitiesStoreSetup = IIdentitiesState & IIdentitiesActions;
 
 // STORE STATE
 // ===========

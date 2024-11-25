@@ -16,14 +16,14 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Caching;
 use FastyBird\Module\Devices\Documents;
@@ -71,7 +71,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 		private readonly Models\States\Channels\Manager $channelPropertiesStatesManager,
 		private readonly Caching\Container $moduleCaching,
 		private readonly DateTimeFactory\Clock $clock,
-		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly ApplicationDocuments\DocumentFactory $documentFactory,
 		private readonly ExchangePublisher\Publisher $publisher,
 		Devices\Logger $logger,
 		ObjectMapper\Processing\Processor $stateMapper,
@@ -84,13 +84,14 @@ final class ChannelPropertiesManager extends PropertiesManager
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws ValueError
 	 * @throws TypeError
-	 * @throws ToolsExceptions\InvalidArgument
 	 */
 	public function read(
 		Documents\Channels\Properties\Dynamic|Documents\Channels\Properties\Mapped $property,
@@ -140,9 +141,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -168,7 +168,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							[
 								'write' => array_map(
 									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => ToolsUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,
@@ -192,9 +192,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -220,7 +219,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 							[
 								'set' => array_map(
 									// phpcs:ignore SlevomatCodingStandard.Files.LineLength.LineTooLong
-									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => MetadataUtilities\Value::flattenValue(
+									static fn (bool|int|float|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $item): bool|int|float|string|null => ToolsUtilities\Value::flattenValue(
 										$item,
 									),
 									(array) $data,
@@ -246,9 +245,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -284,9 +282,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -369,7 +366,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'channel-properties-states',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		} catch (Exceptions\NotImplemented) {
@@ -388,11 +385,12 @@ final class ChannelPropertiesManager extends PropertiesManager
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -466,7 +464,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -477,7 +475,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -505,7 +503,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -516,7 +514,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -538,9 +536,8 @@ final class ChannelPropertiesManager extends PropertiesManager
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -593,12 +590,12 @@ final class ChannelPropertiesManager extends PropertiesManager
 				if (
 					$property->getInvalid() !== null
 					&& strval(
-						MetadataUtilities\Value::flattenValue(
+						ToolsUtilities\Value::flattenValue(
 							// @phpstan-ignore-next-line
 							$data->offsetGet(States\Property::ACTUAL_VALUE_FIELD),
 						),
 					) === strval(
-						MetadataUtilities\Value::flattenValue($property->getInvalid()),
+						ToolsUtilities\Value::flattenValue($property->getInvalid()),
 					)
 				) {
 					$data->offsetSet(States\Property::ACTUAL_VALUE_FIELD, null);
@@ -613,7 +610,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 
 					$data->offsetSet(
 						States\Property::ACTUAL_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($actualValue),
+						ToolsUtilities\Value::flattenValue($actualValue),
 					);
 
 					if ($data->offsetExists(States\Property::VALID_FIELD)) {
@@ -625,7 +622,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						$data->offsetSet(States\Property::VALID_FIELD, true);
 					}
 				}
-			} catch (MetadataExceptions\InvalidValue $ex) {
+			} catch (ToolsExceptions\InvalidValue $ex) {
 				$data->offsetUnset(States\Property::ACTUAL_VALUE_FIELD);
 				$data->offsetSet(States\Property::VALID_FIELD, false);
 
@@ -634,7 +631,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channel-properties-states',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 			}
@@ -675,13 +672,13 @@ final class ChannelPropertiesManager extends PropertiesManager
 
 					$data->offsetSet(
 						States\Property::EXPECTED_VALUE_FIELD,
-						MetadataUtilities\Value::flattenValue($expectedValue),
+						ToolsUtilities\Value::flattenValue($expectedValue),
 					);
 					$data->offsetSet(
 						States\Property::PENDING_FIELD,
 						$expectedValue !== null,
 					);
-				} catch (MetadataExceptions\InvalidValue $ex) {
+				} catch (ToolsExceptions\InvalidValue $ex) {
 					$data->offsetSet(States\Property::EXPECTED_VALUE_FIELD, null);
 					$data->offsetSet(States\Property::PENDING_FIELD, false);
 
@@ -690,7 +687,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
 							'type' => 'channel-properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 						],
 					);
 				}
@@ -702,10 +699,10 @@ final class ChannelPropertiesManager extends PropertiesManager
 
 		try {
 			if ($state !== null) {
-				$actualValue = MetadataUtilities\Value::flattenValue(
+				$actualValue = ToolsUtilities\Value::flattenValue(
 					$this->convertReadValue($state->getActualValue(), $property, null, true),
 				);
-				$expectedValue = MetadataUtilities\Value::flattenValue(
+				$expectedValue = ToolsUtilities\Value::flattenValue(
 					$this->convertWriteExpectedValue($state->getExpectedValue(), $property, null, false),
 				);
 
@@ -738,7 +735,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 					$data->offsetSet(States\Property::PENDING_FIELD, false);
 				}
 			}
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			// Could be ignored
 		}
 
@@ -830,7 +827,7 @@ final class ChannelPropertiesManager extends PropertiesManager
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'channel-properties-states',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		} catch (Exceptions\NotImplemented) {

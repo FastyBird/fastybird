@@ -1,13 +1,17 @@
-import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElMessageBox } from 'element-plus';
+import { useRoute, useRouter } from 'vue-router';
 
-import { useFlashMessage, useRoutesNames } from '../composables';
+import { ElMessageBox } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { channelsStoreKey } from '../configuration';
-import { storesManager } from '../entry';
 import { ApplicationError } from '../errors';
 import { IChannel, UseChannelActions } from '../types';
+
+import { useRoutesNames } from './useRoutesNames';
 
 export const useChannelActions = (): UseChannelActions => {
 	const router = useRouter();
@@ -17,6 +21,8 @@ export const useChannelActions = (): UseChannelActions => {
 
 	const routeNames = useRoutesNames();
 	const flashMessage = useFlashMessage();
+
+	const storesManager = injectStoresManager();
 
 	const channelsStore = storesManager.getStore(channelsStoreKey);
 

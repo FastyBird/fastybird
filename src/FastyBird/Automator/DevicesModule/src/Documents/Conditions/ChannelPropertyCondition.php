@@ -16,8 +16,8 @@
 namespace FastyBird\Automator\DevicesModule\Documents\Conditions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Module\Triggers\Documents as TriggersDocuments;
 use FastyBird\Module\Triggers\Types as TriggersTypes;
 use Orisai\ObjectMapper;
@@ -32,8 +32,8 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Conditions\ChannelPropertyCondition::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Conditions\ChannelPropertyCondition::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Conditions\ChannelPropertyCondition::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Conditions\ChannelPropertyCondition::TYPE)]
 final class ChannelPropertyCondition extends TriggersDocuments\Conditions\Condition
 {
 

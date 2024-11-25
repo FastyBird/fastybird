@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Detect::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Detect::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Detect::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\Detect::TYPE)]
 class Detect extends Channel
 {
 

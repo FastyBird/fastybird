@@ -3,19 +3,19 @@
 		ref="dialogRef"
 		v-model="dialogVisible"
 		:show-close="false"
-		:fullscreen="isExtraSmallDevice"
-		:draggable="!isExtraSmallDevice"
+		:fullscreen="isXSDevice"
+		:draggable="!isXSDevice"
 		@close="onClose"
 	>
 		<template #header>
 			<fb-dialog-header
-				:layout="isExtraSmallDevice ? 'phone' : 'default'"
-				:left-btn-label="t('buttons.close.title')"
-				:right-btn-label="t('buttons.save.title')"
+				:layout="isXSDevice ? 'phone' : 'default'"
+				:left-btn-label="t('accountsModule.buttons.close.title')"
+				:right-btn-label="t('accountsModule.buttons.save.title')"
 				@close="onClose"
 			>
 				<template #title>
-					{{ t('headings.accountSettings') }}
+					{{ t('accountsModule.headings.accountSettings') }}
 				</template>
 
 				<template #icon>
@@ -33,9 +33,9 @@
 
 		<template #footer>
 			<fb-dialog-footer
-				:layout="isExtraSmallDevice ? 'phone' : 'default'"
-				:left-btn-label="t('buttons.close.title')"
-				:right-btn-label="t('buttons.save.title')"
+				:layout="isXSDevice ? 'phone' : 'default'"
+				:left-btn-label="t('accountsModule.buttons.close.title')"
+				:right-btn-label="t('accountsModule.buttons.save.title')"
 				@left-click="onClose"
 				@right-click="onSave"
 			/>
@@ -46,14 +46,16 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElDialog, ElLoading } from 'element-plus';
 
-import { FbDialogHeader, FbDialogFooter } from '@fastybird/web-ui-library';
+import { injectStoresManager, useBreakpoints } from '@fastybird/tools';
 import { FasUser } from '@fastybird/web-ui-icons';
+import { FbDialogFooter, FbDialogHeader } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '../../composables';
-import { useSession } from '../../models';
-import { FormResultTypes } from '../../types';
+import { sessionStoreKey } from '../../configuration';
+import { FormResultType, FormResultTypes } from '../../types';
+
 import { ISettingsAccountDialogProps } from './settings-account-dialog.types';
 import SettingsAccountForm from './settings-account-form.vue';
 
@@ -69,9 +71,11 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
-const { isExtraSmallDevice } = useBreakpoints();
+const { isXSDevice } = useBreakpoints();
 
-const sessionStore = useSession();
+const storesManager = injectStoresManager();
+
+const sessionStore = storesManager.getStore(sessionStoreKey);
 
 const dialogRef = ref();
 
@@ -79,7 +83,7 @@ const dialogVisible = ref<boolean>(props.visible);
 const loading = ref<any | undefined>(undefined);
 
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const onClose = (): void => {
 	emit('update:visible', false);
@@ -91,8 +95,8 @@ const onSave = (): void => {
 };
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	(actual: FormResultTypes, previous: FormResultTypes): void => {
+	(): FormResultType => remoteFormResult.value,
+	(actual: FormResultType, previous: FormResultType): void => {
 		if (actual === FormResultTypes.WORKING) {
 			loading.value = ElLoading.service({
 				target: dialogRef.value.$el.nextElementSibling.querySelector('.el-dialog'),

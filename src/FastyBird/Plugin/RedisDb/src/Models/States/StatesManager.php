@@ -17,8 +17,8 @@ namespace FastyBird\Plugin\RedisDb\Models\States;
 
 use BackedEnum;
 use DateTimeInterface;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -90,7 +90,7 @@ class StatesManager
 				[
 					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-manager',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'record' => [
 						'id' => $id->toString(),
 					],
@@ -138,7 +138,7 @@ class StatesManager
 				[
 					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'states-manager',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'record' => [
 						'id' => $id->toString(),
 					],

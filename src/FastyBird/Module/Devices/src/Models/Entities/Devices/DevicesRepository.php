@@ -17,8 +17,8 @@ namespace FastyBird\Module\Devices\Models\Entities\Devices;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Queries;
@@ -45,7 +45,7 @@ final class DevicesRepository
 	private array $repository = [];
 
 	public function __construct(
-		private readonly ApplicationHelpers\Database $database,
+		private readonly ToolsHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
@@ -58,7 +58,7 @@ final class DevicesRepository
 	 *
 	 * @return T|null
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function find(
 		Uuid\UuidInterface $id,
@@ -78,7 +78,7 @@ final class DevicesRepository
 	 *
 	 * @return T|null
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindDevices $queryObject,
@@ -97,7 +97,7 @@ final class DevicesRepository
 	 *
 	 * @return array<T>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findAll(string $type = Entities\Devices\Device::class): array
 	{
@@ -139,8 +139,8 @@ final class DevicesRepository
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<T>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\Entities\FindDevices $queryObject,

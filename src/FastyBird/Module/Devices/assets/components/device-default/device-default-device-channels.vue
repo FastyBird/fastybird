@@ -67,7 +67,9 @@
 					</template>
 
 					<template #title>
-						<el-text class="block">{{ t('devicesModule.texts.devices.noChannels') }}</el-text>
+						<el-text class="block">
+							{{ t('devicesModule.texts.devices.noChannels') }}
+						</el-text>
 						<el-button
 							:icon="FasPlus"
 							type="primary"
@@ -96,16 +98,17 @@
 </template>
 
 <script setup lang="ts">
-import { orderBy } from 'natural-orderby';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElButton, ElResult, ElScrollbar, ElSkeleton, ElSkeletonItem, ElText } from 'element-plus';
+import { orderBy } from 'natural-orderby';
 
 import { FasInfo, FasLayerGroup, FasPlus } from '@fastybird/web-ui-icons';
 import { FbIconWithChild, FbList } from '@fastybird/web-ui-library';
 
-import { DeviceDefaultDeviceChannel } from '../../components';
 import { IChannelData, IDeviceChannelsEmits, IDeviceChannelsProps } from '../../types';
+import DeviceDefaultDeviceChannel from '../device-default/device-default-device-channel.vue';
 
 defineOptions({
 	name: 'DeviceDefaultDeviceChannels',

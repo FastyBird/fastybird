@@ -23,29 +23,28 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { Component } from 'vue';
+
 import { ElIcon } from 'element-plus';
 
+import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 import {
-	FasEthernet,
-	FarCirclePause,
-	FarCircleStop,
-	FasCircleExclamation,
-	FarCircleQuestion,
-	FarCircleUser,
-	FarCirclePlay,
 	FarCircle,
 	FarCircleCheck,
+	FarCirclePause,
+	FarCirclePlay,
+	FarCircleQuestion,
+	FarCircleStop,
+	FarCircleUser,
+	FasCircleExclamation,
+	FasEthernet,
 } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
-import { ConnectionState } from '@fastybird/metadata-library';
-import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useConnectorState } from '../../composables';
-import { StateColor } from '../../types';
+import { ConnectionState, StateColor } from '../../types';
 
 import { IConnectorsConnectorIconProps } from './connectors-connector-icon.types';
-
-import type { Component } from 'vue';
 
 defineOptions({
 	name: 'ConnectorsConnectorIcon',

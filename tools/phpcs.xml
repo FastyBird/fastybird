@@ -95,19 +95,21 @@
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/fixtures/dummy" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Connector/Zigbee2Mqtt/tests/tools" value="FastyBird\Connector\Zigbee2Mqtt\Tests\Tools"/>
 
-                <element key="src/FastyBird/Library/Application/src" value="FastyBird\Library\Application"/>
-                <element key="src/FastyBird/Library/Application/tests/cases/unit" value="FastyBird\Library\Application\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Core/Application/src" value="FastyBird\Core\Application"/>
+                <element key="src/FastyBird/Core/Application/tests/cases/unit" value="FastyBird\Core\Application\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Core/Application/tests/fixtures/dummy" value="FastyBird\Core\Application\Tests\Fixtures\Dummy"/>
+                <element key="src/FastyBird/Core/Application/tests/tools" value="FastyBird\Core\Application\Tests\Tools"/>
 
-                <element key="src/FastyBird/Library/Exchange/src" value="FastyBird\Library\Exchange"/>
-                <element key="src/FastyBird/Library/Exchange/tests/cases/unit" value="FastyBird\Library\Exchange\Tests\Cases\Unit"/>
+                <element key="src/FastyBird/Core/Exchange/src" value="FastyBird\Core\Exchange"/>
+                <element key="src/FastyBird/Core/Exchange/tests/cases/unit" value="FastyBird\Core\Exchange\Tests\Cases\Unit"/>
+
+                <element key="src/FastyBird/Core/Tools/src" value="FastyBird\Core\Tools"/>
+                <element key="src/FastyBird/Core/Tools/tests/cases/unit" value="FastyBird\Core\Tools\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Library/Metadata/src" value="FastyBird\Library\Metadata"/>
                 <element key="src/FastyBird/Library/Metadata/tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
                 <element key="src/FastyBird/Library/Metadata/tests/fixtures/dummy" value="FastyBird\Library\Metadata\Tests\Fixtures\Dummy"/>
-
-                <element key="src/FastyBird/Library/Tools/src" value="FastyBird\Library\Tools"/>
-                <element key="src/FastyBird/Library/Tools/tests/cases/unit" value="FastyBird\Library\Tools\Tests\Cases\Unit"/>
 
                 <element key="src/FastyBird/Module/Accounts/src" value="FastyBird\Module\Accounts"/>
                 <element key="src/FastyBird/Module/Accounts/tests/cases/unit" value="FastyBird\Module\Accounts\Tests\Cases\Unit"/>
@@ -164,10 +166,6 @@
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/cases/unit" value="FastyBird\Addon\VirtualThermostat\Tests\Cases\Unit"/>
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/fixtures/dummy" value="FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy"/>
                 <element key="src/FastyBird/Addon/VirtualThermostat/tests/tools" value="FastyBird\Addon\VirtualThermostat\Tests\Tools"/>
-
-                <element key="app/src" value="FastyBird\App"/>
-                <element key="app/tests/cases/unit" value="FastyBird\App\Tests\Cases\Unit"/>
-                <element key="app/tests/tools" value="FastyBird\App\Tests\Tools"/>
             </property>
         </properties>
     </rule>
@@ -177,7 +175,6 @@
     <exclude-pattern>^vendor/*</exclude-pattern>
     <exclude-pattern>^tools/*</exclude-pattern>
     <exclude-pattern>^tests/stubs/*</exclude-pattern>
-    <exclude-pattern>app/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Automator/DateTime/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Automator/DevicesModule/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Bridge/DevicesModuleUiModule/tools/*</exclude-pattern>
@@ -196,10 +193,10 @@
     <exclude-pattern>src/FastyBird/Connector/Viera/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Connector/Virtual/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Connector/Zigbee2Mqtt/tools/*</exclude-pattern>
-    <exclude-pattern>src/FastyBird/Library/Application/tools/*</exclude-pattern>
-    <exclude-pattern>src/FastyBird/Library/Exchange/tools/*</exclude-pattern>
+    <exclude-pattern>src/FastyBird/Core/Application/tools/*</exclude-pattern>
+    <exclude-pattern>src/FastyBird/Core/Exchange/tools/*</exclude-pattern>
+    <exclude-pattern>src/FastyBird/Core/Tools/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Library/Metadata/tools/*</exclude-pattern>
-    <exclude-pattern>src/FastyBird/Library/Tools/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Module/Accounts/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Module/Devices/tools/*</exclude-pattern>
     <exclude-pattern>src/FastyBird/Module/Triggers/tools/*</exclude-pattern>

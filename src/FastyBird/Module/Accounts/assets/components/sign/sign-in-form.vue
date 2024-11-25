@@ -9,7 +9,7 @@
 		@submit.prevent="onSubmit"
 	>
 		<el-form-item
-			:label="t('fields.identity.uid.title')"
+			:label="t('accountsModule.fields.identity.uid.title')"
 			prop="uid"
 			class="mb-5"
 		>
@@ -20,7 +20,7 @@
 		</el-form-item>
 
 		<el-form-item
-			:label="t('fields.identity.password.title')"
+			:label="t('accountsModule.fields.identity.password.title')"
 			prop="password"
 			class="mb-5"
 		>
@@ -34,7 +34,7 @@
 
 		<el-checkbox
 			v-model="signForm.persistent"
-			:label="t('fields.persistent.title')"
+			:label="t('accountsModule.fields.persistent.title')"
 			name="persistent"
 			class="mb-10"
 		/>
@@ -45,7 +45,7 @@
 			class="block w-full"
 			@click="onSubmit(signFormEl)"
 		>
-			{{ t('buttons.signIn.title') }}
+			{{ t('accountsModule.buttons.signIn.title') }}
 		</el-button>
 	</el-form>
 </template>
@@ -53,12 +53,15 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElInput, ElCheckbox, ElForm, ElFormItem, ElButton, FormInstance, FormRules } from 'element-plus';
 
-import { useSession } from '../../models';
-import { useFlashMessage } from '../../composables';
-import { FormResultTypes } from '../../types';
+import { ElButton, ElCheckbox, ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager, useFlashMessage } from '@fastybird/tools';
+
+import { sessionStoreKey } from '../../configuration';
+import { FormResultType, FormResultTypes } from '../../types';
+
 import { ISignInForm, ISignInProps } from './sign-in-form.types';
 
 defineOptions({
@@ -71,20 +74,22 @@ const props = withDefaults(defineProps<ISignInProps>(), {
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 const flashMessage = useFlashMessage();
 
-const sessionStore = useSession();
+const storesManager = injectStoresManager();
+
+const sessionStore = storesManager.getStore(sessionStoreKey);
 
 const signFormEl = ref<FormInstance | undefined>(undefined);
 
 const rules = reactive<FormRules<ISignInForm>>({
-	uid: [{ required: true, message: t('fields.identity.uid.validation.required'), trigger: 'change' }],
-	password: [{ required: true, message: t('fields.identity.password.validation.required'), trigger: 'change' }],
+	uid: [{ required: true, message: t('accountsModule.fields.identity.uid.validation.required'), trigger: 'change' }],
+	password: [{ required: true, message: t('accountsModule.fields.identity.password.validation.required'), trigger: 'change' }],
 });
 
 const signForm = reactive<ISignInForm>({
@@ -107,7 +112,7 @@ const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
 			} catch (e: any) {
 				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-				const errorMessage = t('messages.requestError');
+				const errorMessage = t('accountsModule.messages.requestError');
 
 				if (get(e, 'exception', null) !== null) {
 					flashMessage.exception(e.exception, errorMessage);

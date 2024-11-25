@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Automator\DateTime\Hydrators;
 use FastyBird\Automator\DateTime\Schemas;
 use FastyBird\Automator\DateTime\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette;
 
 /**

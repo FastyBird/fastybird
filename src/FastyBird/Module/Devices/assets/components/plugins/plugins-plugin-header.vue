@@ -32,7 +32,9 @@
 					{{ props.plugin.description }}
 				</span>
 
-				<el-tag v-if="props.plugin.core">core</el-tag>
+				<el-tag v-if="props.plugin.core">
+					{{ t('devicesModule.misc.core') }}
+				</el-tag>
 			</div>
 		</template>
 
@@ -93,12 +95,13 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+
 import { ElAvatar, ElButton, ElPageHeader, ElTag, useNamespace } from 'element-plus';
 
-import { FasPlus, FasPlugCircleBolt, FasTrash } from '@fastybird/web-ui-icons';
+import { useBreakpoints } from '@fastybird/tools';
+import { FasPlugCircleBolt, FasPlus, FasTrash } from '@fastybird/web-ui-icons';
 
-import { PluginsPluginStats } from '../../components';
-import { useBreakpoints } from '../../composables';
+import PluginsPluginStats from '../plugins/plugins-plugin-stats.vue';
 
 import { IPluginsPluginHeaderProps } from './plugins-plugin-header.types';
 
@@ -123,5 +126,5 @@ const { isMDDevice, isXLDevice, isXXLDevice } = useBreakpoints();
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'plugins-plugin-header.scss';
+@use 'plugins-plugin-header.scss';
 </style>

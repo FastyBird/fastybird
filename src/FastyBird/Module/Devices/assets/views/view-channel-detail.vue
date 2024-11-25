@@ -121,17 +121,19 @@ import { computed, onBeforeMount, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
-import get from 'lodash.get';
+
 import { ElIcon, vLoading } from 'element-plus';
+import get from 'lodash.get';
 
+import { useBreakpoints } from '@fastybird/tools';
 import { FasAngleLeft } from '@fastybird/web-ui-icons';
-import { FbAppBarButton, FbAppBarHeading, FbExpandableBox, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading, FbExpandableBox } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useChannel, useChannelActions, useChannelRoutes, useConnectorRoutes, useRoutesNames, useUuid } from '../composables';
-import { connectorPlugins } from '../configuration';
 import { ChannelDefaultChannelDetail, ChannelsChannelControl, ChannelsChannelIcon, ViewError } from '../components';
+import { useChannel, useChannelActions, useChannelRoutes, useConnectorRoutes, useRoutesNames, useUuid } from '../composables';
+import { connectorPlugins } from '../configuration';
 import { ApplicationError } from '../errors';
-import { IConnectorPlugin, IChannelData } from '../types';
+import { IChannelData, IConnectorPlugin } from '../types';
 
 import { IViewChannelDetailProps } from './view-channel-detail.types';
 

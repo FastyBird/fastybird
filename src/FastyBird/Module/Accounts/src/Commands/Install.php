@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Commands;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette\Localization;
 use Psr\Log;
@@ -104,7 +104,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Module::ACCOUNTS->value,
 					'type' => 'initialize-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

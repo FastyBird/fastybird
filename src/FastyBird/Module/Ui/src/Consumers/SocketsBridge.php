@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Ui\Consumers;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use IPub\WebSockets;
@@ -34,7 +34,7 @@ use function in_array;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-final readonly class SocketsBridge implements ExchangeConsumer\Consumer
+final readonly class SocketsBridge implements ExchangeConsumers\Consumer
 {
 
 	public function __construct(
@@ -48,7 +48,7 @@ final readonly class SocketsBridge implements ExchangeConsumer\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
-		MetadataDocuments\Document|null $document,
+		ApplicationDocuments\Document|null $document,
 	): void
 	{
 		if (!in_array($routingKey, Ui\Constants::MESSAGE_BUS_ROUTING_KEYS, true)) {
@@ -136,7 +136,7 @@ final readonly class SocketsBridge implements ExchangeConsumer\Consumer
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -146,7 +146,7 @@ final readonly class SocketsBridge implements ExchangeConsumer\Consumer
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'sockets-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		}

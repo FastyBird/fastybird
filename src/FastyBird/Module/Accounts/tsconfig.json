@@ -17,6 +17,7 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": [
+      "@fastybird/tools",
       "@fastybird/metadata-library",
       "@fastybird/web-ui-library",
       "@fastybird/web-ui-icons",
@@ -24,7 +25,6 @@
       "@types/md5",
       "@types/lodash.get",
       "@types/lodash.defaultsdeep",
-      "@types/uuid",
       "ajv",
       "ajv-formats",
       "date-fns",

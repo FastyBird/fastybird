@@ -15,12 +15,12 @@
 
 namespace FastyBird\Module\Ui\Documents\Widgets\DataSources;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Entities;
 
-#[DOC\Document(entity: Entities\Widgets\DataSources\Generic::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Widgets\DataSources\Generic::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Widgets\DataSources\Generic::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Widgets\DataSources\Generic::TYPE)]
 class Generic extends Documents\Widgets\DataSources\DataSource
 {
 

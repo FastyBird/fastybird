@@ -2,7 +2,7 @@
 
 namespace FastyBird\Plugin\CouchDb\Tests\Cases\Unit\States;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\CouchDb\Exceptions;
 use FastyBird\Plugin\CouchDb\States;
 use FastyBird\Plugin\CouchDb\Tests;

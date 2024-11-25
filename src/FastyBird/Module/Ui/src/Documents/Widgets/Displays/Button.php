@@ -16,7 +16,7 @@
 namespace FastyBird\Module\Ui\Documents\Widgets\Displays;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Types;
@@ -24,8 +24,8 @@ use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
-#[DOC\Document(entity: Entities\Widgets\Displays\Button::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Widgets\Displays\Button::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Widgets\Displays\Button::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Widgets\Displays\Button::TYPE)]
 class Button extends Documents\Widgets\Displays\Display
 {
 

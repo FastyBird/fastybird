@@ -16,10 +16,9 @@
 namespace FastyBird\Module\Devices\Subscribers;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
@@ -72,15 +71,16 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -94,15 +94,16 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -116,15 +117,16 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -143,15 +145,16 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -188,15 +191,16 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 
 	/**
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -236,9 +240,8 @@ final class Connector implements EventDispatcher\EventSubscriberInterface
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */

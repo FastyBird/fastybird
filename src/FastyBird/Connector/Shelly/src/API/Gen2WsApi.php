@@ -23,10 +23,10 @@ use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Types;
 use FastyBird\Connector\Shelly\ValueObjects;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\StatusCodeInterface;
 use GuzzleHttp\Psr7 as gPsr;
@@ -156,7 +156,7 @@ final class Gen2WsApi
 		private readonly Shelly\Logger $logger,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
 	)
 	{
@@ -541,7 +541,7 @@ final class Gen2WsApi
 						[
 							'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 							'type' => 'gen2-ws-api',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'device' => [
 								'id' => $this->id->toString(),
 							],
@@ -577,7 +577,7 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException(
+									'exception' => ToolsHelpers\Logger::buildException(
 										$ex,
 										$ex instanceof Exceptions\WsError,
 									),
@@ -606,7 +606,7 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException(
+									'exception' => ToolsHelpers\Logger::buildException(
 										$ex,
 										$ex instanceof Exceptions\WsError,
 									),
@@ -661,7 +661,7 @@ final class Gen2WsApi
 								[
 									'source' => MetadataTypes\Sources\Connector::SHELLY->value,
 									'type' => 'gen2-ws-api',
-									'exception' => ApplicationHelpers\Logger::buildException(
+									'exception' => ToolsHelpers\Logger::buildException(
 										$ex,
 										$ex instanceof Exceptions\WsError,
 									),
@@ -1134,7 +1134,7 @@ final class Gen2WsApi
 				$payload,
 				$this->getSchema($schemaFilename),
 			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData $ex) {
 			if ($throw) {
 				throw new Exceptions\WsError(
 					'Could not validate received payload',

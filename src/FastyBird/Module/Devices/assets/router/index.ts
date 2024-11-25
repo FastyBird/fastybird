@@ -1,4 +1,6 @@
-import { Router, RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw, Router } from 'vue-router';
+
+import { FasEthernet, FasPlug } from '@fastybird/web-ui-icons';
 
 import { useRoutesNames } from '../composables';
 
@@ -9,6 +11,9 @@ const moduleRoutes: RouteRecordRaw[] = [
 		path: '/',
 		name: routeNames.root,
 		component: () => import('../layouts/layout-default.vue'),
+		meta: {
+			title: 'Devices module',
+		},
 		children: [
 			{
 				path: 'devices',
@@ -16,6 +21,8 @@ const moduleRoutes: RouteRecordRaw[] = [
 				component: () => import('../views/view-devices.vue'),
 				meta: {
 					guards: ['authenticated'],
+					title: 'Devices',
+					icon: FasPlug,
 				},
 				children: [
 					{
@@ -85,6 +92,8 @@ const moduleRoutes: RouteRecordRaw[] = [
 				props: true,
 				meta: {
 					guards: ['authenticated'],
+					title: 'Connectors',
+					icon: FasEthernet,
 				},
 				children: [
 					{

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Ui\Models\Configuration;
 
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Models;
@@ -76,7 +76,7 @@ final readonly class Builder
 	/**
 	 * @return array<mixed>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function build(Types\ConfigurationType $type): array
 	{

@@ -26,9 +26,9 @@ use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Mapping;
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Protocol;
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Router;
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Schemas;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\DI as ApplicationDI;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use IPub\SlimRouter\Routing as SlimRouterRouting;
 use Nette\Bootstrap;
 use Nette\DI;
@@ -268,7 +268,7 @@ class ShellyConnectorHomeKitConnectorExtension extends DI\CompilerExtension impl
 		 * APPLICATION DOCUMENTS
 		 */
 
-		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+		$services = $builder->findByTag(ApplicationDI\ApplicationExtension::DRIVER_TAG);
 
 		if ($services !== []) {
 			$services = array_keys($services);
@@ -283,7 +283,7 @@ class ShellyConnectorHomeKitConnectorExtension extends DI\CompilerExtension impl
 				);
 
 				$documentAttributeDriverChainService = $builder->getDefinitionByType(
-					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+					ApplicationDocuments\Mapping\Driver\MappingDriverChain::class,
 				);
 
 				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {

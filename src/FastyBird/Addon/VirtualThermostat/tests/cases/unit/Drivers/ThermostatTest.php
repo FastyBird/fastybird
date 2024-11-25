@@ -10,8 +10,7 @@ use FastyBird\Addon\VirtualThermostat\Tests;
 use FastyBird\Addon\VirtualThermostat\Types;
 use FastyBird\Connector\Virtual\Drivers as VirtualDrivers;
 use FastyBird\Connector\Virtual\Queue as VirtualQueue;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -32,7 +31,6 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
 	 */
 	public function testConnect(): void
@@ -67,7 +65,6 @@ final class ThermostatTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws DI\MissingServiceException
 	 * @throws Error
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws RuntimeException
 	 *
 	 * @dataProvider processThermostatData

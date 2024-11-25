@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Brightness::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Brightness::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Brightness::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\Brightness::TYPE)]
 class Brightness extends Channel
 {
 

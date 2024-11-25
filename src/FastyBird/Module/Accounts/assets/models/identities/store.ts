@@ -1,38 +1,42 @@
-import { defineStore, Pinia, Store } from 'pinia';
-import axios from 'axios';
-import { Jsona } from 'jsona';
+import { ref } from 'vue';
+
+import { Pinia, Store, defineStore } from 'pinia';
+
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
+import axios from 'axios';
+import { Jsona } from 'jsona';
+import lodashGet from 'lodash.get';
 import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
 
-import { IdentityDocument, AccountsModuleRoutes as RoutingKeys, ModulePrefix, IdentityState } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
+import { injectStoresManager } from '@fastybird/tools';
+import { IStoresManager } from '@fastybird/tools/assets/stores';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.identity.json';
-
+import { accountsStoreKey } from '../../configuration';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { useAccounts } from '../../models';
+import { IIdentitiesStateSemaphore, IdentitiesStoreSetup, IdentityDocument, IdentityState, RoutingKeys } from '../../types';
 import { IAccount } from '../accounts/types';
 
 import {
-	IIdentity,
+	IIdentitiesActions,
 	IIdentitiesAddActionPayload,
 	IIdentitiesEditActionPayload,
-	IIdentityRecordFactoryPayload,
-	IIdentityResponseModel,
-	IIdentityResponseJson,
-	IIdentitiesResponseJson,
-	IIdentitiesState,
-	IIdentitiesGetActionPayload,
 	IIdentitiesFetchActionPayload,
-	IIdentitiesSaveActionPayload,
+	IIdentitiesGetActionPayload,
 	IIdentitiesRemoveActionPayload,
-	IIdentitiesSocketDataActionPayload,
-	IIdentitiesUnsetActionPayload,
+	IIdentitiesResponseJson,
+	IIdentitiesSaveActionPayload,
 	IIdentitiesSetActionPayload,
-	IIdentitiesActions,
-	IIdentitiesGetters,
+	IIdentitiesSocketDataActionPayload,
+	IIdentitiesState,
+	IIdentitiesUnsetActionPayload,
+	IIdentity,
+	IIdentityRecordFactoryPayload,
+	IIdentityResponseJson,
+	IIdentityResponseModel,
 } from './types';
 
 const jsonSchemaValidator = new Ajv();
@@ -43,17 +47,17 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const recordFactory = async (data: IIdentityRecordFactoryPayload): Promise<IIdentity> => {
-	const accountsStore = useAccounts();
+const storeRecordFactory = async (storesManager: IStoresManager, rawData: IIdentityRecordFactoryPayload): Promise<IIdentity> => {
+	const accountsStore = storesManager.getStore(accountsStoreKey);
 
-	let account = accountsStore.findById(data.accountId);
+	let account = accountsStore.findById(rawData.accountId);
 
 	if (account === null) {
-		if (!(await accountsStore.get({ id: data.accountId }))) {
+		if (!(await accountsStore.get({ id: rawData.accountId }))) {
 			throw new Error("Account for identity couldn't be loaded from server");
 		}
 
-		account = accountsStore.findById(data.accountId);
+		account = accountsStore.findById(rawData.accountId);
 
 		if (account === null) {
 			throw new Error("Account for identity couldn't be loaded from store");
@@ -61,15 +65,15 @@ const recordFactory = async (data: IIdentityRecordFactoryPayload): Promise<IIden
 	}
 
 	return {
-		id: get(data, 'id', uuid().toString()),
-		type: data.type,
+		id: lodashGet(rawData, 'id', uuid().toString()),
+		type: rawData.type,
 
-		draft: get(data, 'draft', false),
+		draft: lodashGet(rawData, 'draft', false),
 
-		state: get(data, 'state', IdentityState.ACTIVE),
+		state: lodashGet(rawData, 'state', IdentityState.ACTIVE),
 
-		uid: data.uid,
-		password: get(data, 'password', undefined) as string | undefined,
+		uid: rawData.uid,
+		password: lodashGet(rawData, 'password', undefined) as string | undefined,
 
 		// Relations
 		relationshipNames: ['account'],
@@ -81,102 +85,79 @@ const recordFactory = async (data: IIdentityRecordFactoryPayload): Promise<IIden
 	} as IIdentity;
 };
 
-export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGetters, IIdentitiesActions>('accounts_module_identities', {
-	state: (): IIdentitiesState => {
-		return {
-			semaphore: {
-				fetching: {
-					items: [],
-					item: [],
-				},
-				creating: [],
-				updating: [],
-				deleting: [],
+export const useIdentities = defineStore<'accounts_module_identities', IdentitiesStoreSetup>(
+	'accounts_module_identities',
+	(): IdentitiesStoreSetup => {
+		const storesManager = injectStoresManager();
+
+		const semaphore = ref<IIdentitiesStateSemaphore>({
+			fetching: {
+				items: [],
+				item: [],
 			},
+			creating: [],
+			updating: [],
+			deleting: [],
+		});
 
-			firstLoad: [],
+		const firstLoad = ref<IIdentity['id'][]>([]);
 
-			data: {},
+		const data = ref<{ [key: IIdentity['id']]: IIdentity }>({});
+
+		const firstLoadFinished = (accountId: IAccount['id']): boolean => {
+			return firstLoad.value.includes(accountId);
 		};
-	},
 
-	getters: {
-		firstLoadFinished: (state: IIdentitiesState): ((accountId: IAccount['id']) => boolean) => {
-			return (accountId: IAccount['id']): boolean => state.firstLoad.includes(accountId);
-		},
+		const getting = (id: IIdentity['id']): boolean => {
+			return semaphore.value.fetching.item.includes(id);
+		};
 
-		getting: (state: IIdentitiesState): ((id: IIdentity['id']) => boolean) => {
-			return (id: IIdentity['id']): boolean => state.semaphore.fetching.item.includes(id);
-		},
+		const fetching = (accountId: IAccount['id'] | null): boolean => {
+			return accountId !== null ? semaphore.value.fetching.items.includes(accountId) : semaphore.value.fetching.items.length > 0;
+		};
 
-		fetching: (state: IIdentitiesState): ((accountId: IAccount['id'] | null) => boolean) => {
-			return (accountId: IAccount['id'] | null): boolean =>
-				accountId !== null ? state.semaphore.fetching.items.includes(accountId) : state.semaphore.fetching.items.length > 0;
-		},
+		const findById = (id: IIdentity['id']): IIdentity | null => {
+			const identity = Object.values(data.value).find((identity) => identity.id === id);
 
-		findById: (state: IIdentitiesState): ((id: IIdentity['id']) => IIdentity | null) => {
-			return (id: IIdentity['id']): IIdentity | null => {
-				const identity = Object.values(state.data).find((identity) => identity.id === id);
+			return identity ?? null;
+		};
 
-				return identity ?? null;
-			};
-		},
+		const findForAccount = (accountId: IAccount['id']): IIdentity[] => {
+			return Object.values(data.value).filter((identity) => identity.account.id === accountId);
+		};
 
-		findForAccount: (state: IIdentitiesState): ((accountId: IAccount['id']) => IIdentity[]) => {
-			return (accountId: IAccount['id']): IIdentity[] => {
-				return Object.values(state.data).filter((identity) => identity.account.id === accountId);
-			};
-		},
-	},
+		const set = async (payload: IIdentitiesSetActionPayload): Promise<IIdentity> => {
+			const record = await storeRecordFactory(storesManager, payload.data);
 
-	actions: {
-		/**
-		 * Set record from via other store
-		 *
-		 * @param {IIdentitiesUnsetActionPayload} payload
-		 */
-		async set(payload: IIdentitiesSetActionPayload): Promise<IIdentity> {
-			const record = await recordFactory(payload.data);
+			return (data.value[record.id] = record);
+		};
 
-			return (this.data[record.id] = record);
-		},
-
-		/**
-		 * Unset record from via other store
-		 *
-		 * @param {IIdentitiesUnsetActionPayload} payload
-		 */
-		unset(payload: IIdentitiesUnsetActionPayload): void {
+		const unset = (payload: IIdentitiesUnsetActionPayload): void => {
 			if (payload.account !== undefined) {
-				Object.keys(this.data).forEach((id) => {
-					if (id in this.data && this.data[id].account.id === payload.account?.id) {
-						delete this.data[id];
+				Object.keys(data.value).forEach((id) => {
+					if (id in data.value && data.value[id].account.id === payload.account?.id) {
+						delete data.value[id];
 					}
 				});
 
 				return;
 			} else if (payload.id !== undefined) {
-				if (payload.id in this.data) {
-					delete this.data[payload.id];
+				if (payload.id in data.value) {
+					delete data.value[payload.id];
 				}
 
 				return;
 			}
 
 			throw new Error('You have to provide at least account or identity id');
-		},
+		};
 
-		/**
-		 * Get one record from server
-		 *
-		 * @param {IIdentitiesGetActionPayload} payload
-		 */
-		async get(payload: IIdentitiesGetActionPayload): Promise<boolean> {
-			if (this.semaphore.fetching.item.includes(payload.id)) {
+		const get = async (payload: IIdentitiesGetActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.item.includes(payload.id)) {
 				return false;
 			}
 
-			this.semaphore.fetching.item.push(payload.id);
+			semaphore.value.fetching.item.push(payload.id);
 
 			try {
 				const identityResponse = await axios.get<IIdentityResponseJson>(
@@ -185,30 +166,25 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 				const identityResponseModel = jsonApiFormatter.deserialize(identityResponse.data) as IIdentityResponseModel;
 
-				this.data[identityResponseModel.id] = await recordFactory({
+				data.value[identityResponseModel.id] = await storeRecordFactory(storesManager, {
 					...identityResponseModel,
 					...{ accountId: identityResponseModel.account.id },
 				});
 			} catch (e: any) {
 				throw new ApiError('accounts-module.identities.get.failed', e, 'Fetching identity failed.');
 			} finally {
-				this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
+				semaphore.value.fetching.item = semaphore.value.fetching.item.filter((item) => item !== payload.id);
 			}
 
 			return true;
-		},
+		};
 
-		/**
-		 * Fetch all records from server
-		 *
-		 * @param {IIdentitiesFetchActionPayload} payload
-		 */
-		async fetch(payload: IIdentitiesFetchActionPayload): Promise<boolean> {
-			if (this.semaphore.fetching.items.includes(payload.account.id)) {
+		const fetch = async (payload: IIdentitiesFetchActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.items.includes(payload.account.id)) {
 				return false;
 			}
 
-			this.semaphore.fetching.items.push(payload.account.id);
+			semaphore.value.fetching.items.push(payload.account.id);
 
 			try {
 				const identitiesResponse = await axios.get<IIdentitiesResponseJson>(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${payload.account.id}/identities`);
@@ -216,29 +192,24 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 				const identitiesResponseModel = jsonApiFormatter.deserialize(identitiesResponse.data) as IIdentityResponseModel[];
 
 				for (const identity of identitiesResponseModel) {
-					this.data[identity.id] = await recordFactory({
+					data.value[identity.id] = await storeRecordFactory(storesManager, {
 						...identity,
 						...{ accountId: identity.account.id },
 					});
 				}
 
-				this.firstLoad.push(payload.account.id);
+				firstLoad.value.push(payload.account.id);
 			} catch (e: any) {
 				throw new ApiError('accounts-module.identities.fetch.failed', e, 'Fetching identities failed.');
 			} finally {
-				this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.account.id);
+				semaphore.value.fetching.items = semaphore.value.fetching.items.filter((item) => item !== payload.account.id);
 			}
 
 			return true;
-		},
+		};
 
-		/**
-		 * Add new record
-		 *
-		 * @param {IIdentitiesAddActionPayload} payload
-		 */
-		async add(payload: IIdentitiesAddActionPayload): Promise<IIdentity> {
-			const newIdentity = await recordFactory({
+		const add = async (payload: IIdentitiesAddActionPayload): Promise<IIdentity> => {
+			const newIdentity = await storeRecordFactory(storesManager, {
 				...{
 					id: payload?.id,
 					type: payload?.type,
@@ -248,12 +219,12 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 				...payload.data,
 			});
 
-			this.semaphore.creating.push(newIdentity.id);
+			semaphore.value.creating.push(newIdentity.id);
 
-			this.data[newIdentity.id] = newIdentity;
+			data.value[newIdentity.id] = newIdentity;
 
 			if (newIdentity.draft) {
-				this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newIdentity.id);
+				semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newIdentity.id);
 
 				return newIdentity;
 			} else {
@@ -267,50 +238,45 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 					const createdIdentityModel = jsonApiFormatter.deserialize(createdIdentity.data) as IIdentityResponseModel;
 
-					this.data[createdIdentityModel.id] = await recordFactory({
+					data.value[createdIdentityModel.id] = await storeRecordFactory(storesManager, {
 						...createdIdentityModel,
 						...{ accountId: createdIdentityModel.account.id },
 					});
 
-					return this.data[createdIdentityModel.id];
+					return data.value[createdIdentityModel.id];
 				} catch (e: any) {
 					// Entity could not be created on api, we have to remove it from database
-					delete this.data[newIdentity.id];
+					delete data.value[newIdentity.id];
 
 					throw new ApiError('accounts-module.identities.create.failed', e, 'Create new identity failed.');
 				} finally {
-					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newIdentity.id);
+					semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newIdentity.id);
 				}
 			}
-		},
+		};
 
-		/**
-		 * Edit existing record
-		 *
-		 * @param {IIdentitiesEditActionPayload} payload
-		 */
-		async edit(payload: IIdentitiesEditActionPayload): Promise<IIdentity> {
-			if (this.semaphore.updating.includes(payload.id)) {
+		const edit = async (payload: IIdentitiesEditActionPayload): Promise<IIdentity> => {
+			if (semaphore.value.updating.includes(payload.id)) {
 				throw new Error('accounts-module.identities.update.inProgress');
 			}
 
-			if (!Object.keys(this.data).includes(payload.id)) {
+			if (!Object.keys(data.value).includes(payload.id)) {
 				throw new Error('accounts-module.identities.update.failed');
 			}
 
-			this.semaphore.updating.push(payload.id);
+			semaphore.value.updating.push(payload.id);
 
 			// Get record stored in database
-			const existingRecord = this.data[payload.id];
+			const existingRecord = data.value[payload.id];
 			// Update with new values
 			const updatedRecord = { ...existingRecord } as IIdentity;
 
-			this.data[payload.id] = updatedRecord;
+			data.value[payload.id] = updatedRecord;
 
 			if (updatedRecord.draft) {
-				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 
-				return this.data[payload.id];
+				return data.value[payload.id];
 			} else {
 				try {
 					const updatedIdentity = await axios.patch<IIdentityResponseJson>(
@@ -322,46 +288,41 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 					const updatedIdentityModel = jsonApiFormatter.deserialize(updatedIdentity.data) as IIdentityResponseModel;
 
-					this.data[updatedIdentityModel.id] = await recordFactory({
+					data.value[updatedIdentityModel.id] = await storeRecordFactory(storesManager, {
 						...updatedIdentityModel,
 						...{ accountId: updatedIdentityModel.account.id },
 					});
 
-					return this.data[updatedIdentityModel.id];
+					return data.value[updatedIdentityModel.id];
 				} catch (e: any) {
-					const accountsStore = useAccounts();
+					const accountsStore = storesManager.getStore(accountsStoreKey);
 
 					const account = accountsStore.findById(updatedRecord.account.id);
 
 					if (account !== null) {
 						// Updating entity on api failed, we need to refresh entity
-						await this.get({ account, id: payload.id });
+						await get({ account, id: payload.id });
 					}
 
 					throw new ApiError('accounts-module.identities.update.failed', e, 'Edit identity failed.');
 				} finally {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+					semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 				}
 			}
-		},
+		};
 
-		/**
-		 * Save draft record on server
-		 *
-		 * @param {IIdentitiesSaveActionPayload} payload
-		 */
-		async save(payload: IIdentitiesSaveActionPayload): Promise<IIdentity> {
-			if (this.semaphore.updating.includes(payload.id)) {
+		const save = async (payload: IIdentitiesSaveActionPayload): Promise<IIdentity> => {
+			if (semaphore.value.updating.includes(payload.id)) {
 				throw new Error('accounts-module.identities.save.inProgress');
 			}
 
-			if (!Object.keys(this.data).includes(payload.id)) {
+			if (!Object.keys(data.value).includes(payload.id)) {
 				throw new Error('accounts-module.identities.save.failed');
 			}
 
-			this.semaphore.updating.push(payload.id);
+			semaphore.value.updating.push(payload.id);
 
-			const recordToSave = this.data[payload.id];
+			const recordToSave = data.value[payload.id];
 
 			try {
 				const savedIdentity = await axios.post<IIdentityResponseJson>(
@@ -373,69 +334,59 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 
 				const savedIdentityModel = jsonApiFormatter.deserialize(savedIdentity.data) as IIdentityResponseModel;
 
-				this.data[savedIdentityModel.id] = await recordFactory({
+				data.value[savedIdentityModel.id] = await storeRecordFactory(storesManager, {
 					...savedIdentityModel,
 					...{ accountId: savedIdentityModel.account.id },
 				});
 
-				return this.data[savedIdentityModel.id];
+				return data.value[savedIdentityModel.id];
 			} catch (e: any) {
 				throw new ApiError('accounts-module.identities.save.failed', e, 'Save draft identity failed.');
 			} finally {
-				this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 			}
-		},
+		};
 
-		/**
-		 * Remove existing record from store and server
-		 *
-		 * @param {IIdentitiesRemoveActionPayload} payload
-		 */
-		async remove(payload: IIdentitiesRemoveActionPayload): Promise<boolean> {
-			if (this.semaphore.deleting.includes(payload.id)) {
+		const remove = async (payload: IIdentitiesRemoveActionPayload): Promise<boolean> => {
+			if (semaphore.value.deleting.includes(payload.id)) {
 				throw new Error('accounts-module.identities.delete.inProgress');
 			}
 
-			if (!Object.keys(this.data).includes(payload.id)) {
+			if (!Object.keys(data.value).includes(payload.id)) {
 				throw new Error('accounts-module.identities.delete.failed');
 			}
 
-			this.semaphore.deleting.push(payload.id);
+			semaphore.value.deleting.push(payload.id);
 
-			const recordToDelete = this.data[payload.id];
+			const recordToDelete = data.value[payload.id];
 
-			delete this.data[payload.id];
+			delete data.value[payload.id];
 
 			if (recordToDelete.draft) {
-				this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
 			} else {
 				try {
 					await axios.delete(`/${ModulePrefix.ACCOUNTS}/v1/accounts/${recordToDelete.account.id}/identities/${recordToDelete.id}`);
 				} catch (e: any) {
-					const accountsStore = useAccounts();
+					const accountsStore = storesManager.getStore(accountsStoreKey);
 
 					const account = accountsStore.findById(recordToDelete.account.id);
 
 					if (account !== null) {
 						// Deleting entity on api failed, we need to refresh entity
-						await this.get({ account, id: payload.id });
+						await get({ account, id: payload.id });
 					}
 
 					throw new ApiError('accounts-module.identities.delete.failed', e, 'Delete identity failed.');
 				} finally {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+					semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
 				}
 			}
 
 			return true;
-		},
+		};
 
-		/**
-		 * Receive data from sockets
-		 *
-		 * @param {IIdentitiesSocketDataActionPayload} payload
-		 */
-		async socketData(payload: IIdentitiesSocketDataActionPayload): Promise<boolean> {
+		const socketData = async (payload: IIdentitiesSocketDataActionPayload): Promise<boolean> => {
 			if (
 				![
 					RoutingKeys.IDENTITY_DOCUMENT_REPORTED,
@@ -460,20 +411,20 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 			}
 
 			if (
-				!Object.keys(this.data).includes(body.id) &&
+				!Object.keys(data.value).includes(body.id) &&
 				(payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_UPDATED || payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_DELETED)
 			) {
 				throw new Error('accounts-module.identities.update.failed');
 			}
 
 			if (payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_DELETED) {
-				delete this.data[body.id];
+				delete data.value[body.id];
 			} else {
-				if (payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_UPDATED && this.semaphore.updating.includes(body.id)) {
+				if (payload.routingKey === RoutingKeys.IDENTITY_DOCUMENT_UPDATED && semaphore.value.updating.includes(body.id)) {
 					return true;
 				}
 
-				const recordData = await recordFactory({
+				const recordData = await storeRecordFactory(storesManager, {
 					id: body.id,
 					type: {
 						source: body.source,
@@ -484,18 +435,38 @@ export const useIdentities = defineStore<string, IIdentitiesState, IIdentitiesGe
 					accountId: body.account,
 				});
 
-				if (body.id in this.data) {
-					this.data[body.id] = { ...this.data[body.id], ...recordData };
+				if (body.id in data.value) {
+					data.value[body.id] = { ...data.value[body.id], ...recordData };
 				} else {
-					this.data[body.id] = recordData;
+					data.value[body.id] = recordData;
 				}
 			}
 
 			return true;
-		},
-	},
-});
+		};
 
-export const registerIdentitiesStore = (pinia: Pinia): Store => {
+		return {
+			semaphore,
+			firstLoad,
+			data,
+			firstLoadFinished,
+			getting,
+			fetching,
+			findById,
+			findForAccount,
+			set,
+			unset,
+			get,
+			fetch,
+			add,
+			edit,
+			save,
+			remove,
+			socketData,
+		};
+	}
+);
+
+export const registerIdentitiesStore = (pinia: Pinia): Store<string, IIdentitiesState, object, IIdentitiesActions> => {
 	return useIdentities(pinia);
 };

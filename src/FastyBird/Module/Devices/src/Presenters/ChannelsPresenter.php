@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Presenters;
 
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
@@ -60,8 +60,8 @@ class ChannelsPresenter extends BasePresenter
 	/**
 	 * @throws Application\BadRequestException
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError
@@ -88,8 +88,8 @@ class ChannelsPresenter extends BasePresenter
 	/**
 	 * @throws Application\BadRequestException
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws Utils\JsonException
 	 * @throws TypeError
 	 * @throws ValueError

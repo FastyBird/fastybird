@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Models\Configuration;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;
 
@@ -31,7 +31,7 @@ abstract class Repository
 {
 
 	/**
-	 * @template T of MetadataDocuments\Document
+	 * @template T of ApplicationDocuments\Document
 	 *
 	 * @param Queries\Configuration\QueryObject<T> $queryObject
 	 */
@@ -41,7 +41,7 @@ abstract class Repository
 	}
 
 	/**
-	 * @template T of MetadataDocuments\Document
+	 * @template T of ApplicationDocuments\Document
 	 *
 	 * @param Queries\Configuration\QueryObject<T> $queryObject
 	 */

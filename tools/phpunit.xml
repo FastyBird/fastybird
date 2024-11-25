@@ -15,11 +15,11 @@
         <directory>../src/FastyBird/Addon/**/tests/cases/</directory>
         <directory>../src/FastyBird/Automator/**/tests/cases/</directory>
         <directory>../src/FastyBird/Bridge/**/tests/cases/</directory>
+        <directory>../src/FastyBird/Core/**/tests/cases/</directory>
         <directory>../src/FastyBird/Connector/**/tests/cases/</directory>
         <directory>../src/FastyBird/Library/**/tests/cases/</directory>
         <directory>../src/FastyBird/Module/**/tests/cases/</directory>
         <directory>../src/FastyBird/Plugin/**/tests/cases/</directory>
-        <directory>../app/tests/cases/</directory>
     </testsuite>
     <coverage cacheDirectory="../var/tools/PHPUnit/coverage"/>
     <source>
@@ -28,20 +28,20 @@
             <directory suffix=".php">../src/FastyBird/Automator/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Bridge/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Connector/**/tests/cases/</directory>
+            <directory suffix=".php">../src/FastyBird/Core/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Library/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Module/**/tests/cases/</directory>
             <directory suffix=".php">../src/FastyBird/Plugin/**/tests/cases/</directory>
-            <directory suffix=".php">../app/tests/cases/</directory>
         </include>
         <exclude>
             <directory>./src/FastyBird/Addon/**/tests</directory>
             <directory>./src/FastyBird/Automator/**/tests</directory>
             <directory>./src/FastyBird/Bridge/**/tests</directory>
             <directory>./src/FastyBird/Connector/**/tests</directory>
+            <directory>./src/FastyBird/Core/**/tests</directory>
             <directory>./src/FastyBird/Library/**/tests</directory>
             <directory>./src/FastyBird/Module/**/tests</directory>
             <directory>./src/FastyBird/Plugin/**/tests</directory>
-            <directory>./app/tests</directory>
         </exclude>
     </source>
 </phpunit>

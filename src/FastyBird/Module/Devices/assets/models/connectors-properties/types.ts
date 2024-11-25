@@ -1,9 +1,11 @@
-import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ButtonPayload, ConnectorPropertyDocument, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 
 import {
+	ConnectorPropertyDocument,
 	IConnector,
 	IConnectorResponseData,
 	IConnectorResponseModel,
@@ -16,7 +18,8 @@ import {
 	IPropertyMeta,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
-} from '../../models/types';
+	PropertyCategory,
+} from '../../types';
 
 export interface IConnectorPropertyMeta extends IPropertyMeta {
 	parent: 'connector';
@@ -27,25 +30,22 @@ export interface IConnectorPropertyMeta extends IPropertyMeta {
 // =====
 
 export interface IConnectorPropertiesState {
-	semaphore: IConnectorPropertiesStateSemaphore;
-	firstLoad: IConnector['id'][];
-	data: { [key: IConnectorProperty['id']]: IConnectorProperty } | undefined;
-	meta: { [key: IConnectorProperty['id']]: IConnectorPropertyMeta };
-}
-
-export interface IConnectorPropertiesGetters extends _GettersTree<IConnectorPropertiesState> {
-	firstLoadFinished: (state: IConnectorPropertiesState) => (connectorId: IConnector['id']) => boolean;
-	getting: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => boolean;
-	fetching: (state: IConnectorPropertiesState) => (connectorId: IConnector['id'] | null) => boolean;
-	findById: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => IConnectorProperty | null;
-	findByIdentifier: (
-		state: IConnectorPropertiesState
-	) => (connector: IConnector, identifier: IConnectorProperty['identifier']) => IConnectorProperty | null;
-	findForConnector: (state: IConnectorPropertiesState) => (connectorId: IConnector['id']) => IConnectorProperty[];
-	findMeta: (state: IConnectorPropertiesState) => (id: IConnectorProperty['id']) => IConnectorPropertyMeta | null;
+	semaphore: Ref<IConnectorPropertiesStateSemaphore>;
+	firstLoad: Ref<IConnector['id'][]>;
+	data: Ref<{ [key: IConnectorProperty['id']]: IConnectorProperty } | undefined>;
+	meta: Ref<{ [key: IConnectorProperty['id']]: IConnectorPropertyMeta }>;
 }
 
 export interface IConnectorPropertiesActions {
+	// Getters
+	firstLoadFinished: (connectorId: IConnector['id']) => boolean;
+	getting: (id: IConnectorProperty['id']) => boolean;
+	fetching: (connectorId: IConnector['id'] | null) => boolean;
+	findById: (id: IConnectorProperty['id']) => IConnectorProperty | null;
+	findByIdentifier: (connector: IConnector, identifier: IConnectorProperty['identifier']) => IConnectorProperty | null;
+	findForConnector: (connectorId: IConnector['id']) => IConnectorProperty[];
+	findMeta: (id: IConnectorProperty['id']) => IConnectorPropertyMeta | null;
+	// Actions
 	set: (payload: IConnectorPropertiesSetActionPayload) => Promise<IConnectorProperty>;
 	unset: (payload: IConnectorPropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorPropertiesGetActionPayload) => Promise<boolean>;
@@ -61,6 +61,8 @@ export interface IConnectorPropertiesActions {
 	loadAllRecords: (payload?: IConnectorPropertiesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type ConnectorPropertiesStoreSetup = IConnectorPropertiesState & IConnectorPropertiesActions;
+
 // STORE STATE
 // ===========
 
@@ -71,7 +73,7 @@ export interface IConnectorPropertiesStateSemaphore {
 	deleting: string[];
 }
 
-interface IConnectorPropertiesStateSemaphoreFetching {
+export interface IConnectorPropertiesStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

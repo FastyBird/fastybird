@@ -16,12 +16,11 @@
 namespace FastyBird\Module\Devices\Utilities;
 
 use Doctrine\DBAL;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
@@ -55,23 +54,23 @@ final class ConnectorConnection
 		private readonly Models\Entities\Connectors\Properties\PropertiesManager $connectorsPropertiesEntitiesManager,
 		private readonly Models\Configuration\Connectors\Properties\Repository $connectorsPropertiesConfigurationRepository,
 		private readonly Models\States\ConnectorPropertiesManager $propertiesStatesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 		private readonly Devices\Logger $logger,
 	)
 	{
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws DBAL\Exception
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -152,13 +151,14 @@ final class ConnectorConnection
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -181,11 +181,11 @@ final class ConnectorConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+					ToolsUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 			) {
 				return Types\ConnectionState::from(
-					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+					ToolsUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				);
 			}
 		}
@@ -194,13 +194,14 @@ final class ConnectorConnection
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -223,7 +224,7 @@ final class ConnectorConnection
 			if (
 				$state?->getRead()->getActualValue() !== null
 				&& Types\ConnectionState::tryFrom(
-					MetadataUtilities\Value::toString($state->getRead()->getActualValue(), true),
+					ToolsUtilities\Value::toString($state->getRead()->getActualValue(), true),
 				) !== null
 				&& $state->getRead()->getActualValue() === Types\ConnectionState::RUNNING->value
 			) {

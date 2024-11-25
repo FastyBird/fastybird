@@ -1,4 +1,4 @@
-import { GroupDocument, UiModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import exchangeDocumentSchema from '../../../resources/schemas/document.group.js
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { IGroupDatabaseRecord, IGroupMeta, IGroupsInsertDataActionPayload, IGroupsLoadRecordActionPayload, IPlainRelation } from '../../models/types';
+import { GroupDocument, RoutingKeys } from '../../types';
 import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_GROUPS } from '../../utilities/database';
 
 import {

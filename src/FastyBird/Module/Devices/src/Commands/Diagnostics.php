@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Devices\Commands;
 
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
@@ -98,11 +98,12 @@ final class Diagnostics extends Console\Command\Command
 	 * @throws Console\Exception\InvalidArgumentException
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -127,11 +128,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -202,11 +204,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -268,11 +271,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -506,11 +510,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -568,11 +573,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -664,8 +670,8 @@ final class Diagnostics extends Console\Command\Command
 					$propertyConnector->getName() ?? $propertyConnector->getIdentifier(),
 					$property->getName() ?? $property->getIdentifier(),
 					$property instanceof Documents\Connectors\Properties\Dynamic ? 'dynamic' : 'variable',
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false ? $property->getValue() : $state?->getGet()->getActualValue(),
 					),
 					$state !== false && $state !== null ? ($state->isValid() ? '<bg=green>Yes</>' : '<bg=red;fg=white>No</>') : 'N/A',
@@ -675,8 +681,8 @@ final class Diagnostics extends Console\Command\Command
 					$index + 1,
 					$property->getName() ?? $property->getIdentifier(),
 					$property instanceof Documents\Connectors\Properties\Dynamic ? 'dynamic' : 'variable',
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false ? $property->getValue() : $state?->getGet()->getActualValue(),
 					),
 					$state !== false && $state !== null ? ($state->isValid() ? '<bg=green>Yes</>' : '<bg=red;fg=white>No</>') : 'N/A',
@@ -696,11 +702,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -834,8 +841,8 @@ final class Diagnostics extends Console\Command\Command
 					$property instanceof Documents\Devices\Properties\Dynamic
 						? 'dynamic'
 						: ($property instanceof Documents\Devices\Properties\Variable ? 'variable' : 'mapped'),
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false
 							? ($property instanceof Documents\Devices\Properties\Variable ? $property->getValue() : 'N/A')
 							: $state?->getGet()->getActualValue(),
@@ -849,8 +856,8 @@ final class Diagnostics extends Console\Command\Command
 					$property instanceof Documents\Devices\Properties\Dynamic
 						? 'dynamic'
 						: ($property instanceof Documents\Devices\Properties\Variable ? 'variable' : 'mapped'),
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false
 							? ($property instanceof Documents\Devices\Properties\Variable ? $property->getValue() : 'N/A')
 							: $state?->getGet()->getActualValue(),
@@ -872,11 +879,12 @@ final class Diagnostics extends Console\Command\Command
 	/**
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -1084,8 +1092,8 @@ final class Diagnostics extends Console\Command\Command
 					$property instanceof Documents\Channels\Properties\Dynamic
 						? 'dynamic'
 						: ($property instanceof Documents\Channels\Properties\Variable ? 'variable' : 'mapped'),
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false
 							? ($property instanceof Documents\Channels\Properties\Variable ? $property->getValue() : 'N/A')
 							: $state?->getGet()->getActualValue(),
@@ -1099,8 +1107,8 @@ final class Diagnostics extends Console\Command\Command
 					$property instanceof Documents\Channels\Properties\Dynamic
 						? 'dynamic'
 						: ($property instanceof Documents\Channels\Properties\Variable ? 'variable' : 'mapped'),
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					MetadataUtilities\Value::flattenValue(
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue(
 						$state === false
 							? ($property instanceof Documents\Channels\Properties\Variable ? $property->getValue() : 'N/A')
 							: $state?->getGet()->getActualValue(),

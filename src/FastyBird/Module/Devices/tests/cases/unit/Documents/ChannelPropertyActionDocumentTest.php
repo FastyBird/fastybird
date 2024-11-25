@@ -3,9 +3,8 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Documents;
 
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Tests;
 use Nette;
@@ -17,18 +16,16 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelProperty
 	 */
 	public function testCreateDocument(string $data, string $class): void
 	{
-		$factory = $this->getContainer()->getByType(MetadataDocuments\DocumentFactory::class);
+		$factory = $this->getContainer()->getByType(ApplicationDocuments\DocumentFactory::class);
 
 		$document = $factory->create(Documents\States\Channels\Properties\Actions\Action::class, $data);
 
@@ -38,20 +35,18 @@ final class ChannelPropertyActionDocumentTest extends Tests\Cases\Unit\BaseTestC
 	/**
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelPropertyInvalid
 	 */
 	public function testCreateDocumentInvalid(string $data): void
 	{
-		$factory = $this->getContainer()->getByType(MetadataDocuments\DocumentFactory::class);
+		$factory = $this->getContainer()->getByType(ApplicationDocuments\DocumentFactory::class);
 
-		$this->expectException(MetadataExceptions\InvalidArgument::class);
+		$this->expectException(ApplicationExceptions\InvalidArgument::class);
 
 		$factory->create(Documents\States\Channels\Properties\Actions\Action::class, $data);
 	}

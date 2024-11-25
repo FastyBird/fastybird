@@ -46,21 +46,6 @@
 			{{ t('devicesModule.headings.channels.properties') }}
 		</template>
 
-		<template
-			v-if="!noResults"
-			#buttons
-		>
-			<el-button
-				:icon="FasPlus"
-				type="primary"
-				size="small"
-				plain
-				@click="emit('add', $event)"
-			>
-				{{ t('devicesModule.buttons.addProperty.title') }}
-			</el-button>
-		</template>
-
 		<el-scrollbar class="w-full">
 			<div
 				v-if="noResults"
@@ -82,15 +67,9 @@
 					</template>
 
 					<template #title>
-						<el-text class="block">{{ t('devicesModule.texts.devices.noProperties') }}</el-text>
-						<el-button
-							:icon="FasPlus"
-							type="primary"
-							class="mt-4"
-							@click="emit('add', $event)"
-						>
-							{{ t('devicesModule.buttons.addProperty.title') }}
-						</el-button>
+						<el-text class="block">
+							{{ t('devicesModule.texts.devices.noProperties') }}
+						</el-text>
 					</template>
 				</el-result>
 			</div>
@@ -108,12 +87,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { I18nT, useI18n } from 'vue-i18n';
-import { ElButton, ElResult, ElScrollbar, ElTag, ElText } from 'element-plus';
 
-import { FasInfo, FasLightbulb, FasPlus } from '@fastybird/web-ui-icons';
+import { ElResult, ElScrollbar, ElTag, ElText } from 'element-plus';
+
+import { FasInfo, FasLightbulb } from '@fastybird/web-ui-icons';
 import { FbIconWithChild, FbList } from '@fastybird/web-ui-library';
 
-import { ChannelPropertyIdentifier, IChannelDetailProps, IChannelProperty, PropertyType, IChannelDetailEmits } from '../../types';
+import { ChannelPropertyIdentifier, IChannelDetailProps, IChannelProperty, PropertyType } from '../../types';
 import { PropertyDefaultProperty } from '../property-default';
 
 defineOptions({
@@ -121,8 +101,6 @@ defineOptions({
 });
 
 const props = defineProps<IChannelDetailProps>();
-
-const emit = defineEmits<IChannelDetailEmits>();
 
 const { t } = useI18n();
 

@@ -16,9 +16,9 @@
 namespace FastyBird\Module\Devices\Schemas\Devices\Properties;
 
 use Exception;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
@@ -66,8 +66,8 @@ final class Variable extends Property
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -79,7 +79,7 @@ final class Variable extends Property
 	): iterable
 	{
 		return array_merge((array) parent::getAttributes($resource, $context), [
-			'value' => MetadataUtilities\Value::flattenValue($resource->getValue()),
+			'value' => ToolsUtilities\Value::flattenValue($resource->getValue()),
 		]);
 	}
 

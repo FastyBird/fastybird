@@ -17,10 +17,10 @@ namespace FastyBird\Module\Ui\Hydrators\Widgets;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Hydrators as JsonApiHydrators;
 use FastyBird\JsonApi\JsonApi as JsonApiJsonApi;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Ui\Entities;
 use FastyBird\Module\Ui\Hydrators;
 use FastyBird\Module\Ui\Models;
@@ -331,8 +331,8 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 	/**
 	 * @return array<mixed>|null
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateTabsRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,
@@ -375,8 +375,8 @@ abstract class Widget extends JsonApiHydrators\Hydrator
 	/**
 	 * @return array<mixed>|null
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateGroupsRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,

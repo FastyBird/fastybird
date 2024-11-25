@@ -17,12 +17,12 @@ namespace FastyBird\Module\Devices\Entities;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Transformers as ToolsTransformers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
@@ -230,11 +230,11 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
-	public function getFormat(): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
+	public function getFormat(): ToolsFormats\StringEnum|ToolsFormats\NumberRange|ToolsFormats\CombinedEnum|null
 	{
 		return $this->buildFormat($this->format);
 	}
@@ -243,19 +243,19 @@ abstract class Property implements Entity,
 	 * @param string|array<int, string>|array<int, bool|string|int|float|array<int, bool|string|int|float>|Utils\ArrayHash|null>|array<int, array<int, string|array<int, string|int|float|bool>|Utils\ArrayHash|null>>|null $format
 	 *
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function setFormat(
-		array|string|MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null $format,
+		array|string|ToolsFormats\StringEnum|ToolsFormats\NumberRange|ToolsFormats\CombinedEnum|null $format,
 	): void
 	{
 		if (
-			$format instanceof MetadataFormats\StringEnum
-			|| $format instanceof MetadataFormats\NumberRange
-			|| $format instanceof MetadataFormats\CombinedEnum
+			$format instanceof ToolsFormats\StringEnum
+			|| $format instanceof ToolsFormats\NumberRange
+			|| $format instanceof ToolsFormats\CombinedEnum
 		) {
 			$format = $format->toArray();
 		}
@@ -409,8 +409,9 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -421,9 +422,9 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return MetadataUtilities\Value::transformToScale(
-				MetadataUtilities\Value::normalizeValue(
-					MetadataUtilities\Value::transformDataType(
+			return ToolsUtilities\Value::transformToScale(
+				ToolsUtilities\Value::normalizeValue(
+					ToolsUtilities\Value::transformDataType(
 						$this->value,
 						$this->getDataType(),
 					),
@@ -433,26 +434,27 @@ abstract class Property implements Entity,
 				$this->getDataType(),
 				$this->getScale(),
 			);
-		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
+		} catch (Exceptions\InvalidArgument | ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function setValue(bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null $value): void
 	{
 		try {
-			$value = MetadataUtilities\Value::flattenValue(
-				MetadataUtilities\Value::normalizeValue(
-					MetadataUtilities\Value::transformFromScale(
-						MetadataUtilities\Value::transformDataType(
-							MetadataUtilities\Value::flattenValue($value),
+			$value = ToolsUtilities\Value::flattenValue(
+				ToolsUtilities\Value::normalizeValue(
+					ToolsUtilities\Value::transformFromScale(
+						ToolsUtilities\Value::transformDataType(
+							ToolsUtilities\Value::flattenValue($value),
 							$this->getDataType(),
 						),
 						$this->getDataType(),
@@ -462,7 +464,7 @@ abstract class Property implements Entity,
 					$this->getFormat(),
 				),
 			);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			$value = null;
 		}
 
@@ -516,8 +518,9 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -528,9 +531,9 @@ abstract class Property implements Entity,
 		}
 
 		try {
-			return MetadataUtilities\Value::transformToScale(
-				MetadataUtilities\Value::normalizeValue(
-					MetadataUtilities\Value::transformDataType(
+			return ToolsUtilities\Value::transformToScale(
+				ToolsUtilities\Value::normalizeValue(
+					ToolsUtilities\Value::transformDataType(
 						$this->default,
 						$this->getDataType(),
 					),
@@ -540,14 +543,15 @@ abstract class Property implements Entity,
 				$this->getDataType(),
 				$this->getScale(),
 			);
-		} catch (Exceptions\InvalidArgument | MetadataExceptions\InvalidValue) {
+		} catch (Exceptions\InvalidArgument | ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -556,11 +560,11 @@ abstract class Property implements Entity,
 	): void
 	{
 		try {
-			$default = MetadataUtilities\Value::flattenValue(
-				MetadataUtilities\Value::normalizeValue(
-					MetadataUtilities\Value::transformFromScale(
-						MetadataUtilities\Value::transformDataType(
-							MetadataUtilities\Value::flattenValue($default),
+			$default = ToolsUtilities\Value::flattenValue(
+				ToolsUtilities\Value::normalizeValue(
+					ToolsUtilities\Value::transformFromScale(
+						ToolsUtilities\Value::transformDataType(
+							ToolsUtilities\Value::flattenValue($default),
 							$this->getDataType(),
 						),
 						$this->getDataType(),
@@ -570,7 +574,7 @@ abstract class Property implements Entity,
 					$this->getFormat(),
 				),
 			);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			$default = null;
 		}
 
@@ -676,8 +680,9 @@ abstract class Property implements Entity,
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -695,7 +700,7 @@ abstract class Property implements Entity,
 			'invalid' => $this->getInvalid(),
 			'scale' => $this->getScale(),
 			'step' => $this->getStep(),
-			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+			'default' => ToolsUtilities\Value::flattenValue($this->getDefault()),
 			'value_transformer' => $this->getValueTransformer() !== null ? strval($this->getValueTransformer()) : null,
 			'created_at' => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
 			'updated_at' => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
@@ -703,7 +708,7 @@ abstract class Property implements Entity,
 
 		if (static::getType() === Types\PropertyType::VARIABLE->value) {
 			return array_merge($data, [
-				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
+				'value' => ToolsUtilities\Value::flattenValue($this->getValue()),
 			]);
 		} elseif (static::getType() === Types\PropertyType::DYNAMIC->value) {
 			return array_merge($data, [
@@ -716,13 +721,13 @@ abstract class Property implements Entity,
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	private function buildFormat(
 		string|null $format,
-	): MetadataFormats\StringEnum|MetadataFormats\NumberRange|MetadataFormats\CombinedEnum|null
+	): ToolsFormats\StringEnum|ToolsFormats\NumberRange|ToolsFormats\CombinedEnum|null
 	{
 		if ($format === null) {
 			return null;
@@ -744,7 +749,7 @@ abstract class Property implements Entity,
 			)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_NUMBER_RANGE, $format) === 1) {
-				return new MetadataFormats\NumberRange($format);
+				return new ToolsFormats\NumberRange($format);
 			}
 		} elseif (
 			in_array(
@@ -759,9 +764,9 @@ abstract class Property implements Entity,
 			)
 		) {
 			if (preg_match(Metadata\Constants::VALUE_FORMAT_COMBINED_ENUM, $format) === 1) {
-				return new MetadataFormats\CombinedEnum($format);
+				return new ToolsFormats\CombinedEnum($format);
 			} elseif (preg_match(Metadata\Constants::VALUE_FORMAT_STRING_ENUM, $format) === 1) {
-				return new MetadataFormats\StringEnum($format);
+				return new ToolsFormats\StringEnum($format);
 			}
 		}
 

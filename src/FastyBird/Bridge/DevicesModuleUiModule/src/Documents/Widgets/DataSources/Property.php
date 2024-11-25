@@ -17,16 +17,16 @@ namespace FastyBird\Bridge\DevicesModuleUiModule\Documents\Widgets\DataSources;
 
 use DateTimeInterface;
 use FastyBird\Bridge\DevicesModuleUiModule\Entities;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Ui\Documents as UiDocuments;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
-#[DOC\MappedSuperclass]
+#[ApplicationDocuments\Mapping\MappedSuperclass]
 abstract class Property extends UiDocuments\Widgets\DataSources\DataSource
 {
 
@@ -74,7 +74,7 @@ abstract class Property extends UiDocuments\Widgets\DataSources\DataSource
 	{
 		return array_merge(parent::toArray(), [
 			'property' => $this->getProperty()->toString(),
-			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
+			'value' => ToolsUtilities\Value::flattenValue($this->getValue()),
 		]);
 	}
 

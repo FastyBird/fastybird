@@ -18,11 +18,11 @@ namespace FastyBird\Bridge\DevicesModuleUiModule\Consumers;
 use FastyBird\Bridge\DevicesModuleUiModule;
 use FastyBird\Bridge\DevicesModuleUiModule\Documents;
 use FastyBird\Bridge\DevicesModuleUiModule\Queries;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Ui;
@@ -78,7 +78,7 @@ final class SocketsBridge implements ExchangeConsumers\Consumer
 	public function consume(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
-		MetadataDocuments\Document|null $document,
+		ApplicationDocuments\Document|null $document,
 	): void
 	{
 		if (
@@ -127,7 +127,7 @@ final class SocketsBridge implements ExchangeConsumers\Consumer
 				'data' => array_merge(
 					$dataSource->toArray(),
 					[
-						'value' => MetadataUtilities\Value::flattenValue($document->getRead()->getActualValue()),
+						'value' => ToolsUtilities\Value::flattenValue($document->getRead()->getActualValue()),
 					],
 				),
 			];
@@ -200,7 +200,7 @@ final class SocketsBridge implements ExchangeConsumers\Consumer
 				[
 					'source' => MetadataTypes\Sources\Bridge::DEVICES_MODULE_UI_MODULE->value,
 					'type' => 'state-entities-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 
@@ -210,7 +210,7 @@ final class SocketsBridge implements ExchangeConsumers\Consumer
 				[
 					'source' => MetadataTypes\Sources\Bridge::DEVICES_MODULE_UI_MODULE->value,
 					'type' => 'state-entities-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		}

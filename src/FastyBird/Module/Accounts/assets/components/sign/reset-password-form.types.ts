@@ -1,4 +1,4 @@
-import { FormResultTypes } from '../../types';
+import { FormResultType } from '../../types';
 
 export interface IResetPasswordForm {
 	uid: string;
@@ -6,6 +6,6 @@ export interface IResetPasswordForm {
 
 export interface IResetPasswordProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }

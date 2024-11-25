@@ -16,7 +16,7 @@
 namespace FastyBird\Connector\NsPanel\API\Messages\Response;
 
 use FastyBird\Connector\NsPanel\API;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use stdClass;

@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Documents\Channels;
 
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\WindowCovering::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\WindowCovering::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\WindowCovering::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\WindowCovering::TYPE)]
 class WindowCovering extends Shelly
 {
 

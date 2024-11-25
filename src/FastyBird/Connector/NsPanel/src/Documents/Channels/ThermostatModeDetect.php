@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\ThermostatModeDetect::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\ThermostatModeDetect::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\ThermostatModeDetect::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\ThermostatModeDetect::TYPE)]
 class ThermostatModeDetect extends Channel
 {
 

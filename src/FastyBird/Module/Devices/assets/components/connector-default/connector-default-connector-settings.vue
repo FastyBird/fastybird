@@ -120,16 +120,27 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElButton, ElForm, FormInstance } from 'element-plus';
 
+import { ElButton, ElForm, FormInstance } from 'element-plus';
+import get from 'lodash.get';
+
+import { flattenValue } from '@fastybird/tools';
 import { FasPlus } from '@fastybird/web-ui-icons';
 import { FbList } from '@fastybird/web-ui-library';
-import { flattenValue } from '@fastybird/metadata-library';
 
-import { ConnectorDefaultConnectorSettingsRename, PropertyDefaultPropertySettings, PropertyDefaultVariablePropertiesEdit } from '../../components';
 import { useConnectorForm } from '../../composables';
-import { IConnectorProperty, FormResultTypes, IConnectorForm, IEditConnectorProps, PropertyType, IEditConnectorEmits } from '../../types';
+import {
+	FormResultType,
+	FormResultTypes,
+	IConnectorForm,
+	IConnectorProperty,
+	IEditConnectorEmits,
+	IEditConnectorProps,
+	PropertyType,
+} from '../../types';
+import ConnectorDefaultConnectorSettingsRename from '../connector-default/connector-default-connector-settings-rename.vue';
+import PropertyDefaultPropertySettings from '../property-default/property-default-property-settings.vue';
+import PropertyDefaultVariablePropertiesEdit from '../property-default/property-default-variable-properties-edit.vue';
 
 defineOptions({
 	name: 'ConnectorDefaultConnectorSettings',
@@ -248,8 +259,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => formResult.value,
-	(val: FormResultTypes): void => {
+	(): FormResultType => formResult.value,
+	(val: FormResultType): void => {
 		emit('update:remoteFormResult', val);
 	}
 );

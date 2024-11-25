@@ -2,7 +2,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Tests\Cases\Unit\States;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
 use FastyBird\Plugin\RedisDb\Exceptions;
 use FastyBird\Plugin\RedisDb\States;
 use FastyBird\Plugin\RedisDb\Tests\Fixtures\Dummy\DummyState;

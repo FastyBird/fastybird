@@ -1,7 +1,8 @@
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
+
+import { IAccountResponseData, IEntityMeta, IPlainRelation } from '../../types';
 
 export interface IRoleMeta extends IEntityMeta {
 	entity: 'role';
@@ -11,18 +12,17 @@ export interface IRoleMeta extends IEntityMeta {
 // =====
 
 export interface IRolesState {
-	semaphore: IRolesStateSemaphore;
-	firstLoad: boolean;
-	data: { [key: IRole['id']]: IRole };
-}
-
-export interface IRolesGetters extends _GettersTree<IRolesState> {
-	firstLoadFinished: (state: IRolesState) => () => boolean;
-	getting: (state: IRolesState) => (id: IRole['id']) => boolean;
-	fetching: (state: IRolesState) => () => boolean;
+	semaphore: Ref<IRolesStateSemaphore>;
+	firstLoad: Ref<boolean>;
+	data: Ref<{ [key: IRole['id']]: IRole }>;
 }
 
 export interface IRolesActions {
+	// Getters
+	firstLoadFinished: () => boolean;
+	getting: (id: IRole['id']) => boolean;
+	fetching: () => boolean;
+	// Actions
 	get: (payload: IRolesGetActionPayload) => Promise<boolean>;
 	fetch: () => Promise<boolean>;
 	add: (payload: IRolesAddActionPayload) => Promise<IRole>;
@@ -31,6 +31,8 @@ export interface IRolesActions {
 	remove: (payload: IRolesRemoveActionPayload) => Promise<boolean>;
 	socketData: (payload: IRolesSocketDataActionPayload) => Promise<boolean>;
 }
+
+export type RolesStoreSetup = IRolesState & IRolesActions;
 
 // STORE STATE
 // ===========

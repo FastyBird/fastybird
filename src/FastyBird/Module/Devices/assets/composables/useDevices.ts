@@ -1,5 +1,8 @@
-import { orderBy } from 'natural-orderby';
 import { computed, reactive, ref, watch } from 'vue';
+
+import { orderBy } from 'natural-orderby';
+
+import { injectStoresManager } from '@fastybird/tools';
 
 import {
 	channelControlsStoreKey,
@@ -10,21 +13,22 @@ import {
 	devicePropertiesStoreKey,
 	devicesStoreKey,
 } from '../configuration';
-import { storesManager } from '../entry';
 import {
 	IChannelControl,
 	IChannelData,
 	IChannelProperty,
+	IConnector,
 	IDevice,
 	IDeviceControl,
 	IDeviceData,
 	IDeviceProperty,
-	IConnector,
 	UseDevices,
 } from '../types';
 import { defaultDevicesFilter } from '../utilities';
 
 export const useDevices = (connectorId?: IConnector['id']): UseDevices => {
+	const storesManager = injectStoresManager();
+
 	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 	const devicesStore = storesManager.getStore(devicesStoreKey);
 	const deviceControlsStore = storesManager.getStore(deviceControlsStoreKey);
@@ -114,10 +118,12 @@ export const useDevices = (connectorId?: IConnector['id']): UseDevices => {
 		return devicesData.value.slice(start, end);
 	});
 
-	const fetchDevices = async (): Promise<void> => {
-		await devicesStore.fetch({ connectorId, refresh: !devicesStore.firstLoadFinished(connectorId) });
+	const fetchDevices = async (overrideDeviceId?: IConnector['id']): Promise<void> => {
+		const useConnectorId = overrideDeviceId ?? connectorId;
 
-		const devices = (typeof connectorId !== 'undefined' ? devicesStore.findForConnector(connectorId) : devicesStore.findAll()).filter(
+		await devicesStore.fetch({ connectorId: useConnectorId, refresh: !devicesStore.firstLoadFinished(useConnectorId) });
+
+		const devices = (typeof useConnectorId !== 'undefined' ? devicesStore.findForConnector(useConnectorId) : devicesStore.findAll()).filter(
 			(device) => !device.draft
 		);
 

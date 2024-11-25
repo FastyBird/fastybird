@@ -148,17 +148,19 @@ import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
-import get from 'lodash.get';
+
 import { ElCol, ElDrawer, ElIcon, ElRow, ElScrollbar, vLoading } from 'element-plus';
+import get from 'lodash.get';
 
+import { useBreakpoints } from '@fastybird/tools';
 import { FasPlugCircleBolt, FasXmark } from '@fastybird/web-ui-icons';
-import { FbAppBarHeading, FbAppBarButton, FbAppBar, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
+import { AppBarButtonAlignTypes, FbAppBar, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useConnectorActions, usePluginActions, useRoutesNames, useConnectors, useDevices } from '../composables';
 import { ConnectorsConnectorBox, PluginsPluginHeader, PluginsPluginStats, ViewError } from '../components';
+import { useConnectorActions, useConnectors, useDevices, usePluginActions, useRoutesNames } from '../composables';
 import { connectorPlugins } from '../configuration';
 import { ApplicationError } from '../errors';
-import { IConnectorPlugin, IConnector, IDebugLog, IBridge, IService } from '../types';
+import { IBridge, IConnector, IConnectorPlugin, IDebugLog, IService } from '../types';
 
 import { IViewPluginDetailProps } from './view-plugin-detail.types';
 
@@ -178,6 +180,7 @@ const routeNames = useRoutesNames();
 
 const pluginActions = usePluginActions();
 const connectorActions = useConnectorActions();
+const { fetchDevices } = useDevices();
 
 const connectorsPlugin = computed<IConnectorPlugin | null>((): IConnectorPlugin | null => {
 	return connectorPlugins.find((plugin) => plugin.type === props.plugin) ?? null;
@@ -306,9 +309,7 @@ onBeforeMount((): void => {
 	fetchConnectors()
 		.then((): void => {
 			for (const connectorData of connectorsData.value) {
-				const { fetchDevices } = useDevices(connectorData.connector.id);
-
-				fetchDevices().catch((e: any): void => {
+				fetchDevices(connectorData.connector.id).catch((e: any): void => {
 					if (get(e, 'exception.response.status', 0) === 404) {
 						throw new ApplicationError('Connector Not Found', e, { statusCode: 404, message: 'Connector Not Found' });
 					} else {
@@ -318,6 +319,7 @@ onBeforeMount((): void => {
 			}
 		})
 		.catch((e: any): void => {
+			console.log(e);
 			throw new ApplicationError('Something went wrong', e, { statusCode: 503, message: 'Something went wrong' });
 		});
 

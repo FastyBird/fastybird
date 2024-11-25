@@ -1,10 +1,9 @@
-import { IAccount } from '../../models/accounts/types';
-import { FormResultTypes, LayoutType } from '../../types';
+import { FormResultType, IAccount, LayoutType } from '../../types';
 
 export interface ISettingsAccountFormProps {
 	account: IAccount;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 	layout?: LayoutType;
 }

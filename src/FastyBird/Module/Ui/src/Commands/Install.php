@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Ui\Commands;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use Nette\Localization;
@@ -104,7 +104,7 @@ class Install extends Console\Command\Command
 				[
 					'source' => MetadataTypes\Sources\Module::UI->value,
 					'type' => 'install-cmd',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

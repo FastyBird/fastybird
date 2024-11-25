@@ -1,4 +1,4 @@
-import { ActionRoutes, ExchangeCommand, ModulePrefix, UiModuleRoutes as RoutingKeys, WidgetDataSourceDocument } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
@@ -14,6 +14,7 @@ import exchangeDocumentSchema from '../../../resources/schemas/document.widget.d
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useWidgets } from '../../models';
+import { ActionRoutes, ExchangeCommand, RoutingKeys, WidgetDataSourceDocument } from '../../types';
 import { addRecord, DB_TABLE_WIDGETS_DATA_SOURCES, getAllRecords, getRecord, removeRecord } from '../../utilities/database';
 import { IWidget } from '../widgets/types';
 

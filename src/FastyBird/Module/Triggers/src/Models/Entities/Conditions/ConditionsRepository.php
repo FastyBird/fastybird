@@ -17,8 +17,8 @@ namespace FastyBird\Module\Triggers\Models\Entities\Conditions;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Queries;
 use IPub\DoctrineOrmQuery;
@@ -42,7 +42,7 @@ final class ConditionsRepository
 	private array $repository = [];
 
 	public function __construct(
-		private readonly ApplicationHelpers\Database $database,
+		private readonly ToolsHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
@@ -52,7 +52,7 @@ final class ConditionsRepository
 	 * @param Queries\Entities\FindConditions<Entities\Conditions\Condition> $queryObject
 	 * @param class-string<Entities\Conditions\Condition> $type
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindConditions $queryObject,
@@ -70,7 +70,7 @@ final class ConditionsRepository
 	 *
 	 * @return array<Entities\Conditions\Condition>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findAllBy(
 		Queries\Entities\FindConditions $queryObject,
@@ -100,7 +100,7 @@ final class ConditionsRepository
 	 *
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Conditions\Condition>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\Entities\FindConditions $queryObject,

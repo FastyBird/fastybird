@@ -44,8 +44,8 @@ import { ElButton, ElButtonGroup, ElText } from 'element-plus';
 import { FasCircleInfo, FasPencil, FasTrash } from '@fastybird/web-ui-icons';
 import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { DevicesDeviceIcon } from '../../components';
-import { IConnectorDeviceProps, IConnectorDeviceEmits } from '../../types';
+import { IConnectorDeviceEmits, IConnectorDeviceProps } from '../../types';
+import DevicesDeviceIcon from '../devices/devices-device-icon.vue';
 
 defineOptions({
 	name: 'ConnectorDefaultConnectorDevice',

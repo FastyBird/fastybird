@@ -22,9 +22,9 @@ use FastyBird\Connector\Tuya\Exceptions;
 use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
@@ -108,7 +108,7 @@ final class OpenPulsar
 		private readonly Types\OpenPulsarEndpoint $endpoint,
 		private readonly Tuya\Logger $logger,
 		private readonly Services\WebSocketClientFactory $webSocketClientFactory,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 		private readonly DateTimeFactory\Clock $clock,
 		private readonly EventLoop\LoopInterface $eventLoop,
 	)
@@ -286,7 +286,7 @@ final class OpenPulsar
 				$this->getSchema(self::WS_MESSAGE_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
 			throw new Exceptions\OpenPulsarError('Could not decode received Tuya WS message', $ex->getCode(), $ex);
 		}
 
@@ -333,7 +333,7 @@ final class OpenPulsar
 				$this->getSchema(self::WS_MESSAGE_PAYLOAD_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
 			throw new Exceptions\OpenPulsarError(
 				'Could not decode received Tuya WS message payload',
 				$ex->getCode(),
@@ -382,7 +382,7 @@ final class OpenPulsar
 				$this->getSchema(self::WS_MESSAGE_PAYLOAD_DATA_SCHEMA_FILENAME),
 			);
 
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData | Exceptions\OpenPulsarError $ex) {
 			throw new Exceptions\OpenPulsarError(
 				'Could not decode received Tuya WS message payload data decrypted',
 				$ex->getCode(),

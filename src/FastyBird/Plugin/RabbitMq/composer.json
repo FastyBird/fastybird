@@ -36,10 +36,10 @@
     "php": ">=8.2.0",
     "bunny/bunny": "0.6.x-dev",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/application-library": "dev-main",
-    "fastybird/exchange-library": "dev-main",
+    "fastybird/application": "dev-main",
+    "fastybird/exchange": "dev-main",
     "fastybird/metadata-library": "dev-main",
-    "nette/di": "^3.0",
+    "nette/di": "^3.2",
     "nette/utils": "^4.0",
     "orisai/object-mapper": "^0.2",
     "psr/log": "^3.0"

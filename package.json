@@ -1,7 +1,7 @@
 {
   "name": "@fastybird/fastybird",
   "private": true,
-  "version": "1.0.0-dev.23",
+  "version": "1.0.0-dev.24",
   "description": "Repository for FastyBird packages development",
   "keywords": [
     "fastybird",
@@ -23,19 +23,19 @@
     "url": "https://github.com/FastyBird/fastybird.git"
   },
   "workspaces": [
-    "app",
     "src/FastyBird/Addon/**/*",
     "src/FastyBird/Automator/**/*",
     "src/FastyBird/Bridge/**/*",
     "src/FastyBird/Connector/**/*",
+    "src/FastyBird/Core/**/*",
     "src/FastyBird/Library/**/*",
     "src/FastyBird/Module/**/*",
     "src/FastyBird/Plugin/**/*"
   ],
   "scripts": {
     "dev": "lerna run dev --stream --ignore '@fastybird/web-ui'",
-    "build": "lerna run build --stream --ignore '@fastybird/web-ui'",
-    "build:dev": "lerna run build:dev --stream --ignore '@fastybird/web-ui'",
+    "build": "lerna run build --stream --ignore '@fastybird/web-ui' --ignore '@fastybird/application' && yarn workspace @fastybird/application build",
+    "build:dev": "lerna run build:dev --stream --ignore '@fastybird/web-ui' --ignore '@fastybird/application' && yarn workspace @fastybird/application build:dev",
     "clean": "lerna clean && rm -rf node_modules",
     "fix": "lerna run fix",
     "graph": "nx graph",

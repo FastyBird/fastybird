@@ -1,9 +1,10 @@
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ConnectorCategory, ConnectorDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import {
+	ConnectorCategory,
+	ConnectorDocument,
 	IConnectorControlResponseData,
 	IConnectorControlResponseModel,
 	IConnectorProperty,
@@ -13,7 +14,7 @@ import {
 	IDeviceResponseModel,
 	IEntityMeta,
 	IPlainRelation,
-} from '../../models/types';
+} from '../../types';
 
 export interface IConnectorMeta extends IEntityMeta {
 	entity: 'connector';
@@ -23,22 +24,21 @@ export interface IConnectorMeta extends IEntityMeta {
 // =====
 
 export interface IConnectorsState {
-	semaphore: IConnectorsStateSemaphore;
-	firstLoad: boolean;
-	data: { [key: IConnector['id']]: IConnector } | undefined;
-	meta: { [key: IConnector['id']]: IConnectorMeta };
-}
-
-export interface IConnectorsGetters extends _GettersTree<IConnectorsState> {
-	firstLoadFinished: (state: IConnectorsState) => () => boolean;
-	getting: (state: IConnectorsState) => (id: IConnector['id']) => boolean;
-	fetching: (state: IConnectorsState) => () => boolean;
-	findById: (state: IConnectorsState) => (id: IConnector['id']) => IConnector | null;
-	findAll: (state: IConnectorsState) => () => IConnector[];
-	findMeta: (state: IConnectorsState) => (id: IConnector['id']) => IConnectorMeta | null;
+	semaphore: Ref<IConnectorsStateSemaphore>;
+	firstLoad: Ref<boolean>;
+	data: Ref<{ [key: IConnector['id']]: IConnector } | undefined>;
+	meta: Ref<{ [key: IConnector['id']]: IConnectorMeta }>;
 }
 
 export interface IConnectorsActions {
+	// Getters
+	firstLoadFinished: () => boolean;
+	getting: (id: IConnector['id']) => boolean;
+	fetching: () => boolean;
+	findById: (id: IConnector['id']) => IConnector | null;
+	findAll: () => IConnector[];
+	findMeta: (id: IConnector['id']) => IConnectorMeta | null;
+	// Actions
 	set: (payload: IConnectorsSetActionPayload) => Promise<IConnector>;
 	unset: (payload: IConnectorsUnsetActionPayload) => Promise<void>;
 	get: (payload: IConnectorsGetActionPayload) => Promise<boolean>;
@@ -53,17 +53,19 @@ export interface IConnectorsActions {
 	loadAllRecords: () => Promise<boolean>;
 }
 
+export type ConnectorsStoreSetup = IConnectorsState & IConnectorsActions;
+
 // STORE STATE
 // ===========
 
-interface IConnectorsStateSemaphore {
+export interface IConnectorsStateSemaphore {
 	fetching: IConnectorsStateSemaphoreFetching;
 	creating: string[];
 	updating: string[];
 	deleting: string[];
 }
 
-interface IConnectorsStateSemaphoreFetching {
+export interface IConnectorsStateSemaphoreFetching {
 	items: boolean;
 	item: string[];
 }

@@ -1,68 +1,52 @@
-import { StateTree, Store } from 'pinia';
 import { InjectionKey } from 'vue';
 
 import { ConnectorSource } from '@fastybird/metadata-library';
+import { StoreInjectionKey } from '@fastybird/tools';
 
 import {
 	IChannelControlsActions,
-	IChannelControlsGetters,
 	IChannelControlsState,
 	IChannelPropertiesActions,
-	IChannelPropertiesGetters,
 	IChannelPropertiesState,
 	IChannelsActions,
-	IChannelsGetters,
 	IChannelsState,
 	IConnectorControlsActions,
-	IConnectorControlsGetters,
 	IConnectorControlsState,
 	IConnectorPlugin,
 	IConnectorPropertiesActions,
-	IConnectorPropertiesGetters,
 	IConnectorPropertiesState,
 	IConnectorsActions,
-	IConnectorsGetters,
 	IConnectorsState,
 	IDeviceControlsActions,
-	IDeviceControlsGetters,
 	IDeviceControlsState,
 	IDevicePropertiesActions,
-	IDevicePropertiesGetters,
 	IDevicePropertiesState,
 	IDevicesActions,
-	IDevicesGetters,
-	IDevicesModuleConfiguration,
 	IDevicesModuleMeta,
 	IDevicesState,
 } from './types';
 
-export type StoreInjectionKey<Id extends string = string, S extends StateTree = object, G = object, A = object> = InjectionKey<Store<Id, S, G, A>>;
-
 export const metaKey: InjectionKey<IDevicesModuleMeta> = Symbol('devices-module_meta');
-export const configurationKey: InjectionKey<IDevicesModuleConfiguration> = Symbol('devices-module_configuration');
 
-export const channelsStoreKey: StoreInjectionKey<string, IChannelsState, IChannelsGetters, IChannelsActions> =
-	Symbol('devices-module_store_channels');
-export const channelControlsStoreKey: StoreInjectionKey<string, IChannelControlsState, IChannelControlsGetters, IChannelControlsActions> = Symbol(
+export const channelsStoreKey: StoreInjectionKey<string, IChannelsState, object, IChannelsActions> = Symbol('devices-module_store_channels');
+export const channelControlsStoreKey: StoreInjectionKey<string, IChannelControlsState, object, IChannelControlsActions> = Symbol(
 	'devices-module_store_channel_controls'
 );
-export const channelPropertiesStoreKey: StoreInjectionKey<string, IChannelPropertiesState, IChannelPropertiesGetters, IChannelPropertiesActions> =
-	Symbol('devices-module_store_channel_properties');
-export const connectorsStoreKey: StoreInjectionKey<string, IConnectorsState, IConnectorsGetters, IConnectorsActions> =
-	Symbol('devices-module_store_connectors');
-export const connectorControlsStoreKey: StoreInjectionKey<string, IConnectorControlsState, IConnectorControlsGetters, IConnectorControlsActions> =
-	Symbol('devices-module_store_connector_controls');
-export const connectorPropertiesStoreKey: StoreInjectionKey<
-	string,
-	IConnectorPropertiesState,
-	IConnectorPropertiesGetters,
-	IConnectorPropertiesActions
-> = Symbol('devices-module_store_connector_properties');
-export const devicesStoreKey: StoreInjectionKey<string, IDevicesState, IDevicesGetters, IDevicesActions> = Symbol('devices-module_store_devices');
-export const deviceControlsStoreKey: StoreInjectionKey<string, IDeviceControlsState, IDeviceControlsGetters, IDeviceControlsActions> = Symbol(
+export const channelPropertiesStoreKey: StoreInjectionKey<string, IChannelPropertiesState, object, IChannelPropertiesActions> = Symbol(
+	'devices-module_store_channel_properties'
+);
+export const connectorsStoreKey: StoreInjectionKey<string, IConnectorsState, object, IConnectorsActions> = Symbol('devices-module_store_connectors');
+export const connectorControlsStoreKey: StoreInjectionKey<string, IConnectorControlsState, object, IConnectorControlsActions> = Symbol(
+	'devices-module_store_connector_controls'
+);
+export const connectorPropertiesStoreKey: StoreInjectionKey<string, IConnectorPropertiesState, object, IConnectorPropertiesActions> = Symbol(
+	'devices-module_store_connector_properties'
+);
+export const devicesStoreKey: StoreInjectionKey<string, IDevicesState, object, IDevicesActions> = Symbol('devices-module_store_devices');
+export const deviceControlsStoreKey: StoreInjectionKey<string, IDeviceControlsState, object, IDeviceControlsActions> = Symbol(
 	'devices-module_store_device_controls'
 );
-export const devicePropertiesStoreKey: StoreInjectionKey<string, IDevicePropertiesState, IDevicePropertiesGetters, IDevicePropertiesActions> = Symbol(
+export const devicePropertiesStoreKey: StoreInjectionKey<string, IDevicePropertiesState, object, IDevicePropertiesActions> = Symbol(
 	'devices-module_store_device_properties'
 );
 

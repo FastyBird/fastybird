@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Documents\Channels;
 
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\InputSource::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\InputSource::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\InputSource::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\InputSource::TYPE)]
 class InputSource extends Viera
 {
 

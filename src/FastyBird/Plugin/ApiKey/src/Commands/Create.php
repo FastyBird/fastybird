@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\ApiKey\Commands;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\ApiKey\Models;
 use FastyBird\Plugin\ApiKey\Types;
@@ -95,7 +95,7 @@ class Create extends Console\Command\Command
 			$this->logger->error('Api key could not be created', [
 				'source' => MetadataTypes\Sources\Plugin::API_KEY->value,
 				'type' => 'create-command',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
+				'exception' => ToolsHelpers\Logger::buildException($ex),
 				'cmd' => $this->getName(),
 			]);
 

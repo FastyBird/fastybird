@@ -17,10 +17,10 @@ namespace FastyBird\Addon\VirtualThermostat\Documents\Channels;
 
 use FastyBird\Addon\VirtualThermostat\Entities;
 use FastyBird\Connector\Virtual\Documents as VirtualDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Sensors::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Sensors::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Sensors::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\Sensors::TYPE)]
 class Sensors extends VirtualDocuments\Channels\Channel
 {
 

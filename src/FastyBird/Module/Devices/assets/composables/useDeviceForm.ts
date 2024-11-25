@@ -1,14 +1,18 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import capitalize from 'lodash.capitalize';
 import get from 'lodash.get';
 
-import { useFlashMessage } from '../composables';
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { devicePropertiesStoreKey, devicesStoreKey } from '../configuration';
-import { storesManager } from '../entry';
-import { FormResultTypes, IDevice, IDeviceForm, UseDeviceForm } from '../types';
+import { FormResultType, FormResultTypes, IDevice, IDeviceForm, UseDeviceForm } from '../types';
 
 export const useDeviceForm = (device: IDevice): UseDeviceForm => {
+	const storesManager = injectStoresManager();
+
 	const devicesStore = storesManager.getStore(devicesStoreKey);
 	const propertiesStore = storesManager.getStore(devicePropertiesStoreKey);
 
@@ -16,7 +20,7 @@ export const useDeviceForm = (device: IDevice): UseDeviceForm => {
 
 	const flashMessage = useFlashMessage();
 
-	const formResult = ref<FormResultTypes>(FormResultTypes.NONE);
+	const formResult = ref<FormResultType>(FormResultTypes.NONE);
 
 	let timer: number;
 

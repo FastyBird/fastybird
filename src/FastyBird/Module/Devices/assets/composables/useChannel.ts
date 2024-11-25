@@ -1,14 +1,18 @@
 import { computed } from 'vue';
+
 import { orderBy } from 'natural-orderby';
 
+import { injectStoresManager } from '@fastybird/tools';
+
 import { channelControlsStoreKey, channelPropertiesStoreKey, channelsStoreKey, devicesStoreKey } from '../configuration';
-import { IDevice, storesManager } from '../entry';
+import { IDevice } from '../entry';
+import { IChannel, IChannelControl, IChannelData, IChannelProperty } from '../types';
 
 import { UseChannel } from './types';
 
-import { IChannel, IChannelControl, IChannelData, IChannelProperty } from '../types';
-
 export const useChannel = (id: IChannel['id']): UseChannel => {
+	const storesManager = injectStoresManager();
+
 	const devicesStore = storesManager.getStore(devicesStoreKey);
 	const channelsStore = storesManager.getStore(channelsStoreKey);
 	const channelControlsStore = storesManager.getStore(channelControlsStoreKey);
