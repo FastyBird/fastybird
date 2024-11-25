@@ -37,6 +37,7 @@
     "cweagans/composer-patches": "^1.7",
     "fastybird/application": "dev-main",
     "fastybird/metadata-library": "dev-main",
+    "fastybird/tools": "dev-main",
     "nette/bootstrap": "^3.2",
     "nette/di": "^3.2",
     "nette/utils": "^4.0",
