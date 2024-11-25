@@ -14,4 +14,5 @@ php:
     date.timezone: Europe/Prague
 
 extensions:
-    fbDateTimeFactory   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
+    ipubDoctrineTimestampable   : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
+    fbDateTimeFactory           : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
