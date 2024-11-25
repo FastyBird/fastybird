@@ -16,9 +16,9 @@ php:
 extensions:
     ipubWebSocketsWAMP      : IPub\WebSocketsWAMP\DI\WebSocketsWAMPExtension
     ipubWebSockets          : IPub\WebSockets\DI\WebSocketsExtension
-    ipubPhone               : IPub\Phone\DI\PhoneExtension
     fbTools                 : FastyBird\Core\Tools\DI\ToolsExtension
     fbExchange              : FastyBird\Core\Exchange\DI\ExchangeExtension
+    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 services:
     - {factory: Symfony\Component\EventDispatcher\EventDispatcher}

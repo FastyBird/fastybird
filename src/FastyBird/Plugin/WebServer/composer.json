@@ -40,6 +40,7 @@
     "cweagans/composer-patches": "^1.7",
     "fastybird/application": "dev-main",
     "fastybird/metadata-library": "dev-main",
+    "fastybird/tools": "dev-main",
     "fig/http-message-util": "^1.1",
     "ipub/slim-router": "^0.2",
     "nette/bootstrap": "^3.2",
