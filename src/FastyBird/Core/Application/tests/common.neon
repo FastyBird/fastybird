@@ -21,20 +21,13 @@ extensions:
     nettrineOrmAttributes               : Nettrine\ORM\DI\OrmAttributesExtension
     nettrineOrmConsole                  : Nettrine\ORM\DI\OrmConsoleExtension
     nettrineOrmCache                    : Nettrine\ORM\DI\OrmCacheExtension
-    ipubDoctrineCrud                    : IPub\DoctrineCrud\DI\DoctrineCrudExtension
-    ipubDoctrineTimestampable           : IPub\DoctrineTimestampable\DI\DoctrineTimestampableExtension
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
-    fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
-    fbTools                             : FastyBird\Core\Tools\DI\ToolsExtension
-    fbExchange                          : FastyBird\Core\Exchange\DI\ExchangeExtension
 
 services:
     - {factory: IPub\SlimRouter\Http\ResponseFactory}
     -
         factory: IPub\SlimRouter\Routing\Router
-        setup:
-            - addMiddleware(@fbJsonApi.middlewares.jsonapi)
 
     cache.storage: Nette\Caching\Storages\DevNullStorage
 
@@ -47,7 +40,6 @@ contributteTranslation:
     localeResolvers: []
     dirs:
         - %appDir%/../src/Translations
-        - %vendorDir%/fastybird/json-api/src/Translations
 
 nettrineDbal:
     connection:
@@ -87,18 +79,10 @@ fbSimpleAuth:
     token:
         issuer: com.fastybird.auth-module
         signature: 'g3xHbkELpMD9LRqW4WmJkHL7kz2bdNYAQJyEuFVzR3k='
-    enable:
-        middleware: true
-        doctrine:
-            mapping: true
-        casbin:
-            database: true
     services:
         identity: true
-
-fbJsonApi:
-    meta:
-        copyright: FastyBird s.r.o
+    casbin:
+        policy: %appDir%/policy.csv
 
 fbDateTimeFactory:
     frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')
