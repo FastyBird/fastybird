@@ -17,13 +17,12 @@ namespace FastyBird\Module\Devices\DI;
 
 use Contributte\Translation;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Application\Router as ApplicationRouter;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\DI as ExchangeDI;
-use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\DI as ApplicationDI;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\DI as ExchangeDI;
+use FastyBird\Core\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Caching;
@@ -996,7 +995,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 		 * APPLICATION DOCUMENTS
 		 */
 
-		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+		$services = $builder->findByTag(ApplicationDI\ApplicationExtension::DRIVER_TAG);
 
 		if ($services !== []) {
 			$services = array_keys($services);
@@ -1011,7 +1010,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 				);
 
 				$documentAttributeDriverChainService = $builder->getDefinitionByType(
-					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+					ApplicationDocuments\Mapping\Driver\MappingDriverChain::class,
 				);
 
 				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {
@@ -1036,7 +1035,7 @@ class DevicesExtension extends DI\CompilerExtension implements Translation\DI\Tr
 			]);
 		}
 
-		$appRouterServiceName = $builder->getByType(ApplicationRouter\AppRouter::class);
+		$appRouterServiceName = $builder->getByType(Application\Routers\RouteList::class);
 		assert(is_string($appRouterServiceName));
 		$appRouterService = $builder->getDefinition($appRouterServiceName);
 		assert($appRouterService instanceof DI\Definitions\ServiceDefinition);

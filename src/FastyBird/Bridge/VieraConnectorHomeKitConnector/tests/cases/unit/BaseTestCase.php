@@ -4,8 +4,8 @@ namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Tests\Cases\Unit;
 
 use Error;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;

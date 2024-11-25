@@ -14,19 +14,14 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": "assets",
+    "skipLibCheck": true,
     "types": [
       "node"
     ],
-    "paths": {
-      "@/*": [
-        "*"
-      ]
-    },
     "lib": [
       "esnext",
       "dom",
-      "dom.iterable",
-      "scripthost"
+      "dom.iterable"
     ]
   },
   "include": [

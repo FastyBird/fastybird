@@ -29,8 +29,8 @@ extensions:
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbWebServer                         : FastyBird\WebServer\DI\WebServerExtension
-    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbTools                             : FastyBird\Core\Tools\DI\ToolsExtension
+    fbExchange                          : FastyBird\Core\Exchange\DI\ExchangeExtension
 
 contributteTranslation:
     locales:

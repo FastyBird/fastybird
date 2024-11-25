@@ -30,10 +30,10 @@ use FastyBird\Connector\Viera\Entities as VieraEntities;
 use FastyBird\Connector\Viera\Exceptions as VieraExceptions;
 use FastyBird\Connector\Viera\Queries as VieraQueries;
 use FastyBird\Connector\Viera\Types as VieraTypes;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -91,7 +91,7 @@ class Builder
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 	)
 	{
@@ -366,15 +366,14 @@ class Builder
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws HomeKitExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 * @throws VieraExceptions\InvalidArgument
@@ -442,7 +441,7 @@ class Builder
 				throw new Exceptions\InvalidState('Viera input source channel property could not be loaded');
 			}
 
-			if (!$inputSourceProperty->getFormat() instanceof MetadataFormats\CombinedEnum) {
+			if (!$inputSourceProperty->getFormat() instanceof ToolsFormats\CombinedEnum) {
 				throw new Exceptions\InvalidState(
 					'Viera input source channel property is wrongly configured. This service could not be mapped',
 				);
@@ -459,9 +458,9 @@ class Builder
 			foreach ($inputSourceProperty->getFormat()->getItems() as $item) {
 				assert(
 					count($item) === 3
-					&& $item[0] instanceof MetadataFormats\CombinedEnumItem
+					&& $item[0] instanceof ToolsFormats\CombinedEnumItem
 					&& is_string($item[0]->getValue())
-					&& $item[1] instanceof MetadataFormats\CombinedEnumItem
+					&& $item[1] instanceof ToolsFormats\CombinedEnumItem
 					&& is_numeric($item[1]->getValue()),
 				);
 
@@ -678,14 +677,14 @@ class Builder
 				$inputSourcesNames = $inputSourcesValues = [];
 				$inputIndex = 1;
 
-				assert($characteristic->getFormat() instanceof MetadataFormats\CombinedEnum);
+				assert($characteristic->getFormat() instanceof ToolsFormats\CombinedEnum);
 
 				foreach ($characteristic->getFormat()->getItems() as $item) {
 					assert(
 						count($item) === 3
-						&& $item[0] instanceof MetadataFormats\CombinedEnumItem
+						&& $item[0] instanceof ToolsFormats\CombinedEnumItem
 						&& is_string($item[0]->getValue())
-						&& $item[1] instanceof MetadataFormats\CombinedEnumItem
+						&& $item[1] instanceof ToolsFormats\CombinedEnumItem
 						&& is_numeric($item[1]->getValue()),
 					);
 
@@ -962,13 +961,12 @@ class Builder
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws HomeKitExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 * @throws VieraExceptions\InvalidArgument
@@ -1065,13 +1063,13 @@ class Builder
 				) && $connectProperty->getIdentifier() === VieraTypes\ChannelPropertyIdentifier::INPUT_SOURCE->value
 			) {
 				$inputSourceFormat = $connectProperty->getFormat();
-				assert($inputSourceFormat instanceof MetadataFormats\CombinedEnum);
+				assert($inputSourceFormat instanceof ToolsFormats\CombinedEnum);
 
 				$format = array_map(static function (array $items): array {
 					assert(
 						count($items) === 3
-						&& $items[0] instanceof MetadataFormats\CombinedEnumItem
-						&& $items[1] instanceof MetadataFormats\CombinedEnumItem,
+						&& $items[0] instanceof ToolsFormats\CombinedEnumItem
+						&& $items[1] instanceof ToolsFormats\CombinedEnumItem,
 					);
 
 					return [$items[0]->getValue(), $items[1]->getValue(), $items[1]->getValue()];
@@ -1503,9 +1501,9 @@ class Builder
 	}
 
 	/**
-	 * @return MetadataFormats\StringEnum|array<int, float|null>|null
+	 * @return ToolsFormats\StringEnum|array<int, float|null>|null
 	 */
-	private function buildFormat(Utils\ArrayHash $characteristicMetadata): MetadataFormats\StringEnum|array|null
+	private function buildFormat(Utils\ArrayHash $characteristicMetadata): ToolsFormats\StringEnum|array|null
 	{
 		$format = null;
 
@@ -1513,7 +1511,7 @@ class Builder
 			$characteristicMetadata->offsetExists('ValidValues')
 			&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
 		) {
-			$format = new MetadataFormats\StringEnum(
+			$format = new ToolsFormats\StringEnum(
 				array_values((array) $characteristicMetadata->offsetGet('ValidValues')),
 			);
 		}

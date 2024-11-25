@@ -16,11 +16,11 @@
 namespace FastyBird\Connector\Shelly\Documents\Connectors;
 
 use FastyBird\Connector\Shelly\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 
-#[DOC\Document(entity: Entities\Connectors\Connector::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Connectors\Connector::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Connectors\Connector::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Connectors\Connector::TYPE)]
 class Connector extends DevicesDocuments\Connectors\Connector
 {
 

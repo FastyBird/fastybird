@@ -15,8 +15,8 @@
 
 namespace FastyBird\Module\Triggers\Controllers\Finders;
 
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Triggers\Entities;
 use FastyBird\Module\Triggers\Models;
 use FastyBird\Module\Triggers\Queries;
@@ -33,8 +33,8 @@ trait TTrigger
 {
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApi
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function findTrigger(string $id): Entities\Triggers\Trigger
 	{

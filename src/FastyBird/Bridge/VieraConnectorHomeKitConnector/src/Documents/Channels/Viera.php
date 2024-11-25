@@ -16,9 +16,9 @@
 namespace FastyBird\Bridge\VieraConnectorHomeKitConnector\Documents\Channels;
 
 use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\MappedSuperclass()]
+#[ApplicationDocuments\Mapping\MappedSuperclass()]
 abstract class Viera extends HomeKitDocuments\Channels\Channel
 {
 

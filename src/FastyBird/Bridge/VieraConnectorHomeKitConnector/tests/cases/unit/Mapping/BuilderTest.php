@@ -6,7 +6,7 @@ use Error;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Exceptions;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Mapping;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette\DI;
 use RuntimeException;
 

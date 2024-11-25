@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\RedisDbPluginTriggersModule\DI;
 
 use FastyBird\Bridge\RedisDbPluginTriggersModule\Models;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
 use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;

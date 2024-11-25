@@ -18,7 +18,7 @@ namespace FastyBird\Connector\NsPanel\Entities\Channels;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 use Ramsey\Uuid;
 
 #[ORM\Entity]

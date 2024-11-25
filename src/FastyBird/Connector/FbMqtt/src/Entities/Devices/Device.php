@@ -18,7 +18,7 @@ namespace FastyBird\Connector\FbMqtt\Entities\Devices;
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Exceptions;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use Ramsey\Uuid;

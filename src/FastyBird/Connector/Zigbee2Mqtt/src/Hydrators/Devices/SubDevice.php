@@ -18,9 +18,9 @@ namespace FastyBird\Connector\Zigbee2Mqtt\Hydrators\Devices;
 use Doctrine\Persistence;
 use FastyBird\Connector\Zigbee2Mqtt\Entities;
 use FastyBird\Connector\Zigbee2Mqtt\Schemas;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Helpers;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Fig\Http\Message\StatusCodeInterface;
@@ -61,8 +61,8 @@ final class SubDevice extends Device
 	/**
 	 * @return array<DevicesEntities\Devices\Device>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateParentsRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationships,

@@ -2,7 +2,7 @@
 	<div class="flex flex-row items-center align-center w-full h-full">
 		<div class="mx-a w-[25rem]">
 			<el-card
-				v-if="!isXsBreakpoint"
+				v-if="isMDDevice"
 				class="mb-5"
 			>
 				<router-link
@@ -35,7 +35,9 @@
 					keypath="messages.haveAccount"
 					tag="p"
 				>
-					<router-link :to="{ name: routeNames.signIn }"> {{ t('buttons.signIn.title') }} </router-link>
+					<router-link :to="{ name: routeNames.signIn }">
+						{{ t('accountsModule.buttons.signIn.title') }}
+					</router-link>
 				</i18n-t>
 
 				<i18n-t
@@ -43,7 +45,9 @@
 					keypath="messages.notHaveAccount"
 					tag="p"
 				>
-					<router-link :to="{ name: routeNames.signUp }"> {{ t('buttons.signUp.title') }} </router-link>
+					<router-link :to="{ name: routeNames.signUp }">
+						{{ t('accountsModule.buttons.signUp.title') }}
+					</router-link>
 				</i18n-t>
 
 				<div class="flex flex-row justify-center items-center mb-5">
@@ -108,18 +112,18 @@
 
 <script setup lang="ts">
 import { inject } from 'vue';
-import { useI18n, I18nT } from 'vue-i18n';
+import { I18nT, useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { ElCard, ElDivider, ElLink, ElIcon } from 'element-plus';
 
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
-import { FabXTwitter, FabFacebook, FabGithub } from '@fastybird/web-ui-icons';
+import { ElCard, ElDivider, ElIcon, ElLink } from 'element-plus';
 
-import { metaKey } from '../../configuration';
-import { useRoutesNames } from '../../composables';
+import { useBreakpoints } from '@fastybird/tools';
+import { FabFacebook, FabGithub, FabXTwitter } from '@fastybird/web-ui-icons';
 
 // @ts-ignore
 import Logo from '../../assets/images/fastybird_bird.svg?component';
+import { useRoutesNames } from '../../composables';
+import { metaKey } from '../../configuration';
 
 defineOptions({
 	name: 'SignBox',
@@ -131,7 +135,5 @@ const { t } = useI18n();
 const moduleMeta = inject(metaKey);
 
 const route = useRoute();
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
-
-const isXsBreakpoint = breakpoints.smaller('sm');
+const { isMDDevice } = useBreakpoints();
 </script>

@@ -97,13 +97,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { I18nT, useI18n } from 'vue-i18n';
+
 import { ElTag, ElText } from 'element-plus';
 
-import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useDeviceState } from '../../composables';
-import { DevicePropertyIdentifier, IDeviceDetailProps, IDeviceProperty, PropertyType, StateColor } from '../../types';
+import { ConnectionState, DevicePropertyIdentifier, IDeviceDetailProps, IDeviceProperty, PropertyType, StateColor } from '../../types';
 
 defineOptions({
 	name: 'DeviceDefaultDeviceDetail',

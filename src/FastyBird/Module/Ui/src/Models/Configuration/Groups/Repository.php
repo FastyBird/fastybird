@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Ui\Models\Configuration\Groups;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Ui\Caching;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Exceptions;
@@ -43,7 +43,7 @@ final class Repository extends Models\Configuration\Repository
 	public function __construct(
 		private readonly Caching\Container $moduleCaching,
 		private readonly Models\Configuration\Builder $builder,
-		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly ApplicationDocuments\DocumentFactory $documentFactory,
 	)
 	{
 	}

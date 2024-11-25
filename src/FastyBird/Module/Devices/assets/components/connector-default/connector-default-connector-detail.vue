@@ -147,13 +147,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { I18nT, useI18n } from 'vue-i18n';
+
 import { ElTag, ElText } from 'element-plus';
 
-import { ConnectionState } from '@fastybird/metadata-library';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import { useConnectorState } from '../../composables';
-import { ConnectorPropertyIdentifier, IConnectorDetailProps, IConnectorProperty, PropertyType, StateColor } from '../../types';
+import { ConnectionState, ConnectorPropertyIdentifier, IConnectorDetailProps, IConnectorProperty, PropertyType, StateColor } from '../../types';
 
 defineOptions({
 	name: 'ConnectorDefaultConnectorDetail',

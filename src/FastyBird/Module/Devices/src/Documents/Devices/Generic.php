@@ -15,12 +15,12 @@
 
 namespace FastyBird\Module\Devices\Documents\Devices;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
 
-#[DOC\Document(entity: Entities\Devices\Generic::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Devices\Generic::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Devices\Generic::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Devices\Generic::TYPE)]
 class Generic extends Documents\Devices\Device
 {
 

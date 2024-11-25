@@ -17,8 +17,8 @@ namespace FastyBird\Module\Accounts\Models\Entities\Emails;
 
 use Doctrine\ORM;
 use Doctrine\Persistence;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Queries;
@@ -44,14 +44,14 @@ final class EmailsRepository
 	private ORM\EntityRepository|null $repository = null;
 
 	public function __construct(
-		private readonly ApplicationHelpers\Database $database,
+		private readonly ToolsHelpers\Database $database,
 		private readonly Persistence\ManagerRegistry $managerRegistry,
 	)
 	{
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findOneByAddress(string $address): Entities\Emails\Email|null
 	{
@@ -62,7 +62,7 @@ final class EmailsRepository
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function findOneBy(
 		Queries\Entities\FindEmails $queryObject,
@@ -93,8 +93,8 @@ final class EmailsRepository
 	/**
 	 * @return DoctrineOrmQuery\ResultSet<Entities\Emails\Email>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function getResultSet(
 		Queries\Entities\FindEmails $queryObject,

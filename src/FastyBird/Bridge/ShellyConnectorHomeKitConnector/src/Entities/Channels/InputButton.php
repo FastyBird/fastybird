@@ -16,7 +16,7 @@
 namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Entities\Channels;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 
 #[ORM\Entity]
 #[ApplicationMapping\DiscriminatorEntry(name: self::TYPE)]

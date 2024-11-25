@@ -20,8 +20,8 @@ use Doctrine\ORM;
 use Doctrine\Persistence;
 use FastyBird\Bridge\DevicesModuleUiModule\Documents;
 use FastyBird\Bridge\DevicesModuleUiModule\Queries;
-use FastyBird\Library\Application\Utilities as ApplicationUtilities;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Application\EventLoop as ApplicationEventLoop;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Ui;
@@ -51,7 +51,7 @@ final class ModuleEntities implements Common\EventSubscriber
 		private readonly UiModels\Configuration\Widgets\DataSources\Repository $dataSourcesRepository,
 		private readonly UiCaching\Container $uiModuleCaching,
 		private readonly ORM\EntityManagerInterface $entityManager,
-		private readonly ApplicationUtilities\EventLoopStatus $eventLoopStatus,
+		private readonly ApplicationEventLoop\Status $eventLoopStatus,
 		private readonly ExchangePublisher\Publisher $publisher,
 		private readonly ExchangePublisher\Async\Publisher $asyncPublisher,
 	)

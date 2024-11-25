@@ -4,7 +4,7 @@ namespace FastyBird\Bridge\DevicesModuleUiModule\Tests\Cases\Unit\Controllers;
 
 use Error;
 use FastyBird\Bridge\DevicesModuleUiModule\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata;
 use Fig\Http\Message\RequestMethodInterface;
 use Fig\Http\Message\StatusCodeInterface;

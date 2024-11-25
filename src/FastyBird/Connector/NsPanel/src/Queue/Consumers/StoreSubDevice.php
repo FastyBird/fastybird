@@ -24,9 +24,9 @@ use FastyBird\Connector\NsPanel\Mapping;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -56,7 +56,7 @@ final class StoreSubDevice implements Queue\Consumer
 		protected readonly DevicesModels\Entities\Devices\DevicesRepository $devicesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesRepository $devicesPropertiesRepository,
 		protected readonly DevicesModels\Entities\Devices\Properties\PropertiesManager $devicesPropertiesManager,
-		protected readonly ApplicationHelpers\Database $databaseHelper,
+		protected readonly ToolsHelpers\Database $databaseHelper,
 		private readonly Mapping\Builder $mappingBuilder,
 		private readonly DevicesModels\Entities\Connectors\ConnectorsRepository $connectorsRepository,
 		private readonly DevicesModels\Entities\Devices\DevicesManager $devicesManager,
@@ -69,12 +69,12 @@ final class StoreSubDevice implements Queue\Consumer
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -302,7 +302,7 @@ final class StoreSubDevice implements Queue\Consumer
 						$attributeMetadata->getMinValue() !== null
 						|| $attributeMetadata->getMaxValue() !== null
 					) {
-						$format = new MetadataFormats\NumberRange([
+						$format = new ToolsFormats\NumberRange([
 							$attributeMetadata->getMinValue(),
 							$attributeMetadata->getMaxValue(),
 						]);

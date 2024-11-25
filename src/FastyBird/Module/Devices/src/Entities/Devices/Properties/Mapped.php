@@ -17,9 +17,9 @@ namespace FastyBird\Module\Devices\Entities\Devices\Properties;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
@@ -157,23 +157,23 @@ class Mapped extends Property
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function getDefault(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		try {
-			return MetadataUtilities\Value::normalizeValue(
-				MetadataUtilities\Value::transformDataType(
-					MetadataUtilities\Value::flattenValue($this->getParent()->getDefault()),
+			return ToolsUtilities\Value::normalizeValue(
+				ToolsUtilities\Value::transformDataType(
+					ToolsUtilities\Value::flattenValue($this->getParent()->getDefault()),
 					$this->getDataType(),
 				),
 				$this->getDataType(),
 				$this->getFormat(),
 			);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
@@ -190,8 +190,8 @@ class Mapped extends Property
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -202,15 +202,15 @@ class Mapped extends Property
 		}
 
 		try {
-			return MetadataUtilities\Value::normalizeValue(
-				MetadataUtilities\Value::transformDataType(
-					MetadataUtilities\Value::flattenValue($this->getParent()->getValue()),
+			return ToolsUtilities\Value::normalizeValue(
+				ToolsUtilities\Value::transformDataType(
+					ToolsUtilities\Value::flattenValue($this->getParent()->getValue()),
 					$this->getDataType(),
 				),
 				$this->getDataType(),
 				$this->getFormat(),
 			);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
@@ -231,8 +231,8 @@ class Mapped extends Property
 	 * {@inheritDoc}
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -242,15 +242,15 @@ class Mapped extends Property
 			return array_merge(parent::toArray(), [
 				'parent' => $this->getParent()->getId()->toString(),
 
-				'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
-				'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
+				'default' => ToolsUtilities\Value::flattenValue($this->getDefault()),
+				'value' => ToolsUtilities\Value::flattenValue($this->getValue()),
 			]);
 		}
 
 		return array_merge(parent::toArray(), [
 			'parent' => $this->getParent()->getId()->toString(),
 
-			'default' => MetadataUtilities\Value::flattenValue($this->getDefault()),
+			'default' => ToolsUtilities\Value::flattenValue($this->getDefault()),
 			'settable' => $this->isSettable(),
 			'queryable' => $this->isQueryable(),
 		]);

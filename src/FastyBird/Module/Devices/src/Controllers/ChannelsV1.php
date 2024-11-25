@@ -17,9 +17,10 @@ namespace FastyBird\Module\Devices\Controllers;
 
 use Doctrine;
 use Exception;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Controllers;
 use FastyBird\Module\Devices\Exceptions;
@@ -209,7 +210,7 @@ final class ChannelsV1 extends BaseV1
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channels-controller',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -287,7 +288,7 @@ final class ChannelsV1 extends BaseV1
 					[
 						'source' => MetadataTypes\Sources\Module::DEVICES->value,
 						'type' => 'channels-controller',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 					],
 				);
 
@@ -326,6 +327,7 @@ final class ChannelsV1 extends BaseV1
 	 * @throws InvalidArgumentException
 	 * @throws JsonApiExceptions\JsonApi
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @Secured\Role(manager,administrator)
 	 */
@@ -360,7 +362,7 @@ final class ChannelsV1 extends BaseV1
 				[
 					'source' => MetadataTypes\Sources\Module::DEVICES->value,
 					'type' => 'channels-controller',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 

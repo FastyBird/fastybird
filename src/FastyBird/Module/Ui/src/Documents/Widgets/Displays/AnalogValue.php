@@ -16,15 +16,15 @@
 namespace FastyBird\Module\Ui\Documents\Widgets\Displays;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Ui\Documents;
 use FastyBird\Module\Ui\Entities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
 use function array_merge;
 
-#[DOC\Document(entity: Entities\Widgets\Displays\AnalogValue::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Widgets\Displays\AnalogValue::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Widgets\Displays\AnalogValue::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Widgets\Displays\AnalogValue::TYPE)]
 class AnalogValue extends Documents\Widgets\Displays\Display
 {
 

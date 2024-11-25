@@ -1,4 +1,4 @@
-import { FormResultTypes } from '../../types';
+import { FormResultType } from '../../types';
 
 export interface ISignInForm {
 	uid: string;
@@ -8,6 +8,6 @@ export interface ISignInForm {
 
 export interface ISignInProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }

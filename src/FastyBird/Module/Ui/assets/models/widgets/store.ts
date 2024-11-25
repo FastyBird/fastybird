@@ -1,4 +1,4 @@
-import { WidgetDocument, UiModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
+import { ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios from 'axios';
@@ -22,6 +22,7 @@ import {
 	IWidgetDataSourceResponseModel,
 	IWidgetDisplayResponseModel,
 } from '../../models/types';
+import { RoutingKeys, WidgetDocument } from '../../types';
 import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_WIDGETS } from '../../utilities/database';
 
 import {

@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Triggers\Documents\Triggers;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Triggers\Entities;
 use Orisai\ObjectMapper;
 use Ramsey\Uuid;
@@ -29,8 +29,8 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Triggers\Automatic::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Triggers\Automatic::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Triggers\Automatic::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Triggers\Automatic::TYPE)]
 final class Automatic extends Trigger
 {
 

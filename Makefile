@@ -15,21 +15,21 @@ qa: ## Check code quality - coding style and static analysis
 
 cs: ## Check PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcs" src app --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcs" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 csf: ## Fix PHP files coding style
 	mkdir -p var/tools/PHP_CodeSniffer
-	$(PRE_PHP) "vendor/bin/phpcbf" src app --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
+	$(PRE_PHP) "vendor/bin/phpcbf" src --standard=$(PHPCS_CONFIG) --parallel=$(LOGICAL_CORES) $(ARGS)
 
 lint:
-	$(PRE_PHP) "vendor/bin/parallel-lint" src app --exclude .git --exclude vendor
+	$(PRE_PHP) "vendor/bin/parallel-lint" src --exclude .git --exclude vendor
 
 phpstan: ## Analyse code with PHPStan
 	mkdir -p var/tools
 	$(PRE_PHP) "vendor/bin/phpstan" analyse -c $(PHPSTAN_SRC_CONFIG) $(ARGS)
 	$(PRE_PHP) "vendor/bin/phpstan" analyse -c $(PHPSTAN_TESTS_CONFIG) $(ARGS)
 
-# Tests
+# TESTS
 
 .PHONY: tests
 tests: ## Run all tests
@@ -60,7 +60,7 @@ mutations-infection:
 		--skip-initial-tests \
 		$(ARGS)
 
-# Docker
+# DOCKER
 
 up:
 	docker-compose up -d
@@ -74,7 +74,7 @@ bash:
 bash-root:
 	docker-compose exec -u 0 application bash
 
-# Utilities
+# UTILITIES
 
 .SILENT: $(shell grep -h -E '^[a-zA-Z_-]+:.*?$$' $(MAKEFILE_LIST) | sort -u | awk 'BEGIN {FS = ":.*?"}; {printf "%s ", $$1}')
 

@@ -15,10 +15,9 @@
 
 namespace FastyBird\Module\Triggers\Documents\Triggers;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Module\Triggers;
 use FastyBird\Module\Triggers\Entities;
 use Orisai\ObjectMapper;
@@ -32,20 +31,20 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Triggers\Trigger::class)]
-#[DOC\InheritanceType('SINGLE_TABLE')]
-#[DOC\DiscriminatorColumn(name: 'type', type: 'string')]
-#[DOC\MappedSuperclass]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Triggers\Trigger::class)]
+#[ApplicationDocuments\Mapping\InheritanceType('SINGLE_TABLE')]
+#[ApplicationDocuments\Mapping\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ApplicationDocuments\Mapping\MappedSuperclass]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_REPORTED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_CREATED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_UPDATED_ROUTING_KEY,
 	Triggers\Constants::MESSAGE_BUS_TRIGGER_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-abstract class Trigger implements MetadataDocuments\Document, MetadataDocuments\Owner
+abstract class Trigger implements ApplicationDocuments\Document, ApplicationDocuments\Owner
 {
 
-	use MetadataDocuments\TOwner;
+	use ApplicationDocuments\TOwner;
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]

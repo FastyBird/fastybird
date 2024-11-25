@@ -1,6 +1,6 @@
-import { IRoutes } from '../types';
+import { IRoutes, UseRouteNames } from '../types';
 
-export function useRoutesNames(): { routeNames: IRoutes } {
+export function useRoutesNames(): UseRouteNames {
 	const routeNames: IRoutes = {
 		root: 'accounts_module-root',
 		signIn: 'accounts_module-sign_in',

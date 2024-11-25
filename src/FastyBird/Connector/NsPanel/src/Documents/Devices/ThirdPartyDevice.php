@@ -16,10 +16,10 @@
 namespace FastyBird\Connector\NsPanel\Documents\Devices;
 
 use FastyBird\Connector\NsPanel\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Devices\ThirdPartyDevice::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Devices\ThirdPartyDevice::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Devices\ThirdPartyDevice::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Devices\ThirdPartyDevice::TYPE)]
 class ThirdPartyDevice extends Device
 {
 

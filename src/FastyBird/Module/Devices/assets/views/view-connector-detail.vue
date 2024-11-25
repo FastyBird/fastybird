@@ -149,11 +149,13 @@ import { computed, onBeforeMount, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
-import get from 'lodash.get';
-import { ElIcon, vLoading } from 'element-plus';
 
+import { ElIcon, vLoading } from 'element-plus';
+import get from 'lodash.get';
+
+import { useBreakpoints } from '@fastybird/tools';
 import { FasAngleLeft } from '@fastybird/web-ui-icons';
-import { FbAppBarButton, FbAppBarHeading, FbExpandableBox, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading, FbExpandableBox } from '@fastybird/web-ui-library';
 
 import {
 	ConnectorDefaultConnectorDetail,
@@ -163,7 +165,6 @@ import {
 	ViewError,
 } from '../components';
 import {
-	useBreakpoints,
 	useConnector,
 	useConnectorActions,
 	useConnectorRoutes,

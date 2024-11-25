@@ -34,18 +34,21 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
+
 import { ElIcon, ElSwitch } from 'element-plus';
+import get from 'lodash.get';
 
-import { FasCheck, FasBan } from '@fastybird/web-ui-icons';
-import { FbSpinner } from '@fastybird/web-ui-library';
-import { ActionRoutes, DataType, ModulePrefix, ExchangeCommand, SwitchPayload } from '@fastybird/metadata-library';
+import { DataType, ModulePrefix, SwitchPayload } from '@fastybird/metadata-library';
+import { useFlashMessage } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { FasBan, FasCheck } from '@fastybird/web-ui-icons';
+import { FbSpinner } from '@fastybird/web-ui-library';
 
-import { useDeviceState, useEntityTitle, useFlashMessage, useNormalizeValue } from '../../composables';
+import { useDeviceState, useNormalizeValue } from '../../composables';
 import { channelPropertiesStoreKey, devicePropertiesStoreKey } from '../../configuration';
+import { ActionRoutes, ExchangeCommand, PropertyCommandResult, PropertyCommandState } from '../../types';
+
 import { IPropertyActorProps } from './actors-property-actor-switch.types';
-import { PropertyCommandResult, PropertyCommandState } from '../../models/properties/types';
 
 const props = defineProps<IPropertyActorProps>();
 
@@ -109,7 +112,7 @@ const onToggleState = async (): Promise<void> => {
 	if (!isDeviceReady.value) {
 		flashMessage.error(
 			t('devicesModule.messages.devices.notOnline', {
-				device: useEntityTitle(props.device).value,
+				device: props.device?.title,
 			})
 		);
 
@@ -202,7 +205,7 @@ const onToggleState = async (): Promise<void> => {
 		}
 
 		timer = window.setTimeout(resetCommand, 500);
-	} catch (e) {
+	} catch {
 		emit('value', props.property.backupValue);
 
 		if (props.channel !== undefined) {
@@ -227,7 +230,7 @@ const onToggleState = async (): Promise<void> => {
 
 		flashMessage.error(
 			t('devicesModule.messages.properties.commandNotAccepted', {
-				device: useEntityTitle(props.device).value,
+				device: props.device?.title,
 			})
 		);
 

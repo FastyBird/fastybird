@@ -1,11 +1,9 @@
 import { ComputedRef, Ref } from 'vue';
-import { AxiosResponse } from 'axios';
-
-import { ConnectionState } from '@fastybird/metadata-library';
 
 import {
+	ConnectionState,
 	DevicesFilter,
-	FormResultTypes,
+	FormResultType,
 	IChannel,
 	IChannelData,
 	IChannelForm,
@@ -22,15 +20,6 @@ import {
 	IPropertyForm,
 } from '../types';
 
-export interface UseBreakpoints {
-	isXSDevice: ComputedRef<boolean>;
-	isSMDevice: ComputedRef<boolean>;
-	isMDDevice: ComputedRef<boolean>;
-	isLGDevice: ComputedRef<boolean>;
-	isXLDevice: ComputedRef<boolean>;
-	isXXLDevice: ComputedRef<boolean>;
-}
-
 export interface UseChannel {
 	channel: ComputedRef<IChannel | null>;
 	channelData: ComputedRef<IChannelData | null>;
@@ -45,7 +34,7 @@ export interface UseChannelActions {
 export interface UseChannelForm {
 	submit: (model: IChannelForm) => Promise<'added' | 'saved'>;
 	clear: () => void;
-	formResult: Ref<FormResultTypes>;
+	formResult: Ref<FormResultType>;
 }
 
 export interface UseChannelRoutes {
@@ -58,7 +47,7 @@ export interface UseChannels {
 	channels: ComputedRef<IChannel[]>;
 	channelsData: ComputedRef<IChannelData[]>;
 	areLoading: ComputedRef<boolean>;
-	fetchChannels: () => Promise<void>;
+	fetchChannels: (deviceId?: IDevice['id']) => Promise<void>;
 }
 
 export interface UseConnector {
@@ -78,7 +67,7 @@ export interface UseConnectorActions {
 export interface UseConnectorForm {
 	submit: (model: IConnectorForm) => Promise<'added' | 'saved'>;
 	clear: () => void;
-	formResult: Ref<FormResultTypes>;
+	formResult: Ref<FormResultType>;
 }
 
 export interface UseConnectorRoutes {
@@ -113,7 +102,7 @@ export interface UseDeviceActions {
 export interface UseDeviceForm {
 	submit: (model: IDeviceForm) => Promise<'added' | 'saved'>;
 	clear: () => void;
-	formResult: Ref<FormResultTypes>;
+	formResult: Ref<FormResultType>;
 }
 
 export interface UseDeviceRoutes {
@@ -129,7 +118,7 @@ export interface UseDevices {
 	totalRows: ComputedRef<number>;
 	areLoading: ComputedRef<boolean>;
 	loaded: ComputedRef<boolean>;
-	fetchDevices: () => Promise<void>;
+	fetchDevices: (connectorId?: IConnector['id']) => Promise<void>;
 	filters: DevicesFilter;
 	paginateSize: Ref<number>;
 	paginatePage: Ref<number>;
@@ -140,14 +129,6 @@ export interface UseDevices {
 export interface UseDeviceState {
 	state: ComputedRef<ConnectionState>;
 	isReady: ComputedRef<boolean>;
-}
-
-export interface UseFlashMessage {
-	success: (message: string) => void;
-	info: (message: string) => void;
-	error: (message: string) => void;
-	exception: (exception: Error, errorMessage: string) => void;
-	requestError: (response: AxiosResponse, errorMessage: string) => void;
 }
 
 export interface UsePluginActions {
@@ -161,7 +142,7 @@ export interface UsePropertyActions {
 export interface UsePropertyForm {
 	submit: (model: IPropertyForm) => Promise<'added' | 'saved'>;
 	clear: () => void;
-	formResult: Ref<FormResultTypes>;
+	formResult: Ref<FormResultType>;
 }
 
 export interface UseUuid {

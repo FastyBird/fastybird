@@ -4,26 +4,30 @@
 			:id="FB_BREADCRUMBS_TARGET"
 			separator="/"
 		>
-			<el-breadcrumb-item :to="{ path: '/' }"> {{ t('breadcrumbs.homepage') }} </el-breadcrumb-item>
-			<el-breadcrumb-item :to="{ name: routeNames.account }"> {{ t('breadcrumbs.account') }} </el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ path: '/' }">
+				{{ t('accountsModule.breadcrumbs.homepage') }}
+			</el-breadcrumb-item>
+			<el-breadcrumb-item :to="{ name: routeNames.account }">
+				{{ t('accountsModule.breadcrumbs.account') }}
+			</el-breadcrumb-item>
 			<el-breadcrumb-item
 				v-if="route.name === routeNames.accountProfile"
 				:to="{ name: routeNames.accountProfile }"
 			>
-				{{ t('breadcrumbs.profile') }}
+				{{ t('accountsModule.breadcrumbs.profile') }}
 			</el-breadcrumb-item>
 			<el-breadcrumb-item
 				v-if="route.name === routeNames.accountPassword"
 				:to="{ name: routeNames.accountPassword }"
 			>
-				{{ t('breadcrumbs.security') }}
+				{{ t('accountsModule.breadcrumbs.security') }}
 			</el-breadcrumb-item>
 		</el-breadcrumb>
 	</fb-breadcrumbs>
 
 	<div class="lt-sm:p-5 sm:p-2">
 		<el-page-header
-			v-if="!isXsBreakpoint"
+			v-if="isMDDevice"
 			@back="onBack"
 		>
 			<template #content>
@@ -34,8 +38,8 @@
 						class="mr-3"
 					/>
 
-					<span class="text-large font-600 mr-3"> {{ t('headings.yourProfile') }} </span>
-					<span class="text-sm mr-2"> {{ sessionStore.account()?.email?.address || '' }} </span>
+					<span class="text-large font-600 mr-3">{{ t('accountsModule.headings.yourProfile') }}</span>
+					<span class="text-sm mr-2">{{ sessionStore.account()?.email?.address || '' }}</span>
 				</div>
 			</template>
 
@@ -47,14 +51,14 @@
 						type="primary"
 						@click="onSave"
 					>
-						{{ t('buttons.save.title') }}
+						{{ t('accountsModule.buttons.save.title') }}
 					</el-button>
 				</div>
 			</template>
 		</el-page-header>
 
 		<fb-app-bar-heading
-			v-if="isXsBreakpoint"
+			v-if="!isMDDevice"
 			teleport
 		>
 			<template #icon>
@@ -65,7 +69,7 @@
 			</template>
 
 			<template #title>
-				{{ t('headings.yourProfile') }}
+				{{ t('accountsModule.headings.yourProfile') }}
 			</template>
 
 			<template #subtitle>
@@ -74,19 +78,19 @@
 		</fb-app-bar-heading>
 
 		<el-tabs
-			v-if="!isXsBreakpoint"
+			v-if="isMDDevice"
 			v-model="activeTab"
 			class="mt-5"
 			@tab-click="onTabClick"
 		>
 			<el-tab-pane
-				:label="t('tabs.profile')"
-				:name="PanelNames.PROFILE"
+				:label="t('accountsModule.tabs.profile')"
+				:name="'profile'"
 			>
 				<template #label>
 					<span class="flex flex-row items-center gap-2">
 						<el-icon><fas-user /></el-icon>
-						<span>{{ t('tabs.profile') }}</span>
+						<span>{{ t('accountsModule.tabs.profile') }}</span>
 					</span>
 				</template>
 
@@ -98,13 +102,13 @@
 			</el-tab-pane>
 
 			<el-tab-pane
-				:label="t('tabs.security')"
-				:name="PanelNames.SECURITY"
+				:label="t('accountsModule.tabs.security')"
+				:name="'security'"
 			>
 				<template #label>
 					<span class="flex flex-row items-center gap-2">
 						<el-icon><fas-lock /></el-icon>
-						<span>{{ t('tabs.security') }}</span>
+						<span>{{ t('accountsModule.tabs.security') }}</span>
 					</span>
 				</template>
 
@@ -117,7 +121,7 @@
 		</el-tabs>
 
 		<RouterView
-			v-if="isXsBreakpoint"
+			v-if="!isMDDevice"
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
 		/>
@@ -125,28 +129,23 @@
 </template>
 
 <script setup lang="ts">
-import get from 'lodash.get';
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue';
-import { RouteRecordName, useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import md5 from 'md5';
-import { ElPageHeader, ElButton, ElBreadcrumbItem, ElAvatar, ElIcon, ElTabs, ElTabPane, TabsPaneContext, ElBreadcrumb } from 'element-plus';
+import { RouteRecordName, useRoute, useRouter } from 'vue-router';
 
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
-import { AccountDocument, EmailDocument } from '@fastybird/metadata-library';
+import { ElAvatar, ElBreadcrumb, ElBreadcrumbItem, ElButton, ElIcon, ElPageHeader, ElTabPane, ElTabs, TabsPaneContext } from 'element-plus';
+import get from 'lodash.get';
+import md5 from 'md5';
+
+import { injectStoresManager, useBreakpoints } from '@fastybird/tools';
+import { FasLock, FasUser } from '@fastybird/web-ui-icons';
 import { FB_BREADCRUMBS_TARGET, FbAppBarHeading, FbBreadcrumbs } from '@fastybird/web-ui-library';
-import { FasUser, FasLock } from '@fastybird/web-ui-icons';
 
 import { useRoutesNames } from '../composables';
-import { useAccounts, useEmails, useSession } from '../models';
-import { FormResultTypes } from '../types';
+import { accountsStoreKey, emailsStoreKey, sessionStoreKey } from '../configuration';
+import { AccountDocument, EmailDocument, FormResultType, FormResultTypes } from '../types';
 
-enum PanelNames {
-	PROFILE = 'profile',
-	SECURITY = 'security',
-}
-
-type PanelName = PanelNames.PROFILE | PanelNames.SECURITY;
+type PageTabName = 'profile' | 'security';
 
 defineOptions({
 	name: 'LayoutAccount',
@@ -157,26 +156,28 @@ const route = useRoute();
 const { t } = useI18n();
 
 const { routeNames } = useRoutesNames();
-const sessionStore = useSession();
-const accountsStore = useAccounts();
-const emailsStore = useEmails();
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
 
-const isXsBreakpoint = breakpoints.smaller('sm');
-const activeTab = ref<PanelName>(route.name === routeNames.accountProfile ? PanelNames.PROFILE : PanelNames.SECURITY);
+const storesManager = injectStoresManager();
+
+const sessionStore = storesManager.getStore(sessionStoreKey);
+const accountsStore = storesManager.getStore(accountsStoreKey);
+const emailsStore = storesManager.getStore(emailsStoreKey);
+
+const { isMDDevice } = useBreakpoints();
+const activeTab = ref<PageTabName>(route.name === routeNames.accountProfile ? 'profile' : 'security');
 
 const mounted = ref<boolean>(false);
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const onBack = (): void => {};
 
 const onTabClick = (pane: TabsPaneContext): void => {
 	switch (pane.paneName) {
-		case PanelNames.PROFILE:
+		case 'profile':
 			router.push({ name: routeNames.accountProfile });
 			break;
-		case PanelNames.SECURITY:
+		case 'security':
 			router.push({ name: routeNames.accountPassword });
 			break;
 	}
@@ -218,10 +219,10 @@ watch(
 	(): RouteRecordName | string | null | undefined => route.name,
 	(val: RouteRecordName | string | null | undefined): void => {
 		if (mounted.value) {
-			if (val === routeNames.accountProfile && activeTab.value !== PanelNames.PROFILE) {
-				activeTab.value = PanelNames.PROFILE;
-			} else if (val === routeNames.accountPassword && activeTab.value !== PanelNames.SECURITY) {
-				activeTab.value = PanelNames.SECURITY;
+			if (val === routeNames.accountProfile && activeTab.value !== 'profile') {
+				activeTab.value = 'profile';
+			} else if (val === routeNames.accountPassword && activeTab.value !== 'security') {
+				activeTab.value = 'security';
 			}
 		}
 	}

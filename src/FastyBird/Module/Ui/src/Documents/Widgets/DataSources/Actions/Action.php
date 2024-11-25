@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Ui\Documents\Widgets\DataSources\Actions;
 
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Documents;
@@ -33,8 +33,8 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\Document]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_ACTION_ROUTING_KEY,
 ])]
 final readonly class Action implements Documents\Document

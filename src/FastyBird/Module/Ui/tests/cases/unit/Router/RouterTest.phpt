@@ -3,7 +3,8 @@
 namespace FastyBird\Module\Ui\Tests\Cases\Unit\Router;
 
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Library\Metadata;
 use FastyBird\Module\Ui\Exceptions;
 use FastyBird\Module\Ui\Tests;

@@ -1,3 +1,5 @@
+import { UseTimeZones } from './types';
+
 const timezones: string[] = [
 	'Europe/Andorra',
 	'Asia/Dubai',
@@ -349,7 +351,7 @@ const timezones: string[] = [
 	'Africa/Johannesburg',
 ];
 
-export function useTimezones(): { timezones: string[] } {
+export function useTimezones(): UseTimeZones {
 	return {
 		timezones,
 	};

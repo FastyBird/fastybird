@@ -1,21 +1,24 @@
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import capitalize from 'lodash.capitalize';
 import get from 'lodash.get';
 
-import { useFlashMessage } from '../composables';
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { channelPropertiesStoreKey, connectorPropertiesStoreKey, devicePropertiesStoreKey } from '../configuration';
-import { storesManager } from '../entry';
 import {
-	IConnectorProperty,
-	IChannelProperty,
-	IDeviceProperty,
+	FormResultType,
 	FormResultTypes,
-	IConnector,
-	IDevice,
 	IChannel,
-	UsePropertyForm,
+	IChannelProperty,
+	IConnector,
+	IConnectorProperty,
+	IDevice,
+	IDeviceProperty,
 	IPropertyForm,
+	UsePropertyForm,
 } from '../types';
 
 export const usePropertyForm = ({
@@ -29,6 +32,8 @@ export const usePropertyForm = ({
 	channel?: IChannel;
 	property: IConnectorProperty | IDeviceProperty | IChannelProperty;
 }): UsePropertyForm => {
+	const storesManager = injectStoresManager();
+
 	const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
 	const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);
 	const channelPropertiesStore = storesManager.getStore(channelPropertiesStoreKey);
@@ -41,7 +46,7 @@ export const usePropertyForm = ({
 	const isDeviceProperty = computed<boolean>((): boolean => device !== undefined && channel === undefined);
 	const isChannelProperty = computed<boolean>((): boolean => device !== undefined && channel !== undefined);
 
-	const formResult = ref<FormResultTypes>(FormResultTypes.NONE);
+	const formResult = ref<FormResultType>(FormResultTypes.NONE);
 
 	let timer: number;
 

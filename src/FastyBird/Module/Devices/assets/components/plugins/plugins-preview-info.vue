@@ -91,9 +91,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElButton, ElIcon } from 'element-plus';
 
-import { FasPlus, FasEthernet, FasPlugCircleBolt, FasStore } from '@fastybird/web-ui-icons';
+import { FasEthernet, FasPlugCircleBolt, FasPlus, FasStore } from '@fastybird/web-ui-icons';
 import { FbMediaItem } from '@fastybird/web-ui-library';
 
 import { IPluginsPreviewInfoProps } from './plugins-preview-info.types';

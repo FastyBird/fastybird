@@ -120,16 +120,18 @@
 </template>
 
 <script setup lang="ts">
-import { DataType, ModuleSource } from '@fastybird/metadata-library';
-
-import { FarCircleCheck, FarCircleXmark } from '@fastybird/web-ui-icons';
-import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
-import { ElButton, ElScrollbar, vLoading } from 'element-plus';
-import get from 'lodash.get';
 import { computed, inject, onBeforeMount, onBeforeUnmount, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
+
+import { ElButton, ElScrollbar, vLoading } from 'element-plus';
+import get from 'lodash.get';
+
+import { DataType, ModuleSource } from '@fastybird/metadata-library';
+import { useBreakpoints } from '@fastybird/tools';
+import { FarCircleCheck, FarCircleXmark } from '@fastybird/web-ui-icons';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
 import {
 	ConnectorDefaultConnectorSettings,
@@ -137,10 +139,10 @@ import {
 	PropertyDefaultPropertySettingsAdd,
 	PropertyDefaultPropertySettingsEdit,
 } from '../components';
-import { useBreakpoints, useConnector, useConnectorRoutes, useDevices, usePropertyActions, useRoutesNames, useUuid } from '../composables';
+import { useConnector, useConnectorRoutes, useDevices, usePropertyActions, useRoutesNames, useUuid } from '../composables';
 import { connectorPlugins, connectorPropertiesStoreKey, connectorsStoreKey } from '../configuration';
 import { ApplicationError } from '../errors';
-import { FormResultTypes, IConnector, IConnectorData, IConnectorPlugin, IConnectorProperty, PropertyType } from '../types';
+import { FormResultType, FormResultTypes, IConnector, IConnectorData, IConnectorPlugin, IConnectorProperty, PropertyType } from '../types';
 
 import { IViewConnectorSettingsProps } from './view-connector-settings.types';
 
@@ -182,7 +184,7 @@ const connectorsPlugin = computed<IConnectorPlugin | null>((): IConnectorPlugin 
 
 const remoteFormSubmit = ref<boolean>(false);
 const remoteFormReset = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const newPropertyId = ref<string | null>(null);
 const newProperty = computed<IConnectorProperty | null>((): IConnectorProperty | null =>

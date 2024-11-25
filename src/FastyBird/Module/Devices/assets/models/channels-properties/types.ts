@@ -1,9 +1,11 @@
-import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { ButtonPayload, ChannelPropertyDocument, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 
 import {
+	ChannelPropertyDocument,
 	IChannel,
 	IChannelResponseData,
 	IChannelResponseModel,
@@ -16,7 +18,8 @@ import {
 	IPropertyMeta,
 	IPropertyRecordFactoryPayload,
 	IPropertyResponseModel,
-} from '../../models/types';
+	PropertyCategory,
+} from '../../types';
 
 export interface IChannelPropertyMeta extends IPropertyMeta {
 	parent: 'channel';
@@ -27,23 +30,22 @@ export interface IChannelPropertyMeta extends IPropertyMeta {
 // =====
 
 export interface IChannelPropertiesState {
-	semaphore: IChannelPropertiesStateSemaphore;
-	firstLoad: IChannel['id'][];
-	data: { [key: IChannelProperty['id']]: IChannelProperty } | undefined;
-	meta: { [key: IChannelProperty['id']]: IChannelPropertyMeta };
-}
-
-export interface IChannelPropertiesGetters extends _GettersTree<IChannelPropertiesState> {
-	firstLoadFinished: (state: IChannelPropertiesState) => (channelId: IChannel['id']) => boolean;
-	getting: (state: IChannelPropertiesState) => (id: IChannelProperty['id']) => boolean;
-	fetching: (state: IChannelPropertiesState) => (channelId: IChannel['id'] | null) => boolean;
-	findById: (state: IChannelPropertiesState) => (id: IChannelProperty['id']) => IChannelProperty | null;
-	findByIdentifier: (state: IChannelPropertiesState) => (channel: IChannel, identifier: IChannelProperty['identifier']) => IChannelProperty | null;
-	findForChannel: (state: IChannelPropertiesState) => (channelId: IChannel['id']) => IChannelProperty[];
-	findMeta: (state: IChannelPropertiesState) => (id: IChannelProperty['id']) => IChannelPropertyMeta | null;
+	semaphore: Ref<IChannelPropertiesStateSemaphore>;
+	firstLoad: Ref<IChannel['id'][]>;
+	data: Ref<{ [key: IChannelProperty['id']]: IChannelProperty } | undefined>;
+	meta: Ref<{ [key: IChannelProperty['id']]: IChannelPropertyMeta }>;
 }
 
 export interface IChannelPropertiesActions {
+	// Getters
+	firstLoadFinished: (channelId: IChannel['id']) => boolean;
+	getting: (id: IChannelProperty['id']) => boolean;
+	fetching: (channelId: IChannel['id'] | null) => boolean;
+	findById: (id: IChannelProperty['id']) => IChannelProperty | null;
+	findByIdentifier: (channel: IChannel, identifier: IChannelProperty['identifier']) => IChannelProperty | null;
+	findForChannel: (channelId: IChannel['id']) => IChannelProperty[];
+	findMeta: (id: IChannelProperty['id']) => IChannelPropertyMeta | null;
+	// Actions
 	set: (payload: IChannelPropertiesSetActionPayload) => Promise<IChannelProperty>;
 	unset: (payload: IChannelPropertiesUnsetActionPayload) => Promise<void>;
 	get: (payload: IChannelPropertiesGetActionPayload) => Promise<boolean>;
@@ -59,6 +61,8 @@ export interface IChannelPropertiesActions {
 	loadAllRecords: (payload?: IChannelPropertiesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type ChannelPropertiesStoreSetup = IChannelPropertiesState & IChannelPropertiesActions;
+
 // STORE STATE
 // ===========
 
@@ -69,7 +73,7 @@ export interface IChannelPropertiesStateSemaphore {
 	deleting: string[];
 }
 
-interface IChannelPropertiesStateSemaphoreFetching {
+export interface IChannelPropertiesStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

@@ -205,9 +205,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useI18n, I18nT } from 'vue-i18n';
-import { ElRow, ElCol, ElAvatar, ElButton, ElIcon, ElLink, ElPopover, ElText, useNamespace } from 'element-plus';
+import { I18nT, useI18n } from 'vue-i18n';
 
+import { ElAvatar, ElButton, ElCol, ElIcon, ElLink, ElPopover, ElRow, ElText, useNamespace } from 'element-plus';
+
+import { useBreakpoints } from '@fastybird/tools';
 import {
 	FasArrowUpRightFromSquare,
 	FasBookOpen,
@@ -219,8 +221,7 @@ import {
 	FasPlug,
 } from '@fastybird/web-ui-icons';
 
-import { PluginsPluginDefaultIcon } from '../../components';
-import { useBreakpoints } from '../../composables';
+import PluginsPluginDefaultIcon from '../plugins/plugins-plugin-default-icon.vue';
 
 import { IPluginsPluginStatsProps } from './plugins-plugin-stats.types';
 
@@ -256,5 +257,5 @@ const devicesCount = computed<number>((): number => {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'plugins-plugin-stats';
+@use 'plugins-plugin-stats';
 </style>

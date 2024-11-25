@@ -1,8 +1,6 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { TabDocument } from '@fastybird/metadata-library';
-
 import {
 	IDashboardResponseData,
 	IDashboardResponseModel,
@@ -11,6 +9,7 @@ import {
 	IEntityMeta,
 	IPlainRelation,
 } from '../../models/types';
+import { TabDocument } from '../../types';
 
 export interface ITabMeta extends IEntityMeta {
 	entity: 'tab';

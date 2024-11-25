@@ -1,9 +1,8 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-import { useRoutesNames } from '../composables';
-
 import { UseChannelRoutes } from './types';
+import { useRoutesNames } from './useRoutesNames';
 
 export const useChannelRoutes = (): UseChannelRoutes => {
 	const route = useRoute();

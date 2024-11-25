@@ -1,4 +1,4 @@
-import { IDebugLog, IBridge, IConnectorData, IService } from '../../types';
+import { IBridge, IConnectorData, IDebugLog, IService } from '../../types';
 
 export interface IConnectorsConnectorBoxProps {
 	connectorData: IConnectorData;

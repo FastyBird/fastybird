@@ -24,12 +24,12 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -79,15 +79,16 @@ final class WriteSubDeviceState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -397,7 +398,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 		));
 
 		$protocolAttribute->setExpectedValue(
-			MetadataUtilities\Value::flattenValue($state->getExpectedValue()),
+			ToolsUtilities\Value::flattenValue($state->getExpectedValue()),
 		);
 
 		$mapped = $protocolCapability->toState();
@@ -495,7 +496,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 									[
 										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'write-sub-device-state-message-consumer',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'exception' => ToolsHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $message->getConnector()->toString(),
 										],
@@ -522,7 +523,7 @@ final class WriteSubDeviceState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-sub-device-state-message-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
 					],

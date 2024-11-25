@@ -15,7 +15,6 @@ use Symplify\MonorepoBuilder\Release\ReleaseWorker\UpdateReplaceReleaseWorker;
 return static function (MBConfig $mbConfig): void {
 	$mbConfig->packageDirectories([
 		__DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'FastyBird',
-		__DIR__ . DIRECTORY_SEPARATOR . 'app',
 	]);
 	$mbConfig->defaultBranch('main');
 

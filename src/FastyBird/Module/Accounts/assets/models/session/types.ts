@@ -1,5 +1,6 @@
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
+
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import { IAccount, IEntityMeta, IIdentity, IPlainRelation } from '../types';
 
@@ -11,19 +12,18 @@ export interface ISessionMeta extends IEntityMeta {
 // =====
 
 export interface ISessionState {
-	semaphore: ISessionStateSemaphore;
-	data: ISession;
-}
-
-export interface ISessionGetters extends _GettersTree<ISessionState> {
-	accessToken: (state: ISessionState) => () => string | null;
-	refreshToken: (state: ISessionState) => () => string | null;
-	accountId: (state: ISessionState) => () => IAccount['id'] | null;
-	account: (state: ISessionState) => () => IAccount | null;
-	isSignedIn: (state: ISessionState) => () => boolean;
+	semaphore: Ref<ISessionStateSemaphore>;
+	data: Ref<ISession>;
 }
 
 export interface ISessionActions {
+	// Getters
+	accessToken: () => string | null;
+	refreshToken: () => string | null;
+	accountId: () => string | null;
+	account: () => IAccount | null;
+	isSignedIn: () => boolean;
+	// Actions
 	initialize: () => void;
 	clear: () => void;
 	fetch: () => Promise<boolean>;
@@ -31,10 +31,12 @@ export interface ISessionActions {
 	refresh: () => Promise<boolean>;
 }
 
+export type SessionStoreSetup = ISessionState & ISessionActions;
+
 // STORE STATE
 // ===========
 
-interface ISessionStateSemaphore {
+export interface ISessionStateSemaphore {
 	fetching: boolean;
 	creating: boolean;
 	updating: boolean;

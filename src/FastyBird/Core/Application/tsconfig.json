@@ -1,0 +1,51 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "baseUrl": "assets",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": [
+      "@fastybird/tools",
+      "@fastybird/metadata-library",
+      "@fastybird/web-ui-library",
+      "@intlify/unplugin-vue-i18n/messages",
+      "@types/lodash",
+      "@types/md5",
+      "node",
+      "vite/client",
+      "vite-plugin-vue-type-imports",
+      "vite-svg-loader",
+      "vue-meta",
+      "unocss"
+    ],
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "assets/**/*.ts",
+    "assets/**/*.d.ts",
+    "assets/**/*.vue",
+    "assets/**/*.json",
+    "package.json"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

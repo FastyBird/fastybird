@@ -16,9 +16,9 @@
 namespace FastyBird\Automator\DevicesModule\Entities\Actions;
 
 use Doctrine\ORM\Mapping as ORM;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Entities as TriggersEntities;
 use IPub\DoctrineCrud\Mapping\Attribute as IPubDoctrine;
 use Ramsey\Uuid;
@@ -85,7 +85,7 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -93,7 +93,7 @@ abstract class PropertyAction extends TriggersEntities\Actions\Action
 	{
 		return array_merge(parent::toArray(), [
 			'device' => $this->getDevice()->toString(),
-			'value' => MetadataUtilities\Value::toString($this->getValue()),
+			'value' => ToolsUtilities\Value::toString($this->getValue()),
 		]);
 	}
 

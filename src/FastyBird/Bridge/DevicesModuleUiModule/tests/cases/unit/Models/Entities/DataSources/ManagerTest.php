@@ -8,7 +8,7 @@ use FastyBird\Bridge\DevicesModuleUiModule\Entities;
 use FastyBird\Bridge\DevicesModuleUiModule\Exceptions;
 use FastyBird\Bridge\DevicesModuleUiModule\Queries;
 use FastyBird\Bridge\DevicesModuleUiModule\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;

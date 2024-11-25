@@ -24,12 +24,12 @@ use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -79,16 +79,17 @@ readonly class Loader
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -236,13 +237,13 @@ readonly class Loader
 
 					if ($property !== null) {
 						$protocolAttribute->setActualValue(
-							MetadataUtilities\Value::flattenValue($property->getDefault()),
+							ToolsUtilities\Value::flattenValue($property->getDefault()),
 						);
 					}
 
 					if ($property instanceof DevicesDocuments\Channels\Properties\Variable) {
 						$protocolAttribute->setActualValue(
-							MetadataUtilities\Value::flattenValue($property->getValue()),
+							ToolsUtilities\Value::flattenValue($property->getValue()),
 						);
 						$protocolAttribute->setValid(true);
 					} elseif ($property instanceof DevicesDocuments\Channels\Properties\Dynamic) {
@@ -264,7 +265,7 @@ readonly class Loader
 												[
 													'capability' => $protocolCapability->getType()->value,
 													'attribute' => $protocolAttribute->getType()->value,
-													'value' => MetadataUtilities\Value::flattenValue(
+													'value' => ToolsUtilities\Value::flattenValue(
 														$state->getGet()->getExpectedValue() ?? $state->getGet()->getActualValue(),
 													),
 													'identifier' => $protocolCapability->getName(),
@@ -275,10 +276,10 @@ readonly class Loader
 								);
 
 								$protocolAttribute->setActualValue(
-									MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue()),
+									ToolsUtilities\Value::flattenValue($state->getGet()->getActualValue()),
 								);
 								$protocolAttribute->setExpectedValue(
-									MetadataUtilities\Value::flattenValue($state->getGet()->getExpectedValue()),
+									ToolsUtilities\Value::flattenValue($state->getGet()->getExpectedValue()),
 								);
 								$protocolAttribute->setValid($state->isValid());
 							} else {
@@ -293,7 +294,7 @@ readonly class Loader
 												[
 													'capability' => $protocolCapability->getType()->value,
 													'attribute' => $protocolAttribute->getType()->value,
-													'value' => MetadataUtilities\Value::flattenValue(
+													'value' => ToolsUtilities\Value::flattenValue(
 														$property->getDefault(),
 													),
 													'identifier' => $protocolCapability->getName(),
@@ -304,7 +305,7 @@ readonly class Loader
 								);
 
 								$protocolAttribute->setActualValue(
-									MetadataUtilities\Value::flattenValue($property->getDefault()),
+									ToolsUtilities\Value::flattenValue($property->getDefault()),
 								);
 								$protocolAttribute->setValid(true);
 							}
@@ -314,7 +315,7 @@ readonly class Loader
 								[
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'protocol-loader',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $connector->getId()->toString(),
 									],
@@ -347,10 +348,10 @@ readonly class Loader
 
 								if ($state instanceof DevicesDocuments\States\Channels\Properties\Property) {
 									$protocolAttribute->setActualValue(
-										MetadataUtilities\Value::flattenValue($state->getGet()->getActualValue()),
+										ToolsUtilities\Value::flattenValue($state->getGet()->getActualValue()),
 									);
 									$protocolAttribute->setExpectedValue(
-										MetadataUtilities\Value::flattenValue($state->getGet()->getExpectedValue()),
+										ToolsUtilities\Value::flattenValue($state->getGet()->getExpectedValue()),
 									);
 									$protocolAttribute->setValid($state->isValid());
 								}
@@ -360,7 +361,7 @@ readonly class Loader
 									[
 										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'protocol-loader',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'exception' => ToolsHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $connector->getId()->toString(),
 										],
@@ -380,7 +381,7 @@ readonly class Loader
 							}
 						} elseif ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 							$protocolAttribute->setActualValue(
-								MetadataUtilities\Value::flattenValue($parent->getValue()),
+								ToolsUtilities\Value::flattenValue($parent->getValue()),
 							);
 							$protocolAttribute->setValid(true);
 						}
@@ -418,8 +419,8 @@ readonly class Loader
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -445,7 +446,7 @@ readonly class Loader
 				);
 
 				$category = Types\Category::from(
-					MetadataUtilities\Value::toString($categoryProperty?->getValue()) ?? Types\Category::UNKNOWN->value,
+					ToolsUtilities\Value::toString($categoryProperty?->getValue()) ?? Types\Category::UNKNOWN->value,
 				);
 
 				$categoryMetadata = $metadata->findByCategory($category);
@@ -515,8 +516,8 @@ readonly class Loader
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -559,12 +560,12 @@ readonly class Loader
 					$attributeMetadata->getAttribute(),
 					$property->getDataType(),
 					$protocolCapability,
-					$format instanceof MetadataFormats\StringEnum ? $format->toArray() : null,
+					$format instanceof ToolsFormats\StringEnum ? $format->toArray() : null,
 					null,
-					$format instanceof MetadataFormats\NumberRange ? $format->getMin() : null,
-					$format instanceof MetadataFormats\NumberRange ? $format->getMax() : null,
+					$format instanceof ToolsFormats\NumberRange ? $format->getMin() : null,
+					$format instanceof ToolsFormats\NumberRange ? $format->getMax() : null,
 					$property->getStep(),
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
 					$property->getUnit(),
 				);
 			}
@@ -577,8 +578,8 @@ readonly class Loader
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -619,11 +620,11 @@ readonly class Loader
 					$configurationMetadata->getConfiguration(),
 					$property->getDataType(),
 					$protocolCapability,
-					MetadataUtilities\Value::flattenValue($property->getDefault()),
-					$format instanceof MetadataFormats\StringEnum ? $format->toArray() : null,
+					ToolsUtilities\Value::flattenValue($property->getDefault()),
+					$format instanceof ToolsFormats\StringEnum ? $format->toArray() : null,
 					null,
-					$format instanceof MetadataFormats\NumberRange ? $format->getMin() : null,
-					$format instanceof MetadataFormats\NumberRange ? $format->getMax() : null,
+					$format instanceof ToolsFormats\NumberRange ? $format->getMin() : null,
+					$format instanceof ToolsFormats\NumberRange ? $format->getMax() : null,
 					$property->getStep(),
 					$property->getUnit(),
 				);

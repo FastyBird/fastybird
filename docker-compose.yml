@@ -109,7 +109,7 @@ services:
     networks:
       - fastybird
 
-  # WS SERVER
+  # DEVICES MODULE EXCHANGE
   devices-module:
     container_name: fastybird-devices-module
     build:

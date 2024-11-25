@@ -1,10 +1,9 @@
-import { IIdentity } from '../../models/identities/types';
-import { FormResultTypes, LayoutType } from '../../types';
+import { FormResultType, IIdentity, LayoutType } from '../../types';
 
 export interface ISettingsPasswordProps {
 	identity: IIdentity;
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 	layout?: LayoutType;
 }

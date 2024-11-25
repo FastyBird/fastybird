@@ -16,9 +16,9 @@
 namespace FastyBird\Plugin\RabbitMq\Handlers;
 
 use Bunny;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RabbitMq\Events;
 use FastyBird\Plugin\RabbitMq\Exceptions;
@@ -55,7 +55,7 @@ final class Message
 	public function __construct(
 		private readonly Utilities\IdentifierGenerator $identifier,
 		private readonly ExchangeDocuments\DocumentFactory $documentFactory,
-		private readonly ExchangeConsumer\Container $consumer,
+		private readonly ExchangeConsumers\Container $consumer,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private readonly Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -94,7 +94,7 @@ final class Message
 			$this->logger->warning('Received message is not valid json', [
 				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
+				'exception' => ToolsHelpers\Logger::buildException($ex),
 			]);
 		}
 
@@ -135,7 +135,7 @@ final class Message
 			$this->logger->error('Message could not be transformed into entity', [
 				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
+				'exception' => ToolsHelpers\Logger::buildException($ex),
 				'data' => $data,
 			]);
 
@@ -162,7 +162,7 @@ final class Message
 			$this->logger->error('Message could not be handled', [
 				'source' => MetadataTypes\Sources\Plugin::RABBITMQ->value,
 				'type' => 'messages-handler',
-				'exception' => ApplicationHelpers\Logger::buildException($ex),
+				'exception' => ToolsHelpers\Logger::buildException($ex),
 			]);
 
 			return self::MESSAGE_REJECT;

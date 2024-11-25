@@ -31,16 +31,7 @@
     "source": "https://github.com/FastyBird/metadata-library"
   },
   "require": {
-    "php": ">=8.2.0",
-    "fastybird/application-library": "dev-main",
-    "ipub/phone": "^2.3",
-    "nette/bootstrap": "^3.1",
-    "nette/di": "^3.0",
-    "nette/utils": "^4.0",
-    "opis/json-schema": "^2.3",
-    "phpdocumentor/reflection": "^5.3",
-    "phpdocumentor/reflection-common": "^2.2",
-    "ramsey/uuid": "^4.5"
+    "php": ">=8.2.0"
   },
   "require-dev": {
     "brianium/paratest": "^7.3",
@@ -67,9 +58,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit",
-      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\": "tests/fixtures",
-      "FastyBird\\Library\\Metadata\\Tests\\Fixtures\\Dummy\\": "tests/fixtures/dummy"
+      "FastyBird\\Library\\Metadata\\Tests\\Cases\\Unit\\": "tests/cases/unit"
     }
   },
   "config": {

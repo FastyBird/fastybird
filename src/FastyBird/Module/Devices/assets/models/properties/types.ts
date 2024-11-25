@@ -1,8 +1,8 @@
 import { TJsonaModel } from 'jsona/lib/JsonaTypes';
 
-import { ButtonPayload, CoverPayload, DataType, PropertyCategory, SwitchPayload } from '@fastybird/metadata-library';
+import { ButtonPayload, CoverPayload, DataType, SwitchPayload } from '@fastybird/metadata-library';
 
-import { IEntityMeta } from '../types';
+import { IEntityMeta, PropertyCategory } from '../../types';
 
 export interface IPropertyMeta extends IEntityMeta {
 	parent: 'connector' | 'device' | 'channel';

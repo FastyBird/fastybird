@@ -1,0 +1,24 @@
+#
+# App basic DI parameters
+#
+# @license        More in LICENSE.md
+# @copyright      https://www.fastybird.com
+# @author         Adam Kadlec <adam.kadlec@fastybird.com>
+# @package        FastyBird:Application!
+# @subpackage     config
+# @since          1.0.0
+#
+# @date           08.03.20
+
+parameters:
+    logger:
+        rotatingFile:
+            enabled: true
+            level: 200
+            filename: app.log
+        stdOut:
+            enabled: false
+            level: 200
+        console:
+            enabled: false
+            level: 200

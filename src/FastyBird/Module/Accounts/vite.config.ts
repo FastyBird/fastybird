@@ -1,13 +1,13 @@
 import { resolve } from 'path';
+import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import eslint from '@nabla/vite-plugin-eslint';
 import dts from 'vite-plugin-dts';
-import vueI18n from '@intlify/unplugin-vue-i18n/vite';
 import vueTypeImports from 'vite-plugin-vue-type-imports';
 import svgLoader from 'vite-svg-loader';
-import del from 'rollup-plugin-delete';
-import UnoCSS from 'unocss/vite';
+
+import vueI18n from '@intlify/unplugin-vue-i18n/vite';
+import eslint from '@nabla/vite-plugin-eslint';
+import vue from '@vitejs/plugin-vue';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -34,24 +34,19 @@ export default defineConfig({
 			fileName: (format) => `accounts-module.${format}.js`,
 		},
 		rollupOptions: {
-			plugins: [
-				// @ts-ignore
-				del({
-					targets: [
-						'dist/components',
-						'dist/composables',
-						'dist/errors',
-						'dist/jsonapi',
-						'dist/layouts',
-						'dist/models',
-						'dist/router',
-						'dist/types',
-						'dist/views',
-						'dist/entry.ts',
-						'dist/configuration.ts',
-					],
-					hook: 'generateBundle',
-				}),
+			external: [
+				'@fastybird/tools',
+				'@fastybird/metadata-library',
+				'@fastybird/web-ui-icons',
+				'@fastybird/web-ui-library',
+				'axios',
+				'element-plus',
+				'pinia',
+				'unocss',
+				'vue',
+				'vue-i18n',
+				'vue-meta',
+				'vue-router',
 			],
 			output: {
 				assetFileNames: (chunkInfo) => {
@@ -59,6 +54,7 @@ export default defineConfig({
 
 					return chunkInfo.name as string;
 				},
+				exports: 'named',
 			},
 		},
 		sourcemap: true,

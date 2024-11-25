@@ -1,4 +1,4 @@
-import { FormResultTypes } from '../../types';
+import { FormResultType } from '../../types';
 
 export interface ISignUpForm {
 	emailAddress: string;
@@ -9,6 +9,6 @@ export interface ISignUpForm {
 
 export interface ISignUpProps {
 	remoteFormSubmit?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 	remoteFormReset?: boolean;
 }

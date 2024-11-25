@@ -21,8 +21,8 @@ use FastyBird\Connector\Shelly;
 use FastyBird\Connector\Shelly\Exceptions;
 use FastyBird\Connector\Shelly\Helpers;
 use FastyBird\Connector\Shelly\Services;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Nette;
 use Nette\Utils;
@@ -80,7 +80,7 @@ final class Gen1Coap
 		private readonly Services\MulticastFactory $multicastFactory,
 		private readonly Helpers\MessageBuilder $messageBuilder,
 		private readonly Shelly\Logger $logger,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 	)
 	{
 	}
@@ -318,7 +318,7 @@ final class Gen1Coap
 				$payload,
 				$this->getSchema($schemaFilename),
 			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData $ex) {
 			if ($throw) {
 				throw new Exceptions\CoapError(
 					'Could not validate received response payload',

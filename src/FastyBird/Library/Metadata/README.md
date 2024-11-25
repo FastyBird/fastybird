@@ -23,9 +23,7 @@
 
 ## What is FastyBird metadata library?
 
-This is library for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is
-implementing [json schemas](https://json-schema.org) data validation helpers and is central place for application
-constants.
+This is library for [FastyBird](https://www.fastybird.com) [IoT](https://en.wikipedia.org/wiki/Internet_of_things) ecosystem which is a place for application constants and shared values.
 
 ## Installation
 

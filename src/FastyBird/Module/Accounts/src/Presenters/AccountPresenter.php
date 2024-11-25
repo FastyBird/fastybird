@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Accounts\Presenters;
 
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Accounts\Entities;
 use FastyBird\Module\Accounts\Exceptions;
 use FastyBird\Module\Accounts\Models;
@@ -50,9 +50,9 @@ class AccountPresenter extends BasePresenter
 
 	/**
 	 * @throws Application\BadRequestException
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function actionDefault(): void
 	{
@@ -62,9 +62,9 @@ class AccountPresenter extends BasePresenter
 
 	/**
 	 * @throws Application\BadRequestException
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function actionProfile(): void
 	{
@@ -74,9 +74,9 @@ class AccountPresenter extends BasePresenter
 
 	/**
 	 * @throws Application\BadRequestException
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	public function actionPassword(): void
 	{
@@ -86,8 +86,8 @@ class AccountPresenter extends BasePresenter
 
 	/**
 	 * @throws Application\BadRequestException
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function loadAccount(): void
 	{
@@ -108,9 +108,9 @@ class AccountPresenter extends BasePresenter
 
 	/**
 	 * @throws Application\BadRequestException
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidState
 	 * @throws Utils\JsonException
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function loadEmails(): void
 	{

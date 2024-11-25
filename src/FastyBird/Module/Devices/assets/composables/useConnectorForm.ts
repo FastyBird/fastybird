@@ -1,14 +1,18 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import capitalize from 'lodash.capitalize';
 import get from 'lodash.get';
 
-import { useFlashMessage } from '../composables';
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { connectorPropertiesStoreKey, connectorsStoreKey } from '../configuration';
-import { storesManager } from '../entry';
-import { FormResultTypes, IConnector, IConnectorForm, UseConnectorForm } from '../types';
+import { FormResultType, FormResultTypes, IConnector, IConnectorForm, UseConnectorForm } from '../types';
 
 export const useConnectorForm = (connector: IConnector): UseConnectorForm => {
+	const storesManager = injectStoresManager();
+
 	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 	const propertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
 
@@ -16,7 +20,7 @@ export const useConnectorForm = (connector: IConnector): UseConnectorForm => {
 
 	const flashMessage = useFlashMessage();
 
-	const formResult = ref<FormResultTypes>(FormResultTypes.NONE);
+	const formResult = ref<FormResultType>(FormResultTypes.NONE);
 
 	let timer: number;
 

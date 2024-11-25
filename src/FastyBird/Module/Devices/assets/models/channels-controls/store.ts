@@ -1,23 +1,33 @@
-import { defineStore, Pinia, Store } from 'pinia';
-import axios, { AxiosError } from 'axios';
+import { ref } from 'vue';
+
+import { Pinia, Store, defineStore } from 'pinia';
+
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
+import axios, { AxiosError } from 'axios';
 import { Jsona } from 'jsona';
-import { v4 as uuid } from 'uuid';
-import get from 'lodash.get';
+import lodashGet from 'lodash.get';
 import isEqual from 'lodash.isequal';
+import { v4 as uuid } from 'uuid';
 
-import { ActionRoutes, ExchangeCommand, ChannelControlDocument, DevicesModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
+import { IStoresManager, injectStoresManager } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.channel.control.json';
-
 import { channelsStoreKey } from '../../configuration';
-import { storesManager } from '../../entry';
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
-import { IChannel } from '../channels/types';
-import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_CHANNELS_CONTROLS } from '../../utilities';
+import {
+	ActionRoutes,
+	ChannelControlDocument,
+	ChannelControlsStoreSetup,
+	ExchangeCommand,
+	IChannel,
+	IChannelControlsStateSemaphore,
+	RoutingKeys,
+} from '../../types';
+import { DB_TABLE_CHANNELS_CONTROLS, addRecord, getAllRecords, getRecord, removeRecord } from '../../utilities';
 
 import {
 	IChannelControl,
@@ -30,7 +40,6 @@ import {
 	IChannelControlsAddActionPayload,
 	IChannelControlsFetchActionPayload,
 	IChannelControlsGetActionPayload,
-	IChannelControlsGetters,
 	IChannelControlsInsertDataActionPayload,
 	IChannelControlsLoadAllRecordsActionPayload,
 	IChannelControlsLoadRecordActionPayload,
@@ -52,10 +61,10 @@ const jsonApiFormatter = new Jsona({
 	jsonPropertiesMapper: new JsonApiJsonPropertiesMapper(),
 });
 
-const storeRecordFactory = async (data: IChannelControlRecordFactoryPayload): Promise<IChannelControl> => {
+const storeRecordFactory = async (storesManager: IStoresManager, data: IChannelControlRecordFactoryPayload): Promise<IChannelControl> => {
 	const channelsStore = storesManager.getStore(channelsStoreKey);
 
-	let channel = 'channel' in data ? get(data, 'channel', null) : null;
+	let channel = 'channel' in data ? lodashGet(data, 'channel', null) : null;
 
 	let channelMeta = data.channelId ? channelsStore.findMeta(data.channelId) : null;
 
@@ -88,10 +97,10 @@ const storeRecordFactory = async (data: IChannelControlRecordFactoryPayload): Pr
 	}
 
 	return {
-		id: get(data, 'id', uuid().toString()),
+		id: lodashGet(data, 'id', uuid().toString()),
 		type: data.type,
 
-		draft: get(data, 'draft', false),
+		draft: lodashGet(data, 'draft', false),
 
 		name: data.name,
 
@@ -130,684 +139,624 @@ const databaseRecordFactory = (record: IChannelControl): IChannelControlDatabase
 	};
 };
 
-export const useChannelControls = defineStore<string, IChannelControlsState, IChannelControlsGetters, IChannelControlsActions>(
+export const useChannelControls = defineStore<'devices_module_channels_controls', ChannelControlsStoreSetup>(
 	'devices_module_channels_controls',
-	{
-		state: (): IChannelControlsState => {
-			return {
-				semaphore: {
-					fetching: {
-						items: [],
-						item: [],
-					},
-					creating: [],
-					updating: [],
-					deleting: [],
-				},
+	(): ChannelControlsStoreSetup => {
+		const storesManager = injectStoresManager();
 
-				firstLoad: [],
-
-				data: undefined,
-				meta: {},
-			};
-		},
-
-		getters: {
-			firstLoadFinished: (state: IChannelControlsState): ((channelId: IChannel['id']) => boolean) => {
-				return (channelId: IChannel['id']): boolean => state.firstLoad.includes(channelId);
+		const semaphore = ref<IChannelControlsStateSemaphore>({
+			fetching: {
+				items: [],
+				item: [],
 			},
+			creating: [],
+			updating: [],
+			deleting: [],
+		});
 
-			getting: (state: IChannelControlsState): ((id: IChannelControl['id']) => boolean) => {
-				return (id: IChannelControl['id']): boolean => state.semaphore.fetching.item.includes(id);
-			},
+		const firstLoad = ref<IChannel['id'][]>([]);
 
-			fetching: (state: IChannelControlsState): ((channelId: IChannel['id'] | null) => boolean) => {
-				return (channelId: IChannel['id'] | null): boolean =>
-					channelId !== null ? state.semaphore.fetching.items.includes(channelId) : state.semaphore.fetching.items.length > 0;
-			},
+		const data = ref<{ [key: IChannelControl['id']]: IChannelControl } | undefined>(undefined);
 
-			findById: (state: IChannelControlsState): ((id: IChannelControl['id']) => IChannelControl | null) => {
-				return (id: IChannelControl['id']): IChannelControl | null => {
-					const control: IChannelControl | undefined = Object.values(state.data ?? {}).find((control: IChannelControl): boolean => control.id === id);
+		const meta = ref<{ [key: IChannelControl['id']]: IChannelControlMeta }>({});
 
-					return control ?? null;
-				};
-			},
+		const firstLoadFinished = (channelId: IChannel['id']): boolean => firstLoad.value.includes(channelId);
 
-			findByName: (state: IChannelControlsState): ((channel: IChannel, name: IChannelControl['name']) => IChannelControl | null) => {
-				return (channel: IChannel, name: IChannelControl['name']): IChannelControl | null => {
-					const control: IChannelControl | undefined = Object.values(state.data ?? {}).find((control: IChannelControl): boolean => {
-						return control.channel.id === channel.id && control.name.toLowerCase() === name.toLowerCase();
-					});
+		const getting = (id: IChannelControl['id']): boolean => semaphore.value.fetching.item.includes(id);
 
-					return control ?? null;
-				};
-			},
+		const fetching = (channelId: IChannel['id'] | null): boolean =>
+			channelId !== null ? semaphore.value.fetching.items.includes(channelId) : semaphore.value.fetching.items.length > 0;
 
-			findForChannel: (state: IChannelControlsState): ((channelId: IChannel['id']) => IChannelControl[]) => {
-				return (channelId: IChannel['id']): IChannelControl[] => {
-					return Object.values(state.data ?? {}).filter((control: IChannelControl): boolean => control.channel.id === channelId);
-				};
-			},
+		const findById = (id: IChannelControl['id']): IChannelControl | null => {
+			const control: IChannelControl | undefined = Object.values(data.value ?? {}).find((control: IChannelControl): boolean => control.id === id);
 
-			findMeta: (state: IChannelControlsState): ((id: IChannelControl['id']) => IChannelControlMeta | null) => {
-				return (id: IChannelControl['id']): IChannelControlMeta | null => {
-					return id in state.meta ? state.meta[id] : null;
-				};
-			},
-		},
+			return control ?? null;
+		};
 
-		actions: {
-			/**
-			 * Set record from via other store
-			 *
-			 * @param {IChannelControlsSetActionPayload} payload
-			 */
-			async set(payload: IChannelControlsSetActionPayload): Promise<IChannelControl> {
-				if (this.data && payload.data.id && payload.data.id in this.data) {
-					const record = await storeRecordFactory({ ...this.data[payload.data.id], ...payload.data });
+		const findByName = (channel: IChannel, name: IChannelControl['name']): IChannelControl | null => {
+			const control: IChannelControl | undefined = Object.values(data.value ?? {}).find((control: IChannelControl): boolean => {
+				return control.channel.id === channel.id && control.name.toLowerCase() === name.toLowerCase();
+			});
 
-					return (this.data[record.id] = record);
-				}
+			return control ?? null;
+		};
 
-				const record = await storeRecordFactory(payload.data);
+		const findForChannel = (channelId: IChannel['id']): IChannelControl[] =>
+			Object.values(data.value ?? {}).filter((control: IChannelControl): boolean => control.channel.id === channelId);
 
-				await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
+		const findMeta = (id: IChannelControl['id']): IChannelControlMeta | null => (id in meta.value ? meta.value[id] : null);
 
-				this.meta[record.id] = record.type;
+		const set = async (payload: IChannelControlsSetActionPayload): Promise<IChannelControl> => {
+			if (data.value && payload.data.id && payload.data.id in data.value) {
+				const record = await storeRecordFactory(storesManager, { ...data.value[payload.data.id], ...payload.data });
 
-				this.data = this.data ?? {};
-				return (this.data[record.id] = record);
-			},
+				return (data.value[record.id] = record);
+			}
 
-			/**
-			 * Remove records for given relation or record by given identifier
-			 *
-			 * @param {IChannelControlsUnsetActionPayload} payload
-			 */
-			async unset(payload: IChannelControlsUnsetActionPayload): Promise<void> {
-				if (!this.data) {
-					return;
-				}
+			const record = await storeRecordFactory(storesManager, payload.data);
 
-				if (payload.channel !== undefined) {
-					const items = this.findForChannel(payload.channel.id);
+			await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
 
-					for (const item of items) {
-						if (item.id in (this.data ?? {})) {
-							await removeRecord(item.id, DB_TABLE_CHANNELS_CONTROLS);
+			meta.value[record.id] = record.type;
 
-							delete this.meta[item.id];
+			data.value = data.value ?? {};
+			return (data.value[record.id] = record);
+		};
 
-							delete (this.data ?? {})[item.id];
-						}
+		const unset = async (payload: IChannelControlsUnsetActionPayload): Promise<void> => {
+			if (!data.value) {
+				return;
+			}
+
+			if (payload.channel !== undefined) {
+				const items = findForChannel(payload.channel.id);
+
+				for (const item of items) {
+					if (item.id in (data.value ?? {})) {
+						await removeRecord(item.id, DB_TABLE_CHANNELS_CONTROLS);
+
+						delete meta.value[item.id];
+
+						delete (data.value ?? {})[item.id];
 					}
-
-					return;
-				} else if (payload.id !== undefined) {
-					await removeRecord(payload.id, DB_TABLE_CHANNELS_CONTROLS);
-
-					delete this.meta[payload.id];
-
-					delete this.data[payload.id];
-
-					return;
 				}
 
-				throw new Error('You have to provide at least channel or control id');
-			},
+				return;
+			} else if (payload.id !== undefined) {
+				await removeRecord(payload.id, DB_TABLE_CHANNELS_CONTROLS);
 
-			/**
-			 * Get one record from server
-			 *
-			 * @param {IChannelControlsGetActionPayload} payload
-			 */
-			async get(payload: IChannelControlsGetActionPayload): Promise<boolean> {
-				if (this.semaphore.fetching.item.includes(payload.id)) {
-					return false;
-				}
+				delete meta.value[payload.id];
 
-				const fromDatabase = await this.loadRecord({ id: payload.id });
+				delete data.value[payload.id];
 
-				if (fromDatabase && payload.refresh === false) {
-					return true;
-				}
+				return;
+			}
 
-				this.semaphore.fetching.item.push(payload.id);
+			throw new Error('You have to provide at least channel or control id');
+		};
 
-				try {
-					const controlResponse = await axios.get<IChannelControlResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls/${payload.id}`
-					);
+		const get = async (payload: IChannelControlsGetActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.item.includes(payload.id)) {
+				return false;
+			}
 
-					const controlResponseModel = jsonApiFormatter.deserialize(controlResponse.data) as IChannelControlResponseModel;
+			const fromDatabase = await loadRecord({ id: payload.id });
 
-					this.data = this.data ?? {};
-					this.data[controlResponseModel.id] = await storeRecordFactory({
-						...controlResponseModel,
-						...{ channelId: controlResponseModel.channel.id },
-					});
-
-					await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(this.data[controlResponseModel.id]), DB_TABLE_CHANNELS_CONTROLS);
-
-					this.meta[controlResponseModel.id] = controlResponseModel.type;
-				} catch (e: any) {
-					if (e instanceof AxiosError && e.status === 404) {
-						this.unset({
-							id: payload.id,
-						});
-
-						return true;
-					}
-
-					throw new ApiError('devices-module.channel-controls.get.failed', e, 'Fetching control failed.');
-				} finally {
-					this.semaphore.fetching.item = this.semaphore.fetching.item.filter((item) => item !== payload.id);
-				}
-
+			if (fromDatabase && payload.refresh === false) {
 				return true;
-			},
+			}
 
-			/**
-			 * Fetch all records from server
-			 *
-			 * @param {IChannelControlsFetchActionPayload} payload
-			 */
-			async fetch(payload: IChannelControlsFetchActionPayload): Promise<boolean> {
-				if (this.semaphore.fetching.items.includes(payload.channel.id)) {
-					return false;
-				}
+			semaphore.value.fetching.item.push(payload.id);
 
-				const fromDatabase = await this.loadAllRecords({ channel: payload.channel });
+			try {
+				const controlResponse = await axios.get<IChannelControlResponseJson>(
+					`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls/${payload.id}`
+				);
 
-				if (fromDatabase && payload?.refresh === false) {
-					return true;
-				}
+				const controlResponseModel = jsonApiFormatter.deserialize(controlResponse.data) as IChannelControlResponseModel;
 
-				if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
-					this.semaphore.fetching.items.push(payload.channel.id);
-				}
-
-				this.firstLoad = this.firstLoad.filter((item) => item !== payload.channel.id);
-				this.firstLoad = [...new Set(this.firstLoad)];
-
-				try {
-					const controlsResponse = await axios.get<IChannelControlsResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`
-					);
-
-					const controlsResponseModel = jsonApiFormatter.deserialize(controlsResponse.data) as IChannelControlResponseModel[];
-
-					for (const control of controlsResponseModel) {
-						this.data = this.data ?? {};
-						this.data[control.id] = await storeRecordFactory({
-							...control,
-							...{ channelId: control.channel.id },
-						});
-
-						await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(this.data[control.id]), DB_TABLE_CHANNELS_CONTROLS);
-
-						this.meta[control.id] = control.type;
-					}
-
-					this.firstLoad.push(payload.channel.id);
-					this.firstLoad = [...new Set(this.firstLoad)];
-
-					// Get all current IDs from IndexedDB
-					const allRecords = await getAllRecords<IChannelControlDatabaseRecord>(DB_TABLE_CHANNELS_CONTROLS);
-					const indexedDbIds: string[] = allRecords.filter((record) => record.channel.id === payload.channel.id).map((record) => record.id);
-
-					// Get the IDs from the latest changes
-					const serverIds: string[] = Object.keys(this.data ?? {});
-
-					// Find IDs that are in IndexedDB but not in the server response
-					const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
-
-					// Remove records that are no longer present on the server
-					for (const id of idsToRemove) {
-						await removeRecord(id, DB_TABLE_CHANNELS_CONTROLS);
-
-						delete this.meta[id];
-					}
-				} catch (e: any) {
-					if (e instanceof AxiosError && e.status === 404) {
-						try {
-							const channelsStore = storesManager.getStore(channelsStoreKey);
-
-							await channelsStore.get({
-								id: payload.channel.id,
-							});
-						} catch (e: any) {
-							if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
-								const channelsStore = storesManager.getStore(channelsStoreKey);
-
-								channelsStore.unset({
-									id: payload.channel.id,
-								});
-
-								return true;
-							}
-						}
-					}
-
-					throw new ApiError('devices-module.channel-controls.fetch.failed', e, 'Fetching controls failed.');
-				} finally {
-					this.semaphore.fetching.items = this.semaphore.fetching.items.filter((item) => item !== payload.channel.id);
-				}
-
-				return true;
-			},
-
-			/**
-			 * Add new record
-			 *
-			 * @param {IChannelControlsAddActionPayload} payload
-			 */
-			async add(payload: IChannelControlsAddActionPayload): Promise<IChannelControl> {
-				const newControl = await storeRecordFactory({
-					...{
-						id: payload?.id,
-						type: payload?.type,
-						draft: payload?.draft,
-						channelId: payload.channel.id,
-					},
-					...payload.data,
+				data.value = data.value ?? {};
+				data.value[controlResponseModel.id] = await storeRecordFactory(storesManager, {
+					...controlResponseModel,
+					...{ channelId: controlResponseModel.channel.id },
 				});
 
-				this.semaphore.creating.push(newControl.id);
+				await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(data.value[controlResponseModel.id]), DB_TABLE_CHANNELS_CONTROLS);
 
-				this.data = this.data ?? {};
-				this.data[newControl.id] = newControl;
+				meta.value[controlResponseModel.id] = controlResponseModel.type;
+			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
+					await unset({
+						id: payload.id,
+					});
 
-				if (newControl.draft) {
-					this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newControl.id);
+					return true;
+				}
 
-					return newControl;
-				} else {
-					const channelsStore = storesManager.getStore(channelsStoreKey);
+				throw new ApiError('devices-module.channel-controls.get.failed', e, 'Fetching control failed.');
+			} finally {
+				semaphore.value.fetching.item = semaphore.value.fetching.item.filter((item) => item !== payload.id);
+			}
 
-					const channel = channelsStore.findById(payload.channel.id);
+			return true;
+		};
 
-					if (channel === null) {
-						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newControl.id);
+		const fetch = async (payload: IChannelControlsFetchActionPayload): Promise<boolean> => {
+			if (semaphore.value.fetching.items.includes(payload.channel.id)) {
+				return false;
+			}
 
-						throw new Error('devices-module.channel-controls.get.failed');
-					}
+			const fromDatabase = await loadAllRecords({ channel: payload.channel });
 
+			if (fromDatabase && payload?.refresh === false) {
+				return true;
+			}
+
+			if (payload?.refresh === undefined || payload?.refresh === true || !fromDatabase) {
+				semaphore.value.fetching.items.push(payload.channel.id);
+			}
+
+			firstLoad.value = firstLoad.value.filter((item) => item !== payload.channel.id);
+			firstLoad.value = [...new Set(firstLoad.value)];
+
+			try {
+				const controlsResponse = await axios.get<IChannelControlsResponseJson>(`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`);
+
+				const controlsResponseModel = jsonApiFormatter.deserialize(controlsResponse.data) as IChannelControlResponseModel[];
+
+				for (const control of controlsResponseModel) {
+					data.value = data.value ?? {};
+					data.value[control.id] = await storeRecordFactory(storesManager, {
+						...control,
+						...{ channelId: control.channel.id },
+					});
+
+					await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(data.value[control.id]), DB_TABLE_CHANNELS_CONTROLS);
+
+					meta.value[control.id] = control.type;
+				}
+
+				firstLoad.value.push(payload.channel.id);
+				firstLoad.value = [...new Set(firstLoad.value)];
+
+				// Get all current IDs from IndexedDB
+				const allRecords = await getAllRecords<IChannelControlDatabaseRecord>(DB_TABLE_CHANNELS_CONTROLS);
+				const indexedDbIds: string[] = allRecords.filter((record) => record.channel.id === payload.channel.id).map((record) => record.id);
+
+				// Get the IDs from the latest changes
+				const serverIds: string[] = Object.keys(data.value ?? {});
+
+				// Find IDs that are in IndexedDB but not in the server response
+				const idsToRemove: string[] = indexedDbIds.filter((id) => !serverIds.includes(id));
+
+				// Remove records that are no longer present on the server
+				for (const id of idsToRemove) {
+					await removeRecord(id, DB_TABLE_CHANNELS_CONTROLS);
+
+					delete meta.value[id];
+				}
+			} catch (e: any) {
+				if (e instanceof AxiosError && e.status === 404) {
 					try {
-						const createdControl = await axios.post<IChannelControlResponseJson>(
-							`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`,
-							jsonApiFormatter.serialize({
-								stuff: newControl,
-							})
-						);
+						const channelsStore = storesManager.getStore(channelsStoreKey);
 
-						const createdControlModel = jsonApiFormatter.deserialize(createdControl.data) as IChannelControlResponseModel;
-
-						this.data[createdControlModel.id] = await storeRecordFactory({
-							...createdControlModel,
-							...{ channelId: createdControlModel.channel.id },
+						await channelsStore.get({
+							id: payload.channel.id,
 						});
-
-						await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(this.data[createdControlModel.id]), DB_TABLE_CHANNELS_CONTROLS);
-
-						this.meta[createdControlModel.id] = createdControlModel.type;
-
-						return this.data[createdControlModel.id];
 					} catch (e: any) {
-						// Record could not be created on api, we have to remove it from database
-						delete this.data[newControl.id];
+						if (e instanceof ApiError && e.exception instanceof AxiosError && e.exception.status === 404) {
+							const channelsStore = storesManager.getStore(channelsStoreKey);
 
-						throw new ApiError('devices-module.channel-controls.create.failed', e, 'Create new control failed.');
-					} finally {
-						this.semaphore.creating = this.semaphore.creating.filter((item) => item !== newControl.id);
+							channelsStore.unset({
+								id: payload.channel.id,
+							});
+
+							return true;
+						}
 					}
 				}
-			},
 
-			/**
-			 * Save draft record on server
-			 *
-			 * @param {IChannelControlsSaveActionPayload} payload
-			 */
-			async save(payload: IChannelControlsSaveActionPayload): Promise<IChannelControl> {
-				if (this.semaphore.updating.includes(payload.id)) {
-					throw new Error('devices-module.channel-controls.save.inProgress');
-				}
+				throw new ApiError('devices-module.channel-controls.fetch.failed', e, 'Fetching controls failed.');
+			} finally {
+				semaphore.value.fetching.items = semaphore.value.fetching.items.filter((item) => item !== payload.channel.id);
+			}
 
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.channel-controls.save.failed');
-				}
+			return true;
+		};
 
-				this.semaphore.updating.push(payload.id);
+		const add = async (payload: IChannelControlsAddActionPayload): Promise<IChannelControl> => {
+			const newControl = await storeRecordFactory(storesManager, {
+				...{
+					id: payload?.id,
+					type: payload?.type,
+					draft: payload?.draft,
+					channelId: payload.channel.id,
+				},
+				...payload.data,
+			});
 
-				const recordToSave = this.data[payload.id];
+			semaphore.value.creating.push(newControl.id);
 
+			data.value = data.value ?? {};
+			data.value[newControl.id] = newControl;
+
+			if (newControl.draft) {
+				semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newControl.id);
+
+				return newControl;
+			} else {
 				const channelsStore = storesManager.getStore(channelsStoreKey);
 
-				const channel = channelsStore.findById(recordToSave.channel.id);
+				const channel = channelsStore.findById(payload.channel.id);
 
 				if (channel === null) {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+					semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newControl.id);
 
 					throw new Error('devices-module.channel-controls.get.failed');
 				}
 
 				try {
-					const savedControl = await axios.post<IChannelControlResponseJson>(
-						`/${ModulePrefix.DEVICES}/v1/channels/${recordToSave.channel.id}/controls`,
+					const createdControl = await axios.post<IChannelControlResponseJson>(
+						`/${ModulePrefix.DEVICES}/v1/channels/${payload.channel.id}/controls`,
 						jsonApiFormatter.serialize({
-							stuff: recordToSave,
+							stuff: newControl,
 						})
 					);
 
-					const savedControlModel = jsonApiFormatter.deserialize(savedControl.data) as IChannelControlResponseModel;
+					const createdControlModel = jsonApiFormatter.deserialize(createdControl.data) as IChannelControlResponseModel;
 
-					this.data[savedControlModel.id] = await storeRecordFactory({
-						...savedControlModel,
-						...{ channelId: savedControlModel.channel.id },
+					data.value[createdControlModel.id] = await storeRecordFactory(storesManager, {
+						...createdControlModel,
+						...{ channelId: createdControlModel.channel.id },
 					});
 
-					await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(this.data[savedControlModel.id]), DB_TABLE_CHANNELS_CONTROLS);
+					await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(data.value[createdControlModel.id]), DB_TABLE_CHANNELS_CONTROLS);
 
-					this.meta[savedControlModel.id] = savedControlModel.type;
+					meta.value[createdControlModel.id] = createdControlModel.type;
 
-					return this.data[savedControlModel.id];
+					return data.value[createdControlModel.id];
 				} catch (e: any) {
-					throw new ApiError('devices-module.channel-controls.save.failed', e, 'Save draft control failed.');
+					// Record could not be created on api, we have to remove it from database
+					delete data.value[newControl.id];
+
+					throw new ApiError('devices-module.channel-controls.create.failed', e, 'Create new control failed.');
 				} finally {
-					this.semaphore.updating = this.semaphore.updating.filter((item) => item !== payload.id);
+					semaphore.value.creating = semaphore.value.creating.filter((item) => item !== newControl.id);
 				}
-			},
+			}
+		};
 
-			/**
-			 * Remove existing record from store and server
-			 *
-			 * @param {IChannelControlsRemoveActionPayload} payload
-			 */
-			async remove(payload: IChannelControlsRemoveActionPayload): Promise<boolean> {
-				if (this.semaphore.deleting.includes(payload.id)) {
-					throw new Error('devices-module.channel-controls.delete.inProgress');
-				}
+		const save = async (payload: IChannelControlsSaveActionPayload): Promise<IChannelControl> => {
+			if (semaphore.value.updating.includes(payload.id)) {
+				throw new Error('devices-module.channel-controls.save.inProgress');
+			}
 
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.channel-controls.delete.failed');
-				}
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.channel-controls.save.failed');
+			}
 
-				this.semaphore.deleting.push(payload.id);
+			semaphore.value.updating.push(payload.id);
 
-				const recordToDelete = this.data[payload.id];
+			const recordToSave = data.value[payload.id];
 
-				const channelsStore = storesManager.getStore(channelsStoreKey);
+			const channelsStore = storesManager.getStore(channelsStoreKey);
 
-				const channel = channelsStore.findById(recordToDelete.channel.id);
+			const channel = channelsStore.findById(recordToSave.channel.id);
 
-				if (channel === null) {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
+			if (channel === null) {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
 
-					throw new Error('devices-module.channel-controls.get.failed');
-				}
+				throw new Error('devices-module.channel-controls.get.failed');
+			}
 
-				delete this.data[payload.id];
+			try {
+				const savedControl = await axios.post<IChannelControlResponseJson>(
+					`/${ModulePrefix.DEVICES}/v1/channels/${recordToSave.channel.id}/controls`,
+					jsonApiFormatter.serialize({
+						stuff: recordToSave,
+					})
+				);
 
-				await removeRecord(payload.id, DB_TABLE_CHANNELS_CONTROLS);
+				const savedControlModel = jsonApiFormatter.deserialize(savedControl.data) as IChannelControlResponseModel;
 
-				delete this.meta[payload.id];
+				data.value[savedControlModel.id] = await storeRecordFactory(storesManager, {
+					...savedControlModel,
+					...{ channelId: savedControlModel.channel.id },
+				});
 
-				if (recordToDelete.draft) {
-					this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
-				} else {
-					try {
-						await axios.delete(`/${ModulePrefix.DEVICES}/v1/channels/${recordToDelete.channel.id}/controls/${recordToDelete.id}`);
-					} catch (e: any) {
-						const channelsStore = storesManager.getStore(channelsStoreKey);
+				await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(data.value[savedControlModel.id]), DB_TABLE_CHANNELS_CONTROLS);
 
-						const channel = channelsStore.findById(recordToDelete.channel.id);
+				meta.value[savedControlModel.id] = savedControlModel.type;
 
-						if (channel !== null) {
-							// Deleting entity on api failed, we need to refresh entity
-							await this.get({ channel, id: payload.id });
-						}
+				return data.value[savedControlModel.id];
+			} catch (e: any) {
+				throw new ApiError('devices-module.channel-controls.save.failed', e, 'Save draft control failed.');
+			} finally {
+				semaphore.value.updating = semaphore.value.updating.filter((item) => item !== payload.id);
+			}
+		};
 
-						throw new ApiError('devices-module.channel-controls.delete.failed', e, 'Delete control failed.');
-					} finally {
-						this.semaphore.deleting = this.semaphore.deleting.filter((item) => item !== payload.id);
-					}
-				}
+		const remove = async (payload: IChannelControlsRemoveActionPayload): Promise<boolean> => {
+			if (semaphore.value.deleting.includes(payload.id)) {
+				throw new Error('devices-module.channel-controls.delete.inProgress');
+			}
 
-				return true;
-			},
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.channel-controls.delete.failed');
+			}
 
-			/**
-			 * Transmit control command to server
-			 *
-			 * @param {IChannelControlsTransmitCommandActionPayload} payload
-			 */
-			async transmitCommand(payload: IChannelControlsTransmitCommandActionPayload): Promise<boolean> {
-				if (!this.data || !Object.keys(this.data).includes(payload.id)) {
-					throw new Error('devices-module.channel-controls.transmit.failed');
-				}
+			semaphore.value.deleting.push(payload.id);
 
-				const control = this.data[payload.id];
+			const recordToDelete = data.value[payload.id];
 
-				const channelsStore = storesManager.getStore(channelsStoreKey);
+			const channelsStore = storesManager.getStore(channelsStoreKey);
 
-				const channel = channelsStore.findById(control.channel.id);
+			const channel = channelsStore.findById(recordToDelete.channel.id);
 
-				if (channel === null) {
-					throw new Error('devices-module.channel-controls.transmit.failed');
-				}
+			if (channel === null) {
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
 
-				const { call } = useWampV1Client<{ data: string }>();
+				throw new Error('devices-module.channel-controls.get.failed');
+			}
 
+			delete data.value[payload.id];
+
+			await removeRecord(payload.id, DB_TABLE_CHANNELS_CONTROLS);
+
+			delete meta.value[payload.id];
+
+			if (recordToDelete.draft) {
+				semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+			} else {
 				try {
-					const response = await call('', {
-						routing_key: ActionRoutes.CHANNEL_CONTROL,
-						source: control.type.source,
-						data: {
-							action: ExchangeCommand.SET,
-							channel: channel.id,
-							control: control.id,
-							expected_value: payload.value,
+					await axios.delete(`/${ModulePrefix.DEVICES}/v1/channels/${recordToDelete.channel.id}/controls/${recordToDelete.id}`);
+				} catch (e: any) {
+					const channelsStore = storesManager.getStore(channelsStoreKey);
+
+					const channel = channelsStore.findById(recordToDelete.channel.id);
+
+					if (channel !== null) {
+						// Deleting entity on api failed, we need to refresh entity
+						await get({ channel, id: payload.id });
+					}
+
+					throw new ApiError('devices-module.channel-controls.delete.failed', e, 'Delete control failed.');
+				} finally {
+					semaphore.value.deleting = semaphore.value.deleting.filter((item) => item !== payload.id);
+				}
+			}
+
+			return true;
+		};
+
+		const transmitCommand = async (payload: IChannelControlsTransmitCommandActionPayload): Promise<boolean> => {
+			if (!data.value || !Object.keys(data.value).includes(payload.id)) {
+				throw new Error('devices-module.channel-controls.transmit.failed');
+			}
+
+			const control = data.value[payload.id];
+
+			const channelsStore = storesManager.getStore(channelsStoreKey);
+
+			const channel = channelsStore.findById(control.channel.id);
+
+			if (channel === null) {
+				throw new Error('devices-module.channel-controls.transmit.failed');
+			}
+
+			const { call } = useWampV1Client<{ data: string }>();
+
+			try {
+				const response = await call('', {
+					routing_key: ActionRoutes.CHANNEL_CONTROL,
+					source: control.type.source,
+					data: {
+						action: ExchangeCommand.SET,
+						channel: channel.id,
+						control: control.id,
+						expected_value: payload.value,
+					},
+				});
+
+				if (lodashGet(response.data, 'response') === 'accepted') {
+					return true;
+				}
+			} catch {
+				throw new Error('devices-module.channel-controls.transmit.failed');
+			}
+
+			throw new Error('devices-module.channel-controls.transmit.failed');
+		};
+
+		const socketData = async (payload: IChannelControlsSocketDataActionPayload): Promise<boolean> => {
+			if (
+				![
+					RoutingKeys.CHANNEL_CONTROL_DOCUMENT_REPORTED,
+					RoutingKeys.CHANNEL_CONTROL_DOCUMENT_CREATED,
+					RoutingKeys.CHANNEL_CONTROL_DOCUMENT_UPDATED,
+					RoutingKeys.CHANNEL_CONTROL_DOCUMENT_DELETED,
+				].includes(payload.routingKey as RoutingKeys)
+			) {
+				return false;
+			}
+
+			const body: ChannelControlDocument = JSON.parse(payload.data);
+
+			const isValid = jsonSchemaValidator.compile<ChannelControlDocument>(exchangeDocumentSchema);
+
+			try {
+				if (!isValid(body)) {
+					return false;
+				}
+			} catch {
+				return false;
+			}
+
+			if (payload.routingKey === RoutingKeys.CHANNEL_CONTROL_DOCUMENT_DELETED) {
+				await removeRecord(body.id, DB_TABLE_CHANNELS_CONTROLS);
+
+				delete meta.value[body.id];
+
+				if (data.value && body.id in data.value) {
+					delete data.value[body.id];
+				}
+			} else {
+				if (data.value && body.id in data.value) {
+					const record = await storeRecordFactory(storesManager, {
+						...data.value[body.id],
+						...{
+							name: body.name,
+							channelId: body.channel,
 						},
 					});
 
-					if (get(response.data, 'response') === 'accepted') {
-						return true;
+					if (!isEqual(JSON.parse(JSON.stringify(data.value[body.id])), JSON.parse(JSON.stringify(record)))) {
+						data.value[body.id] = record;
+
+						await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
+
+						meta.value[record.id] = record.type;
 					}
-				} catch (e) {
-					throw new Error('devices-module.channel-controls.transmit.failed');
+				} else {
+					const channelsStore = storesManager.getStore(channelsStoreKey);
+
+					const channel = channelsStore.findById(body.channel);
+
+					if (channel !== null) {
+						try {
+							await get({
+								channel,
+								id: body.id,
+							});
+						} catch {
+							return false;
+						}
+					}
 				}
+			}
 
-				throw new Error('devices-module.channel-controls.transmit.failed');
-			},
+			return true;
+		};
 
-			/**
-			 * Receive data from sockets
-			 *
-			 * @param {IChannelControlsSocketDataActionPayload} payload
-			 */
-			async socketData(payload: IChannelControlsSocketDataActionPayload): Promise<boolean> {
-				if (
-					![
-						RoutingKeys.CHANNEL_CONTROL_DOCUMENT_REPORTED,
-						RoutingKeys.CHANNEL_CONTROL_DOCUMENT_CREATED,
-						RoutingKeys.CHANNEL_CONTROL_DOCUMENT_UPDATED,
-						RoutingKeys.CHANNEL_CONTROL_DOCUMENT_DELETED,
-					].includes(payload.routingKey as RoutingKeys)
-				) {
-					return false;
-				}
+		const insertData = async (payload: IChannelControlsInsertDataActionPayload): Promise<boolean> => {
+			data.value = data.value ?? {};
 
-				const body: ChannelControlDocument = JSON.parse(payload.data);
+			let documents: ChannelControlDocument[];
 
+			if (Array.isArray(payload.data)) {
+				documents = payload.data;
+			} else {
+				documents = [payload.data];
+			}
+
+			const channelIds = [];
+
+			for (const doc of documents) {
 				const isValid = jsonSchemaValidator.compile<ChannelControlDocument>(exchangeDocumentSchema);
 
 				try {
-					if (!isValid(body)) {
+					if (!isValid(doc)) {
 						return false;
 					}
 				} catch {
 					return false;
 				}
 
-				if (payload.routingKey === RoutingKeys.CHANNEL_CONTROL_DOCUMENT_DELETED) {
-					await removeRecord(body.id, DB_TABLE_CHANNELS_CONTROLS);
-
-					delete this.meta[body.id];
-
-					if (this.data && body.id in this.data) {
-						delete this.data[body.id];
-					}
-				} else {
-					if (this.data && body.id in this.data) {
-						const record = await storeRecordFactory({
-							...this.data[body.id],
-							...{
-								name: body.name,
-								channelId: body.channel,
-							},
-						});
-
-						if (!isEqual(JSON.parse(JSON.stringify(this.data[body.id])), JSON.parse(JSON.stringify(record)))) {
-							this.data[body.id] = record;
-
-							await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
-
-							this.meta[record.id] = record.type;
-						}
-					} else {
-						const channelsStore = storesManager.getStore(channelsStoreKey);
-
-						const channel = channelsStore.findById(body.channel);
-
-						if (channel !== null) {
-							try {
-								await this.get({
-									channel,
-									id: body.id,
-								});
-							} catch {
-								return false;
-							}
-						}
-					}
-				}
-
-				return true;
-			},
-
-			/**
-			 * Insert data from SSR
-			 *
-			 * @param {IChannelControlsInsertDataActionPayload} payload
-			 */
-			async insertData(payload: IChannelControlsInsertDataActionPayload) {
-				this.data = this.data ?? {};
-
-				let documents: ChannelControlDocument[] = [];
-
-				if (Array.isArray(payload.data)) {
-					documents = payload.data;
-				} else {
-					documents = [payload.data];
-				}
-
-				const channelIds = [];
-
-				for (const doc of documents) {
-					const isValid = jsonSchemaValidator.compile<ChannelControlDocument>(exchangeDocumentSchema);
-
-					try {
-						if (!isValid(doc)) {
-							return false;
-						}
-					} catch {
-						return false;
-					}
-
-					const record = await storeRecordFactory({
-						...this.data[doc.id],
-						...{
-							id: doc.id,
-							type: {
-								type: doc.type,
-								source: doc.source,
-								parent: 'channel',
-								entity: 'control',
-							},
-							name: doc.name,
-							channelId: doc.channel,
+				const record = await storeRecordFactory(storesManager, {
+					...data.value[doc.id],
+					...{
+						id: doc.id,
+						type: {
+							type: doc.type,
+							source: doc.source,
+							parent: 'channel',
+							entity: 'control',
 						},
-					});
+						name: doc.name,
+						channelId: doc.channel,
+					},
+				});
 
-					if (documents.length === 1) {
-						this.data[doc.id] = record;
-					}
-
-					await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
-
-					this.meta[record.id] = record.type;
-
-					channelIds.push(doc.channel);
+				if (documents.length === 1) {
+					data.value[doc.id] = record;
 				}
 
-				if (documents.length > 1) {
-					const uniqueChannelIds = [...new Set(channelIds)];
+				await addRecord<IChannelControlDatabaseRecord>(databaseRecordFactory(record), DB_TABLE_CHANNELS_CONTROLS);
 
-					for (const channelId of uniqueChannelIds) {
-						this.firstLoad.push(channelId);
-						this.firstLoad = [...new Set(this.firstLoad)];
-					}
+				meta.value[record.id] = record.type;
+
+				channelIds.push(doc.channel);
+			}
+
+			if (documents.length > 1) {
+				const uniqueChannelIds = [...new Set(channelIds)];
+
+				for (const channelId of uniqueChannelIds) {
+					firstLoad.value.push(channelId);
+					firstLoad.value = [...new Set(firstLoad.value)];
 				}
+			}
+
+			return true;
+		};
+
+		const loadRecord = async (payload: IChannelControlsLoadRecordActionPayload): Promise<boolean> => {
+			const record = await getRecord<IChannelControlDatabaseRecord>(payload.id, DB_TABLE_CHANNELS_CONTROLS);
+
+			if (record) {
+				data.value = data.value ?? {};
+				data.value[payload.id] = await storeRecordFactory(storesManager, record);
 
 				return true;
-			},
+			}
 
-			/**
-			 * Load record from database
-			 *
-			 * @param {IChannelControlsLoadRecordActionPayload} payload
-			 */
-			async loadRecord(payload: IChannelControlsLoadRecordActionPayload): Promise<boolean> {
-				const record = await getRecord<IChannelControlDatabaseRecord>(payload.id, DB_TABLE_CHANNELS_CONTROLS);
+			return false;
+		};
 
-				if (record) {
-					this.data = this.data ?? {};
-					this.data[payload.id] = await storeRecordFactory(record);
+		const loadAllRecords = async (payload?: IChannelControlsLoadAllRecordsActionPayload): Promise<boolean> => {
+			const records = await getAllRecords<IChannelControlDatabaseRecord>(DB_TABLE_CHANNELS_CONTROLS);
 
-					return true;
+			data.value = data.value ?? {};
+
+			for (const record of records) {
+				if (payload?.channel && payload?.channel.id !== record?.channel.id) {
+					continue;
 				}
 
-				return false;
-			},
+				data.value[record.id] = await storeRecordFactory(storesManager, record);
+			}
 
-			/**
-			 * Load records from database
-			 *
-			 * @param {IChannelControlsLoadAllRecordsActionPayload} payload
-			 */
-			async loadAllRecords(payload?: IChannelControlsLoadAllRecordsActionPayload): Promise<boolean> {
-				const records = await getAllRecords<IChannelControlDatabaseRecord>(DB_TABLE_CHANNELS_CONTROLS);
+			return true;
+		};
 
-				this.data = this.data ?? {};
-
-				for (const record of records) {
-					if (payload?.channel && payload?.channel.id !== record?.channel.id) {
-						continue;
-					}
-
-					this.data[record.id] = await storeRecordFactory(record);
-				}
-
-				return true;
-			},
-		},
+		return {
+			semaphore,
+			firstLoad,
+			data,
+			meta,
+			firstLoadFinished,
+			getting,
+			fetching,
+			findById,
+			findByName,
+			findForChannel,
+			findMeta,
+			set,
+			unset,
+			get,
+			fetch,
+			add,
+			save,
+			remove,
+			transmitCommand,
+			socketData,
+			insertData,
+			loadRecord,
+			loadAllRecords,
+		};
 	}
 );
 
-export const registerChannelsControlsStore = (
-	pinia: Pinia
-): Store<string, IChannelControlsState, IChannelControlsGetters, IChannelControlsActions> => {
+export const registerChannelsControlsStore = (pinia: Pinia): Store<string, IChannelControlsState, object, IChannelControlsActions> => {
 	return useChannelControls(pinia);
 };

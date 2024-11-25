@@ -1,10 +1,13 @@
 import { RouteLocationNormalized } from 'vue-router';
+
 import get from 'lodash.get';
 
-import { useSession } from '../../models';
+import { IStoresManager } from '@fastybird/tools';
 
-const authenticatedGuard = (to: RouteLocationNormalized): boolean | { name: string } | undefined => {
-	const sessionStore = useSession();
+import { sessionStoreKey } from '../../configuration';
+
+const authenticatedGuard = (storesManager: IStoresManager, to: RouteLocationNormalized): boolean | { name: string } | undefined => {
+	const sessionStore = storesManager.getStore(sessionStoreKey);
 	const toGuards = get(to.meta, 'guards', []);
 
 	if (!sessionStore.isSignedIn() && Array.isArray(toGuards) && toGuards.includes('authenticated')) {

@@ -1,6 +1,6 @@
 <template>
 	<layout-sign-box>
-		<layout-sign-header :heading="t('headings.signIn')" />
+		<layout-sign-header :heading="t('accountsModule.headings.signIn')" />
 
 		<sign-in-form v-model:remote-form-result="remoteFormResult" />
 
@@ -9,55 +9,54 @@
 				link
 				@click="router.push({ name: routeNames.resetPassword })"
 			>
-				{{ t('buttons.forgotPassword.title') }}
+				{{ t('accountsModule.buttons.forgotPassword.title') }}
 			</el-button>
 		</div>
 	</layout-sign-box>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
-import { Emitter } from 'mitt';
+import { useRouter } from 'vue-router';
+
 import { ElButton } from 'element-plus';
 
-import { configurationKey } from '../configuration';
-import { EventBusEventsType, FormResultTypes } from '../types';
-import { useRoutesNames } from '../composables';
+import { useEventBus } from '@fastybird/tools';
+
 import { LayoutSignBox, LayoutSignHeader, SignInForm } from '../components';
+import { useRoutesNames } from '../composables';
+import { FormResultType, FormResultTypes } from '../types';
 
 defineOptions({
 	name: 'ViewSignIn',
 });
 
-const configuration = inject(configurationKey);
-
 const { t } = useI18n();
 const { routeNames } = useRoutesNames();
 const router = useRouter();
 
-const eventsBus = inject<Emitter<EventBusEventsType>>(configuration?.injectionKeys.eventBusInjectionKey ?? 'eventBus');
+const eventsBus = useEventBus();
 
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	(state: FormResultTypes): void => {
+	(): FormResultType => remoteFormResult.value,
+	(state: FormResultType): void => {
 		if (state === FormResultTypes.WORKING) {
-			eventsBus?.emit('loadingOverlay', 10);
+			eventsBus.emit('loadingOverlay', 10);
 		} else {
-			eventsBus?.emit('loadingOverlay', false);
+			eventsBus.emit('loadingOverlay', false);
 
 			if (state === FormResultTypes.OK) {
-				eventsBus?.emit('userSigned', 'in');
+				eventsBus.emit('userSigned', 'in');
 			}
 		}
 	}
 );
 
 useMeta({
-	title: t('meta.sign.in.title'),
+	title: t('accountsModule.meta.sign.in.title'),
 });
 </script>

@@ -1,9 +1,10 @@
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
-import { _GettersTree } from 'pinia';
+import { Ref } from 'vue';
 
-import { DeviceCategory, DeviceDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
 import {
+	DeviceCategory,
+	DeviceDocument,
 	IChannelResponseData,
 	IChannelResponseModel,
 	IConnector,
@@ -15,7 +16,7 @@ import {
 	IDevicePropertyResponseModel,
 	IEntityMeta,
 	IPlainRelation,
-} from '../../models/types';
+} from '../../types';
 
 export interface IDeviceMeta extends IEntityMeta {
 	entity: 'device';
@@ -25,23 +26,22 @@ export interface IDeviceMeta extends IEntityMeta {
 // =====
 
 export interface IDevicesState {
-	semaphore: IDevicesStateSemaphore;
-	firstLoad: IConnector['id'][];
-	data: { [key: IDevice['id']]: IDevice } | undefined;
-	meta: { [key: IDevice['id']]: IDeviceMeta };
-}
-
-export interface IDevicesGetters extends _GettersTree<IDevicesState> {
-	firstLoadFinished: (state: IDevicesState) => (connectorId?: IConnector['id'] | null) => boolean;
-	getting: (state: IDevicesState) => (id: IDevice['id']) => boolean;
-	fetching: (state: IDevicesState) => (connectorId?: IConnector['id'] | null) => boolean;
-	findById: (state: IDevicesState) => (id: IDevice['id']) => IDevice | null;
-	findForConnector: (state: IDevicesState) => (connectorId: IConnector['id']) => IDevice[];
-	findAll: (state: IDevicesState) => () => IDevice[];
-	findMeta: (state: IDevicesState) => (id: IDevice['id']) => IDeviceMeta | null;
+	semaphore: Ref<IDevicesStateSemaphore>;
+	firstLoad: Ref<IConnector['id'][]>;
+	data: Ref<{ [key: IDevice['id']]: IDevice } | undefined>;
+	meta: Ref<{ [key: IDevice['id']]: IDeviceMeta }>;
 }
 
 export interface IDevicesActions {
+	// Getters
+	firstLoadFinished: (connectorId?: IConnector['id'] | null) => boolean;
+	getting: (id: IDevice['id']) => boolean;
+	fetching: (connectorId?: IConnector['id'] | null) => boolean;
+	findById: (id: IDevice['id']) => IDevice | null;
+	findForConnector: (connectorId: IConnector['id']) => IDevice[];
+	findAll: () => IDevice[];
+	findMeta: (id: IDevice['id']) => IDeviceMeta | null;
+	// Actions
 	set: (payload: IDevicesSetActionPayload) => Promise<IDevice>;
 	unset: (payload: IDevicesUnsetActionPayload) => Promise<void>;
 	get: (payload: IDevicesGetActionPayload) => Promise<boolean>;
@@ -56,17 +56,19 @@ export interface IDevicesActions {
 	loadAllRecords: (payload?: IDevicesLoadAllRecordsActionPayload) => Promise<boolean>;
 }
 
+export type DevicesStoreSetup = IDevicesState & IDevicesActions;
+
 // STORE STATE
 // ===========
 
-interface IDevicesStateSemaphore {
+export interface IDevicesStateSemaphore {
 	fetching: IDevicesStateSemaphoreFetching;
 	creating: string[];
 	updating: string[];
 	deleting: string[];
 }
 
-interface IDevicesStateSemaphoreFetching {
+export interface IDevicesStateSemaphoreFetching {
 	items: string[];
 	item: string[];
 }

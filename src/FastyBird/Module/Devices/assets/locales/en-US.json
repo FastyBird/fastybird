@@ -80,7 +80,8 @@
 			"variableProperties": "Configuration parameters",
 			"dynamicProperties": "Data parameters",
 			"remove": "Remove channel",
-			"new": "New channel configuration"
+			"new": "New channel configuration",
+			"properties": "Channel properties"
 		},
 		"properties": {
 			"add": "Add parameter",
@@ -494,6 +495,7 @@
 		"or": "or",
 		"paging": "{page} of {total}",
 		"missing": "Missing",
+		"core": "core",
 		"state": {
 			"connected": "Connected",
 			"disconnected": "Disconnected",

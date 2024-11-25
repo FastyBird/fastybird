@@ -1,13 +1,15 @@
 import { RouteLocation } from 'vue-router';
-import get from 'lodash.get';
-import { jwtDecode } from 'jwt-decode';
 
+import { jwtDecode } from 'jwt-decode';
+import get from 'lodash.get';
+
+import { IStoresManager } from '@fastybird/tools';
 import * as Sentry from '@sentry/vue';
 
-import { useSession } from '../../models';
+import { sessionStoreKey } from '../../configuration';
 
-const sessionGuard = async (): Promise<boolean | RouteLocation | undefined> => {
-	const sessionStore = useSession();
+const sessionGuard = async (storesManager: IStoresManager): Promise<boolean | RouteLocation | undefined> => {
+	const sessionStore = storesManager.getStore(sessionStoreKey);
 
 	sessionStore.initialize();
 

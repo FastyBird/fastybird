@@ -71,17 +71,19 @@ import { computed, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
-import { orderBy } from 'natural-orderby';
+
 import { vLoading } from 'element-plus';
+import { orderBy } from 'natural-orderby';
 
+import { useBreakpoints } from '@fastybird/tools';
 import { FasPlugCircleBolt } from '@fastybird/web-ui-icons';
-import { FbAppBarHeading, FbAppBarButton, AppBarButtonAlignTypes } from '@fastybird/web-ui-library';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useConnectors, usePluginActions, useRoutesNames } from '../composables';
 import { PluginsListPlugins, PluginsPreviewInfo } from '../components';
+import { useConnectors, usePluginActions, useRoutesNames } from '../composables';
 import { connectorPlugins } from '../configuration';
 import { ApplicationError } from '../errors';
-import { IConnectorPlugin, IConnector } from '../types';
+import { IConnector, IConnectorPlugin } from '../types';
 
 import { IViewPluginsProps } from './view-plugins.types';
 

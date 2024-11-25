@@ -23,11 +23,11 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -73,15 +73,16 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -341,7 +342,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 
 		if ($propertyToUpdate instanceof DevicesDocuments\Channels\Properties\Variable) {
 			$protocolAttribute->setActualValue(
-				MetadataUtilities\Value::flattenValue($propertyToUpdate->getValue()),
+				ToolsUtilities\Value::flattenValue($propertyToUpdate->getValue()),
 			);
 			$protocolAttribute->setExpectedValue(null);
 			$protocolAttribute->setValid(true);
@@ -366,7 +367,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 			));
 
 			$protocolAttribute->setActualValue(
-				MetadataUtilities\Value::flattenValue($state->getExpectedValue() ?? $state->getActualValue()),
+				ToolsUtilities\Value::flattenValue($state->getExpectedValue() ?? $state->getActualValue()),
 			);
 			$protocolAttribute->setExpectedValue(null);
 			$protocolAttribute->setValid(true);
@@ -381,7 +382,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 
 			if ($parent instanceof DevicesDocuments\Channels\Properties\Variable) {
 				$protocolAttribute->setActualValue(
-					MetadataUtilities\Value::flattenValue($parent->getValue()),
+					ToolsUtilities\Value::flattenValue($parent->getValue()),
 				);
 				$protocolAttribute->setExpectedValue(null);
 				$protocolAttribute->setValid(true);
@@ -395,10 +396,10 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				}
 
 				$protocolAttribute->setActualValue(
-					MetadataUtilities\Value::flattenValue($state->getActualValue()),
+					ToolsUtilities\Value::flattenValue($state->getActualValue()),
 				);
 				$protocolAttribute->setExpectedValue(
-					MetadataUtilities\Value::flattenValue($state->getExpectedValue()),
+					ToolsUtilities\Value::flattenValue($state->getExpectedValue()),
 				);
 				$protocolAttribute->setValid($state->isValid());
 				$protocolAttribute->setPending($state->getPending());
@@ -508,7 +509,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 								[
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'write-third-party-device-state-message-consumer',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $message->getConnector()->toString(),
 									],
@@ -534,7 +535,7 @@ final class WriteThirdPartyDeviceState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 					'type' => 'write-third-party-device-state-message-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $message->getConnector()->toString(),
 					],

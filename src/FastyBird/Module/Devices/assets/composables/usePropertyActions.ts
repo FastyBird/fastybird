@@ -1,13 +1,15 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElMessageBox } from 'element-plus';
 
-import { useFlashMessage } from '../composables';
+import { ElMessageBox } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { channelPropertiesStoreKey, connectorPropertiesStoreKey, devicePropertiesStoreKey } from '../configuration';
-import { storesManager } from '../entry';
 import { ApplicationError } from '../errors';
-import { IConnector, IChannel, IChannelProperty, IConnectorProperty, IDevice, IDeviceProperty, UsePropertyActions } from '../types';
+import { IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty, UsePropertyActions } from '../types';
 
 export const usePropertyActions = ({
 	connector,
@@ -21,6 +23,8 @@ export const usePropertyActions = ({
 	const { t } = useI18n();
 
 	const flashMessage = useFlashMessage();
+
+	const storesManager = injectStoresManager();
 
 	const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);
 	const devicePropertiesStore = storesManager.getStore(devicePropertiesStoreKey);

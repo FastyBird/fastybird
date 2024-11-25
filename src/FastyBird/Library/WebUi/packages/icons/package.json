@@ -1,6 +1,6 @@
 {
   "name": "@fastybird/web-ui-icons",
-  "version": "1.0.0-dev.23",
+  "version": "1.0.0-dev.24",
   "type": "module",
   "description": "FontAwesome icons for FastyBird IoT application theme",
   "keywords": [
@@ -86,7 +86,7 @@
     "prettier": "^3.2",
     "svgo": "^3.2",
     "tsx": "^4.9",
-    "typescript": "^5.4",
+    "typescript": "5.6.2",
     "typescript-eslint": "^7.8",
     "unplugin-vue": "^5.0",
     "url": "^0.11",

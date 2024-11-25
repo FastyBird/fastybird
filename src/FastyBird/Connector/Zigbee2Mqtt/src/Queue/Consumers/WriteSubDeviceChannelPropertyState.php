@@ -25,12 +25,12 @@ use FastyBird\Connector\Zigbee2Mqtt\Models;
 use FastyBird\Connector\Zigbee2Mqtt\Queries;
 use FastyBird\Connector\Zigbee2Mqtt\Queue;
 use FastyBird\Connector\Zigbee2Mqtt\Types;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Documents as DevicesDocuments;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -82,14 +82,16 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 	}
 
 	/**
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidArgument
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws ValueError
 	 * @throws TypeError
 	 */
@@ -321,7 +323,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 
 			foreach ($properties as $property) {
 				if ($message->getProperty()->equals($property->getId())) {
-					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
+					$writeData->{$property->getIdentifier()} = ToolsUtilities\Value::flattenValue(
 						$state->getExpectedValue(),
 					);
 
@@ -339,7 +341,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					try {
 						$value = $this->stateRepository->get($property->getId());
 
-						$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue($value);
+						$writeData->{$property->getIdentifier()} = ToolsUtilities\Value::flattenValue($value);
 					} catch (Exceptions\MissingValue) {
 						// Could be ignored
 					}
@@ -365,7 +367,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 
 			foreach ($properties as $property) {
 				if ($message->getProperty()->equals($property->getId())) {
-					$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue(
+					$writeData->{$property->getIdentifier()} = ToolsUtilities\Value::flattenValue(
 						$state->getExpectedValue(),
 					);
 
@@ -384,7 +386,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 					try {
 						$value = $this->stateRepository->get($property->getId());
 
-						$writeData->{$property->getIdentifier()} = MetadataUtilities\Value::flattenValue($value);
+						$writeData->{$property->getIdentifier()} = ToolsUtilities\Value::flattenValue($value);
 					} catch (Exceptions\MissingValue) {
 						// Could be ignored
 					}
@@ -524,7 +526,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 								[
 									'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 									'type' => 'write-sub-device-channel-property-state-message-consumer',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $connector->getId()->toString(),
 									],
@@ -558,7 +560,7 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 				[
 					'source' => MetadataTypes\Sources\Connector::ZIGBEE2MQTT->value,
 					'type' => 'write-sub-device-channel-property-state-message-consumer',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'connector' => [
 						'id' => $connector->getId()->toString(),
 					],
@@ -609,8 +611,8 @@ final class WriteSubDeviceChannelPropertyState implements Queue\Consumer
 	/**
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */

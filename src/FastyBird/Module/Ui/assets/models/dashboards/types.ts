@@ -1,9 +1,8 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { DashboardDocument } from '@fastybird/metadata-library';
-
 import { ITabResponseData, ITabResponseModel, IEntityMeta, IPlainRelation } from '../../models/types';
+import { DashboardDocument } from '../../types';
 
 export interface IDashboardMeta extends IEntityMeta {
 	entity: 'dashboard';

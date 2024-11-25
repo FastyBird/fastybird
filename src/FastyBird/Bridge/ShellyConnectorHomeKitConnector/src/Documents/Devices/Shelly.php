@@ -17,10 +17,10 @@ namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Documents\Devices;
 
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Entities;
 use FastyBird\Connector\HomeKit\Documents as HomeKitDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Devices\Shelly::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Devices\Shelly::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Devices\Shelly::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Devices\Shelly::TYPE)]
 class Shelly extends HomeKitDocuments\Devices\Device
 {
 

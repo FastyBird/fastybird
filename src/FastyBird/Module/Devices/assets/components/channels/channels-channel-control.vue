@@ -44,12 +44,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
+
 import { ElButton, ElDropdownItem, ElDropdownMenu } from 'element-plus';
 
-import { FasArrowsRotate, FasCircleInfo, FasGears, FasTrash } from '@fastybird/web-ui-icons';
+import { useBreakpoints } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { FasArrowsRotate, FasCircleInfo, FasGears, FasTrash } from '@fastybird/web-ui-icons';
 
-import { useBreakpoints, useChannelRoutes } from '../../composables';
+import { useChannelRoutes } from '../../composables';
 
 import { IChannelsChannelControlProps } from './channels-channel-control.types';
 

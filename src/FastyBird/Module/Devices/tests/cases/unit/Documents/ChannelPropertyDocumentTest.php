@@ -3,9 +3,8 @@
 namespace FastyBird\Module\Devices\Tests\Cases\Unit\Documents;
 
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Tests;
@@ -19,23 +18,21 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 {
 
 	/**
-	 * @param class-string<MetadataDocuments\Document> $class
+	 * @param class-string<ApplicationDocuments\Document> $class
 	 * @param array<string, mixed> $fixture
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelProperty
 	 */
 	public function testCreateDocument(string $data, string $class, array $fixture): void
 	{
-		$factory = $this->getContainer()->getByType(MetadataDocuments\DocumentFactory::class);
+		$factory = $this->getContainer()->getByType(ApplicationDocuments\DocumentFactory::class);
 
 		$document = $factory->create($class, $data);
 
@@ -46,24 +43,22 @@ final class ChannelPropertyDocumentTest extends Tests\Cases\Unit\BaseTestCase
 	}
 
 	/**
-	 * @param class-string<MetadataDocuments\Document> $class
+	 * @param class-string<ApplicationDocuments\Document> $class
 	 *
 	 * @throws ApplicationExceptions\InvalidArgument
 	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\MalformedInput
+	 * @throws ApplicationExceptions\Mapping
 	 * @throws Error
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\MalformedInput
-	 * @throws MetadataExceptions\Mapping
 	 * @throws Nette\DI\MissingServiceException
 	 *
 	 * @dataProvider channelPropertyInvalid
 	 */
 	public function testCreateDocumentInvalid(string $data, string $class): void
 	{
-		$factory = $this->getContainer()->getByType(MetadataDocuments\DocumentFactory::class);
+		$factory = $this->getContainer()->getByType(ApplicationDocuments\DocumentFactory::class);
 
-		$this->expectException(MetadataExceptions\InvalidArgument::class);
+		$this->expectException(ApplicationExceptions\InvalidArgument::class);
 
 		$factory->create($class, $data);
 	}

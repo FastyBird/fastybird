@@ -37,10 +37,11 @@ extensions:
     fbDateTimeFactory                               : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbSimpleAuth                                    : FastyBird\SimpleAuth\DI\SimpleAuthExtension
     fbJsonApi                                       : FastyBird\JsonApi\DI\JsonApiExtension
-    # FastyBird app libs
-    fbApplicationLibrary                            : FastyBird\Library\Application\DI\ApplicationExtension
-    fbMetadataLibrary                               : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchangeLibrary                               : FastyBird\Library\Exchange\DI\ExchangeExtension
+    # FastyBird app core
+    fbApplication                                   : FastyBird\Core\Application\DI\ApplicationExtension
+    fbTools                                         : FastyBird\Core\Tools\DI\ToolsExtension
+    fbExchange                                      : FastyBird\Core\Exchange\DI\ExchangeExtension
+    # FastyBird app plugins
     fbWebServerPlugin                               : FastyBird\Plugin\WebServer\DI\WebServerExtension
     fbWsServerPlugin                                : FastyBird\Plugin\WsServer\DI\WsServerExtension
     # FastyBird modules
@@ -66,8 +67,6 @@ extensions:
     fbVirtualThermostatAddonHomeKitConnectorBridge  : FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\DI\VirtualThermostatAddonHomeKitConnectorExtension
     # FastyBird addons
     fbVirtualThermostatAddon                        : FastyBird\Addon\VirtualThermostat\DI\VirtualThermostatExtension
-    # FastyBird application
-    fbApplication                                   : FastyBird\App\DI\AppExtension
 
 decorator:
     FastyBird\Plugin\WebServer\Router\Router:
@@ -166,7 +165,7 @@ contributteVite:
     server: http://localhost:3000
     cookie: fb-app-vite
 
-fbMetadataLibrary:
+fbApplication:
     documents:
         mapping: []
 

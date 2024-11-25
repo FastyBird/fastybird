@@ -67,7 +67,9 @@
 					</template>
 
 					<template #title>
-						<el-text class="block">{{ t('devicesModule.texts.connectors.noDevices') }}</el-text>
+						<el-text class="block">
+							{{ t('devicesModule.texts.connectors.noDevices') }}
+						</el-text>
 						<el-button
 							:icon="FasPlus"
 							type="primary"
@@ -98,14 +100,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { orderBy } from 'natural-orderby';
-import { ElButton, ElResult, ElScrollbar, ElSkeleton, ElSkeletonItem, ElText } from 'element-plus';
 
-import { FasPlug, FasInfo, FasPlus } from '@fastybird/web-ui-icons';
+import { ElButton, ElResult, ElScrollbar, ElSkeleton, ElSkeletonItem, ElText } from 'element-plus';
+import { orderBy } from 'natural-orderby';
+
+import { FasInfo, FasPlug, FasPlus } from '@fastybird/web-ui-icons';
 import { FbIconWithChild, FbList } from '@fastybird/web-ui-library';
 
-import { ConnectorDefaultConnectorDevice } from '../../components';
 import { IConnectorDevicesEmits, IConnectorDevicesProps, IDeviceData } from '../../types';
+import ConnectorDefaultConnectorDevice from '../connector-default/connector-default-connector-device.vue';
 
 defineOptions({
 	name: 'ConnectorDefaultConnectorDevices',

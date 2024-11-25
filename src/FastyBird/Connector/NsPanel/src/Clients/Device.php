@@ -23,8 +23,8 @@ use FastyBird\Connector\NsPanel\Helpers;
 use FastyBird\Connector\NsPanel\Protocol;
 use FastyBird\Connector\NsPanel\Queries;
 use FastyBird\Connector\NsPanel\Queue;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -70,8 +70,8 @@ final class Device implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -220,7 +220,7 @@ final class Device implements Client
 									[
 										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'device-client',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'exception' => ToolsHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $gateway->getConnector()->toString(),
 										],
@@ -347,7 +347,7 @@ final class Device implements Client
 														[
 															'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 															'type' => 'device-client',
-															'exception' => ApplicationHelpers\Logger::buildException(
+															'exception' => ToolsHelpers\Logger::buildException(
 																$ex,
 															),
 															'connector' => [
@@ -414,7 +414,7 @@ final class Device implements Client
 										[
 											'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 											'type' => 'device-client',
-											'exception' => ApplicationHelpers\Logger::buildException($ex),
+											'exception' => ToolsHelpers\Logger::buildException($ex),
 											'connector' => [
 												'id' => $gateway->getConnector()->toString(),
 											],
@@ -474,7 +474,7 @@ final class Device implements Client
 								[
 									'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 									'type' => 'device-client',
-									'exception' => ApplicationHelpers\Logger::buildException($ex),
+									'exception' => ToolsHelpers\Logger::buildException($ex),
 									'connector' => [
 										'id' => $gateway->getConnector()->toString(),
 									],
@@ -493,7 +493,7 @@ final class Device implements Client
 					[
 						'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 						'type' => 'device-client',
-						'exception' => ApplicationHelpers\Logger::buildException($ex),
+						'exception' => ToolsHelpers\Logger::buildException($ex),
 						'connector' => [
 							'id' => $gateway->getConnector()->toString(),
 						],
@@ -521,8 +521,8 @@ final class Device implements Client
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\Runtime
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -629,7 +629,7 @@ final class Device implements Client
 									[
 										'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 										'type' => 'device-client',
-										'exception' => ApplicationHelpers\Logger::buildException($ex),
+										'exception' => ToolsHelpers\Logger::buildException($ex),
 										'connector' => [
 											'id' => $gateway->getConnector()->toString(),
 										],
@@ -647,7 +647,7 @@ final class Device implements Client
 						[
 							'source' => MetadataTypes\Sources\Connector::NS_PANEL->value,
 							'type' => 'device-client',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'connector' => [
 								'id' => $gateway->getConnector()->toString(),
 							],

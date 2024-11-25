@@ -1,4 +1,4 @@
-import { TabDocument, UiModuleRoutes as RoutingKeys, ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
+import { ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import exchangeDocumentSchema from '../../../resources/schemas/document.tab.json
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { ITabDatabaseRecord, ITabMeta, ITabsInsertDataActionPayload, ITabsLoadRecordActionPayload, IPlainRelation } from '../../models/types';
+import { RoutingKeys, TabDocument } from '../../types';
 import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_TABS } from '../../utilities/database';
 
 import {

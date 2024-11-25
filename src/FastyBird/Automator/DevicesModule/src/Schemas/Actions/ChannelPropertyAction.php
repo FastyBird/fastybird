@@ -16,9 +16,9 @@
 namespace FastyBird\Automator\DevicesModule\Schemas\Actions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use TypeError;
@@ -55,7 +55,7 @@ final class ChannelPropertyAction extends TriggersSchemas\Actions\Action
 	/**
 	 * @return iterable<string, string|bool|null>
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -70,7 +70,7 @@ final class ChannelPropertyAction extends TriggersSchemas\Actions\Action
 			'device' => $resource->getDevice()->toString(),
 			'channel' => $resource->getChannel()->toString(),
 			'property' => $resource->getProperty()->toString(),
-			'value' => MetadataUtilities\Value::toString($resource->getValue()),
+			'value' => ToolsUtilities\Value::toString($resource->getValue()),
 		]);
 	}
 

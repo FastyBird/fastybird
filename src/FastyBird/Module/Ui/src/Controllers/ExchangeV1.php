@@ -15,9 +15,9 @@
 
 namespace FastyBird\Module\Ui\Controllers;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Documents;
@@ -48,7 +48,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	public function __construct(
 		private readonly Models\Configuration\Widgets\DataSources\Repository $dataSourcesConfigurationRepository,
 		private readonly Ui\Logger $logger,
-		private readonly MetadataDocuments\DocumentFactory $documentFactory,
+		private readonly ApplicationDocuments\DocumentFactory $documentFactory,
 		private readonly EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 	)
 	{
@@ -95,7 +95,7 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 				[
 					'source' => MetadataTypes\Sources\Module::UI->value,
 					'type' => 'exchange-controller',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		}
@@ -107,10 +107,10 @@ final class ExchangeV1 extends WebSockets\Application\Controller\Controller
 	 *
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\Mapping
-	 * @throws MetadataExceptions\MalformedInput
+	 * @throws ApplicationExceptions\InvalidArgument
+	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ApplicationExceptions\Mapping
+	 * @throws ApplicationExceptions\MalformedInput
 	 * @throws Utils\JsonException
 	 */
 	public function actionCall(

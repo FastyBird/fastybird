@@ -16,10 +16,10 @@
 namespace FastyBird\Module\Devices\Schemas\Channels\Properties\States;
 
 use DateTimeInterface;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\JsonApi\Schemas as JsonApiSchemas;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Entities;
@@ -78,7 +78,7 @@ final class State extends JsonApiSchemas\JsonApi
 	 *
 	 * @return iterable<string, (string|bool|int|float|array<string>|array<int, (int|float|array<int, (string|int|float|null)>|null)>|array<int, array<int, (string|array<int, (string|int|float|bool)>|null)>>|null)>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -92,8 +92,8 @@ final class State extends JsonApiSchemas\JsonApi
 
 		return [
 			'channel' => $property->getChannel()->getId()->toString(),
-			'actual_value' => MetadataUtilities\Value::flattenValue($resource->getActualValue()),
-			'expected_value' => MetadataUtilities\Value::flattenValue($resource->getExpectedValue()),
+			'actual_value' => ToolsUtilities\Value::flattenValue($resource->getActualValue()),
+			'expected_value' => ToolsUtilities\Value::flattenValue($resource->getExpectedValue()),
 			'pending' => is_bool($resource->getPending())
 				? $resource->getPending()
 				: $resource->getPending()->format(DateTimeInterface::ATOM),
@@ -106,7 +106,7 @@ final class State extends JsonApiSchemas\JsonApi
 	/**
 	 * @param T $resource
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -134,7 +134,7 @@ final class State extends JsonApiSchemas\JsonApi
 	 *
 	 * @return iterable<string, mixed>
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */
@@ -158,7 +158,7 @@ final class State extends JsonApiSchemas\JsonApi
 	/**
 	 * @param T $resource
 	 *
-	 * @throws ApplicationExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 *
 	 * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint
 	 */

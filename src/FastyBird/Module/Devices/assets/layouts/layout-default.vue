@@ -4,19 +4,8 @@
 
 <script setup lang="ts">
 import { inject, onBeforeMount, ref } from 'vue';
-import get from 'lodash.get';
 
-import {
-	ChannelControlDocument,
-	ChannelDocument,
-	ChannelPropertyDocument,
-	ConnectorControlDocument,
-	ConnectorDocument,
-	ConnectorPropertyDocument,
-	DeviceControlDocument,
-	DeviceDocument,
-	DevicePropertyDocument,
-} from '@fastybird/metadata-library';
+import get from 'lodash.get';
 
 import {
 	channelControlsStoreKey,
@@ -30,6 +19,17 @@ import {
 	devicesStoreKey,
 } from '../configuration';
 import { ApplicationError } from '../errors';
+import {
+	ChannelControlDocument,
+	ChannelDocument,
+	ChannelPropertyDocument,
+	ConnectorControlDocument,
+	ConnectorDocument,
+	ConnectorPropertyDocument,
+	DeviceControlDocument,
+	DeviceDocument,
+	DevicePropertyDocument,
+} from '../types';
 
 defineOptions({
 	name: 'LayoutDefault',

@@ -16,10 +16,10 @@
 namespace FastyBird\Plugin\RedisDb\Publishers\Async;
 
 use DateTimeInterface;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Clients;
 use FastyBird\Plugin\RedisDb\Exceptions;
@@ -61,7 +61,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 	public function publish(
 		MetadataTypes\Sources\Source $source,
 		string $routingKey,
-		MetadataDocuments\Document|null $entity,
+		ApplicationDocuments\Document|null $entity,
 	): Promise\PromiseInterface
 	{
 		$deferred = new Promise\Deferred();
@@ -99,7 +99,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 						[
 							'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 							'type' => 'messages-async-publisher',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'message' => [
 								'routing_key' => $routingKey,
 								'source' => $source->value,
@@ -122,7 +122,7 @@ final class Publisher implements ExchangePublisher\Async\Publisher
 				[
 					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-async-publisher',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'message' => [
 						'routing_key' => $routingKey,
 						'source' => $source->value,

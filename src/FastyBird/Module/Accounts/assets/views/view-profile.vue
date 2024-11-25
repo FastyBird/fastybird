@@ -1,5 +1,5 @@
 <template>
-	<el-card v-if="!isXsBreakpoint">
+	<el-card v-if="isMDDevice">
 		<settings-account-form
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
@@ -24,7 +24,7 @@
 			class="w-full mt-5"
 			@click="onSave"
 		>
-			{{ t('buttons.save.title') }}
+			{{ t('accountsModule.buttons.save.title') }}
 		</el-button>
 	</template>
 </template>
@@ -33,13 +33,15 @@
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
+
 import { ElButton, ElCard } from 'element-plus';
 
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
+import { injectStoresManager, useBreakpoints } from '@fastybird/tools';
 
 import { SettingsAccountForm } from '../components';
-import { useSession } from '../models';
-import { FormResultTypes, LayoutTypes } from '../types';
+import { sessionStoreKey } from '../configuration';
+import { FormResultType, FormResultTypes, LayoutTypes } from '../types';
+
 import { IViewProfileProps } from './view-profile.types';
 
 defineOptions({
@@ -54,18 +56,20 @@ const props = withDefaults(defineProps<IViewProfileProps>(), {
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 
-const sessionStore = useSession();
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
+const { isMDDevice } = useBreakpoints();
 
-const isXsBreakpoint = breakpoints.smaller('sm');
+const storesManager = injectStoresManager();
+
+const sessionStore = storesManager.getStore(sessionStoreKey);
+
 const remoteFormSubmit = ref<boolean>(props.remoteFormSubmit);
-const remoteFormResult = ref<FormResultTypes>(props.remoteFormResult);
+const remoteFormResult = ref<FormResultType>(props.remoteFormResult);
 const remoteFormReset = ref<boolean>(props.remoteFormReset);
 
 const onSave = (): void => {
@@ -94,8 +98,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	async (val: FormResultTypes): Promise<void> => {
+	(): FormResultType => remoteFormResult.value,
+	async (val: FormResultType): Promise<void> => {
 		emit('update:remoteFormResult', val);
 	}
 );
@@ -108,6 +112,6 @@ watch(
 );
 
 useMeta({
-	title: t('meta.profile.profile.title'),
+	title: t('accountsModule.meta.profile.profile.title'),
 });
 </script>

@@ -1,4 +1,3 @@
-export { useBreakpoints } from './useBreakpoints';
 export { useChannel } from './useChannel';
 export { useChannelActions } from './useChannelActions';
 export { useChannelForm } from './useChannelForm';
@@ -16,8 +15,6 @@ export { useDeviceForm } from './useDeviceForm';
 export { useDeviceRoutes } from './useDeviceRoutes';
 export { useDevices } from './useDevices';
 export { useDeviceState } from './useDeviceState';
-export { useEntityTitle } from './useEntityTitle';
-export { useFlashMessage } from './useFlashMessage';
 export { useNormalizeValue } from './useNormalizeValue';
 export { usePluginActions } from './usePluginActions';
 export { usePropertyActions } from './usePropertyActions';

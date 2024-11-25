@@ -18,7 +18,7 @@ namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities\Chann
 use Doctrine\ORM\Mapping as ORM;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Entities;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
-use FastyBird\Library\Application\Entities\Mapping as ApplicationMapping;
+use FastyBird\Core\Application\Entities\Mapping as ApplicationMapping;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Ramsey\Uuid;
 use function assert;

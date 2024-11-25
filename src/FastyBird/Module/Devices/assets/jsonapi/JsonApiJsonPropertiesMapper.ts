@@ -4,6 +4,9 @@ import get from 'lodash.get';
 
 import { DataType } from '@fastybird/metadata-library';
 
+import { useNormalizeValue } from '../composables';
+import { PropertyType } from '../types';
+
 import {
 	ANY_CONTROL_DOCUMENT_REG_EXP,
 	ANY_PROPERTY_DOCUMENT_REG_EXP,
@@ -11,8 +14,6 @@ import {
 	CONNECTOR_DOCUMENT_REG_EXP,
 	DEVICE_DOCUMENT_REG_EXP,
 } from './utilities';
-import { useNormalizeValue } from '../composables';
-import { PropertyType } from '../types';
 
 const CASE_REG_EXP = '_([a-z0-9])';
 

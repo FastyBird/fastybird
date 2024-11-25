@@ -1,45 +1,43 @@
 <template>
 	<layout-sign-box>
-		<layout-sign-header :heading="t('headings.signUp')" />
+		<layout-sign-header :heading="t('accountsModule.headings.signUp')" />
 
 		<sign-up-form v-model:remote-form-result="remoteFormResult" />
 	</layout-sign-box>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
-import { Emitter } from 'mitt';
 
-import { configurationKey } from '../configuration';
-import { EventBusEventsType, FormResultTypes } from '../types';
-import { LayoutSignHeader, LayoutSignBox, SignUpForm } from '../components';
+import { useEventBus } from '@fastybird/tools';
+
+import { LayoutSignBox, LayoutSignHeader, SignUpForm } from '../components';
+import { FormResultType, FormResultTypes } from '../types';
 
 defineOptions({
 	name: 'ViewSignUp',
 });
 
-const configuration = inject(configurationKey);
-
 const { t } = useI18n();
 
-const eventsBus = inject<Emitter<EventBusEventsType>>(configuration?.injectionKeys.eventBusInjectionKey ?? 'eventBus');
+const eventsBus = useEventBus();
 
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	(state: FormResultTypes): void => {
+	(): FormResultType => remoteFormResult.value,
+	(state: FormResultType): void => {
 		if (state === FormResultTypes.WORKING) {
-			eventsBus?.emit('loadingOverlay', 10);
+			eventsBus.emit('loadingOverlay', 10);
 		} else {
-			eventsBus?.emit('loadingOverlay', false);
+			eventsBus.emit('loadingOverlay', false);
 		}
 	}
 );
 
 useMeta({
-	title: t('meta.sign.up.title'),
+	title: t('accountsModule.meta.sign.up.title'),
 });
 </script>

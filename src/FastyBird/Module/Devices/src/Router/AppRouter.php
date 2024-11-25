@@ -15,7 +15,7 @@
 
 namespace FastyBird\Module\Devices\Router;
 
-use FastyBird\Library\Application\Router as ApplicationRouter;
+use Nette\Application;
 
 /**
  * Application router
@@ -28,7 +28,7 @@ use FastyBird\Library\Application\Router as ApplicationRouter;
 final class AppRouter
 {
 
-	public static function createRouter(ApplicationRouter\AppRouter $router): void
+	public static function createRouter(Application\Routers\RouteList $router): void
 	{
 		$list = $router->withModule('Devices');
 

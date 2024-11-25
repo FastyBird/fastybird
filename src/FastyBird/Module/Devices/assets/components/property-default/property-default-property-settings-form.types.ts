@@ -1,4 +1,4 @@
-import { FormResultTypes, IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../types';
+import { FormResultType, IChannel, IChannelProperty, IConnector, IConnectorProperty, IDevice, IDeviceProperty } from '../../types';
 
 export interface IPropertyDefaultPropertySettingsFormProps {
 	connector?: IConnector;
@@ -7,5 +7,5 @@ export interface IPropertyDefaultPropertySettingsFormProps {
 	property: IChannelProperty | IDeviceProperty | IConnectorProperty;
 	remoteFormSubmit?: boolean;
 	remoteFormReset?: boolean;
-	remoteFormResult?: FormResultTypes;
+	remoteFormResult?: FormResultType;
 }

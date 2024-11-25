@@ -15,9 +15,9 @@
 
 namespace FastyBird\Plugin\RedisDb\Exchange;
 
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumer;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Plugin\RedisDb\Events;
 use FastyBird\Plugin\RedisDb\Utilities;
@@ -46,7 +46,7 @@ final readonly class Handler
 	public function __construct(
 		private Utilities\IdentifierGenerator $identifier,
 		private ExchangeDocuments\DocumentFactory $documentFactory,
-		private ExchangeConsumer\Container $consumer,
+		private ExchangeConsumers\Container $consumer,
 		private EventDispatcher\EventDispatcherInterface|null $dispatcher = null,
 		private Log\LoggerInterface $logger = new Log\NullLogger(),
 	)
@@ -94,7 +94,7 @@ final readonly class Handler
 				[
 					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-handler',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 				],
 			);
 		}
@@ -136,7 +136,7 @@ final readonly class Handler
 				[
 					'source' => MetadataTypes\Sources\Plugin::REDISDB->value,
 					'type' => 'messages-handler',
-					'exception' => ApplicationHelpers\Logger::buildException($ex),
+					'exception' => ToolsHelpers\Logger::buildException($ex),
 					'data' => $data,
 				],
 			);

@@ -69,10 +69,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ElAvatar, ElResult, ElIcon, ElScrollbar, useNamespace } from 'element-plus';
+
+import { ElAvatar, ElIcon, ElResult, ElScrollbar, useNamespace } from 'element-plus';
 
 import { FasInfo, FasPlugCircleBolt, FasTrash } from '@fastybird/web-ui-icons';
-import { FbListItem, FbSwipe, FbIconWithChild, ListItemVariantTypes } from '@fastybird/web-ui-library';
+import { FbIconWithChild, FbListItem, FbSwipe, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
 import { IConnectorPlugin } from '../../types';
 
@@ -100,5 +101,5 @@ const noResults = computed<boolean>((): boolean => plugins.value.length === 0);
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'plugins-list-plugins.scss';
+@use 'plugins-list-plugins.scss';
 </style>

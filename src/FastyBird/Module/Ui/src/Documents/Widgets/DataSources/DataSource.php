@@ -16,10 +16,9 @@
 namespace FastyBird\Module\Ui\Documents\Widgets\DataSources;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Ui;
 use FastyBird\Module\Ui\Documents;
@@ -35,22 +34,22 @@ use Ramsey\Uuid;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Widgets\DataSources\DataSource::class)]
-#[DOC\InheritanceType('JOINED_TABLE')]
-#[DOC\DiscriminatorColumn(name: 'type', type: 'string')]
-#[DOC\MappedSuperclass]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Widgets\DataSources\DataSource::class)]
+#[ApplicationDocuments\Mapping\InheritanceType('JOINED_TABLE')]
+#[ApplicationDocuments\Mapping\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ApplicationDocuments\Mapping\MappedSuperclass]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_REPORTED_ROUTING_KEY,
 	Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_CREATED_ROUTING_KEY,
 	Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_UPDATED_ROUTING_KEY,
 	Ui\Constants::MESSAGE_BUS_WIDGET_DATA_SOURCE_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-abstract class DataSource implements Documents\Document, MetadataDocuments\Owner, MetadataDocuments\CreatedAt, MetadataDocuments\UpdatedAt
+abstract class DataSource implements Documents\Document, ApplicationDocuments\Owner, ApplicationDocuments\CreatedAt, ApplicationDocuments\UpdatedAt
 {
 
-	use MetadataDocuments\TOwner;
-	use MetadataDocuments\TCreatedAt;
-	use MetadataDocuments\TUpdatedAt;
+	use ApplicationDocuments\TOwner;
+	use ApplicationDocuments\TCreatedAt;
+	use ApplicationDocuments\TUpdatedAt;
 
 	public function __construct(
 		#[ApplicationObjectMapper\Rules\UuidValue()]

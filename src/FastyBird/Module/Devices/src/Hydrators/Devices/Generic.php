@@ -16,9 +16,9 @@
 namespace FastyBird\Module\Devices\Hydrators\Devices;
 
 use Doctrine\Persistence;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\JsonApi\Exceptions as JsonApiExceptions;
 use FastyBird\JsonApi\Helpers;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Schemas;
@@ -57,8 +57,8 @@ final class Generic extends Device
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws JsonApiExceptions\JsonApiError
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	protected function hydrateConnectorRelationship(
 		JsonAPIDocument\Objects\IRelationshipObject $relationship,

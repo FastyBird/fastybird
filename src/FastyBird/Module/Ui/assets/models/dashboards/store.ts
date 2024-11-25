@@ -1,4 +1,4 @@
-import { DashboardDocument, UiModuleRoutes as RoutingKeys, ModulePrefix } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios from 'axios';
@@ -19,6 +19,7 @@ import {
 	IDashboardsLoadRecordActionPayload,
 	IPlainRelation,
 } from '../../models/types';
+import { DashboardDocument, RoutingKeys } from '../../types';
 import { addRecord, getAllRecords, getRecord, removeRecord, DB_TABLE_DASHBOARDS } from '../../utilities/database';
 
 import {

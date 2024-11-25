@@ -9,7 +9,7 @@
 		@submit.prevent="onSubmit"
 	>
 		<el-form-item
-			:label="t('fields.identity.uid.title')"
+			:label="t('accountsModule.fields.identity.uid.title')"
 			prop="uid"
 			class="mb-10"
 		>
@@ -25,7 +25,7 @@
 			class="block w-full"
 			@click="onSubmit(resetPasswordFormEl)"
 		>
-			{{ t('buttons.resetPassword.title') }}
+			{{ t('accountsModule.buttons.resetPassword.title') }}
 		</el-button>
 	</el-form>
 
@@ -34,21 +34,25 @@
 			class="block w-full"
 			@click="onBackToSignIn()"
 		>
-			{{ t('buttons.backToSignIn.title') }}
+			{{ t('accountsModule.buttons.backToSignIn.title') }}
 		</el-button>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import get from 'lodash.get';
-import { ElButton, ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
+import { useRouter } from 'vue-router';
 
-import { useAccount } from '../../models';
-import { useFlashMessage, useRoutesNames } from '../../composables';
-import { FormResultTypes } from '../../types';
+import { ElButton, ElForm, ElFormItem, ElInput, FormInstance, FormRules } from 'element-plus';
+import get from 'lodash.get';
+
+import { injectStoresManager, useFlashMessage } from '@fastybird/tools';
+
+import { useRoutesNames } from '../../composables';
+import { accountStoreKey } from '../../configuration';
+import { FormResultType, FormResultTypes } from '../../types';
+
 import { IResetPasswordForm, IResetPasswordProps } from './reset-password-form.types';
 
 defineOptions({
@@ -61,7 +65,7 @@ const props = withDefaults(defineProps<IResetPasswordProps>(), {
 });
 
 const emit = defineEmits<{
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
@@ -69,13 +73,16 @@ const { t } = useI18n();
 const flashMessage = useFlashMessage();
 const router = useRouter();
 
-const accountStore = useAccount();
+const storesManager = injectStoresManager();
+
+const accountStore = storesManager.getStore(accountStoreKey);
+
 const { routeNames } = useRoutesNames();
 
 const resetPasswordFormEl = ref<FormInstance | undefined>(undefined);
 
 const rules = reactive<FormRules<IResetPasswordForm>>({
-	uid: [{ required: true, message: t('fields.identity.uid.validation.required'), trigger: 'change' }],
+	uid: [{ required: true, message: t('accountsModule.fields.identity.uid.validation.required'), trigger: 'change' }],
 });
 
 const resetPasswordForm = reactive<IResetPasswordForm>({
@@ -96,7 +103,7 @@ const onSubmit = async (formEl: FormInstance | undefined): Promise<void> => {
 			} catch (e: any) {
 				emit('update:remoteFormResult', FormResultTypes.ERROR);
 
-				const errorMessage = t('messages.requestError');
+				const errorMessage = t('accountsModule.messages.requestError');
 
 				if (get(e, 'exception', null) !== null) {
 					flashMessage.exception(e.exception, errorMessage);

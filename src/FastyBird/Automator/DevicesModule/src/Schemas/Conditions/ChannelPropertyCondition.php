@@ -16,9 +16,9 @@
 namespace FastyBird\Automator\DevicesModule\Schemas\Conditions;
 
 use FastyBird\Automator\DevicesModule\Entities;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Triggers\Schemas as TriggersSchemas;
 use Neomerx\JsonApi;
 use TypeError;
@@ -56,7 +56,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 	/**
 	 * @return iterable<string, string|bool|array<int>|null>
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidArgument
 	 * @throws TypeError
 	 * @throws ValueError
 	 *
@@ -72,7 +72,7 @@ final class ChannelPropertyCondition extends TriggersSchemas\Conditions\Conditio
 			'channel' => $resource->getChannel()->toString(),
 			'property' => $resource->getProperty()->toString(),
 			'operator' => $resource->getOperator()->value,
-			'operand' => MetadataUtilities\Value::toString($resource->getOperand()),
+			'operand' => ToolsUtilities\Value::toString($resource->getOperand()),
 		]);
 	}
 

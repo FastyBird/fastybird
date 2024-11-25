@@ -60,16 +60,17 @@
 
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElResult } from 'element-plus';
 
-import { FasExclamation, FasBox, FasPlug, FasEthernet } from '@fastybird/web-ui-icons';
+import { FasBox, FasEthernet, FasExclamation, FasPlug } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
 
 import { ApplicationError } from '../../errors';
-import { IViewErrorProps } from './view-error.types';
 
-import type { ComponentPublicInstance } from 'vue';
+import { IViewErrorProps } from './view-error.types';
 
 defineOptions({
 	name: 'ViewError',

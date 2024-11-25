@@ -1,5 +1,5 @@
 <template>
-	<el-card v-if="!isXsBreakpoint">
+	<el-card v-if="isMDDevice">
 		<settings-password-form
 			v-model:remote-form-submit="remoteFormSubmit"
 			v-model:remote-form-result="remoteFormResult"
@@ -24,7 +24,7 @@
 			class="w-full mt-5"
 			@click="onSave"
 		>
-			{{ t('buttons.save.title') }}
+			{{ t('accountsModule.buttons.save.title') }}
 		</el-button>
 	</template>
 </template>
@@ -33,13 +33,15 @@
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
+
 import { ElButton, ElCard } from 'element-plus';
 
-import { breakpointsBootstrapV5, useBreakpoints } from '@vueuse/core';
+import { injectStoresManager, useBreakpoints } from '@fastybird/tools';
 
 import { SettingsPasswordForm } from '../components';
-import { useIdentities, useSession } from '../models';
-import { FormResultTypes, IIdentity, LayoutTypes } from '../types';
+import { identitiesStoreKey, sessionStoreKey } from '../configuration';
+import { FormResultType, FormResultTypes, IIdentity, LayoutTypes } from '../types';
+
 import { IViewPasswordProps } from './view-password.types';
 
 defineOptions({
@@ -54,19 +56,21 @@ const props = withDefaults(defineProps<IViewPasswordProps>(), {
 
 const emit = defineEmits<{
 	(e: 'update:remoteFormSubmit', remoteFormSubmit: boolean): void;
-	(e: 'update:remoteFormResult', remoteFormResult: FormResultTypes): void;
+	(e: 'update:remoteFormResult', remoteFormResult: FormResultType): void;
 	(e: 'update:remoteFormReset', remoteFormReset: boolean): void;
 }>();
 
 const { t } = useI18n();
 
-const sessionStore = useSession();
-const identitiesStore = useIdentities();
-const breakpoints = useBreakpoints(breakpointsBootstrapV5);
+const { isMDDevice } = useBreakpoints();
 
-const isXsBreakpoint = breakpoints.smaller('sm');
+const storesManager = injectStoresManager();
+
+const sessionStore = storesManager.getStore(sessionStoreKey);
+const identitiesStore = storesManager.getStore(identitiesStoreKey);
+
 const remoteFormSubmit = ref<boolean>(props.remoteFormSubmit);
-const remoteFormResult = ref<FormResultTypes>(props.remoteFormResult);
+const remoteFormResult = ref<FormResultType>(props.remoteFormResult);
 const remoteFormReset = ref<boolean>(props.remoteFormReset);
 
 const identity = computed<IIdentity | null>((): IIdentity | null => {
@@ -107,8 +111,8 @@ watch(
 );
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	async (val: FormResultTypes): Promise<void> => {
+	(): FormResultType => remoteFormResult.value,
+	async (val: FormResultType): Promise<void> => {
 		emit('update:remoteFormResult', val);
 	}
 );
@@ -121,6 +125,6 @@ watch(
 );
 
 useMeta({
-	title: t('meta.profile.password.title'),
+	title: t('accountsModule.meta.profile.password.title'),
 });
 </script>

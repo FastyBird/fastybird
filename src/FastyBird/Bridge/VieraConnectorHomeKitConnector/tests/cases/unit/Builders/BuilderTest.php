@@ -9,8 +9,8 @@ use FastyBird\Bridge\VieraConnectorHomeKitConnector\Exceptions;
 use FastyBird\Bridge\VieraConnectorHomeKitConnector\Tests;
 use FastyBird\Connector\HomeKit\Entities as HomeKitEntities;
 use FastyBird\Connector\Viera\Entities as VieraEntities;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use FastyBird\Module\Devices\Queries as DevicesQueries;
 use IPub\DoctrineCrud\Exceptions as DoctrineCrudExceptions;
@@ -34,9 +34,9 @@ final class BuilderTest extends Tests\Cases\Unit\DbTestCase
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws Error
-	 * @throws MetadataExceptions\InvalidArgument
 	 * @throws Utils\JsonException
 	 * @throws RuntimeException
+	 * @throws ToolsExceptions\InvalidArgument
 	 *
 	 * @dataProvider builder
 	 */

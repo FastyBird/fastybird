@@ -5,9 +5,9 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Subscribers;
 use Doctrine\ORM;
 use Doctrine\Persistence;
 use Exception;
-use FastyBird\Library\Application\Utilities as ApplicationUtilities;
-use FastyBird\Library\Exchange\Documents as ExchangeDocuments;
-use FastyBird\Library\Exchange\Publisher as ExchangePublisher;
+use FastyBird\Core\Application\EventLoop as ApplicationEventLoop;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
+use FastyBird\Core\Exchange\Publisher as ExchangePublisher;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
@@ -54,7 +54,7 @@ final class ModuleEntitiesTest extends TestCase
 
 		$documentFactory = $this->createMock(ExchangeDocuments\DocumentFactory::class);
 
-		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+		$eventLoopStatus = $this->createMock(ApplicationEventLoop\Status::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
@@ -166,7 +166,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+		$eventLoopStatus = $this->createMock(ApplicationEventLoop\Status::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
@@ -287,7 +287,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+		$eventLoopStatus = $this->createMock(ApplicationEventLoop\Status::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,
@@ -416,7 +416,7 @@ final class ModuleEntitiesTest extends TestCase
 			->method('create')
 			->willReturn($document);
 
-		$eventLoopStatus = $this->createMock(ApplicationUtilities\EventLoopStatus::class);
+		$eventLoopStatus = $this->createMock(ApplicationEventLoop\Status::class);
 
 		$subscriber = new Subscribers\ModuleEntities(
 			$entityManager,

@@ -22,9 +22,9 @@ use FastyBird\Connector\Tuya\Helpers;
 use FastyBird\Connector\Tuya\Services;
 use FastyBird\Connector\Tuya\Types;
 use FastyBird\Connector\Tuya\ValueObjects;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Schemas as ToolsSchemas;
 use FastyBird\DateTimeFactory;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Schemas as MetadataSchemas;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp;
@@ -154,7 +154,7 @@ final class OpenApi
 		private readonly Types\OpenApiEndpoint $endpoint,
 		private readonly Services\HttpClientFactory $httpClientFactory,
 		private readonly Tuya\Logger $logger,
-		private readonly MetadataSchemas\Validator $schemaValidator,
+		private readonly ToolsSchemas\Validator $schemaValidator,
 		private readonly ObjectMapper\Processing\Processor $objectMapper,
 		private readonly DateTimeFactory\Clock $clock,
 	)
@@ -1426,7 +1426,7 @@ final class OpenApi
 				$body,
 				$this->getSchema($schemaFilename),
 			);
-		} catch (MetadataExceptions\Logic | MetadataExceptions\MalformedInput | MetadataExceptions\InvalidData $ex) {
+		} catch (ToolsExceptions\Logic | ToolsExceptions\MalformedInput | ToolsExceptions\InvalidData $ex) {
 			if ($throw) {
 				throw new Exceptions\OpenApiCall(
 					'Could not validate received response payload',

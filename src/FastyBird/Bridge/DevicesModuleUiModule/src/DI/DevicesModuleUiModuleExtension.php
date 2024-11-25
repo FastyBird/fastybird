@@ -21,11 +21,11 @@ use FastyBird\Bridge\DevicesModuleUiModule\Consumers;
 use FastyBird\Bridge\DevicesModuleUiModule\Hydrators;
 use FastyBird\Bridge\DevicesModuleUiModule\Schemas;
 use FastyBird\Bridge\DevicesModuleUiModule\Subscribers;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Exchange\Consumers as ExchangeConsumers;
-use FastyBird\Library\Exchange\DI as ExchangeDI;
-use FastyBird\Library\Metadata;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\DI as ApplicationDI;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Exchange\Consumers as ExchangeConsumers;
+use FastyBird\Core\Exchange\DI as ExchangeDI;
 use Nette\Bootstrap;
 use Nette\DI;
 use Nette\Schema;
@@ -204,7 +204,7 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 		 * APPLICATION DOCUMENTS
 		 */
 
-		$services = $builder->findByTag(Metadata\DI\MetadataExtension::DRIVER_TAG);
+		$services = $builder->findByTag(ApplicationDI\ApplicationExtension::DRIVER_TAG);
 
 		if ($services !== []) {
 			$services = array_keys($services);
@@ -219,7 +219,7 @@ class DevicesModuleUiModuleExtension extends DI\CompilerExtension
 				);
 
 				$documentAttributeDriverChainService = $builder->getDefinitionByType(
-					MetadataDocuments\Mapping\Driver\MappingDriverChain::class,
+					ApplicationDocuments\Mapping\Driver\MappingDriverChain::class,
 				);
 
 				if ($documentAttributeDriverChainService instanceof DI\Definitions\ServiceDefinition) {

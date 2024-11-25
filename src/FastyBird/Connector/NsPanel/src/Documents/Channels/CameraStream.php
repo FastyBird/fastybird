@@ -17,10 +17,10 @@ namespace FastyBird\Connector\NsPanel\Documents\Channels;
 
 use FastyBird\Connector\NsPanel\Entities;
 use FastyBird\Connector\NsPanel\Types;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\CameraStream::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\CameraStream::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\CameraStream::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\CameraStream::TYPE)]
 class CameraStream extends Channel
 {
 

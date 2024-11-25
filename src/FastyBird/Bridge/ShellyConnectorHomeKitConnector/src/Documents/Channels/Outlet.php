@@ -16,10 +16,10 @@
 namespace FastyBird\Bridge\ShellyConnectorHomeKitConnector\Documents\Channels;
 
 use FastyBird\Bridge\ShellyConnectorHomeKitConnector\Entities;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 
-#[DOC\Document(entity: Entities\Channels\Outlet::class)]
-#[DOC\DiscriminatorEntry(name: Entities\Channels\Outlet::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Outlet::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: Entities\Channels\Outlet::TYPE)]
 class Outlet extends Shelly
 {
 

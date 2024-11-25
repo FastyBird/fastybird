@@ -1,14 +1,18 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import capitalize from 'lodash.capitalize';
 import get from 'lodash.get';
 
-import { useFlashMessage } from '../composables';
+import { injectStoresManager } from '@fastybird/tools';
+import { useFlashMessage } from '@fastybird/tools';
+
 import { channelPropertiesStoreKey, channelsStoreKey } from '../configuration';
-import { storesManager } from '../entry';
-import { FormResultTypes, IChannel, IChannelForm, UseChannelForm } from '../types';
+import { FormResultType, FormResultTypes, IChannel, IChannelForm, UseChannelForm } from '../types';
 
 export const useChannelForm = (channel: IChannel): UseChannelForm => {
+	const storesManager = injectStoresManager();
+
 	const channelsStore = storesManager.getStore(channelsStoreKey);
 	const propertiesStore = storesManager.getStore(channelPropertiesStoreKey);
 
@@ -16,7 +20,7 @@ export const useChannelForm = (channel: IChannel): UseChannelForm => {
 
 	const flashMessage = useFlashMessage();
 
-	const formResult = ref<FormResultTypes>(FormResultTypes.NONE);
+	const formResult = ref<FormResultType>(FormResultTypes.NONE);
 
 	let timer: number;
 

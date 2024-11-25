@@ -1,4 +1,4 @@
-import { ModulePrefix, UiModuleRoutes as RoutingKeys, WidgetDisplayDocument } from '@fastybird/metadata-library';
+import { ModulePrefix } from '@fastybird/metadata-library';
 import addFormats from 'ajv-formats';
 import Ajv from 'ajv/dist/2020';
 import axios from 'axios';
@@ -13,6 +13,7 @@ import exchangeDocumentSchema from '../../../resources/schemas/document.widget.d
 import { ApiError } from '../../errors';
 import { JsonApiJsonPropertiesMapper, JsonApiModelPropertiesMapper } from '../../jsonapi';
 import { useWidgets } from '../../models';
+import { RoutingKeys, WidgetDisplayDocument } from '../../types';
 import { addRecord, DB_TABLE_WIDGETS_DATA_SOURCES, getAllRecords, getRecord, removeRecord } from '../../utilities/database';
 import { IWidget } from '../widgets/types';
 

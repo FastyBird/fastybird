@@ -20,8 +20,8 @@ use FastyBird\Connector\FbMqtt;
 use FastyBird\Connector\FbMqtt\Entities;
 use FastyBird\Connector\FbMqtt\Queries;
 use FastyBird\Connector\FbMqtt\Queue;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Exceptions as DevicesExceptions;
@@ -56,15 +56,15 @@ final class ChannelAttribute implements Queue\Consumer
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelPropertiesManager,
 		private readonly DevicesModels\Entities\Channels\Controls\ControlsRepository $channelControlsRepository,
 		private readonly DevicesModels\Entities\Channels\Controls\ControlsManager $channelControlsManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 	)
 	{
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
-	 * @throws ApplicationExceptions\Runtime
 	 * @throws DBAL\Exception
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\Runtime
 	 */
 	public function consume(Queue\Messages\Message $message): bool
 	{
@@ -170,12 +170,12 @@ final class ChannelAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $properties
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function setChannelProperties(
 		DevicesEntities\Channels\Channel $channel,
@@ -213,12 +213,12 @@ final class ChannelAttribute implements Queue\Consumer
 	/**
 	 * @param Utils\ArrayHash<string> $controls
 	 *
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws DevicesExceptions\InvalidState
 	 * @throws DBAL\Exception\UniqueConstraintViolationException
 	 * @throws DoctrineCrudExceptions\EntityCreation
 	 * @throws DoctrineCrudExceptions\InvalidArgument
 	 * @throws DoctrineCrudExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidState
 	 */
 	private function setChannelControls(
 		DevicesEntities\Channels\Channel $channel,

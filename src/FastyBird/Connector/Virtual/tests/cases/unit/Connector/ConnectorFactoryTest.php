@@ -7,7 +7,7 @@ use FastyBird\Connector\Virtual\Connector;
 use FastyBird\Connector\Virtual\Documents;
 use FastyBird\Connector\Virtual\Exceptions;
 use FastyBird\Connector\Virtual\Tests;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Models as DevicesModels;
 use Nette;
 use Ramsey\Uuid;

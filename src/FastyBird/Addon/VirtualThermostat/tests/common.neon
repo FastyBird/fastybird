@@ -27,8 +27,8 @@ extensions:
     fbDateTimeFactory                   : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
     fbJsonApi                           : FastyBird\JsonApi\DI\JsonApiExtension
     fbSimpleAuth                        : FastyBird\SimpleAuth\DI\SimpleAuthExtension
-    fbMetadataLibrary                   : FastyBird\Library\Metadata\DI\MetadataExtension
-    fbExchangeLibrary                   : FastyBird\Library\Exchange\DI\ExchangeExtension
+    fbTools                             : FastyBird\Core\Tools\DI\ToolsExtension
+    fbExchange                          : FastyBird\Core\Exchange\DI\ExchangeExtension
     fbDevicesModule                     : FastyBird\Module\Devices\DI\DevicesExtension
     fbVirtualConnector                  : FastyBird\Connector\Virtual\DI\VirtualExtension
 
@@ -100,7 +100,7 @@ nettrineOrmAttributes:
         FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy
     ]
 
-fbMetadataLibrary:
+fbApplication:
     documents:
         mapping: [
             FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy: %appDir%/fixtures/dummy

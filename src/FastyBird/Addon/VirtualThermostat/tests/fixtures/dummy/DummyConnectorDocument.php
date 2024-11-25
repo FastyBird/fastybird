@@ -2,11 +2,11 @@
 
 namespace FastyBird\Addon\VirtualThermostat\Tests\Fixtures\Dummy;
 
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Module\Devices\Documents;
 
-#[DOC\Document(entity: DummyConnectorEntity::class)]
-#[DOC\DiscriminatorEntry(name: DummyConnectorEntity::TYPE)]
+#[ApplicationDocuments\Mapping\Document(entity: DummyConnectorEntity::class)]
+#[ApplicationDocuments\Mapping\DiscriminatorEntry(name: DummyConnectorEntity::TYPE)]
 class DummyConnectorDocument extends Documents\Connectors\Connector
 {
 

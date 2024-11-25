@@ -79,8 +79,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RuleType } from 'async-validator/dist-types/interface';
-import { ElDatePicker, ElFormItem, ElInput, ElInputNumber, ElOption, ElTimePicker, ElSelect, ElSwitch, FormItemRule } from 'element-plus';
+
+import { RuleType } from 'async-validator';
+import { ElDatePicker, ElFormItem, ElInput, ElInputNumber, ElOption, ElSelect, ElSwitch, ElTimePicker, FormItemRule } from 'element-plus';
 
 import { DataType } from '@fastybird/metadata-library';
 

@@ -15,8 +15,8 @@
 
 namespace FastyBird\Plugin\WsServer\DI;
 
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Exchange\Exchange as ExchangeExchange;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Exchange\Exchange as ExchangeExchange;
 use FastyBird\Plugin\WsServer\Commands;
 use FastyBird\Plugin\WsServer\Events;
 use FastyBird\Plugin\WsServer\Exceptions;

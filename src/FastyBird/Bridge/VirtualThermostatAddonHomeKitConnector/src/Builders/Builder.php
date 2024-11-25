@@ -27,10 +27,10 @@ use FastyBird\Connector\HomeKit\Exceptions as HomeKitExceptions;
 use FastyBird\Connector\HomeKit\Helpers as HomeKitHelpers;
 use FastyBird\Connector\HomeKit\Queries as HomeKitQueries;
 use FastyBird\Connector\HomeKit\Types as HomeKitTypes;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
-use FastyBird\Library\Metadata\Formats as MetadataFormats;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Formats as ToolsFormats;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Devices\Entities as DevicesEntities;
 use FastyBird\Module\Devices\Models as DevicesModels;
@@ -79,7 +79,7 @@ class Builder
 		private readonly DevicesModels\Entities\Channels\ChannelsManager $channelsManager,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesRepository $channelsPropertiesRepository,
 		private readonly DevicesModels\Entities\Channels\Properties\PropertiesManager $channelsPropertiesManager,
-		private readonly ApplicationHelpers\Database $databaseHelper,
+		private readonly ToolsHelpers\Database $databaseHelper,
 		private readonly Localization\Translator $translator,
 	)
 	{
@@ -306,13 +306,12 @@ class Builder
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws HomeKitExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 * @throws VirtualThermostatExceptions\InvalidState
@@ -461,13 +460,12 @@ class Builder
 	}
 
 	/**
-	 * @throws ApplicationExceptions\InvalidState
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidState
 	 * @throws HomeKitExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws Nette\IOException
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 * @throws VirtualThermostatExceptions\InvalidState
@@ -625,7 +623,7 @@ class Builder
 				$characteristicMetadata->offsetExists('ValidValues')
 				&& $characteristicMetadata->offsetGet('ValidValues') instanceof Utils\ArrayHash
 			) {
-				$format = new MetadataFormats\StringEnum(
+				$format = new ToolsFormats\StringEnum(
 					array_values((array) $characteristicMetadata->offsetGet('ValidValues')),
 				);
 				$default = array_values((array) $characteristicMetadata->offsetGet('ValidValues'))[0];
@@ -808,8 +806,8 @@ class Builder
 	/**
 	 * @return array<int, int|float|array<int, int|float|string|null>|null>|null
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -822,7 +820,7 @@ class Builder
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_STATE->value
 			&& $characteristicType === HomeKitTypes\CharacteristicType::CURRENT_HEATING_COOLING_STATE
 		) {
-			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
+			assert($property->getFormat() instanceof ToolsFormats\StringEnum);
 
 			$format = [];
 
@@ -855,7 +853,7 @@ class Builder
 			$property->getIdentifier() === VirtualThermostatTypes\ChannelPropertyIdentifier::HVAC_MODE->value
 			&& $characteristicType === HomeKitTypes\CharacteristicType::TARGET_HEATING_COOLING_STATE
 		) {
-			assert($property->getFormat() instanceof MetadataFormats\StringEnum);
+			assert($property->getFormat() instanceof ToolsFormats\StringEnum);
 
 			$format = [];
 
@@ -914,7 +912,7 @@ class Builder
 			)
 		) {
 			assert(
-				$property->getFormat() instanceof MetadataFormats\NumberRange
+				$property->getFormat() instanceof ToolsFormats\NumberRange
 				|| $property->getFormat() === null,
 			);
 

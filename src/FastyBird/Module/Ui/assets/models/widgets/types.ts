@@ -1,8 +1,6 @@
 import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
 import { _GettersTree } from 'pinia';
 
-import { WidgetDocument } from '@fastybird/metadata-library';
-
 import {
 	IWidgetDataSourceResponseModel,
 	ITabResponseModel,
@@ -14,6 +12,7 @@ import {
 	ITabResponseData,
 	IWidgetDisplayResponseData,
 } from '../../models/types';
+import { WidgetDocument } from '../../types';
 
 export interface IWidgetMeta extends IEntityMeta {
 	type: string;

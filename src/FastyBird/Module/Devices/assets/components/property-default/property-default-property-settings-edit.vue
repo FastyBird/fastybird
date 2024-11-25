@@ -72,14 +72,15 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import { ElButton, ElDialog } from 'element-plus';
 
+import { useBreakpoints } from '@fastybird/tools';
 import { FarCircleCheck, FarCircleXmark, FasPencil } from '@fastybird/web-ui-icons';
 import { FbDialogFooter, FbDialogHeader } from '@fastybird/web-ui-library';
 
-import { useBreakpoints } from '../../composables';
-import { PropertyDefaultPropertySettingsForm } from '../../components';
-import { FormResultTypes } from '../../types';
+import { FormResultType, FormResultTypes } from '../../types';
+import PropertyDefaultPropertySettingsForm from '../property-default/property-default-property-settings-form.vue';
 
 import { IPropertyDefaultPropertySettingsEditProps } from './property-default-property-settings-edit.types';
 
@@ -99,7 +100,7 @@ const { isSMDevice, isMDDevice } = useBreakpoints();
 const open = ref<boolean>(true);
 
 const remoteFormSubmit = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const isDraft = computed<boolean>((): boolean => {
 	if (isChannelProperty.value) {
@@ -138,8 +139,8 @@ const onCreated = (): void => {
 };
 
 watch(
-	(): FormResultTypes => remoteFormResult.value,
-	(actual, previous): void => {
+	(): FormResultType => remoteFormResult.value,
+	(actual: FormResultType, previous: FormResultType): void => {
 		if (actual === FormResultTypes.NONE && previous === FormResultTypes.OK) {
 			onClose();
 		}

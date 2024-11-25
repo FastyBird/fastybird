@@ -4,8 +4,8 @@ namespace FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector\Tests\Cases\Un
 
 use Error;
 use FastyBird\Bridge\VirtualThermostatAddonHomeKitConnector;
-use FastyBird\Library\Application\Boot as ApplicationBoot;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Boot as ApplicationBoot;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use Nette;
 use Nette\DI;
 use PHPUnit\Framework\TestCase;

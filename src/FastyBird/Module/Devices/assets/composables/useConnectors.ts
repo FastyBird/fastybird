@@ -1,5 +1,8 @@
 import { computed } from 'vue';
+
 import { orderBy } from 'natural-orderby';
+
+import { injectStoresManager } from '@fastybird/tools';
 
 import {
 	channelControlsStoreKey,
@@ -12,7 +15,6 @@ import {
 	devicePropertiesStoreKey,
 	devicesStoreKey,
 } from '../configuration';
-import { storesManager } from '../entry';
 import {
 	IChannelControl,
 	IChannelData,
@@ -29,6 +31,8 @@ import {
 } from '../types';
 
 export const useConnectors = (plugin?: IConnectorPlugin['type'] | undefined): UseConnectors => {
+	const storesManager = injectStoresManager();
+
 	const connectorsStore = storesManager.getStore(connectorsStoreKey);
 	const connectorControlsStore = storesManager.getStore(connectorControlsStoreKey);
 	const connectorPropertiesStore = storesManager.getStore(connectorPropertiesStoreKey);

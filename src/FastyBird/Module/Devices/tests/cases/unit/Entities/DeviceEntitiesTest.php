@@ -4,7 +4,7 @@ namespace FastyBird\Module\Devices\Tests\Cases\Unit\Entities;
 
 use Doctrine\DBAL;
 use Error;
-use FastyBird\Library\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Models;
 use FastyBird\Module\Devices\Queries;

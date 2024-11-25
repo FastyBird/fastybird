@@ -35,17 +35,17 @@
   "require": {
     "php": ">=8.2.0",
     "cweagans/composer-patches": "^1.7",
-    "fastybird/application-library": "dev-main",
+    "fastybird/application": "dev-main",
     "fastybird/metadata-library": "dev-main",
-    "nette/bootstrap": "^3.1",
-    "nette/di": "^3.0",
+    "nette/bootstrap": "^3.2",
+    "nette/di": "^3.2",
     "nette/utils": "^4.0",
     "orisai/object-mapper": "^0.2",
     "php-on-couch/php-on-couch": "^4.0",
     "phpdocumentor/reflection": "^5.3",
     "phpdocumentor/reflection-common": "^2.2",
     "psr/log": "^3.0",
-    "ramsey/uuid": "^4.5"
+    "ramsey/uuid": "^4.7"
   },
   "require-dev": {
     "brianium/paratest": "^7.3",

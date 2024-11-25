@@ -1,0 +1,8 @@
+{
+	"application": {
+		"menu": {
+			"root": "MiniServer",
+			"dashboard": "Dashboard"
+		}
+	}
+}

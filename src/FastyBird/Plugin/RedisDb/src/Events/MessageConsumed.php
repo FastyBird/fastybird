@@ -15,7 +15,7 @@
 
 namespace FastyBird\Plugin\RedisDb\Events;
 
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use Symfony\Contracts\EventDispatcher;
 
@@ -33,7 +33,7 @@ class MessageConsumed extends EventDispatcher\Event
 	public function __construct(
 		private readonly MetadataTypes\Sources\Source $source,
 		private readonly string $routingKey,
-		private readonly MetadataDocuments\Document|null $entity,
+		private readonly ApplicationDocuments\Document|null $entity,
 	)
 	{
 	}
@@ -48,7 +48,7 @@ class MessageConsumed extends EventDispatcher\Event
 		return $this->routingKey;
 	}
 
-	public function getEntity(): MetadataDocuments\Document|null
+	public function getEntity(): ApplicationDocuments\Document|null
 	{
 		return $this->entity;
 	}

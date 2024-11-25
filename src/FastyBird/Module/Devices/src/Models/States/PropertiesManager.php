@@ -16,12 +16,12 @@
 namespace FastyBird\Module\Devices\Models\States;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\Helpers as ApplicationHelpers;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Exceptions as ApplicationExceptions;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Helpers as ToolsHelpers;
+use FastyBird\Core\Tools\Transformers as ToolsTransformers;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
-use FastyBird\Library\Tools\Exceptions as ToolsExceptions;
-use FastyBird\Library\Tools\Transformers as ToolsTransformers;
 use FastyBird\Module\Devices;
 use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Exceptions;
@@ -68,9 +68,8 @@ abstract class PropertiesManager
 	 * @throws Exceptions\InvalidArgument
 	 * @throws Exceptions\InvalidExpectedValue
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -86,7 +85,7 @@ abstract class PropertiesManager
 					$mappedProperty,
 					$forReading,
 				);
-			} catch (MetadataExceptions\InvalidValue | MetadataExceptions\InvalidState $ex) {
+			} catch (ToolsExceptions\InvalidValue | ApplicationExceptions\InvalidState $ex) {
 				if ($mappedProperty !== null) {
 					$updateValues[States\Property::ACTUAL_VALUE_FIELD] = null;
 					$updateValues[States\Property::VALID_FIELD] = false;
@@ -96,7 +95,7 @@ abstract class PropertiesManager
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
 							'type' => 'properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 							'property' => $property->getId()->toString(),
 							'mapped_property' => $mappedProperty->getId()->toString(),
 						],
@@ -115,7 +114,7 @@ abstract class PropertiesManager
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
 							'type' => 'properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -139,7 +138,7 @@ abstract class PropertiesManager
 				}
 
 				$updateValues[States\Property::EXPECTED_VALUE_FIELD] = $expectedValue;
-			} catch (MetadataExceptions\InvalidValue $ex) {
+			} catch (ToolsExceptions\InvalidValue $ex) {
 				if ($mappedProperty !== null) {
 					$updateValues[States\Property::EXPECTED_VALUE_FIELD] = null;
 					$updateValues[States\Property::PENDING_FIELD] = false;
@@ -149,7 +148,7 @@ abstract class PropertiesManager
 						[
 							'source' => MetadataTypes\Sources\Module::DEVICES->value,
 							'type' => 'properties-states',
-							'exception' => ApplicationHelpers\Logger::buildException($ex),
+							'exception' => ToolsHelpers\Logger::buildException($ex),
 						],
 					);
 
@@ -209,10 +208,9 @@ abstract class PropertiesManager
 	 * @param TChild $mappedProperty
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidValue
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidValue
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -226,22 +224,22 @@ abstract class PropertiesManager
 		/**
 		 * Transform value to property defined data type
 		 */
-		$value = MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
+		$value = ToolsUtilities\Value::transformDataType(
+			ToolsUtilities\Value::flattenValue($value),
 			$property->getDataType(),
 		);
 
 		/**
 		 * Read value is now normalized and validated against property configuration
 		 */
-		$value = MetadataUtilities\Value::normalizeValue(
+		$value = ToolsUtilities\Value::normalizeValue(
 			$value,
 			$property->getDataType(),
 			$property->getFormat(),
 		);
 
 		if ($forReading || $mappedProperty !== null) {
-			$value = MetadataUtilities\Value::transformToScale(
+			$value = ToolsUtilities\Value::transformToScale(
 				$value,
 				$property->getDataType(),
 				$property->getScale(),
@@ -260,7 +258,7 @@ abstract class PropertiesManager
 		}
 
 		if (!$forReading && $mappedProperty === null) {
-			$value = MetadataUtilities\Value::transformValueToDevice(
+			$value = ToolsUtilities\Value::transformValueToDevice(
 				$value,
 				$property->getDataType(),
 				$property->getFormat(),
@@ -282,25 +280,25 @@ abstract class PropertiesManager
 			/**
 			 * Transform value to mapped property defined data type
 			 */
-			$value = MetadataUtilities\Value::transformDataType(
-				MetadataUtilities\Value::flattenValue($value),
+			$value = ToolsUtilities\Value::transformDataType(
+				ToolsUtilities\Value::flattenValue($value),
 				$mappedProperty->getDataType(),
 			);
 
 			/**
 			 * Read value is now normalized and validated against mapped property configuration
 			 */
-			$value = MetadataUtilities\Value::normalizeValue(
+			$value = ToolsUtilities\Value::normalizeValue(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getFormat(),
 			);
 
-			$value = $forReading ? MetadataUtilities\Value::transformToScale(
+			$value = $forReading ? ToolsUtilities\Value::transformToScale(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getScale(),
-			) : MetadataUtilities\Value::transformValueToDevice(
+			) : ToolsUtilities\Value::transformValueToDevice(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getFormat(),
@@ -313,9 +311,9 @@ abstract class PropertiesManager
 	/**
 	 * @param TParent $property
 	 *
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidValue
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidValue
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -327,8 +325,8 @@ abstract class PropertiesManager
 		/**
 		 * Convert value received from device to property defined data type
 		 */
-		$value = MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
+		$value = ToolsUtilities\Value::transformDataType(
+			ToolsUtilities\Value::flattenValue($value),
 			$property->getDataType(),
 		);
 
@@ -336,7 +334,7 @@ abstract class PropertiesManager
 		 * Value received from device have to be converted to system acceptable value
 		 * It is mandatory for properties with combined enum format defined values
 		 */
-		$value = MetadataUtilities\Value::transformValueFromDevice(
+		$value = ToolsUtilities\Value::transformValueFromDevice(
 			$value,
 			$property->getDataType(),
 			$property->getFormat(),
@@ -345,7 +343,7 @@ abstract class PropertiesManager
 		/**
 		 * Value received from device is now normalized and validated against property configuration
 		 */
-		return MetadataUtilities\Value::normalizeValue(
+		return ToolsUtilities\Value::normalizeValue(
 			$value,
 			$property->getDataType(),
 			$property->getFormat(),
@@ -357,10 +355,9 @@ abstract class PropertiesManager
 	 * @param TChild $mappedProperty
 	 *
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidValue
 	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidValue
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
@@ -375,16 +372,16 @@ abstract class PropertiesManager
 			/**
 			 * Transform value to mapped property defined data type
 			 */
-			$value = MetadataUtilities\Value::transformDataType(
-				MetadataUtilities\Value::flattenValue($value),
+			$value = ToolsUtilities\Value::transformDataType(
+				ToolsUtilities\Value::flattenValue($value),
 				$mappedProperty->getDataType(),
 			);
 
-			$value = $forWriting ? MetadataUtilities\Value::transformFromScale(
+			$value = $forWriting ? ToolsUtilities\Value::transformFromScale(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getScale(),
-			) : MetadataUtilities\Value::transformValueFromDevice(
+			) : ToolsUtilities\Value::transformValueFromDevice(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getFormat(),
@@ -393,7 +390,7 @@ abstract class PropertiesManager
 			/**
 			 * Write value is now normalized and validated against property configuration
 			 */
-			$value = MetadataUtilities\Value::normalizeValue(
+			$value = ToolsUtilities\Value::normalizeValue(
 				$value,
 				$mappedProperty->getDataType(),
 				$mappedProperty->getFormat(),
@@ -414,8 +411,8 @@ abstract class PropertiesManager
 		/**
 		 * Transform value to property defined data type
 		 */
-		$value = MetadataUtilities\Value::transformDataType(
-			MetadataUtilities\Value::flattenValue($value),
+		$value = ToolsUtilities\Value::transformDataType(
+			ToolsUtilities\Value::flattenValue($value),
 			$property->getDataType(),
 		);
 
@@ -433,7 +430,7 @@ abstract class PropertiesManager
 		}
 
 		if ($forWriting || $mappedProperty !== null) {
-			$value = MetadataUtilities\Value::transformFromScale(
+			$value = ToolsUtilities\Value::transformFromScale(
 				$value,
 				$property->getDataType(),
 				$property->getScale(),
@@ -443,7 +440,7 @@ abstract class PropertiesManager
 		/**
 		 * Write value is now normalized and validated against property configuration
 		 */
-		return MetadataUtilities\Value::normalizeValue(
+		return ToolsUtilities\Value::normalizeValue(
 			$value,
 			$property->getDataType(),
 			$property->getFormat(),

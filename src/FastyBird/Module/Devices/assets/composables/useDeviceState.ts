@@ -1,8 +1,6 @@
 import { computed } from 'vue';
 
-import { ConnectionState } from '@fastybird/metadata-library';
-
-import { IDevice, PropertyType, UseDeviceState } from '../types';
+import { ConnectionState, IDevice, PropertyType, UseDeviceState } from '../types';
 
 export function useDeviceState(device: IDevice): UseDeviceState {
 	const state = computed<ConnectionState>((): ConnectionState => {

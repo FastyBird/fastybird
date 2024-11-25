@@ -55,13 +55,15 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 import { DataType } from '@fastybird/metadata-library';
+import { useBreakpoints } from '@fastybird/tools';
 import { useWampV1Client } from '@fastybird/vue-wamp-v1';
+import { FbListItem, ListItemVariantTypes } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useConnectorState, useDeviceState } from '../../composables';
-import { ActorsPropertyActorSwitch, PropertiesPropertyIcon } from '../../components';
+import { useConnectorState, useDeviceState } from '../../composables';
 import { PropertyType } from '../../types';
+import ActorsPropertyActorSwitch from '../actors/actors-property-actor-switch.vue';
+import PropertiesPropertyIcon from '../properties/properties-property-icon.vue';
 
 import { IPropertyDefaultPropertyProps } from './property-default-property.types';
 

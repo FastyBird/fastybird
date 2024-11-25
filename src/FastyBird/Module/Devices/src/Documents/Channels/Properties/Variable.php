@@ -16,11 +16,11 @@
 namespace FastyBird\Module\Devices\Documents\Channels\Properties;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
-use FastyBird\Library\Metadata\Exceptions as MetadataExceptions;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Tools\Exceptions as ToolsExceptions;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use FastyBird\Module\Devices\Entities;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\Types;
@@ -39,7 +39,7 @@ use function array_merge;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Channels\Properties\Variable::class)]
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Channels\Properties\Variable::class)]
 final class Variable extends Property
 {
 
@@ -112,35 +112,35 @@ final class Variable extends Property
 	}
 
 	/**
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function getValue(): bool|float|int|string|DateTimeInterface|MetadataTypes\Payloads\Payload|null
 	{
 		try {
-			return MetadataUtilities\Value::normalizeValue(
+			return ToolsUtilities\Value::normalizeValue(
 				$this->value,
 				$this->getDataType(),
 				$this->getFormat(),
 			);
-		} catch (MetadataExceptions\InvalidValue) {
+		} catch (ToolsExceptions\InvalidValue) {
 			return null;
 		}
 	}
 
 	/**
 	 * @throws Exceptions\InvalidState
-	 * @throws MetadataExceptions\InvalidArgument
-	 * @throws MetadataExceptions\InvalidState
+	 * @throws ToolsExceptions\InvalidArgument
+	 * @throws ToolsExceptions\InvalidState
 	 * @throws TypeError
 	 * @throws ValueError
 	 */
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), [
-			'value' => MetadataUtilities\Value::flattenValue($this->getValue()),
+			'value' => ToolsUtilities\Value::flattenValue($this->getValue()),
 
 			'children' => array_map(
 				static fn (Uuid\UuidInterface $id): string => $id->toString(),

@@ -18,7 +18,9 @@
 			<el-collapse v-model="activeBoxes">
 				<el-collapse-item name="plugins">
 					<template #title>
-						<el-text class="!px-2">{{ t('devicesModule.filters.plugins.title') }}</el-text>
+						<el-text class="!px-2">
+							{{ t('devicesModule.filters.plugins.title') }}
+						</el-text>
 					</template>
 					<el-checkbox-group
 						v-model="filters.plugins"
@@ -34,7 +36,9 @@
 				</el-collapse-item>
 				<el-collapse-item name="connectors">
 					<template #title>
-						<el-text class="!px-2">{{ t('devicesModule.filters.connectors.title') }}</el-text>
+						<el-text class="!px-2">
+							{{ t('devicesModule.filters.connectors.title') }}
+						</el-text>
 					</template>
 					<el-checkbox-group
 						v-model="filters.connectors"
@@ -51,7 +55,9 @@
 				</el-collapse-item>
 				<el-collapse-item name="state">
 					<template #title>
-						<el-text class="!px-2">{{ t('devicesModule.filters.states.title') }}</el-text>
+						<el-text class="!px-2">
+							{{ t('devicesModule.filters.states.title') }}
+						</el-text>
 					</template>
 					<el-checkbox-group
 						v-model="filters.states"
@@ -81,16 +87,16 @@
 </template>
 
 <script setup lang="ts">
-import isEqual from 'lodash.isequal';
 import { computed, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ElButton, ElCollapse, ElCollapseItem, ElCheckbox, ElCheckboxGroup, ElScrollbar, ElText } from 'element-plus';
+
+import { ElButton, ElCheckbox, ElCheckboxGroup, ElCollapse, ElCollapseItem, ElScrollbar, ElText } from 'element-plus';
+import isEqual from 'lodash.isequal';
 
 import { FasFilter, FasFilterCircleXmark } from '@fastybird/web-ui-icons';
 import { FbAppBarHeading } from '@fastybird/web-ui-library';
-import { ConnectionState } from '@fastybird/metadata-library';
 
-import { DevicesFilter, IConnector, IDevicesFilter } from '../../types';
+import { ConnectionState, DevicesFilter, IConnector, IDevicesFilter } from '../../types';
 import { defaultDevicesFilter } from '../../utilities';
 
 import { IDevicesListAdjustProps } from './devices-list-adjust.types';

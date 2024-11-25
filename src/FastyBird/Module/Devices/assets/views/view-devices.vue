@@ -104,15 +104,17 @@ import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRoute, useRouter } from 'vue-router';
-import get from 'lodash.get';
-import { ElDrawer, ElIcon, vLoading } from 'element-plus';
 
+import { ElDrawer, ElIcon, vLoading } from 'element-plus';
+import get from 'lodash.get';
+
+import { useBreakpoints } from '@fastybird/tools';
 import { FasPlug, FasXmark } from '@fastybird/web-ui-icons';
 import { AppBarButtonAlignTypes, FbAppBar, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
-import { useBreakpoints, useConnectors, useDeviceActions, useDevices, useRoutesNames } from '../composables';
+import { DevicesListAdjust, DevicesListDevices, ViewError } from '../components';
+import { useConnectors, useDeviceActions, useDevices, useRoutesNames } from '../composables';
 import { connectorPlugins } from '../configuration';
-import { DevicesListDevices, ViewError, DevicesListAdjust } from '../components';
 import { ApplicationError } from '../errors';
 
 import { IViewDevicesProps } from './view-devices.types';

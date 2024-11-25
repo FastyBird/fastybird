@@ -1,9 +1,8 @@
-import { _GettersTree } from 'pinia';
-import { TJsonaModel, TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships } from 'jsona/lib/JsonaTypes';
+import { Ref } from 'vue';
 
-import { EmailDocument } from '@fastybird/metadata-library';
+import { TJsonApiBody, TJsonApiData, TJsonApiRelation, TJsonApiRelationships, TJsonaModel } from 'jsona/lib/JsonaTypes';
 
-import { IAccount, IAccountResponseData, IEntityMeta, IPlainRelation } from '../../models/types';
+import { EmailDocument, IAccount, IAccountResponseData, IEntityMeta, IPlainRelation } from '../../types';
 
 export interface IEmailMeta extends IEntityMeta {
 	entity: 'email';
@@ -13,21 +12,20 @@ export interface IEmailMeta extends IEntityMeta {
 // =====
 
 export interface IEmailsState {
-	semaphore: IEmailsStateSemaphore;
-	firstLoad: IEmail['id'][];
-	data: { [key: IEmail['id']]: IEmail };
-}
-
-export interface IEmailsGetters extends _GettersTree<IEmailsState> {
-	firstLoadFinished: (state: IEmailsState) => (accountId: IAccount['id']) => boolean;
-	getting: (state: IEmailsState) => (id: IEmail['id']) => boolean;
-	fetching: (state: IEmailsState) => (accountId: IAccount['id'] | null) => boolean;
-	findById: (state: IEmailsState) => (id: IEmail['id']) => IEmail | null;
-	findByAddress: (state: IEmailsState) => (address: IEmail['address']) => IEmail | null;
-	findForAccount: (state: IEmailsState) => (accountId: IAccount['id']) => IEmail[];
+	semaphore: Ref<IEmailsStateSemaphore>;
+	firstLoad: Ref<IEmail['id'][]>;
+	data: Ref<{ [key: IEmail['id']]: IEmail }>;
 }
 
 export interface IEmailsActions {
+	// Getters
+	firstLoadFinished: (accountId: IAccount['id']) => boolean;
+	getting: (id: IEmail['id']) => boolean;
+	fetching: (accountId: IAccount['id'] | null) => boolean;
+	findById: (id: IEmail['id']) => IEmail | null;
+	findByAddress: (address: IEmail['address']) => IEmail | null;
+	findForAccount: (accountId: IAccount['id']) => IEmail[];
+	// Actions
 	set: (payload: IEmailsSetActionPayload) => Promise<IEmail>;
 	unset: (payload: IEmailsUnsetActionPayload) => void;
 	get: (payload: IEmailsGetActionPayload) => Promise<boolean>;
@@ -40,6 +38,8 @@ export interface IEmailsActions {
 	socketData: (payload: IEmailsSocketDataActionPayload) => Promise<boolean>;
 	insertData: (payload: IEmailsInsertDataActionPayload) => Promise<boolean>;
 }
+
+export type EmailsStoreSetup = IEmailsState & IEmailsActions;
 
 // STORE STATE
 // ===========

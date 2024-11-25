@@ -16,10 +16,9 @@
 namespace FastyBird\Module\Accounts\Documents\Accounts;
 
 use DateTimeInterface;
-use FastyBird\Library\Application\ObjectMapper as ApplicationObjectMapper;
-use FastyBird\Library\Exchange\Documents\Mapping as EXCHANGE;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Application\ObjectMapper as ApplicationObjectMapper;
+use FastyBird\Core\Exchange\Documents as ExchangeDocuments;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
 use FastyBird\Module\Accounts;
 use FastyBird\Module\Accounts\Entities;
@@ -36,14 +35,14 @@ use function array_map;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document(entity: Entities\Accounts\Account::class)]
-#[EXCHANGE\RoutingMap([
+#[ApplicationDocuments\Mapping\Document(entity: Entities\Accounts\Account::class)]
+#[ExchangeDocuments\Mapping\RoutingMap([
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_REPORTED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_CREATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_UPDATED_ROUTING_KEY,
 	Accounts\Constants::MESSAGE_BUS_ACCOUNT_DOCUMENT_DELETED_ROUTING_KEY,
 ])]
-final readonly class Account implements MetadataDocuments\Document
+final readonly class Account implements ApplicationDocuments\Document
 {
 
 	/**

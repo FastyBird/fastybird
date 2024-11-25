@@ -16,10 +16,9 @@
 namespace FastyBird\Module\Devices\Documents\States;
 
 use DateTimeInterface;
-use FastyBird\Library\Metadata\Documents as MetadataDocuments;
-use FastyBird\Library\Metadata\Documents\Mapping as DOC;
+use FastyBird\Core\Application\Documents as ApplicationDocuments;
+use FastyBird\Core\Tools\Utilities as ToolsUtilities;
 use FastyBird\Library\Metadata\Types as MetadataTypes;
-use FastyBird\Library\Metadata\Utilities as MetadataUtilities;
 use Orisai\ObjectMapper;
 
 /**
@@ -30,8 +29,8 @@ use Orisai\ObjectMapper;
  *
  * @author         Adam Kadlec <adam.kadlec@fastybird.com>
  */
-#[DOC\Document]
-final readonly class StateValues implements MetadataDocuments\Document
+#[ApplicationDocuments\Mapping\Document]
+final readonly class StateValues implements ApplicationDocuments\Document
 {
 
 	public function __construct(
@@ -78,8 +77,8 @@ final readonly class StateValues implements MetadataDocuments\Document
 	public function toArray(): array
 	{
 		return [
-			'actual_value' => MetadataUtilities\Value::flattenValue($this->getActualValue()),
-			'expected_value' => MetadataUtilities\Value::flattenValue($this->getExpectedValue()),
+			'actual_value' => ToolsUtilities\Value::flattenValue($this->getActualValue()),
+			'expected_value' => ToolsUtilities\Value::flattenValue($this->getExpectedValue()),
 		];
 	}
 

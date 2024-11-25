@@ -204,28 +204,30 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
 import {
 	ElAvatar,
 	ElButton,
 	ElButtonGroup,
-	ElTable,
-	ElTableColumn,
-	ElRadioButton,
-	ElRadioGroup,
-	ElResult,
 	ElIcon,
 	ElInput,
 	ElPagination,
+	ElRadioButton,
+	ElRadioGroup,
+	ElResult,
 	ElSpace,
+	ElTable,
+	ElTableColumn,
 	ElText,
 	useNamespace,
 } from 'element-plus';
 
-import { FasInfo, FasFilter, FasFilterCircleXmark, FasMagnifyingGlass, FasPlug, FasSliders } from '@fastybird/web-ui-icons';
+import { FasFilter, FasFilterCircleXmark, FasInfo, FasMagnifyingGlass, FasPlug, FasSliders } from '@fastybird/web-ui-icons';
 import { FbIconWithChild } from '@fastybird/web-ui-library';
 
-import { ConnectorsConnectorIcon, DevicesListDevicesColumnState } from '../../components';
 import { DevicesFilter } from '../../types';
+import ConnectorsConnectorIcon from '../connectors/connectors-connector-icon.vue';
+import DevicesListDevicesColumnState from '../devices/devices-list-devices-column-state.vue';
 
 import { IDevicesListDevicesProps } from './devices-list-devices.types';
 
@@ -284,5 +286,5 @@ const onSortData = ({ order }: { order: 'ascending' | 'descending' }): void => {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-@import 'devices-list-devices.scss';
+@use 'devices-list-devices.scss';
 </style>

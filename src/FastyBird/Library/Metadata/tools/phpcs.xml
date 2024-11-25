@@ -19,8 +19,6 @@
             <property name="rootNamespaces" type="array">
                 <element key="src" value="FastyBird\Library\Metadata"/>
                 <element key="tests/cases/unit" value="FastyBird\Library\Metadata\Tests\Cases\Unit"/>
-                <element key="tests/fixtures" value="FastyBird\Library\Metadata\Tests\Fixtures"/>
-                <element key="tests/fixtures/dummy" value="FastyBird\Library\Metadata\Tests\Fixtures\Dummy"/>
             </property>
         </properties>
     </rule>

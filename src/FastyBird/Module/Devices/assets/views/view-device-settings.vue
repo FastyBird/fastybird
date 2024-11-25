@@ -134,32 +134,25 @@ import { computed, inject, onBeforeMount, onBeforeUnmount, onUnmounted, ref, wat
 import { useI18n } from 'vue-i18n';
 import { useMeta } from 'vue-meta';
 import { useRouter } from 'vue-router';
-import get from 'lodash.get';
-import { ElButton, ElIcon, ElScrollbar, vLoading } from 'element-plus';
 
-import { FarCircleXmark, FarCircleCheck, FasAngleLeft } from '@fastybird/web-ui-icons';
-import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
+import { ElButton, ElIcon, ElScrollbar, vLoading } from 'element-plus';
+import get from 'lodash.get';
+
 import { DataType, ModuleSource } from '@fastybird/metadata-library';
+import { useBreakpoints } from '@fastybird/tools';
+import { FarCircleCheck, FarCircleXmark, FasAngleLeft } from '@fastybird/web-ui-icons';
+import { AppBarButtonAlignTypes, FbAppBarButton, FbAppBarHeading } from '@fastybird/web-ui-library';
 
 import {
-	DevicesDeviceIcon,
 	DeviceDefaultDeviceSettings,
+	DevicesDeviceIcon,
 	PropertyDefaultPropertySettingsAdd,
 	PropertyDefaultPropertySettingsEdit,
 } from '../components';
-import {
-	useBreakpoints,
-	useChannels,
-	useConnectorRoutes,
-	useDevice,
-	useDeviceRoutes,
-	usePropertyActions,
-	useRoutesNames,
-	useUuid,
-} from '../composables';
+import { useChannels, useConnectorRoutes, useDevice, useDeviceRoutes, usePropertyActions, useRoutesNames, useUuid } from '../composables';
 import { connectorPlugins, devicePropertiesStoreKey, devicesStoreKey } from '../configuration';
 import { ApplicationError } from '../errors';
-import { FormResultTypes, IDevice, IDeviceProperty, IDeviceData, PropertyType, IConnectorPlugin } from '../types';
+import { FormResultType, FormResultTypes, IConnectorPlugin, IDevice, IDeviceData, IDeviceProperty, PropertyType } from '../types';
 
 import { IViewDeviceSettingsProps } from './view-device-settings.types';
 
@@ -202,7 +195,7 @@ const connectorsPlugin = computed<IConnectorPlugin | null>((): IConnectorPlugin 
 
 const remoteFormSubmit = ref<boolean>(false);
 const remoteFormReset = ref<boolean>(false);
-const remoteFormResult = ref<FormResultTypes>(FormResultTypes.NONE);
+const remoteFormResult = ref<FormResultType>(FormResultTypes.NONE);
 
 const newPropertyId = ref<string | null>(null);
 const newProperty = computed<IDeviceProperty | null>((): IDeviceProperty | null =>
