@@ -120,5 +120,7 @@ export const focusNode = (el: HTMLElement): void => {
 
 	el.focus();
 
-	!isLeaf(el) && el.click();
+	if (!isLeaf(el)) {
+		el.click();
+	}
 };

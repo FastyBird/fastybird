@@ -35,7 +35,6 @@ const beforeEnter = (el: Element): void => {
 const enter = (el: Element, done: () => void): void => {
 	const element = el as HTMLElement;
 
-	element.offsetHeight;
 	element.style.transition = 'height 0.5s ease-in-out';
 	element.style.height = '100%';
 	element.addEventListener('transitionend', done);

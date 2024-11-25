@@ -95,8 +95,8 @@ const testPassive = (): boolean => {
 		);
 
 		passive = true;
-	} catch (e) {
-		// do nothing
+	} catch (e: any) {
+		console.log(e);
 	}
 
 	return passive;
