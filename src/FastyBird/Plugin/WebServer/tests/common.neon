@@ -15,6 +15,7 @@ php:
 
 extensions:
     fbTools                 : FastyBird\Core\Tools\DI\ToolsExtension
+    fbDateTimeFactory       : FastyBird\DateTimeFactory\DI\DateTimeFactoryExtension
 
 fbApplication:
     documents:

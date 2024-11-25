@@ -28,7 +28,6 @@ use FastyBird\Module\Devices\Documents;
 use FastyBird\Module\Devices\Events;
 use FastyBird\Module\Devices\Exceptions;
 use FastyBird\Module\Devices\States;
-use IPub\Phone\Exceptions as PhoneExceptions;
 use Nette;
 use Nette\Caching as NetteCaching;
 use Symfony\Component\EventDispatcher;
@@ -80,8 +79,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws ToolsExceptions\InvalidData
 	 * @throws ToolsExceptions\Logic
 	 * @throws ToolsExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function stateCreated(
 		Events\ConnectorPropertyStateEntityCreated|Events\DevicePropertyStateEntityCreated|Events\ChannelPropertyStateEntityCreated $event,
@@ -104,8 +101,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws ToolsExceptions\InvalidData
 	 * @throws ToolsExceptions\Logic
 	 * @throws ToolsExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	public function stateUpdated(
 		Events\ConnectorPropertyStateEntityUpdated|Events\DevicePropertyStateEntityUpdated|Events\ChannelPropertyStateEntityUpdated $event,
@@ -139,8 +134,6 @@ final class StateEntities implements EventDispatcher\EventSubscriberInterface
 	 * @throws ToolsExceptions\InvalidData
 	 * @throws ToolsExceptions\Logic
 	 * @throws ToolsExceptions\MalformedInput
-	 * @throws PhoneExceptions\NoValidCountryException
-	 * @throws PhoneExceptions\NoValidPhoneException
 	 */
 	private function publishDocument(
 		MetadataTypes\Sources\Source $source,

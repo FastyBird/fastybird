@@ -13,10 +13,6 @@
 php:
     date.timezone: Europe/Prague
 
-extensions:
-    ipubPhone           : IPub\Phone\DI\PhoneExtension
-    fbTools             : FastyBird\Core\Tools\DI\ToolsExtension
-
 fbApplication:
     documents:
         mapping: []

@@ -79,9 +79,6 @@ fbJsonApi:
     meta:
         copyright: FastyBird s.r.o
 
-fbDateTimeFactory:
-    frozen: DateTimeImmutable('2020-04-01T12:00:00+00:00')
-
 fbApplication:
     documents:
         mapping: []
