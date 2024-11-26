@@ -43,7 +43,7 @@
     "fastybird/metadata-library": "dev-main",
     "fastybird/tools": "dev-main",
     "fastybird/virtual-connector": "dev-main",
-    "ipub/doctrine-crud": "^5.0",
+    "ipub/doctrine-crud": "^5.1",
     "nette/di": "^3.2",
     "psr/log": "^3.0",
     "ramsey/uuid": "^4.7",
