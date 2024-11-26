@@ -12,7 +12,7 @@ import { v4 as uuid } from 'uuid';
 
 import { ModulePrefix } from '@fastybird/metadata-library';
 import { injectStoresManager } from '@fastybird/tools';
-import { IStoresManager } from '@fastybird/tools/assets/stores';
+import { IStoresManager } from '@fastybird/tools';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.account.json';
 import { emailsStoreKey, identitiesStoreKey } from '../../configuration';

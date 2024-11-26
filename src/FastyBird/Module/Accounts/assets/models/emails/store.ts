@@ -11,7 +11,7 @@ import { v4 as uuid } from 'uuid';
 
 import { ModulePrefix, ModuleSource } from '@fastybird/metadata-library';
 import { injectStoresManager } from '@fastybird/tools';
-import { IStoresManager } from '@fastybird/tools/assets/stores';
+import { IStoresManager } from '@fastybird/tools';
 
 import exchangeDocumentSchema from '../../../resources/schemas/document.email.json';
 import { accountsStoreKey } from '../../configuration';
