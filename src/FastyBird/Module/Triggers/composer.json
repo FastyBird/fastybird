@@ -47,6 +47,7 @@
     "fastybird/metadata-library": "dev-main",
     "fastybird/simple-auth": "^0.14",
     "ipub/doctrine-phone": "^1.6",
+    "ipub/phone": "^2.3",
     "ipub/slim-router": "^0.2",
     "nettrine/dbal": "^0.8",
     "nettrine/orm": "^0.8",
